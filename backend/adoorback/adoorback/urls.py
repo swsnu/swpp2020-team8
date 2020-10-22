@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('friends/', include('friendship.urls')),
+    path('questions/', include('question.urls')),
     path('likes/', include('like.urls')),
     path('comments/', include('comment.urls')),
     path('notifications/', include('notification.urls')),
