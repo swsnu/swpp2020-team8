@@ -21,6 +21,7 @@
     "prettier/prettier": ["error"],
     "comma-dangle": ["error", "never"],
     "import/no-unresolved": "off",
+    "no-use-before-define": "off",
     "import/extensions": "off",
     "import/no-absolute-path": "off",
     "object-curly-newline": "off",
