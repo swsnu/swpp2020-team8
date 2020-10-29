@@ -1,5 +1,5 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
+.idea/
 
 # dependencies
 node_modules
@@ -32,9 +32,12 @@ node_modules
 /backend/*.pyc
 /backend/*/*/*.pyc
 /backend/*/*.pyc
+/backend/*/*/*/*.pyc
 /backend/__pycache__/
 /backend/local_settings.py
 /backend/db.sqlite3
 /backend/media
 /backend/*/*/__pycache__/
 /backend/*/__pycache__/
+/backend/*/*/*/__pycache__/
+/backend/adoorback/*/migrations/
