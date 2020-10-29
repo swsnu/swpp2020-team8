@@ -1,7 +1,7 @@
 // global style
 // TODO: reset css, declare common styles here
 
-import { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -10,6 +10,45 @@ const GlobalStyle = createGlobalStyle`
   button {
     outline: none;
     cursor: pointer;
+  }
+`;
+
+export const CommonInput = styled.input`
+  padding: 11px;
+  border-radius: 4px;
+  color: rgb(50, 50, 50);
+  font-size: 16px;
+  outline: none;
+  width: ${(props) => (props.width ? props.width : '100%')};
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  margin: 4px 0;
+  ::placeholder,
+  ::-webkit-input-placeholder {
+    color: #aaa;
+  }
+  :focus {
+    border-color: #008489;
+  }
+`;
+
+export const FlexDiv = styled.div`
+  display: flex;
+`;
+
+export const CommonButton = styled.button`
+  padding: 12px 11px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 16px;
+  outline: none;
+  border: none;
+  background-color: ${(props) => (props.color ? props.color : '#F12C56')};
+  width: ${(props) => (props.width ? props.width : '100%')};
+  margin: ${(props) => (props.margin ? props.margin : '4px 0')};
+  opacity: 0.8;
+  :hover {
+    opacity: 1;
   }
 `;
 
