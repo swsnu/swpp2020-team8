@@ -7,6 +7,11 @@ const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
   }
+
+  h1 {
+    font-size: 24px;
+    color: rgb(50, 50, 50);
+  }
   button {
     outline: none;
     cursor: pointer;
@@ -23,6 +28,7 @@ export const CommonInput = styled.input`
   box-sizing: border-box;
   border: 1px solid #ddd;
   margin: 4px 0;
+  border-color: ${(props) => props.invalid && '#ff395b'};
   ::placeholder,
   ::-webkit-input-placeholder {
     color: #aaa;
@@ -48,7 +54,7 @@ export const CommonButton = styled.button`
   margin: ${(props) => (props.margin ? props.margin : '4px 0')};
   opacity: 0.8;
   :hover {
-    opacity: 1;
+    opacity: ${(props) => !props.disabled && 1};
   }
 `;
 

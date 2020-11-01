@@ -10,8 +10,8 @@ function App() {
     <>
       <GlobalStyle />
       <Switch>
-        <Route path="/signup" component={SignUp} />
-        <Route path="/signup/questions" component={QuestionSelection} />
+        <Route exact path="/signup" component={SignUp} />
+        <Route exact path="/select-questions" component={QuestionSelection} />
         <Route path="/style-example" component={StyledComponentExample} />
       </Switch>
     </>
