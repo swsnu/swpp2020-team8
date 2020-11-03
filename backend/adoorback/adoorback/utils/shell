@@ -4,29 +4,28 @@ from faker import Faker
 import random
 
 from django.contrib.auth import get_user_model
-from feed.models import Feed, Question, AdminQuestion, CustomQuestionPost, Article, Response
+from feed.models import Question, Article, Response, Post
 from comment.models import Comment
 from like.models import Like
 from django.contrib.contenttypes.models import ContentType
 from adoorback.utils.seed import set_seed
+from adoorback.utils.content_types import get_content_type
+User = get_user_model()
 
 set_seed(10)
 
-User = get_user_model()
-comment_model = ContentType.objects.get_for_model(Comment)
-feed_model = ContentType.objects.get_for_model(Feed)
-article_model = ContentType.objects.get_for_model(Article)
-response_model = ContentType.objects.get_for_model(Response)
-custom_question_model = ContentType.objects.get_for_model(CustomQuestionPost)
-admin_question_model = ContentType.objects.get_for_model(AdminQuestion)
-
 user = User.objects.all().last()
-feed = Feed.objects.all().last()
+
 article = Article.objects.all().last()
 response = Response.objects.all().last()
-custom_question = CustomQuestionPost.objects.all().last()
-admin_question = AdminQuestion.objects.all().last()
+question = Question.objects.all().last()
 comment = Comment.objects.all().last()
-reply = Comment.objects.all().filter(content_type=comment_model).last()
-feed_like = Like.objects.all().filter(content_type=feed_model).last()
-comment_like = Like.objects.all().filter(content_type=comment_model).last()
+like = Like.objects.all().last()
+post = Post.objects.all().last()
+
+admin_question = Question.objects.admin_questions_only()
+custom_question = Question.objects.custom_questions_only()
+feed_comment = Comment.objects.comments_only().last()
+reply = Comment.objects.replies_only().last()
+feed_like = Like.objects.feed_likes_only().last()
+comment_like = Like.objects.comment_likes_only().last()
