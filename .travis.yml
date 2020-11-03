@@ -1,0 +1,27 @@
+matrix:
+    include:
+        - language: node_js
+          node_js:
+              - '12'
+          cache: 
+              - yarn: true
+          before_install:
+              - cd frontend
+          install:
+              - yarn install
+          script:
+              - ./node_modules/.bin/eslint src
+              - yarn test --coverage --watchAll=false
+        
+        - language: python
+          python:
+              - '3.7'
+	      before_install:
+              - cd backend/adoorback
+          install:
+              - pip install -r requirements.txt
+          script:
+              - pylint **/*.py --load-plugins pylint_django
+              - coverage run --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
+              - coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
+              - coverage xml
