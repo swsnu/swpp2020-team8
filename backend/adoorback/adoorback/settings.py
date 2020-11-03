@@ -32,19 +32,36 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'question.apps.QuestionConfig',
+    'feed.apps.FeedConfig',
     'like.apps.LikeConfig',
     'comment.apps.CommentConfig',
     'notification.apps.NotificationConfig',
     'account.apps.AccountConfig',
-    'post.apps.PostConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'rest_framework',
+    'polymorphic',
 ]
+
+SITE_ID = 1
+
+AUTH_USER_MODEL = 'account.User'
+
+# reference: https://github.com/jazzband/django-redis
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -110,7 +127,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'ko-kr'
+LANGUAGE_CODE = 'en-US'
 
 TIME_ZONE = 'Asia/Seoul'
 

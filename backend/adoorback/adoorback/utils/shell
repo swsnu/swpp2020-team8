@@ -1,0 +1,32 @@
+python manage.py shell
+
+from faker import Faker
+import random
+
+from django.contrib.auth import get_user_model
+from feed.models import Feed, Question, AdminQuestion, CustomQuestionPost, Article, Response
+from comment.models import Comment
+from like.models import Like
+from django.contrib.contenttypes.models import ContentType
+from adoorback.utils.seed import set_seed
+
+set_seed(10)
+
+User = get_user_model()
+comment_model = ContentType.objects.get_for_model(Comment)
+feed_model = ContentType.objects.get_for_model(Feed)
+article_model = ContentType.objects.get_for_model(Article)
+response_model = ContentType.objects.get_for_model(Response)
+custom_question_model = ContentType.objects.get_for_model(CustomQuestionPost)
+admin_question_model = ContentType.objects.get_for_model(AdminQuestion)
+
+user = User.objects.all().last()
+feed = Feed.objects.all().last()
+article = Article.objects.all().last()
+response = Response.objects.all().last()
+custom_question = CustomQuestionPost.objects.all().last()
+admin_question = AdminQuestion.objects.all().last()
+comment = Comment.objects.all().last()
+reply = Comment.objects.all().filter(content_type=comment_model).last()
+feed_like = Like.objects.all().filter(content_type=feed_model).last()
+comment_like = Like.objects.all().filter(content_type=comment_model).last()

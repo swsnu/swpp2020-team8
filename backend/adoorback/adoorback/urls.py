@@ -19,12 +19,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('questions/', include('question.urls')),
     path('likes/', include('like.urls')),
     path('comments/', include('comment.urls')),
     path('notifications/', include('notification.urls')),
     path('accounts/', include('account.urls')),
-    path('posts/', include('post.urls')),
+    path('feeds/', include('feed.urls')),
     path('admin/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
