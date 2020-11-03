@@ -21,7 +21,9 @@ matrix:
           install:
               - pip install -r requirements.txt
           script:              
-              - pylint **/*.py --load-plugins pylint_django
+              - pylint --load-plugins pylint_django */models.py */views/*.py */tests/*.py
+              - python manage.py makemigrations
+              - python manage.py migrate --run-syncdb
               - coverage run --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
               - coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
               - coverage xml
