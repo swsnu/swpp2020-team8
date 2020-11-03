@@ -1,4 +1,5 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+/backend/adoorback/.idea/
 .idea/
 
 # dependencies
@@ -41,3 +42,5 @@ node_modules
 /backend/*/__pycache__/
 /backend/*/*/*/__pycache__/
 /backend/adoorback/*/migrations/
+
+/backend/adoorback/.coverage
