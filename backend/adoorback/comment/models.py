@@ -4,23 +4,32 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth import get_user_model
 from like.models import Like
+from adoorback.models import AdoorModel
+from adoorback.utils.content_types import get_content_type
 
 
 User = get_user_model()
 
 
-class Comment(models.Model):
-    author = models.ForeignKey(User, related_name='commented_set', on_delete=models.CASCADE)
-    content_type = models.ForeignKey(ContentType, related_name='comment_set', on_delete=models.CASCADE)
+class CommentManager(models.Manager):
+    use_for_related_fields = True
+
+    def comments_only(self, **kwargs):
+        return self.exclude(content_type=get_content_type("comment"), **kwargs)
+
+    def replies_only(self, **kwargs):
+        return self.filter(content_type=get_content_type("comment"), **kwargs)
+
+
+class Comment(AdoorModel):
+    author = models.ForeignKey(User, related_name='comment_set', on_delete=models.CASCADE)
+    is_private = models.BooleanField(default=False)
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.IntegerField(blank=True, null=True)
     target = GenericForeignKey('content_type', 'object_id')
-    content = models.TextField()
-    is_private = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(auto_now=True)
 
     replies = GenericRelation('self')
-    likes = GenericRelation(Like)
+    comment_likes = GenericRelation(Like)
 
-    def __str__(self):
-        return self.content
+    objects = CommentManager()
