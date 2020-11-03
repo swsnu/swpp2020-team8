@@ -1,7 +1,7 @@
 ---
 name: Sprint Notes
 about: 'Sprint Done / Todos '
-title: "[note]"
+title: "[Sprint#]"
 labels: ''
 assignees: ''
 
@@ -9,10 +9,17 @@ assignees: ''
 
 ### Date
 
-### DONE
+## DONE
 - [ ] 점심 (규리)
 - [ ] 저녁 (지나)
 
-### TODO 
-* 점심 (진선) 
-*
+## TODO 
+### DUE: 
+* 진선
+- [ ] 밥
+* 재원
+- [ ] 밥
+* 지나
+- [ ] 밥
+* 규리
+- [ ] 밥
