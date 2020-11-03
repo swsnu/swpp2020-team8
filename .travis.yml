@@ -17,10 +17,11 @@ matrix:
           python:
               - '3.7'
           before_install:
-              - cd backend
+              - cd backend/adoorback
           install:
               - pip install -r requirements.txt
           script:              
               - pylint **/*.py --load-plugins pylint_django
-              - coverage run --source='.' manage.py test
+              - coverage run --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
+              - coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
               - coverage xml
