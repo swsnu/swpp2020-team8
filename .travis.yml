@@ -15,15 +15,15 @@ matrix:
         
         - language: python
           python:
-              - '3.7'
+              - '3.7.6'
           before_install:
               - cd backend/adoorback
           install:
               - pip install -r requirements.txt
           script:              
-              - pylint --load-plugins pylint_django */models.py */views/*.py */tests/*.py
-              - python manage.py makemigrations
-              - python manage.py migrate --run-syncdb
+              - pylint --load-plugins pylint_django */models.py */view.py */tests.py
+              - python manage.py makemigrations account feed comment like
+              - python manage.py migrate
               - coverage run --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
               - coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
               - coverage xml
