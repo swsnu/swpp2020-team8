@@ -9,6 +9,8 @@ matrix:
               - cd frontend
           install:
               - yarn install
+          ignore:
+            - ./src/serviceWorker.js
           script:
               - ./node_modules/.bin/eslint src
               - yarn test --coverage --watchAll=false
