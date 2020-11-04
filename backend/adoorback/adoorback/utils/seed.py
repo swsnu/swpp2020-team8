@@ -9,7 +9,7 @@ import logging
 import sys
 
 
-DEBUG = True
+DEBUG = False
 
 
 def set_seed(n):
