@@ -7,6 +7,10 @@ const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
   }
+  h1 {
+    font-size: 24px;
+    color: rgb(50, 50, 50);
+  }
   button {
     outline: none;
     cursor: pointer;

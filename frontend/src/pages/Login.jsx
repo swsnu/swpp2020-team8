@@ -5,9 +5,9 @@ import { useHistory } from 'react-router';
 import { CommonInput, CommonButton } from '../styles';
 
 const LoginWrapper = styled.div`
-  margin: 16px 0;
-  width: 100vw;
-  text-align: center;
+  width: 500px;
+  margin: 0 auto;
+  margin-top: 50px;
 `;
 
 export default function Login() {
@@ -20,39 +20,35 @@ export default function Login() {
   };
 
   const onClickSubmitButton = () => {
-    if (email !== 'adoor' || password !== 'adoor') {
-      alert('Please check your email or password');
-    } else {
-      history.push('/friends');
-    }
+    history.push('/friends');
   };
 
   return (
     <LoginWrapper>
       <h1>Login</h1>
       <CommonInput
-        name="email-input"
+        id="email-input"
         value={email}
         placeholder="email"
         onChange={(e) => setEmail(e.target.value)}
       />
       <CommonInput
-        name="password-input"
+        id="password-input"
         value={password}
         placeholder="password"
         onChange={(e) => setPassword(e.target.value)}
       />
       <CommonButton
-        name="submit-button"
+        id="submit-button"
         disabled={email === '' || password === ''}
-        margin="40px 0"
+        margin="20px 0"
         onClick={onClickSubmitButton}
       >
         Login
       </CommonButton>
       <CommonButton
-        name="signup-button"
-        margin="40px 0"
+        id="signup-button"
+        margin="5px 0"
         onClick={onClickSignupButton}
       >
         Sign Up
