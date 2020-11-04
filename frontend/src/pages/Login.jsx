@@ -64,7 +64,11 @@ export default function Login() {
         type="password"
         onChange={(e) => setPassword(e.target.value)}
       />
-      {showLoginError && <WarningMessage> Login Error </WarningMessage>}
+      {showLoginError && (
+        <WarningMessage>
+          이메일 혹은 패스워드를 다시 확인해주세요
+        </WarningMessage>
+      )}
       <CommonButton
         id="submit-button"
         disabled={email === '' || password === ''}

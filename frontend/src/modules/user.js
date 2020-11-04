@@ -50,22 +50,22 @@ export default function userReducer(state = initialState, action) {
   switch (action.type) {
     case LOGIN:
       return {
-        user: null,
+        user: {},
         error: false
       };
     case LOGIN_SUCCESS:
       return {
-        user: action.user,
+        user: { ...action.user },
         error: false
       };
     case LOGIN_ERROR:
       return {
-        user: null,
+        user: {},
         error: action.error
       };
     case LOGOUT:
       return {
-        user: null,
+        user: {},
         error: false
       };
     default:
