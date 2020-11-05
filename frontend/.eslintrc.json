@@ -1,7 +1,8 @@
 {
   "env": {
     "browser": true,
-    "es2020": true
+    "es2020": true,
+    "jest": true
   },
   "extends": [
     "prettier",
@@ -26,5 +27,10 @@
     "import/no-absolute-path": "off",
     "object-curly-newline": "off",
     "react/jsx-filename-extension": [1, { "extensions": [".jsx"] }]
+  },
+  "globals": {
+    "shallow": true,
+    "render": true,
+    "mount": true
   }
 }

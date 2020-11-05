@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { getSampleQuestions, resetQuestions } from '../modules/question';
+import { getSampleQuestions } from '../modules/question';
 import { CommonButton } from '../styles';
 
 const QuestionsWrapper = styled.div`
@@ -34,11 +34,9 @@ export default function QuestionSelection() {
     (state) => state.questionReducer.sampleQuestions
   );
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(getSampleQuestions());
-    return () => {
-      dispatch(resetQuestions());
-    };
   }, [dispatch]);
 
   const onQuestionSelect = (e) => {
@@ -56,6 +54,7 @@ export default function QuestionSelection() {
       selected={selectedQuestions.includes(question.id)}
       key={question.id}
       id={question.id}
+      className="question-item"
     >
       {question.question}
     </QuestionItem>
@@ -65,13 +64,14 @@ export default function QuestionSelection() {
 
   return (
     <QuestionsWrapper>
-      <h1>마음에 드는 질문을 골라주세요.</h1>
+      <h1 id="question-selection-title">마음에 드는 질문을 골라주세요.</h1>
 
       <div>{sampleQuestionList}</div>
       <CommonButton
         disabled={!selectedQuestions.length}
         margin="40px 0"
         onClick={onClickSubmitButton}
+        id="complete-button"
       >
         완료!
       </CommonButton>

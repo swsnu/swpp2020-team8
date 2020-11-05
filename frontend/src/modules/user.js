@@ -1,27 +1,18 @@
-export const UPDATE_SIGNUP_INFO = 'user/UPDATE_SIGNUP_INFO';
+export const SIGN_UP_SUCCESS = 'user/SIGN_UP_SUCCESS';
 
 const initialState = {
-  user: {},
-  signUpInfo: {}
+  user: {}
 };
 
-export const updateSignUpInfo = (signUpInfo) => {
+export const signUp = (signUpInfo) => {
   return {
-    type: UPDATE_SIGNUP_INFO,
+    type: SIGN_UP_SUCCESS,
     signUpInfo
   };
 };
 
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
-    case UPDATE_SIGNUP_INFO:
-      return {
-        ...state,
-        signUpInfo: {
-          ...state.signUpInfo,
-          ...action.signUpInfo
-        }
-      };
     default:
       return state;
   }
