@@ -5,6 +5,7 @@ import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import AuthorProfile from './AuthorProfile';
 import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
+import QuestionBox from './QuestionBox';
 
 const ArticleItemWrapper = styled.div`
   background: #fff;
@@ -13,6 +14,7 @@ const ArticleItemWrapper = styled.div`
   border: 1px solid #eee;
   margin: 8px 12px;
   position: relative;
+  border-radius: 4px;
 `;
 
 const ContentWrapper = styled.div`
@@ -58,6 +60,9 @@ export default function ArticleItem({ articleObj }) {
           />
         )}
       </HeaderWrapper>
+      {articleObj.question_detail && (
+        <QuestionBox questionObj={articleObj.question_detail} />
+      )}
       <ContentWrapper>{articleObj.content}</ContentWrapper>
       <CreateTime createdTime={articleObj.created_at} />
       <FooterWrapper>
