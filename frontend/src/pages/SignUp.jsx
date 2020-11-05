@@ -60,14 +60,11 @@ export default function SignUp() {
     setIsEmailValid(false);
   };
 
-  // const onCheckUsername = () => {
-  //   setIsUsernameValid(true); // temporary
-  // };
-
   return (
     <SignUpWrapper>
-      <h1>회원가입</h1>
+      <h1 id="signup-title">회원가입</h1>
       <CommonInput
+        id="email-input"
         name="email"
         value={signUpInfo.email}
         placeholder="이메일"
@@ -79,6 +76,7 @@ export default function SignUp() {
       )}
       <CommonInput
         name="username"
+        id="username-input"
         value={signUpInfo.username}
         placeholder="닉네임"
         onChange={onInputChange}
@@ -92,6 +90,7 @@ export default function SignUp() {
         </CheckButton> */}
       <CommonInput
         name="password"
+        id="password-input"
         value={signUpInfo.password}
         placeholder="비밀번호"
         onChange={onInputChange}
