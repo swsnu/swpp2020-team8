@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import GlobalStyle from './styles';
+import { GlobalStyle } from './styles';
 import StyledComponentExample from './components/StyledComponentExample';
 import SignUp from './pages/SignUp';
 import QuestionSelection from './pages/QuestionSelection';

@@ -12,6 +12,7 @@ const ArticleItemWrapper = styled.div`
   font-size: 14px;
   border: 1px solid #eee;
   margin: 8px 12px;
+  position: relative;
 `;
 
 const ContentWrapper = styled.div`
