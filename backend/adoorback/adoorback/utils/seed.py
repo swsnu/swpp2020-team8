@@ -9,25 +9,24 @@ import logging
 import sys
 
 
-DEBUG = False
+DEBUG = True
 
 
 def set_seed(n):
     if DEBUG:
-        logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+        logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
 
     User = get_user_model()
     faker = Faker()
 
     # Seed User
-    for _ in range(3):
+    for _ in range(2):
         User.objects.create_user(username=faker.user_name(), email=faker.email(), password=faker.password(length=12))
     logging.info(f"{User.objects.all().count()} User(s) created!") if DEBUG else None
 
     # Seed Superuser
-    admin = User.objects.get(id=1)
-    admin.is_superuser = True
-    admin.save()
+    if User.objects.all().count() == 2:
+        admin = User.objects.create_superuser(username='adoor', email='adoor.team@gmail.com', password='adoor2020:)')
     logging.info("Superuser created!") if DEBUG else None
 
     # Seed Article/AdminQuestion/CustomQuestionPost

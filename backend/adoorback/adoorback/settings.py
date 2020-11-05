@@ -26,6 +26,11 @@ SECRET_KEY = '((5+vsn)pefc7()9_x2oud)po=@0=@gf0=8j)lrk*(*sy47c+='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 15
+}
+
 ALLOWED_HOSTS = []
 
 
