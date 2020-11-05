@@ -4,6 +4,7 @@ export const LOGIN = 'user/LOGIN';
 export const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
 export const LOGIN_ERROR = 'user/LOGIN_ERROR';
 export const LOGOUT = 'user/LOGOUT';
+export const SIGN_UP_SUCCESS = 'user/SIGN_UP_SUCCESS';
 
 const initialState = {
   user: {},
@@ -43,6 +44,13 @@ export const requestLogin = (email, password) => {
     } catch (error) {
       dispatch(loginFailure(error));
     }
+  };
+};
+
+export const signUp = (signUpInfo) => {
+  return {
+    type: SIGN_UP_SUCCESS,
+    signUpInfo
   };
 };
 
