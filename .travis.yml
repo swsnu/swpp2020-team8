@@ -3,24 +3,29 @@ matrix:
         - language: node_js
           node_js:
               - '12'
-          cache: 
+          cache:
               - yarn: true
           before_install:
               - cd frontend
           install:
               - yarn install
+          ignore:
+            - ./src/serviceWorker.js
           script:
               - ./node_modules/.bin/eslint src
               - yarn test --coverage --watchAll=false
-        
+
         - language: python
           python:
               - '3.7'
           before_install:
-              - cd backend
+              - cd backend/adoorback
           install:
               - pip install -r requirements.txt
-          script:              
-              - pylint **/*.py --load-plugins pylint_django
-              - coverage run --source='.' manage.py test
+          script:
+              - python manage.py makemigrations account feed comment like
+              - python manage.py migrate
+              - coverage run --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
+              - coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
+              - coverage report -m
               - coverage xml

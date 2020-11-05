@@ -8,9 +8,9 @@ import thunk from 'redux-thunk';
 import rootReducer from '../modules';
 import history from '../history';
 import { mockStore } from '../mockStore';
-import SignUp from './SignUp';
+import Login from './Login';
 
-describe('<QuestionSelection /> unit test', () => {
+describe('<Login /> unit test', () => {
   const store = createStore(
     rootReducer,
     mockStore,
@@ -21,48 +21,68 @@ describe('<QuestionSelection /> unit test', () => {
     mount(
       <Provider store={store}>
         <Router history={history}>
-          <SignUp />
+          <Login />
         </Router>
       </Provider>
     );
 
-  it('SignUp Page should mount', () => {
+  it('Login Page should render properly', () => {
     const wrapper = getWrapper();
-    expect(wrapper.find('SignUp').length).toBe(1);
+    expect(wrapper.find('Login').length).toBe(1);
   });
 
-  it('should work with input change', async () => {
-    const component = getWrapper();
-    const emailInput = component.find('#email-input').at(0);
-    const usernameInput = component.find('#username-input').at(0);
-    const pwInput = component.find('#password-input').at(0);
-    const emailEvent = {
-      preventDefault() {},
-      target: { name: 'email', value: 'hello' }
-    };
-    emailInput.simulate('change', emailEvent);
-    const usernameEvent = {
-      preventDefault() {},
-      target: { name: 'username', value: 'hello' }
-    };
-    usernameInput.simulate('change', usernameEvent);
-    const pwEvent = {
-      preventDefault() {},
-      target: { name: 'password', value: 'hello' }
-    };
-    pwInput.simulate('change', pwEvent);
-    const submitButton = component.find('button');
-    submitButton.simulate('click');
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    // expect(component.find('WarningMessage').length)
-  });
-
-  it('SignUp Page should mount', async () => {
+  it('Login Page should mount', async () => {
+    const mockClickDone = jest.fn();
     const wrapper = getWrapper();
-    const submitButton = wrapper.find('button');
+    const submitButton = wrapper.find('#submit-button').at(0);
+    const signupButton = wrapper.find('#signup-button').at(0);
+
     expect(submitButton.length).toBe(1);
+    expect(signupButton.length).toBe(1);
     expect(submitButton.props().disabled).toBe(true);
     submitButton.simulate('click');
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    expect(mockClickDone).toHaveBeenCalledTimes(0);
+  });
+
+  it('should handle with sign-up button', async () => {
+    const component = getWrapper();
+    const emailInput = component.find('#email-input').hostNodes();
+    const passwordInput = component.find('#password-input').hostNodes();
+
+    const emailEvent = {
+      preventDefault() {},
+      target: { name: 'email', value: 'test-email' }
+    };
+    emailInput.simulate('change', emailEvent);
+
+    const passwordEvent = {
+      preventDefault() {},
+      target: { name: 'password', value: 'test-password' }
+    };
+    passwordInput.simulate('change', passwordEvent);
+
+    const signupButton = component.find('#signup-button').at(0);
+    signupButton.simulate('click');
+    expect(history.location.pathname).toBe('/signup');
+  });
+
+  it('should handle with submit button', async () => {
+    const component = getWrapper();
+    const emailInput = component.find('#email-input').hostNodes();
+    const passwordInput = component.find('#password-input').hostNodes();
+    const submitButton = component.find('#submit-button').hostNodes();
+
+    const emailEvent = {
+      preventDefault() {},
+      target: { name: 'email', value: 'test-email' }
+    };
+    emailInput.simulate('change', emailEvent);
+
+    const passwordEvent = {
+      preventDefault() {},
+      target: { name: 'password', value: 'test-password' }
+    };
+    passwordInput.simulate('change', passwordEvent);
+    submitButton.simulate('click');
   });
 });
