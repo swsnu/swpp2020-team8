@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-// import { CommonInput } from '../styles';
+import ShareSettings from './ShareSettings';
 
 const NewPostWrapper = styled.div`
   width: 700px;
@@ -51,6 +51,7 @@ export default function NewPost() {
         value={postInput.content}
         onChange={onPostInputChange}
       />
+      <ShareSettings />
     </NewPostWrapper>
   );
 }
