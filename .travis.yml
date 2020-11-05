@@ -31,7 +31,7 @@ matrix:
           script:
               - python manage.py makemigrations account feed comment like
               - python manage.py migrate
-              - coverage run --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
-              - coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
+              - coverage run --omit='manage.py','./adoorback/*.py','./*/tests.py','./*/urls.py','./*/views.py' --source='.' manage.py test
+              - coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py','./*/urls.py','./*/views.py' --source='.' manage.py test
               - coverage report -m
               - coverage xml
