@@ -42,7 +42,6 @@ node_modules
 /backend/*/__pycache__/
 /backend/*/*/*/__pycache__/
 /backend/adoorback/*/migrations/
-/backend/adoorback/*/utils/__pycache__/
 
 /backend/adoorback/.coverage
 /backend/adoorback/db.sqlite3
