@@ -7,7 +7,7 @@ matrix:
       sonarcloud:
         organization: "swsnu"
         token:
-          secure: "UyibO0r9M3SbXOoBoBf0GNk6t/a6Tntje0JwEZoQpqLxzclf98bt4P5yJBN7+cKQfYWi/SQPLV9Dwwn3fnvtAfRofTqYzZAK8s4OgGsAta8aJvpUu4qlmvpznctSqCFkOL8A7zeVVBxqvSQ004RbZ2OHbRdIfTF5UQmtaNanW7IIGSo4dmqo2n35iuNTLYkNO1yjuEYgr67fWAPNk7RzUJOVi6Qe6xIjuuPCrdvX4UbXpRmmK6dXXn8qNmqk/QN5RmLSBcxqDMK7Qq8gGNkwI0DWu0dkpQFiQAUlAnkdTn1/NIi1caknRN3QD/Hc8kwdGleBPckpTWu1RMp2eF+TDCrOa6x9qIrGp5vA6MRE7QVo3O5g536e+Lggvv9gg105YpWD55LYNz5l+IH6c/A8dounsIzNW/eorsds1iFIuERmdHXKOCBiHBhAylCZw5EPi872qQSzor32RaKyPQcfJzqz/vgUrTPFgJbBGm1ic+3gtcTskoNQ1E8EW3JqJuInxH++K8YPaVxH6gGK09rG93odTD6fblr0QyhWBHJfTKuilOjoXP66MAEgmXCPSTji3bPYtXUa/5hiM1XfVad7ekpTqZgrMMEqEP4mAI77NI03V3qEbVYeYAtmVIF3wCykNbBJi4C+7kVyW/C4t8EXrW8wS8tclujZZ+/XliDP53g="
+          secure: "Gwa4HKVSn8NpUV1ESrdX9rCfSQ186645H9ry3Q7rI4Ej8BTl0olVYeY/d4Rd5XaIBXc9Nyvgf5WjMr9CzM3jdwpKsfxLQzvQfzffqRkLxKfKuN+6KNcdujMZEOlU23gM+xpfDghpE5EscCvtn8/gtYl/HMs18v5tbYmmScbqxPIZ6NHDQz85KZcXqmL2JYQQK30n/KiiuEVpEJNr9LOxuZ0e/SwlQcAtKwkfCSN304oIB8UN3R0wp9tqYLPzWHSLrth3ivE+11tu3nmhCHaQsLEVwIS8T/jgcofmsrt3dv1+EoiFeoFeVTy5oBt6/vkOy6pDfr3HlpzvZE6zbcHw67kWR3l+7aPZmFnc4EeD3MJas55i08fXi+WQJOHWgBp7sKJaDqO8ZJMFsdxE60lI5b+3TUW975JKKA0hcdHbzXYmBq1nMghhmREamI01FRF7xWV0m0nYpIenGmNFBPqRcIpIgXJtnSNt/KUA/K+0ioglNBXA0UlJwyhUsnn8ORmYlsWdeeIBoU+WiDtqBcpkBpujTlP0YjWTOYLfIz55VlogNn5PWeryyrgai1CnExPiWlVgaMPWQQ8ZcJD2VmkfkhUa6sPS6+/qSoFVjyoYBjyfLctTTw3oOmdZ0a7BmJR+3MEGQ2rILUOe4LBJxEkfy3CjYRAxr/BfCqfBUeTfh9I="
     cache:
     - yarn: true
     before_install:
@@ -30,8 +30,6 @@ matrix:
     install:
     - pip install -r requirements.txt
     script:
-    - python manage.py makemigrations account feed comment like
-    - python manage.py migrate
     - coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
     - coverage report -m
     - coverage xml
