@@ -44,7 +44,7 @@ describe('<Login /> unit test', () => {
     expect(mockClickDone).toHaveBeenCalledTimes(0);
   });
 
-  it('should handle with sign-up button', async () => {
+  it('should handle with signup button', async () => {
     const component = getWrapper();
     const emailInput = component.find('#email-input').hostNodes();
     const passwordInput = component.find('#password-input').hostNodes();
