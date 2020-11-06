@@ -33,7 +33,6 @@ matrix:
     - coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
     - coverage report -m
     - coverage xml
+    - cd ../.. && sonar-scanner
     after_success:
     - coveralls
-    after_script:
-    - cd ..
