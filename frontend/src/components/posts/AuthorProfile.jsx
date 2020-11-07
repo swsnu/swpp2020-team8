@@ -10,10 +10,15 @@ const ProfileImage = styled.img`
   margin-right: 8px;
   width: ${(props) => (props.isComment ? '20px' : '30px')};
 `;
+
 export default function AuthorProfile({ author, isComment = false }) {
   return (
     <AuthorProfileWrapper>
-      <ProfileImage src={author.profile_pic} isComment={isComment} />
+      <ProfileImage
+        id="profile-image"
+        src={author.profile_pic}
+        isComment={isComment}
+      />
       <div>{author.username}</div>
     </AuthorProfileWrapper>
   );
