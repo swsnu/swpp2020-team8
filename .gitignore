@@ -44,3 +44,4 @@ node_modules
 /backend/adoorback/*/migrations/
 
 /backend/adoorback/.coverage
+/backend/adoorback/db.sqlite3

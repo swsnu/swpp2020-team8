@@ -9,12 +9,12 @@ import logging
 import sys
 
 
-DEBUG = True
+DEBUG = False
 
 
 def set_seed(n):
     if DEBUG:
-        logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+        logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
 
     User = get_user_model()
     faker = Faker()

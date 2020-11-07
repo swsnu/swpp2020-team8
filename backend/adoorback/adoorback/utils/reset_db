@@ -1,4 +1,4 @@
 rm -f tmp.db db.sqlite3
 rm -r */migrations
-python manage.py makemigrations
-python manage.py migrate --run-syncdb
+python manage.py makemigrations feed account comment like
+python manage.py migrate
