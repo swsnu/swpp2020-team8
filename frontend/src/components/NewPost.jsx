@@ -18,7 +18,8 @@ export const NewPostInput = styled.textarea`
   font-size: 16px;
   outline: none;
   width: 650px;
-  height: 100px;
+  height: ${(props) =>
+    props.style && props.style.height ? `${props.style.height}px` : '100px'};
   box-sizing: border-box;
   border: 1px solid #ddd;
   margin: 4px 0;
@@ -32,6 +33,7 @@ export const NewPostInput = styled.textarea`
   }
   cursor: auto;
   resize: none;
+  overflow: hidden;
 `;
 
 export default function NewPost() {
@@ -40,6 +42,9 @@ export default function NewPost() {
   });
 
   const onPostInputChange = (e) => {
+    const t = e.target;
+    t.style.height = '100px';
+    t.style.height = `${t.scrollHeight}px`;
     setPostInput(e.target.value);
   };
 
