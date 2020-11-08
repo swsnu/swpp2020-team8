@@ -3,7 +3,7 @@ import styled from 'styled-components';
 // import { CommonInput } from '../styles';
 
 const NewPostWrapper = styled.div`
-  width: 700px;
+  width: 650px;
   margin: 0 auto;
   margin-top: 50px;
   border: 1px solid #ddd;
@@ -17,7 +17,7 @@ export const NewPostInput = styled.textarea`
   color: rgb(50, 50, 50);
   font-size: 16px;
   outline: none;
-  width: 700px;
+  width: 650px;
   height: 100px;
   box-sizing: border-box;
   border: 1px solid #ddd;

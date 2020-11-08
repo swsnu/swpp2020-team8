@@ -50,12 +50,6 @@ export const login = (loginInfo) => {
           case 401:
             errMessage = 'Email or Password incorrect';
             break;
-          case 400:
-            errMessage = 'Something went wrong with the request. Try again.';
-            break;
-          case 404:
-            errMessage = 'Email or Password incorrect';
-            break;
           default:
             break;
         }
