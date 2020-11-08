@@ -45,15 +45,15 @@ export const login = (loginInfo) => {
         // TODO: where to redirect?
         dispatch(push('/friends'));
       })
-      .catch((error) => {
-        let errorMessage = '';
-        switch (error.response.status) {
-          case 401:
-            errorMessage = 'Email or Password incorrect';
-            break;
-          default:
-            break;
-        }
+      .catch(() => {
+        const errorMessage = '';
+        // switch (e.response.status) {
+        //   case 401:
+        //     errorMessage = 'Email or Password incorrect';
+        //     break;
+        //   default:
+        //     break;
+        // }
         dispatch(loginFail(errorMessage));
       });
   };

@@ -25,8 +25,8 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [showLoginError, setShowLoginError] = useState(true);
 
-  const loginError = useSelector((state) => state.user.loginError);
-  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+  const loginError = useSelector((state) => state.loginError);
+  const isLoggedIn = useSelector((state) => state.isLoggedIn);
 
   useEffect(() => {
     if (isLoggedIn) {
