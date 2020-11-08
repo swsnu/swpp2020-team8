@@ -42,18 +42,19 @@ export const login = (loginInfo) => {
       .post('/api/user/login/', loginInfo)
       .then(() => {
         dispatch(loginDeep());
-        dispatch(push('/browse'));
+        // TODO: where to redirect?
+        dispatch(push('/friends'));
       })
-      .catch((err) => {
-        let errMessage = '';
-        switch (err.response.status) {
-          case 401:
-            errMessage = 'Email or Password incorrect';
-            break;
-          default:
-            break;
-        }
-        dispatch(loginFail(errMessage));
+      .catch(() => {
+        const errorMessage = '';
+        // switch (e.response.status) {
+        //   case 401:
+        //     errorMessage = 'Email or Password incorrect';
+        //     break;
+        //   default:
+        //     break;
+        // }
+        dispatch(loginFail(errorMessage));
       });
   };
 };
@@ -70,13 +71,13 @@ export const logout = () => {
   return (dispatch) => {
     return axios.get('/api/user/logout/').then(() => {
       dispatch(logoutDeep());
-      dispatch(push('/'));
+      // TODO: where to redirect?
     });
   };
 };
 
 export const removeError = () => {
-  return { type: REMOVE_ERROR, signupErr: '', loginError: '' };
+  return { type: REMOVE_ERROR, loginError: '' };
 };
 
 export default function userReducer(state = initialState, action) {
