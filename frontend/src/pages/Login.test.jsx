@@ -1,88 +1,109 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
-import { Router } from 'react-router-dom';
-import { createStore, applyMiddleware } from 'redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
-import thunk from 'redux-thunk';
-import rootReducer from '../modules';
+// import { Router } from 'react-router-dom';
+import { ConnectedRouter } from 'connected-react-router';
+import axios from 'axios';
+import { getMockStore } from '../test-utils/mocks';
 import history from '../history';
-import { mockStore } from '../mockStore';
 import Login from './Login';
 
-describe('<Login /> unit test', () => {
-  const store = createStore(
-    rootReducer,
-    mockStore,
-    composeWithDevTools(applyMiddleware(thunk))
-  );
+const stubInitialState = { isLoggedIn: false, loginError: 'Error' };
+const stubErrorState = { isLoggedIn: false, loginError: 'Error' };
+const stubLoggedInState = { isLoggedIn: true };
 
-  const getWrapper = () =>
-    mount(
-      <Provider store={store}>
-        <Router history={history}>
-          <Login />
-        </Router>
+const mockStore = getMockStore(stubInitialState);
+const mockStoreError = getMockStore(stubErrorState);
+const mockStoreLoggedIn = getMockStore(stubLoggedInState);
+
+describe('Login', () => {
+  let login;
+  let spyHistoryPush;
+  let spyAxiosPost;
+
+  beforeEach(() => {
+    login = (
+      <Provider store={mockStore}>
+        <ConnectedRouter history={history}>
+          <Login history={history} />
+        </ConnectedRouter>
       </Provider>
     );
 
+    spyHistoryPush = jest.spyOn(history, 'push').mockImplementation(() => {
+      return (dispatch) => {
+        dispatch();
+      };
+    });
+
+    spyAxiosPost = jest
+      .spyOn(axios, 'post')
+      .mockImplementation(() => Promise.resolve({}));
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('Login Page should render properly', () => {
-    const wrapper = getWrapper();
-    expect(wrapper.find('Login').length).toBe(1);
+    const component = mount(login);
+    expect(component.find('Login').length).toBe(1);
   });
 
-  it('Login Page should mount', async () => {
-    const mockClickDone = jest.fn();
-    const wrapper = getWrapper();
-    const submitButton = wrapper.find('#submit-button').at(0);
-    const signupButton = wrapper.find('#signup-button').at(0);
-
-    expect(submitButton.length).toBe(1);
-    expect(signupButton.length).toBe(1);
-    expect(submitButton.props().disabled).toBe(true);
-    submitButton.simulate('click');
-    expect(mockClickDone).toHaveBeenCalledTimes(0);
+  it("should not call 'onLogin' when input is not valid", () => {
+    const component = mount(login);
+    const wrapper = component.find('#submit-button').at(0);
+    wrapper.simulate('click');
+    expect(spyAxiosPost).toHaveBeenCalledTimes(0);
   });
 
-  it('should handle with signup button', async () => {
-    const component = getWrapper();
-    const emailInput = component.find('#email-input').hostNodes();
-    const passwordInput = component.find('#password-input').hostNodes();
+  it("should call 'onLogin' when clicked", () => {
+    const component = mount(login);
+    component
+      .find('#email-input')
+      .at(0)
+      .simulate('change', { target: { value: 'test@gmail.com' } });
+    component
+      .find('#password-input')
+      .at(0)
+      .simulate('change', { target: { value: 'test' } });
 
-    const emailEvent = {
-      preventDefault() {},
-      target: { name: 'email', value: 'test-email' }
-    };
-    emailInput.simulate('change', emailEvent);
-
-    const passwordEvent = {
-      preventDefault() {},
-      target: { name: 'password', value: 'test-password' }
-    };
-    passwordInput.simulate('change', passwordEvent);
-
-    const signupButton = component.find('#signup-button').at(0);
-    signupButton.simulate('click');
-    expect(history.location.pathname).toBe('/signup');
+    const wrapper = component.find('#submit-button').at(0);
+    wrapper.simulate('click');
+    expect(spyAxiosPost).toHaveBeenCalledTimes(1);
   });
 
-  it('should handle with submit button', async () => {
-    const component = getWrapper();
-    const emailInput = component.find('#email-input').hostNodes();
-    const passwordInput = component.find('#password-input').hostNodes();
-    const submitButton = component.find('#submit-button').hostNodes();
+  it('should redirect to /signup', () => {
+    const component = mount(login);
+    const wrapper = component.find('#signup-button').at(0);
+    wrapper.simulate('click');
+    expect(spyHistoryPush).toHaveBeenCalledTimes(1);
+    // expect(history.location.pathname).toBe('/signup');
+  });
 
-    const emailEvent = {
-      preventDefault() {},
-      target: { name: 'email', value: 'test-email' }
-    };
-    emailInput.simulate('change', emailEvent);
+  it('should redirect to /friends when isLoggedIn', () => {
+    login = (
+      <Provider store={mockStoreLoggedIn}>
+        <ConnectedRouter history={history}>
+          <Login history={history} />
+        </ConnectedRouter>
+      </Provider>
+    );
+    mount(login);
+    expect(spyHistoryPush).toHaveBeenCalledTimes(1);
+    // expect(history.location.pathname).toBe('/friends');
+  });
 
-    const passwordEvent = {
-      preventDefault() {},
-      target: { name: 'password', value: 'test-password' }
-    };
-    passwordInput.simulate('change', passwordEvent);
-    submitButton.simulate('click');
+  it('should render WarningMessage', () => {
+    login = (
+      <Provider store={mockStoreError}>
+        <ConnectedRouter history={history}>
+          <Login history={history} />
+        </ConnectedRouter>
+      </Provider>
+    );
+    const component = mount(login);
+    const wrapper = component.find('#login-error-message').at(0);
+    expect(wrapper.length).toBe(1);
   });
 });
