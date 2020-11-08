@@ -7,7 +7,7 @@ import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
 import QuestionBox from './QuestionBox';
 
-const ArticleItemWrapper = styled.div`
+const PostItemWrapper = styled.div`
   background: #fff;
   padding: 16px;
   font-size: 14px;
@@ -16,6 +16,8 @@ const ArticleItemWrapper = styled.div`
   position: relative;
   border-radius: 4px;
 `;
+
+PostItemWrapper.displayName = 'PostItemWrapper';
 
 const ContentWrapper = styled.div`
   margin: 12px 0 8px;
@@ -32,7 +34,7 @@ const FooterWrapper = styled.div`
   align-items: center;
 `;
 
-export default function ArticleItem({ articleObj }) {
+export default function PostItem({ articleObj }) {
   // TODO: fix
   const isAuthor = true;
   const [liked, setLiked] = useState(false);
@@ -50,7 +52,7 @@ export default function ArticleItem({ articleObj }) {
   const handleDelete = () => {};
 
   return (
-    <ArticleItemWrapper>
+    <PostItemWrapper>
       <HeaderWrapper>
         <AuthorProfile author={articleObj.author_detail} />
         {isAuthor && (
@@ -71,8 +73,12 @@ export default function ArticleItem({ articleObj }) {
         ) : (
           <FavoriteBorderIcon onClick={toggleLike} color="primary" />
         )}
-        {isAuthor && <div style={{ margin: '4px' }}>{likeCount}</div>}
+        {isAuthor && (
+          <div id="like-count" style={{ margin: '4px' }}>
+            {likeCount}
+          </div>
+        )}
       </FooterWrapper>
-    </ArticleItemWrapper>
+    </PostItemWrapper>
   );
 }

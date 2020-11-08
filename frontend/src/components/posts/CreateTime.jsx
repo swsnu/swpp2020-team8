@@ -11,6 +11,8 @@ const TimeWrapper = styled.div`
   bottom: 20px;
 `;
 
+TimeWrapper.displayName = 'TimeWrapper';
+
 export default function CreateTime({ createdTime }) {
   return <TimeWrapper>{getCreatedTime(createdTime)}</TimeWrapper>;
 }

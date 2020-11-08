@@ -1,5 +1,5 @@
 import React from 'react';
-import ArticleItem from '../../components/posts/ArticleItem';
+import ArticleItem from '../../components/posts/PostItem';
 
 const sampleArticleObj = {
   id: 4756,

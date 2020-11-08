@@ -21,6 +21,7 @@ const useStyles = makeStyles(() => ({
 const PostAuthorWrapper = styled.div`
   justify-self: right;
 `;
+
 export default function PostAuthorButtons({ onClickEdit, onClickDelete }) {
   const classes = useStyles();
   const [showButtons, setShowButtons] = useState(false);
@@ -29,6 +30,7 @@ export default function PostAuthorButtons({ onClickEdit, onClickDelete }) {
       <IconButton
         aria-label="delete"
         color="secondary"
+        id="more-button"
         style={{ padding: '4px' }}
         onClick={() => setShowButtons((prev) => !prev)}
       >
@@ -49,3 +51,5 @@ export default function PostAuthorButtons({ onClickEdit, onClickDelete }) {
     </PostAuthorWrapper>
   );
 }
+
+PostAuthorWrapper.displayName = 'PostAuthorWrapper';
