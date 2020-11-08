@@ -1,50 +1,16 @@
 import axios from 'axios';
+import { push } from 'connected-react-router';
 
-export const LOGIN = 'user/LOGIN';
-export const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
-export const LOGIN_ERROR = 'user/LOGIN_ERROR';
-export const LOGOUT = 'user/LOGOUT';
 export const SIGN_UP_SUCCESS = 'user/SIGN_UP_SUCCESS';
+export const LOGIN = 'user/LOGIN';
+export const LOGOUT = 'user/LOGOUT';
+export const GET_LOGIN = 'user/GET_LOGIN';
+export const REMOVE_ERROR = 'user/REMOVE_ERROR';
 
 const initialState = {
   user: {},
-  error: false
-};
-
-export const login = () => {
-  return {
-    type: LOGIN
-  };
-};
-
-export const loginSuccess = (user) => {
-  return {
-    type: LOGIN_SUCCESS,
-    user
-  };
-};
-
-export const loginFailure = (error) => {
-  return {
-    type: LOGIN_ERROR,
-    error
-  };
-};
-
-export const requestLogin = (email, password) => {
-  return (dispatch) => {
-    dispatch(login());
-    try {
-      const { data } = axios.post('/user/login', email, password);
-      if (+data.code === 200) {
-        dispatch(loginSuccess(data.user));
-      } else {
-        dispatch(loginFailure(data.error));
-      }
-    } catch (error) {
-      dispatch(loginFailure(error));
-    }
-  };
+  isLoggedIn: JSON.parse(localStorage.getItem('isLoggedIn')),
+  loginError: ''
 };
 
 export const signUp = (signUpInfo) => {
@@ -54,27 +20,89 @@ export const signUp = (signUpInfo) => {
   };
 };
 
+export const getLoginDeep = (data) => {
+  return { type: GET_LOGIN, login: data.isLoggedIn };
+};
+
+export const getLogin = () => {
+  return (dispatch) => {
+    return axios.get('/api/user').then((res) => {
+      dispatch(getLoginDeep(res.data));
+    });
+  };
+};
+
+export const loginDeep = () => {
+  return { type: LOGIN, isLoggedIn: true, loginError: '' };
+};
+
+export const login = (loginInfo) => {
+  return (dispatch) => {
+    return axios
+      .post('/api/user/login/', loginInfo)
+      .then(() => {
+        dispatch(loginDeep());
+        dispatch(push('/browse'));
+      })
+      .catch((err) => {
+        let errMessage = '';
+        switch (err.response.status) {
+          case 401:
+            errMessage = 'Email or Password incorrect';
+            break;
+          case 400:
+            errMessage = 'Something went wrong with the request. Try again.';
+            break;
+          case 404:
+            errMessage = 'Email or Password incorrect';
+            break;
+          default:
+            break;
+        }
+        dispatch(loginFail(errMessage));
+      });
+  };
+};
+
+export const loginFail = (error) => {
+  return { type: LOGIN, isLoggedIn: false, loginError: error };
+};
+
+export const logoutDeep = () => {
+  return { type: LOGOUT, isLoggedIn: false };
+};
+
+export const logout = () => {
+  return (dispatch) => {
+    return axios.get('/api/user/logout/').then(() => {
+      dispatch(logoutDeep());
+      dispatch(push('/'));
+    });
+  };
+};
+
+export const removeError = () => {
+  return { type: REMOVE_ERROR, signupErr: '', loginError: '' };
+};
+
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
     case LOGIN:
+      localStorage.setItem('isLoggedIn', JSON.stringify(action.isLoggedIn));
       return {
-        user: {},
-        error: false
+        ...state,
+        isLoggedIn: action.isLoggedIn,
+        loginError: action.loginError
       };
-    case LOGIN_SUCCESS:
-      return {
-        user: { ...action.user },
-        error: false
-      };
-    case LOGIN_ERROR:
-      return {
-        user: {},
-        error: action.error
-      };
+    case GET_LOGIN:
+      return { ...state, isLoggedIn: action.login };
     case LOGOUT:
+      localStorage.setItem('isLoggedIn', JSON.stringify(action.isLoggedIn));
+      return { ...state, isLoggedIn: false };
+    case REMOVE_ERROR:
       return {
-        user: {},
-        error: false
+        ...state,
+        loginError: action.loginError
       };
     default:
       return state;

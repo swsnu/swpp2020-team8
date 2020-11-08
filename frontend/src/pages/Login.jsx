@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import history from '../history';
 import { CommonInput, CommonButton } from '../styles';
 
-import { requestLogin } from '../modules/user';
+import { login, removeError } from '../modules/user';
 
 const LoginWrapper = styled.div`
   width: 500px;
@@ -23,29 +23,26 @@ export default function Login() {
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showLoginError, setShowLoginError] = useState(false);
+  const [showLoginError, setShowLoginError] = useState(true);
 
-  const user = useSelector((state) => state.user);
-  const loginError = useSelector((state) => state.error);
-  const isLoggedIn = user && !loginError;
-
-  useEffect(() => {
-    if (isLoggedIn || user?.id) history.goBack();
-  }, [isLoggedIn, user]);
+  const loginError = useSelector((state) => state.user.loginError);
+  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
 
   useEffect(() => {
-    if (loginError) {
-      setShowLoginError(true);
+    if (isLoggedIn) {
+      history.push('/friends');
     }
-  }, [loginError]);
+    dispatch(removeError());
+  }, [isLoggedIn]);
+
+  const onClickSubmitButton = (loginInfo) => {
+    dispatch(removeError());
+    dispatch(login(loginInfo));
+    setShowLoginError(true);
+  };
 
   const onClickSignupButton = () => {
     history.push('/signup');
-  };
-
-  const onClickSubmitButton = () => {
-    dispatch(requestLogin(user));
-    if (isLoggedIn) history.push('/friends');
   };
 
   return (
@@ -60,13 +57,13 @@ export default function Login() {
       <CommonInput
         id="password-input"
         value={password}
-        placeholder="패스워드"
+        placeholder="비밀번호"
         type="password"
         onChange={(e) => setPassword(e.target.value)}
       />
-      {showLoginError && (
-        <WarningMessage>
-          이메일 혹은 패스워드를 다시 확인해주세요
+      {showLoginError && loginError && (
+        <WarningMessage id="login-error-message">
+          이메일 혹은 비밀번호를 다시 확인해주세요
         </WarningMessage>
       )}
       <CommonButton

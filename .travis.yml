@@ -22,6 +22,7 @@ matrix:
       after_success:
         - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 
+<<<<<<< HEAD
     - language: python
       python:
         - '3.7'
@@ -42,3 +43,28 @@ matrix:
         - coverage xml
         - cd ../..
         - sonar-scanner
+=======
+        - language: python
+          python:
+              - '3.7'
+          before_install:
+              - cd backend/adoorback
+          install:
+              - pip install -r requirements.txt
+          script:
+              - python manage.py makemigrations account feed comment like
+              - python manage.py migrate
+<<<<<<< HEAD
+              - coverage run --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
+              - coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
+              - coverage report -m
+              - coverage xml
+=======
+              - coverage run --omit='manage.py','./adoorback/*.py','./*/tests.py','./*/urls.py','./*/views.py' --source='.' manage.py test
+              - coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py','./*/urls.py','./*/views.py' --source='.' manage.py test
+          after_success:
+            - coveralls
+          after_script:
+            - cd ..
+>>>>>>> 84392b19a822caab221e5508909b0503632cd51b
+>>>>>>> f69d858eec14eb571e0271ae6a9cb5dc2d794eef
