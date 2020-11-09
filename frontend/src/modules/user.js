@@ -8,12 +8,9 @@ export const LOGIN_ERROR = 'user/LOGIN_ERROR';
 export const REMOVE_ERROR = 'user/REMOVE_ERROR';
 
 const initialState = {
-  loading: false,
   error: false,
   user: {
-    email: '',
-    password: '',
-    username: ''
+    isLoggedIn: false
   }
 };
 
@@ -60,12 +57,11 @@ export const logoutSuccess = (user) => {
   };
 };
 
-export const loginSuccess = ({ user, users }) => {
+export const loginSuccess = (user) => {
   localStorage.setItem('user', JSON.stringify(user));
   return {
     type: LOGIN_SUCCESS,
-    user,
-    users
+    user
   };
 };
 
@@ -87,32 +83,27 @@ export default function userReducer(state = initialState, action) {
     case LOGIN:
       return {
         user: null,
-        error: false,
-        loading: true
+        error: false
       };
     case LOGIN_SUCCESS:
       return {
         user: action.user,
-        error: false,
-        loading: false
+        error: false
       };
     case LOGIN_ERROR:
       return {
         user: null,
-        error: action.error,
-        loading: false
+        error: action.error
       };
     case LOGOUT:
       return {
         user: null,
-        error: false,
-        loading: false
+        error: false
       };
     case REMOVE_ERROR:
       return {
         user: null,
-        error: false,
-        loading: false
+        error: false
       };
     default:
       return state;

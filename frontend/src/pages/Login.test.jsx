@@ -5,9 +5,10 @@ import { Router } from 'react-router-dom';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
+import { getMockStore } from '../test-utils/mocks';
 import rootReducer from '../modules';
 import history from '../history';
-import mockStore from '../mockStore';
+import { mockStore } from '../mockStore';
 import Login from './Login';
 
 describe('<Login /> unit test', () => {
@@ -75,25 +76,19 @@ describe('<Login /> unit test', () => {
   });
 
   it('should handle with warning message', () => {
-    const mockStoreError = createStore(
-      rootReducer,
-      {
-        error: true,
-        user: {
-          isLoggedIn: false
-        }
-      },
-      composeWithDevTools(applyMiddleware(thunk))
-    );
+    const loginFailState = { error: true };
+    const mockStoreLoginFail = getMockStore(loginFailState);
+
     const login = (
-      <Provider store={mockStoreError}>
+      <Provider store={mockStoreLoginFail}>
         <Router history={history}>
-          <Login />
+          <Login handleSubmit={handleSubmit} />
         </Router>
       </Provider>
     );
+    // const wrapper = getWrapper();
     const wrapper = mount(login);
-    const warningMessage = wrapper.find('#login-error-message').at(0);
+    const warningMessage = wrapper.find('WarningMessage');
     expect(warningMessage.length).toBe(1);
   });
 });
