@@ -8,7 +8,7 @@ const NewPostWrapper = styled.div`
   margin-top: 50px;
   border: 1px solid #ddd;
   padding: 10px 10px;
-  padding-bottom: 30px;
+  padding-bottom: 50px;
 `;
 
 export const NewPostInput = styled.textarea`
