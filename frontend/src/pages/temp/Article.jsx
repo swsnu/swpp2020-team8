@@ -1,5 +1,6 @@
 import React from 'react';
 import ArticleItem from '../../components/posts/PostItem';
+import QuestionItem from '../../components/posts/QuestionItem';
 
 const sampleArticleObj = {
   id: 4756,
@@ -30,11 +31,43 @@ const sampleResponseObj = {
   created_at: '2020-11-05T14:16:13.801119+08:00'
 };
 
+const sampleQuestionObj = {
+  id: 4758,
+  author_detail: {
+    id: 1,
+    username: 'admin',
+    profile_pic:
+      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+  },
+  question_detail: {
+    id: 1244,
+    question: '어디서 마시는 커피를 가장 좋아하는가?'
+  },
+  created_at: '2020-11-05T14:16:13.801119+08:00'
+};
+
+const sampleCustomQuestionObj = {
+  id: 4758,
+  author_detail: {
+    id: 123,
+    username: 'curious',
+    profile_pic:
+      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+  },
+  question_detail: {
+    id: 1244,
+    question: '어디서 마시는 커피를 가장 좋아하는가?'
+  },
+  created_at: '2020-11-05T14:16:13.801119+08:00'
+};
+
 export default function Article() {
   return (
     <div style={{ width: '650px' }}>
       <ArticleItem articleObj={sampleArticleObj} />
       <ArticleItem articleObj={sampleResponseObj} />
+      <QuestionItem articleObj={sampleQuestionObj} />
+      <QuestionItem articleObj={sampleCustomQuestionObj} />
     </div>
   );
 }
