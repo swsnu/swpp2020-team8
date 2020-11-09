@@ -1,13 +1,13 @@
 matrix:
   include:
     - language: node_js
-      node_js: '12'
-      addons: 
+      node_js: "12"
+      addons:
         sonarcloud:
           organization: "swsnu"
           token:
             secure: "dXD8jIeWATIBfl30J1DtZcQyXXvSeXXka2knpRuaEl3c+PxcRoomt7XcDAhNXLVzz7B7PfaN6gP77F2r7KGwpJoZ8XxddU395OEgzI8/USYmVhaf57g0YnZixr6wPNR0EGkxPPa+JEts7LWD5q4VTAId74nQJ5us7OIfMo7iD9n5kGLICrKwG+nkviOzFg1SIuXkV72eQz10IXze6sXQf32gR58fAHh+LI2oHvrP9iaYiRMtJEL0JlxZsvnkey0LuUiuRqdqUCHRVRZJoij5RHLhTLYqIbv6yPq/KDdfDhRVCoL483JntvTNkyoCRq/JYgT5o3Hjvsp2tuNM3ay422yFU9ZJv/P82V0fL+iU15Udlh3OkdfUz3iwxsL5tUq+0Pa+sQMJHub1Z69bE9RcDGWnROqnHJyLcM0U5vZCyobFkOy/svU3RAgZWoTiAjUu+cGJlXYeSAW+vOr+gU3Js/NzBqyLW6zDXZnQyIxFOYPOwfECzVt6fiAIjxqQdExhGSGgLnt10m1rtClyozj696Z9bv4I9lDm9bwM1kSMY1c3oyW0gFc7e/wjaK4IOGTRCsVWay7C55zr+79+ZW0hX/NqNOkrrKkTc4EsJiWqiDkCMlqNYYLSY+Fve+koDA72T5PgznqfBNKp2eMokSmO6Z6V/HM/hSZ1QREkK1zEnso="
-      cache: 
+      cache:
         - yarn: true
       before_install:
         - cd frontend
@@ -22,11 +22,10 @@ matrix:
       after_success:
         - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 
-<<<<<<< HEAD
     - language: python
       python:
-        - '3.7'
-      addons: 
+        - "3.7"
+      addons:
         sonarcloud:
           organization: "swsnu"
           token:
@@ -43,28 +42,3 @@ matrix:
         - coverage xml
         - cd ../..
         - sonar-scanner
-=======
-        - language: python
-          python:
-              - '3.7'
-          before_install:
-              - cd backend/adoorback
-          install:
-              - pip install -r requirements.txt
-          script:
-              - python manage.py makemigrations account feed comment like
-              - python manage.py migrate
-<<<<<<< HEAD
-              - coverage run --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
-              - coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
-              - coverage report -m
-              - coverage xml
-=======
-              - coverage run --omit='manage.py','./adoorback/*.py','./*/tests.py','./*/urls.py','./*/views.py' --source='.' manage.py test
-              - coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py','./*/urls.py','./*/views.py' --source='.' manage.py test
-          after_success:
-            - coveralls
-          after_script:
-            - cd ..
->>>>>>> 84392b19a822caab221e5508909b0503632cd51b
->>>>>>> f69d858eec14eb571e0271ae6a9cb5dc2d794eef
