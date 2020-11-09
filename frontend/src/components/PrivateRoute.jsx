@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-curly-newline */
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 
@@ -6,10 +7,9 @@ const PrivateRoute = ({ component: Component, signedIn, ...rest }) => {
   return (
     <Route
       {...rest}
-      render={(props) => {
-        // eslint-disable-next-line no-unused-expressions
-        signedIn ? <Component {...props} /> : <Redirect to="/login" />;
-      }}
+      render={(props) =>
+        signedIn ? <Component {...props} /> : <Redirect to="/login" />
+      }
     />
   );
 };

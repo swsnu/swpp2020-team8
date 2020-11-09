@@ -12,8 +12,7 @@ describe('<PrivateRoute />', () => {
         <PrivateRoute signedIn={true} component={FriendFeed} />
       </MemoryRouter>
     );
-    // TODO: should render component if user has been signed in
-    expect(enzymeWrapper.exists(FriendFeed)).toBe(false);
+    expect(enzymeWrapper.exists(FriendFeed)).toBe(true);
   });
 
   it('should redirect /login if user is not signed in', () => {
@@ -23,8 +22,7 @@ describe('<PrivateRoute />', () => {
         <PrivateRoute signedIn={false} component={component} />
       </MemoryRouter>
     );
-    // TODO: should redirect /login if user is not signed in
     const history = enzymeWrapper.find('Router').prop('history');
-    expect(history.location.pathname).toBe('/friends');
+    expect(history.location.pathname).toBe('/login');
   });
 });
