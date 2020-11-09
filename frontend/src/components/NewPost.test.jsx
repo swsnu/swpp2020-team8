@@ -17,7 +17,7 @@ describe('<NewPost />', () => {
     expect(wrapper.find('NewPost').length).toBe(1);
   });
 
-  it('should call onChange properly', () => {
+  it('should handle with input change properly', () => {
     const onChange = jest.fn();
     const wrapper = shallow(<NewPost onChange={onChange} />);
     const input = wrapper.find('#new-post-input').at(0);
