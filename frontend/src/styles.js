@@ -85,3 +85,14 @@ export const CommonButton = styled.button`
     opacity: ${(props) => !props.disabled && 1};
   }
 `;
+
+export const PostItemHeaderWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+export const PostItemFooterWrapper = styled.div`
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+`;
