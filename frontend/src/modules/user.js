@@ -27,7 +27,7 @@ export const requestLogin = (email, password) => {
   return async (dispatch) => {
     dispatch(login());
     try {
-      const { data } = await axios.post('/user/login', email, password);
+      const { data } = await axios.post('/api/user/login', email, password);
       if (+data.code === 200) {
         dispatch(loginSuccess(data.user));
       } else {
@@ -45,20 +45,6 @@ export const login = () => {
   };
 };
 
-export const logout = () => {
-  localStorage.setItem('user', null);
-  return {
-    type: LOGOUT
-  };
-};
-
-export const logoutSuccess = (user) => {
-  return {
-    type: LOGOUT,
-    user
-  };
-};
-
 export const loginSuccess = (user) => {
   localStorage.setItem('user', JSON.stringify(user));
   return {
@@ -71,6 +57,20 @@ export const loginFailure = (error) => {
   return {
     type: LOGIN_ERROR,
     error
+  };
+};
+
+export const logout = () => {
+  localStorage.setItem('user', null);
+  return {
+    type: LOGOUT
+  };
+};
+
+export const logoutSuccess = (user) => {
+  return {
+    type: LOGOUT,
+    user
   };
 };
 
