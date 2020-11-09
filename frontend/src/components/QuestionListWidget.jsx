@@ -38,8 +38,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const QuestionListWidget = () => {
-  const [isFolded, setIsFolded] = useState(false);
+const QuestionListWidget = ({ initialIsFolded = false }) => {
+  const [isFolded, setIsFolded] = useState(initialIsFolded);
   const classes = useStyles();
 
   return (
@@ -55,6 +55,7 @@ const QuestionListWidget = () => {
                 <IconButton
                   href=""
                   className={classes.iconButton}
+                  id="question-list-widget-unfold-button"
                   onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
@@ -70,6 +71,7 @@ const QuestionListWidget = () => {
                   </IconButton>
                   <IconButton
                     href=""
+                    id="question-list-widget-fold-button"
                     className={classes.iconButton}
                     onClick={(e) => {
                       e.stopPropagation();
