@@ -3,9 +3,16 @@
 
 import styled, { createGlobalStyle } from 'styled-components';
 
-const GlobalStyle = createGlobalStyle`
+export const GlobalStyle = createGlobalStyle`
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
   body {
     margin: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  a {
+    text-decoration: none;
+    color: #000;
   }
 
   h1 {
@@ -78,5 +85,3 @@ export const CommonButton = styled.button`
     opacity: ${(props) => !props.disabled && 1};
   }
 `;
-
-export default GlobalStyle;
