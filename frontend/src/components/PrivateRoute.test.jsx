@@ -2,7 +2,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { MemoryRouter } from 'react-router-dom';
-import PrivateRoute from './privateRoute';
+import PrivateRoute from './PrivateRoute';
 import FriendFeed from '../pages/FriendFeed';
 
 describe('<PrivateRoute />', () => {
