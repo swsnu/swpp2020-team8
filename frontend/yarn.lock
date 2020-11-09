@@ -9794,7 +9794,6 @@ react-test-renderer@^17.0.0-0:
     react-shallow-renderer "^16.13.1"
     scheduler "^0.20.1"
 
-<<<<<<< HEAD
 react-textarea-autosize@^8.3.0:
   version "8.3.0"
   resolved "https://registry.yarnpkg.com/react-textarea-autosize/-/react-textarea-autosize-8.3.0.tgz#e6e2fd186d9f61bb80ac6e2dcb4c55504f93c2fa"
@@ -9804,8 +9803,6 @@ react-textarea-autosize@^8.3.0:
     use-composed-ref "^1.0.0"
     use-latest "^1.0.0"
 
-=======
->>>>>>> 7152ec66656dd8899ebc453f00e99e977625d3d0
 react-transition-group@^4.4.0:
   version "4.4.1"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-4.4.1.tgz#63868f9325a38ea5ee9535d828327f85773345c9"
