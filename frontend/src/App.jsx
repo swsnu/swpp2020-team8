@@ -4,6 +4,8 @@ import GlobalStyle from './styles';
 import StyledComponentExample from './components/StyledComponentExample';
 import Login from './pages/Login';
 import NewPost from './components/NewPost';
+import SignUp from './pages/SignUp';
+import QuestionSelection from './pages/QuestionSelection';
 
 function App() {
   return (
@@ -12,6 +14,8 @@ function App() {
       <Switch>
         <Route exact path="/new-post" component={NewPost} />
         <Route exact path="/login" component={Login} />
+        <Route exact path="/signup" component={SignUp} />
+        <Route exact path="/select-questions" component={QuestionSelection} />
         <Route path="/style-example" component={StyledComponentExample} />
       </Switch>
     </>
