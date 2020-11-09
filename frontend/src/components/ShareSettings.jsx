@@ -18,9 +18,13 @@ export default function ShareSettings() {
     shareAnonymously: false
   });
 
-  const onToggleChange = (e) => {
+  const handleChange = (e) => {
     const { name, checked } = e.target;
     setShareState((prev) => ({ ...prev, [name]: checked }));
+  };
+
+  const onClickSubmitButton = () => {
+    setShareState({ shareWithFriends: false, shareAnonymously: false });
   };
 
   const controlShareWithFriends = (
@@ -28,7 +32,7 @@ export default function ShareSettings() {
       id="share-with-friends"
       name="shareWithFriends"
       checked={shareState.shareWithFriends}
-      onChange={onToggleChange}
+      onChange={handleChange}
     />
   );
 
@@ -37,23 +41,21 @@ export default function ShareSettings() {
       id="share-anonymously"
       name="shareAnonymously"
       checked={shareState.shareAnonymously}
-      onChange={onToggleChange}
+      onChange={handleChange}
     />
   );
-
-  const onClickSubmitButton = () => {
-    setShareState({ shareWithFriends: false, shareAnonymously: false });
-  };
 
   return (
     <ShareSettingsWrapper>
       <FormGroup row width="400px">
         <FormControlLabel
+          className="share-with-friends"
           control={controlShareWithFriends}
           label="친구에게 공유하기"
         />
 
         <FormControlLabel
+          className="share-anonymously"
           control={controlShareAnonymously}
           label="익명으로 공유하기"
         />
