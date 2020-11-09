@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import history from '../history';
@@ -22,25 +22,24 @@ const WarningMessage = styled.div`
 export default function Login() {
   const dispatch = useDispatch();
   const [loginInfo, setLoginInfo] = useState({ email: '', password: '' });
-  const [showLoginError, setShowLoginError] = useState(true);
 
-  const user = useSelector((state) => state.user);
-  const loginError = useSelector((state) => state.loginError);
+  // const user = useSelector((state) => state.user);
+  const loginError = useSelector((state) => state.error);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLoginInfo((prev) => ({ ...prev, [name]: value }));
   };
 
-  useEffect(() => {
-    if (user && user.isLoggedIn) history.push('/friends');
-  }, [user]);
+  // TODO: handle with isLoggedIn users
+  // useEffect(() => {
+  //   if (user && user.isLoggedIn) history.push('/friends');
+  // }, [user]);
 
   const onClickSubmitButton = () => {
     const { email, password } = loginInfo;
     dispatch(removeError());
     dispatch(requestLogin({ email, password }));
-    setShowLoginError(true);
   };
 
   const onClickSignupButton = () => {
@@ -65,7 +64,7 @@ export default function Login() {
         type="password"
         onChange={handleChange}
       />
-      {showLoginError && loginError && (
+      {loginError && (
         <WarningMessage id="login-error-message">
           이메일 혹은 비밀번호를 다시 확인해주세요
         </WarningMessage>

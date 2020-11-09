@@ -39,7 +39,7 @@ describe('<Login /> unit test', () => {
     expect(input.prop('value')).toEqual('');
     const event = {
       preventDefault() {},
-      target: { name: 'email', value: 'hello@hello.com' }
+      target: { name: 'email', value: 'test' }
     };
     input.simulate('change', event);
   });
@@ -52,14 +52,14 @@ describe('<Login /> unit test', () => {
     const emailInput = wrapper.find('#email-input').at(0);
     const event = {
       preventDefault() {},
-      target: { name: 'email', value: 'swpp@snu.ac.kr' }
+      target: { name: 'email', value: 'test' }
     };
     emailInput.simulate('change', event);
 
     const pwInput = wrapper.find('#password-input').at(0);
     const event2 = {
       preventDefault() {},
-      target: { name: 'password', value: 'iluvswpp' }
+      target: { name: 'password', value: 'test' }
     };
     pwInput.simulate('change', event2);
     button.simulate('click');
@@ -72,5 +72,28 @@ describe('<Login /> unit test', () => {
     expect(button.length).toBe(1);
     button.simulate('click');
     expect(jest.fn()).toBeCalledTimes(0);
+  });
+
+  it('should handle with warning message', () => {
+    const mockStoreError = createStore(
+      rootReducer,
+      {
+        error: true,
+        user: {
+          isLoggedIn: false
+        }
+      },
+      composeWithDevTools(applyMiddleware(thunk))
+    );
+    const login = (
+      <Provider store={mockStoreError}>
+        <Router history={history}>
+          <Login />
+        </Router>
+      </Provider>
+    );
+    const wrapper = mount(login);
+    const warningMessage = wrapper.find('#login-error-message').at(0);
+    expect(warningMessage.length).toBe(1);
   });
 });
