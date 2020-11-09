@@ -45,6 +45,27 @@ export const CommonInput = styled.input`
   }
 `;
 
+export const MainWrapper = styled.main`
+  width: 1280px;
+  margin: 16px auto 100px auto;
+  display: flex;
+`;
+
+export const FeedWrapper = styled.div`
+  width: 700px;
+  margin: 0 40px;
+`;
+
+export const WidgetWrapper = styled.div`
+  width: 300px;
+`;
+
+export const WidgetTitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+`;
+
 export const FlexDiv = styled.div`
   display: flex;
 `;

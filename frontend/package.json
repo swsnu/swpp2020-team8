@@ -70,5 +70,10 @@
       "prettier --write",
       "eslint --fix-dry-run"
     ]
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "!src/constants/*"
+    ]
   }
 }
