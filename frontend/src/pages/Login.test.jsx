@@ -1,109 +1,76 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
-// import { Router } from 'react-router-dom';
-import { ConnectedRouter } from 'connected-react-router';
-import axios from 'axios';
-import { getMockStore } from '../test-utils/mocks';
+import { Router } from 'react-router-dom';
+import { createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import thunk from 'redux-thunk';
+import rootReducer from '../modules';
 import history from '../history';
+import mockStore from '../mockStore';
 import Login from './Login';
 
-const stubInitialState = { isLoggedIn: false, loginError: 'Error' };
-const stubErrorState = { isLoggedIn: false, loginError: 'Error' };
-const stubLoggedInState = { isLoggedIn: true };
+describe('<Login /> unit test', () => {
+  const store = createStore(
+    rootReducer,
+    mockStore,
+    composeWithDevTools(applyMiddleware(thunk))
+  );
 
-const mockStore = getMockStore(stubInitialState);
-const mockStoreError = getMockStore(stubErrorState);
-const mockStoreLoggedIn = getMockStore(stubLoggedInState);
-
-describe('Login', () => {
-  let login;
-  let spyHistoryPush;
-  let spyAxiosPost;
-
-  beforeEach(() => {
-    login = (
-      <Provider store={mockStore}>
-        <ConnectedRouter history={history}>
-          <Login history={history} />
-        </ConnectedRouter>
+  const handleSubmit = jest.fn();
+  const getWrapper = () =>
+    mount(
+      <Provider store={store}>
+        <Router history={history}>
+          <Login handleSubmit={handleSubmit} />
+        </Router>
       </Provider>
     );
 
-    spyHistoryPush = jest.spyOn(history, 'push').mockImplementation(() => {
-      return (dispatch) => {
-        dispatch();
-      };
-    });
-
-    spyAxiosPost = jest
-      .spyOn(axios, 'post')
-      .mockImplementation(() => Promise.resolve({}));
+  it('LoginPage should mount', () => {
+    const wrapper = getWrapper();
+    expect(wrapper.find('Login').length).toBe(1);
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
+  it('should reflect input change', () => {
+    const wrapper = getWrapper();
+    const input = wrapper.find('#email-input').at(0);
+    expect(input.length).toBe(1);
+    expect(input.prop('value')).toEqual('');
+    const event = {
+      preventDefault() {},
+      target: { name: 'email', value: 'hello@hello.com' }
+    };
+    input.simulate('change', event);
   });
 
-  it('Login Page should render properly', () => {
-    const component = mount(login);
-    expect(component.find('Login').length).toBe(1);
+  it('should handle submit', () => {
+    const wrapper = getWrapper();
+    const button = wrapper.find('#submit-button').at(0);
+    expect(button.length).toBe(1);
+
+    const emailInput = wrapper.find('#email-input').at(0);
+    const event = {
+      preventDefault() {},
+      target: { name: 'email', value: 'swpp@snu.ac.kr' }
+    };
+    emailInput.simulate('change', event);
+
+    const pwInput = wrapper.find('#password-input').at(0);
+    const event2 = {
+      preventDefault() {},
+      target: { name: 'password', value: 'iluvswpp' }
+    };
+    pwInput.simulate('change', event2);
+    button.simulate('click');
+    expect(jest.fn()).toBeCalledTimes(0);
   });
 
-  it("should not call 'onLogin' when input is not valid", () => {
-    const component = mount(login);
-    const wrapper = component.find('#submit-button').at(0);
-    wrapper.simulate('click');
-    expect(spyAxiosPost).toHaveBeenCalledTimes(0);
-  });
-
-  it("should call 'onLogin' when clicked", () => {
-    const component = mount(login);
-    component
-      .find('#email-input')
-      .at(0)
-      .simulate('change', { target: { value: 'test@gmail.com' } });
-    component
-      .find('#password-input')
-      .at(0)
-      .simulate('change', { target: { value: 'test' } });
-
-    const wrapper = component.find('#submit-button').at(0);
-    wrapper.simulate('click');
-    expect(spyAxiosPost).toHaveBeenCalledTimes(1);
-  });
-
-  it('should redirect to /signup', () => {
-    const component = mount(login);
-    const wrapper = component.find('#signup-button').at(0);
-    wrapper.simulate('click');
-    expect(spyHistoryPush).toHaveBeenCalledTimes(1);
-    // expect(history.location.pathname).toBe('/signup');
-  });
-
-  it('should redirect to /friends when isLoggedIn', () => {
-    login = (
-      <Provider store={mockStoreLoggedIn}>
-        <ConnectedRouter history={history}>
-          <Login history={history} />
-        </ConnectedRouter>
-      </Provider>
-    );
-    mount(login);
-    expect(spyHistoryPush).toHaveBeenCalledTimes(1);
-    // expect(history.location.pathname).toBe('/friends');
-  });
-
-  it('should render WarningMessage', () => {
-    login = (
-      <Provider store={mockStoreError}>
-        <ConnectedRouter history={history}>
-          <Login history={history} />
-        </ConnectedRouter>
-      </Provider>
-    );
-    const component = mount(login);
-    const wrapper = component.find('#login-error-message').at(0);
-    expect(wrapper.length).toBe(1);
+  it('should handle signup', () => {
+    const wrapper = getWrapper();
+    const button = wrapper.find('#signup-button').at(0);
+    expect(button.length).toBe(1);
+    button.simulate('click');
+    expect(jest.fn()).toBeCalledTimes(0);
   });
 });

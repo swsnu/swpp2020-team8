@@ -6,7 +6,6 @@ import StyledComponentExample from './components/StyledComponentExample';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import QuestionSelection from './pages/QuestionSelection';
-import Article from './pages/temp/Article';
 
 const theme = createMuiTheme({
   palette: {
@@ -22,7 +21,6 @@ function App() {
   return (
     <MuiThemeProvider theme={theme}>
       <GlobalStyle />
-      <Article />
       <Switch>
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={SignUp} />
