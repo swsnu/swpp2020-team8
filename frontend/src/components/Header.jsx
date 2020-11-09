@@ -97,12 +97,11 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Header = () => {
+// eslint-disable-next-line react/prop-types
+const Header = ({ signedIn }) => {
   const classes = useStyles();
   const { pathname } = window.location;
 
-  // TODO: signedIn redux state
-  const [signedIn] = useState(true);
   const [isNotiOpen, setIsNotiOpen] = useState(false);
 
   const toggleNotiOpen = () => {

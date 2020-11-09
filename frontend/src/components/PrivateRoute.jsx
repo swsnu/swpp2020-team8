@@ -2,16 +2,13 @@ import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 
 // eslint-disable-next-line react/prop-types
-const PrivateRoute = ({ component: Component, ...rest }) => {
-  // TODO: userLogin redux state
-  const user = false;
-
+const PrivateRoute = ({ component: Component, signedIn, ...rest }) => {
   return (
     <Route
       {...rest}
       render={(props) => {
         // eslint-disable-next-line no-unused-expressions
-        user ? <Component {...props} /> : <Redirect to="/login" />;
+        signedIn ? <Component {...props} /> : <Redirect to="/login" />;
       }}
     />
   );

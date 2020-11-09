@@ -20,7 +20,7 @@ const App = () => {
   return (
     <>
       <GlobalStyle />
-      <Header />
+      <Header signedIn={signedIn} />
       {!signedIn ? (
         <Switch>
           <Route exact path="/login" component={Login} />
@@ -34,9 +34,25 @@ const App = () => {
           <QuestionListWidget />
           <FeedWrapper>
             <Switch>
-              <PrivateRoute exact path="/friends" component={FriendFeed} />
-              <PrivateRoute exact path="/anonymous" component={AnonymousFeed} />
-              <PrivateRoute exact path="/questions" component={QuestionFeed} />
+              <PrivateRoute
+                exact
+                path="/friends"
+                component={FriendFeed}
+                signedIn
+              />
+              <PrivateRoute
+                exact
+                path="/anonymous"
+                component={AnonymousFeed}
+                signedIn
+              />
+              <PrivateRoute
+                exact
+                path="/questions"
+                component={QuestionFeed}
+                signedIn
+              />
+              <Redirect path="/" to="/friends" />
             </Switch>
           </FeedWrapper>
           <FriendListWidget />

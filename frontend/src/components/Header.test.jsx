@@ -10,7 +10,8 @@ describe('<Header/>', () => {
   });
 
   it('should render <NotificationDropdownList/> when clicking notification button', () => {
-    const component = shallow(<Header />);
+    // eslint-disable-next-line react/jsx-boolean-value
+    const component = shallow(<Header signedIn={true} />);
     const notiButton = component.find('.noti-button');
     notiButton.simulate('click', { stopPropagation: () => undefined });
     expect(component.find(NotificationDropdownList)).toHaveLength(1);
