@@ -7,13 +7,6 @@ const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
   }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> bb60287dfe99c82d63cd9ecec09ce0045f34cab8
-=======
->>>>>>> f69d858eec14eb571e0271ae6a9cb5dc2d794eef
   h1 {
     font-size: 24px;
     color: rgb(50, 50, 50);

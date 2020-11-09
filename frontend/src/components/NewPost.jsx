@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-// import { CommonInput } from '../styles';
 
 const NewPostWrapper = styled.div`
   width: 650px;
@@ -18,12 +17,10 @@ export const NewPostInput = styled.textarea`
   font-size: 16px;
   outline: none;
   width: 650px;
-  height: ${(props) =>
-    props.style && props.style.height ? `${props.style.height}px` : '100px'};
+  height: auto;
   box-sizing: border-box;
   border: 1px solid #ddd;
   margin: 4px 0;
-  border-color: ${(props) => props.invalid && '#ff395b'};
   ::placeholder,
   ::-webkit-input-placeholder {
     color: #aaa;
@@ -37,24 +34,31 @@ export const NewPostInput = styled.textarea`
 `;
 
 export default function NewPost() {
-  const [postInput, setPostInput] = useState({
+  const [postInfo, setPostInfo] = useState({
     content: ''
   });
 
-  const onPostInputChange = (e) => {
-    const t = e.target;
-    t.style.height = '100px';
-    t.style.height = `${t.scrollHeight}px`;
-    setPostInput(e.target.value);
-  };
+  const textareaRef = useRef(null);
 
+  useEffect(() => {
+    textareaRef.current.style.height = '100px';
+    const { scrollHeight } = textareaRef.current;
+    textareaRef.current.style.height = `${scrollHeight}px`;
+  }, [postInfo]);
+
+  const onInputChange = (e) => {
+    const { name, value } = e.target;
+    setPostInfo((prev) => ({ ...prev, [name]: value }));
+  };
   return (
     <NewPostWrapper>
       <NewPostInput
         id="new-post-input"
+        name="content"
         placeholder="떠오르는 생각을 공유해주세요."
-        value={postInput.content}
-        onChange={onPostInputChange}
+        ref={textareaRef}
+        value={postInfo.content}
+        onChange={onInputChange}
       />
     </NewPostWrapper>
   );
