@@ -10,6 +10,8 @@ export const REMOVE_ERROR = 'user/REMOVE_ERROR';
 const initialState = {
   error: false,
   user: {
+    id: 0,
+    username: '',
     isLoggedIn: false
   }
 };

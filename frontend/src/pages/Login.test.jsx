@@ -11,6 +11,11 @@ import history from '../history';
 import { mockStore } from '../mockStore';
 import Login from './Login';
 
+const stubStateLoginError = {
+  error: true,
+  user: { id: 1, username: 'jina', isLoggedIn: false }
+};
+
 describe('<Login /> unit test', () => {
   const store = createStore(
     rootReducer,
@@ -76,17 +81,15 @@ describe('<Login /> unit test', () => {
   });
 
   it('should handle with warning message', () => {
-    const loginFailState = { error: true };
-    const mockStoreLoginFail = getMockStore(loginFailState);
+    const mockStoreLoginError = getMockStore(stubStateLoginError);
 
     const login = (
-      <Provider store={mockStoreLoginFail}>
+      <Provider store={mockStoreLoginError}>
         <Router history={history}>
           <Login handleSubmit={handleSubmit} />
         </Router>
       </Provider>
     );
-    // const wrapper = getWrapper();
     const wrapper = mount(login);
     const warningMessage = wrapper.find('WarningMessage');
     expect(warningMessage.length).toBe(1);

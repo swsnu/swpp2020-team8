@@ -1,5 +1,4 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
-
 import { connectRouter, routerMiddleware } from 'connected-react-router';
 import thunk from 'redux-thunk';
 import history from '../history';
@@ -13,22 +12,6 @@ const getMockReducer = jest.fn(
     return state;
   }
 );
-
-export const getMockUserStore = (userState) => {
-  const mockUserReducer = getMockReducer(userState);
-
-  const rootReducer = combineReducers({
-    user: mockUserReducer,
-    router: connectRouter(history)
-  });
-
-  const mockStore = createStore(
-    rootReducer,
-    applyMiddleware(thunk, routerMiddleware(history))
-  );
-
-  return mockStore;
-};
 
 export const getMockStore = (userState) => {
   const mockUserReducer = getMockReducer(userState);
@@ -45,3 +28,5 @@ export const getMockStore = (userState) => {
 
   return mockStore;
 };
+
+export default getMockStore;
