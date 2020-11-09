@@ -158,7 +158,7 @@ const Header = () => {
         </div>
         <IconButton
           aria-label="show new notifications"
-          className={classes.iconButton}
+          className={`${classes.iconButton} noti-button`}
           onClick={(e) => {
             e.stopPropagation();
             toggleNotiOpen();
@@ -191,12 +191,7 @@ const Header = () => {
       <div className={classes.grow}>
         <AppBar position="static" className={classes.header}>
           <Toolbar>
-            <Link
-              href="/friends"
-              component="button"
-              className={classes.title}
-              onClick={(e) => e.preventDefault}
-            >
+            <Link href="/friends" component="button" className={classes.title}>
               adoor
             </Link>
             {signedIn ? (
