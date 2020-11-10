@@ -8,5 +8,5 @@ export default function PostList({ posts }) {
       return <QuestionItem key={post.id} questionObj={post} />;
     return <PostItem key={post.id} postObj={post} />;
   });
-  return <>{postList}</>;
+  return <div id="post-list">{postList}</div>;
 }
