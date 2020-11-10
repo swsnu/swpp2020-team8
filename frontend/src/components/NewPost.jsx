@@ -2,36 +2,33 @@ import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import ShareSettings from './ShareSettings';
 
-
 const NewPostWrapper = styled.div`
   width: 650px;
   margin: 0 auto;
-  margin-top: 50px;
-  border: 1px solid #ddd;
-  padding: 10px 10px;
-
-
-  padding-bottom: 50px;
-
+  border: 1px solid #eee;
+  padding: 10px;
+  border-radius: 4px;
+  box-sizing: border-box;
 `;
 
 export const NewPostInput = styled.textarea`
   padding: 5px;
   border-radius: 2px;
   color: rgb(50, 50, 50);
-  font-size: 16px;
+  font-size: 14px;
   outline: none;
-  width: 650px;
+  width: 100%;
   height: auto;
   box-sizing: border-box;
-  border: 1px solid #ddd;
+  border: none;
   margin: 4px 0;
+  box-sizing: border-box;
   ::placeholder,
   ::-webkit-input-placeholder {
     color: #aaa;
   }
   :focus {
-    border-color: #008489;
+    outline: 'none !important';
   }
   cursor: auto;
   resize: none;

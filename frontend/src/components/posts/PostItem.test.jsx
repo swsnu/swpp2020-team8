@@ -52,15 +52,15 @@ describe('<PostItem />', () => {
 
   it('should toggle like', async () => {
     const component = shallow(<PostItem articleObj={sampleResponseObj} />);
-    const likeButton = component.find('FavoriteBorderIcon');
-    let unlikeButton = component.find('FavoriteIcon');
+    const likeButton = component.find('FavoriteBorderIcon').parent();
+    let unlikeButton = component.find('FavoriteIcon').parent();
     const likeCount = component.find('#like-count').at(0).text();
     expect(+likeCount).toEqual(0);
     expect(likeButton.length).toBe(1);
     expect(unlikeButton.length).toBe(0);
     likeButton.simulate('click');
     await new Promise((resolve) => setTimeout(resolve, 500));
-    unlikeButton = component.find('FavoriteIcon');
+    unlikeButton = component.find('FavoriteIcon').parent();
     expect(unlikeButton.length).toBe(1);
     unlikeButton.simulate('click');
     await new Promise((resolve) => setTimeout(resolve, 500));
