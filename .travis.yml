@@ -1,7 +1,7 @@
 matrix:
   include:
     - language: node_js
-      node_js: "12"
+      node_js: '12'
       addons:
         sonarcloud:
           organization: "swsnu"
@@ -24,7 +24,7 @@ matrix:
 
     - language: python
       python:
-        - "3.7"
+        - '3.7'
       addons:
         sonarcloud:
           organization: "swsnu"
@@ -37,8 +37,8 @@ matrix:
       script:
         - python manage.py makemigrations account feed comment like
         - python manage.py migrate
-        - coverage run --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
-        - coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py' --source='.' manage.py test
+        - coverage run --omit='manage.py','./adoorback/*.py','./*/tests.py','./*/urls.py','./*/views.py' --source='.' manage.py test
+        - coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py','./*/urls.py','./*/views.py' --source='.' manage.py test
         - coverage xml
         - cd ../..
         - sonar-scanner
