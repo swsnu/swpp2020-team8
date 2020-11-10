@@ -1,16 +1,19 @@
 import axios from 'axios';
-import { push } from 'connected-react-router';
 
 export const SIGN_UP_SUCCESS = 'user/SIGN_UP_SUCCESS';
 export const LOGIN = 'user/LOGIN';
 export const LOGOUT = 'user/LOGOUT';
-export const GET_LOGIN = 'user/GET_LOGIN';
+export const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
+export const LOGIN_ERROR = 'user/LOGIN_ERROR';
 export const REMOVE_ERROR = 'user/REMOVE_ERROR';
 
 const initialState = {
-  user: {},
-  isLoggedIn: JSON.parse(localStorage.getItem('isLoggedIn')),
-  loginError: ''
+  error: false,
+  user: {
+    id: 0,
+    username: '',
+    isLoggedIn: false
+  }
 };
 
 export const signUp = (signUpInfo) => {
@@ -20,84 +23,89 @@ export const signUp = (signUpInfo) => {
   };
 };
 
-export const getLoginDeep = (data) => {
-  return { type: GET_LOGIN, login: data.isLoggedIn };
-};
-
-export const getLogin = () => {
-  return (dispatch) => {
-    return axios.get('/api/user').then((res) => {
-      dispatch(getLoginDeep(res.data));
-    });
+export const requestLogin = (email, password) => {
+  return async (dispatch) => {
+    dispatch(login());
+    try {
+      const { data } = await axios.post('/api/user/login', email, password);
+      if (+data.code === 200) {
+        dispatch(loginSuccess(data.user));
+      } else {
+        dispatch(loginFailure(data.error));
+      }
+    } catch (error) {
+      dispatch(loginFailure(error));
+    }
   };
 };
 
-export const loginDeep = () => {
-  return { type: LOGIN, isLoggedIn: true, loginError: '' };
-};
-
-export const login = (loginInfo) => {
-  return (dispatch) => {
-    return axios
-      .post('/api/user/login/', loginInfo)
-      .then(() => {
-        dispatch(loginDeep());
-        // TODO: where to redirect?
-        dispatch(push('/friends'));
-      })
-      .catch(() => {
-        const errorMessage = '';
-        // switch (e.response.status) {
-        //   case 401:
-        //     errorMessage = 'Email or Password incorrect';
-        //     break;
-        //   default:
-        //     break;
-        // }
-        dispatch(loginFail(errorMessage));
-      });
+export const login = () => {
+  return {
+    type: LOGIN
   };
 };
 
-export const loginFail = (error) => {
-  return { type: LOGIN, isLoggedIn: false, loginError: error };
+export const loginSuccess = (user) => {
+  localStorage.setItem('user', JSON.stringify(user));
+  return {
+    type: LOGIN_SUCCESS,
+    user
+  };
 };
 
-export const logoutDeep = () => {
-  return { type: LOGOUT, isLoggedIn: false };
+export const loginFailure = (error) => {
+  return {
+    type: LOGIN_ERROR,
+    error
+  };
 };
 
 export const logout = () => {
-  return (dispatch) => {
-    return axios.get('/api/user/logout/').then(() => {
-      dispatch(logoutDeep());
-      // TODO: where to redirect?
-    });
+  localStorage.setItem('user', null);
+  return {
+    type: LOGOUT
+  };
+};
+
+export const logoutSuccess = (user) => {
+  return {
+    type: LOGOUT,
+    user
   };
 };
 
 export const removeError = () => {
-  return { type: REMOVE_ERROR, loginError: '' };
+  return {
+    type: REMOVE_ERROR
+  };
 };
 
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
     case LOGIN:
-      localStorage.setItem('isLoggedIn', JSON.stringify(action.isLoggedIn));
       return {
-        ...state,
-        isLoggedIn: action.isLoggedIn,
-        loginError: action.loginError
+        user: null,
+        error: false
       };
-    case GET_LOGIN:
-      return { ...state, isLoggedIn: action.login };
+    case LOGIN_SUCCESS:
+      return {
+        user: action.user,
+        error: false
+      };
+    case LOGIN_ERROR:
+      return {
+        user: null,
+        error: action.error
+      };
     case LOGOUT:
-      localStorage.setItem('isLoggedIn', JSON.stringify(action.isLoggedIn));
-      return { ...state, isLoggedIn: false };
+      return {
+        user: null,
+        error: false
+      };
     case REMOVE_ERROR:
       return {
-        ...state,
-        loginError: action.loginError
+        user: null,
+        error: false
       };
     default:
       return state;
