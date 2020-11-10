@@ -5,14 +5,25 @@ import {
   Button,
   Checkbox
 } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
 
 const ShareSettingsWrapper = styled.div`
   float: right;
   margin-bottom: auto;
+  font-size: 14px;
 `;
 
+const useStyles = makeStyles(() => ({
+  label: {
+    fontSize: '14px'
+  }
+}));
+
 export default function ShareSettings() {
+  const classes = useStyles();
+
   const [shareState, setShareState] = useState({
     shareWithFriends: false,
     shareAnonymously: false
@@ -33,6 +44,7 @@ export default function ShareSettings() {
       name="shareWithFriends"
       checked={shareState.shareWithFriends}
       onChange={handleChange}
+      size="small"
     />
   );
 
@@ -42,6 +54,7 @@ export default function ShareSettings() {
       name="shareAnonymously"
       checked={shareState.shareAnonymously}
       onChange={handleChange}
+      size="small"
     />
   );
 
@@ -49,19 +62,22 @@ export default function ShareSettings() {
     <ShareSettingsWrapper>
       <FormGroup row width="400px">
         <FormControlLabel
-          className="share-with-friends"
+          className={`share-with-friends ${classes.label}`}
           control={controlShareWithFriends}
-          label="친구에게 공유하기"
+          label={
+            <Typography className={classes.label}>친구에게 공유하기</Typography>
+          }
         />
-
         <FormControlLabel
-          className="share-anonymously"
+          className={`share-anonymously ${classes.label}`}
           control={controlShareAnonymously}
-          label="익명으로 공유하기"
+          label={
+            <Typography className={classes.label}>익명으로 공유하기</Typography>
+          }
         />
         <Button
           id="submit-button"
-          size="medium"
+          size="small"
           variant="outlined"
           color="secondary"
           onClick={onClickSubmitButton}

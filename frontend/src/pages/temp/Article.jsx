@@ -1,6 +1,7 @@
 import React from 'react';
 import ArticleItem from '../../components/posts/PostItem';
 import QuestionItem from '../../components/posts/QuestionItem';
+import NewPost from '../../components/NewPost';
 
 const sampleArticleObj = {
   id: 4756,
@@ -64,6 +65,7 @@ const sampleCustomQuestionObj = {
 export default function Article() {
   return (
     <div style={{ width: '650px' }}>
+      <NewPost />
       <ArticleItem articleObj={sampleArticleObj} />
       <ArticleItem articleObj={sampleResponseObj} />
       <QuestionItem articleObj={sampleQuestionObj} />
