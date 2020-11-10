@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getDailyQuestions } from '../modules/question';
-import QuestionItem from '../components/posts/QuestionItem';
+import QuestionList from '../components/posts/QuestionList';
 
 export default function QuestionFeed() {
   const dailyQuestions = useSelector(
@@ -12,10 +12,5 @@ export default function QuestionFeed() {
   useEffect(() => {
     dispatch(getDailyQuestions());
   }, [dispatch]);
-
-  const dailyQuestionList = dailyQuestions.map((question) => (
-    <QuestionItem key={question.id} questionObj={question} />
-  ));
-
-  return <>{dailyQuestionList}</>;
+  return <QuestionList questions={dailyQuestions} />;
 }
