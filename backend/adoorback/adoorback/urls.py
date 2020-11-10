@@ -24,12 +24,7 @@ router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 
 urlpatterns = [
-    # path('likes/', include('like.urls')),
-    # path('comments/', include('comment.urls')),
-    # path('notifications/', include('notification.urls')),
-    # path('accounts/', include('account.urls')),
-    # path('feeds/', include('feed.urls')),
-    # path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
