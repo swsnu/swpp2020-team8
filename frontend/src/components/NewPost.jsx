@@ -2,13 +2,17 @@ import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import ShareSettings from './ShareSettings';
 
+
 const NewPostWrapper = styled.div`
   width: 650px;
   margin: 0 auto;
   margin-top: 50px;
   border: 1px solid #ddd;
   padding: 10px 10px;
+
+
   padding-bottom: 50px;
+
 `;
 
 export const NewPostInput = styled.textarea`
