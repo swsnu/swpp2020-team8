@@ -3,16 +3,21 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { MemoryRouter } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
-import FriendFeed from '../pages/FriendFeed';
+
+jest.mock('react-redux', () => ({
+  // useSelector: jest.fn((fn) => fn()),
+  useDispatch: () => jest.fn()
+}));
 
 describe('<PrivateRoute />', () => {
   it('should render component if user has been signed in', () => {
+    const component = () => <div id="test-component">component</div>;
     const enzymeWrapper = mount(
       <MemoryRouter initialEntries={['/friends']}>
-        <PrivateRoute signedIn={true} component={FriendFeed} />
+        <PrivateRoute signedIn={true} component={component} />
       </MemoryRouter>
     );
-    expect(enzymeWrapper.exists(FriendFeed)).toBe(true);
+    expect(enzymeWrapper.exists('#test-component')).toBe(true);
   });
 
   it('should redirect /login if user is not signed in', () => {
