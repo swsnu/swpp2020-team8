@@ -10,6 +10,9 @@ import FriendItem from './FriendItem';
 import { WidgetWrapper, WidgetTitleWrapper } from '../styles';
 
 const useStyles = makeStyles({
+  card: {
+    borderColor: '#eee'
+  },
   cardContent: {
     padding: '0 !important'
   },
@@ -29,7 +32,7 @@ const FriendListWidget = () => {
 
   return (
     <WidgetWrapper>
-      <Card variant="outlined">
+      <Card className={classes.card} variant="outlined">
         <CardContent className={classes.cardContent}>
           <WidgetTitleWrapper>
             <Typography variant="h6" className={classes.title}>
