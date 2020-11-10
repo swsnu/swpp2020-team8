@@ -5,11 +5,11 @@ export const getUserName = createSelector([getUser], (user) => {
   return user?.username;
 });
 
-export const getUserError = (state) => state.userReducer.error;
+export const getUserError = (state) => state.userReducer.loginError;
 
 export const getIsLoggedIn = createSelector(
   [getUser, getUserError],
-  (user, error) => {
-    return user && user.id && user.username && !error;
+  (user, loginError) => {
+    return user && user.id && user.username && !loginError;
   }
 );

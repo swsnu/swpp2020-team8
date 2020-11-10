@@ -48,6 +48,8 @@ export default function Login() {
 
   const onClickSignupButton = () => {
     history.push('/signup');
+    dispatch(removeError());
+    setLoginInfo({ email: '', password: '' });
   };
 
   return (
@@ -68,7 +70,7 @@ export default function Login() {
         type="password"
         onChange={handleChange}
       />
-      {loginError && loginError.length && (
+      {loginError && (
         <WarningMessage id="login-error-message">
           이메일 혹은 비밀번호를 다시 확인해주세요
         </WarningMessage>

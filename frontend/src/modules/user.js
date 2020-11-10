@@ -31,10 +31,10 @@ export const requestLogin = (email, password) => {
       if (+data.code === 200) {
         dispatch(loginSuccess(data.user));
       } else {
-        dispatch(loginFailure(data.loginError));
+        dispatch(loginFailure(data.error));
       }
-    } catch (error) {
-      dispatch(loginFailure(error));
+    } catch (e) {
+      dispatch(loginFailure(e));
     }
   };
 };
@@ -95,7 +95,7 @@ export default function userReducer(state = initialState, action) {
     case LOGIN_FAILURE:
       return {
         user: null,
-        loginError: action.loginError
+        loginError: true
       };
     case LOGOUT:
       return {
