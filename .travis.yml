@@ -1,37 +1,53 @@
 matrix:
-    include:
-        - language: node_js
-          node_js:
-              - '12'
-          addons: 
-            sonarcloud:
-                organization: "swsnu"
-                token:
-                    secure: "UyibO0r9M3SbXOoBoBf0GNk6t/a6Tntje0JwEZoQpqLxzclf98bt4P5yJBN7+cKQfYWi/SQPLV9Dwwn3fnvtAfRofTqYzZAK8s4OgGsAta8aJvpUu4qlmvpznctSqCFkOL8A7zeVVBxqvSQ004RbZ2OHbRdIfTF5UQmtaNanW7IIGSo4dmqo2n35iuNTLYkNO1yjuEYgr67fWAPNk7RzUJOVi6Qe6xIjuuPCrdvX4UbXpRmmK6dXXn8qNmqk/QN5RmLSBcxqDMK7Qq8gGNkwI0DWu0dkpQFiQAUlAnkdTn1/NIi1caknRN3QD/Hc8kwdGleBPckpTWu1RMp2eF+TDCrOa6x9qIrGp5vA6MRE7QVo3O5g536e+Lggvv9gg105YpWD55LYNz5l+IH6c/A8dounsIzNW/eorsds1iFIuERmdHXKOCBiHBhAylCZw5EPi872qQSzor32RaKyPQcfJzqz/vgUrTPFgJbBGm1ic+3gtcTskoNQ1E8EW3JqJuInxH++K8YPaVxH6gGK09rG93odTD6fblr0QyhWBHJfTKuilOjoXP66MAEgmXCPSTji3bPYtXUa/5hiM1XfVad7ekpTqZgrMMEqEP4mAI77NI03V3qEbVYeYAtmVIF3wCykNbBJi4C+7kVyW/C4t8EXrW8wS8tclujZZ+/XliDP53g="
-          cache: 
-              - yarn: true
-          before_install:
-              - cd frontend
-          install:
-              - yarn install
-          ignore:
-            - ./src/serviceWorker.js
-          script:
-              - ./node_modules/.bin/eslint src
-              - yarn test --coverage --watchAll=false
-              - cd .. && sonar-scanner
+  include:
+    - language: node_js
+<<<<<<< HEAD
+      node_js: '12'
+=======
+      node_js: "12"
+>>>>>>> 3b7c9dd44edcedc8e9f31adc0bf772c3ff541908
+      addons:
+        sonarcloud:
+          organization: "swsnu"
+          token:
+            secure: "dXD8jIeWATIBfl30J1DtZcQyXXvSeXXka2knpRuaEl3c+PxcRoomt7XcDAhNXLVzz7B7PfaN6gP77F2r7KGwpJoZ8XxddU395OEgzI8/USYmVhaf57g0YnZixr6wPNR0EGkxPPa+JEts7LWD5q4VTAId74nQJ5us7OIfMo7iD9n5kGLICrKwG+nkviOzFg1SIuXkV72eQz10IXze6sXQf32gR58fAHh+LI2oHvrP9iaYiRMtJEL0JlxZsvnkey0LuUiuRqdqUCHRVRZJoij5RHLhTLYqIbv6yPq/KDdfDhRVCoL483JntvTNkyoCRq/JYgT5o3Hjvsp2tuNM3ay422yFU9ZJv/P82V0fL+iU15Udlh3OkdfUz3iwxsL5tUq+0Pa+sQMJHub1Z69bE9RcDGWnROqnHJyLcM0U5vZCyobFkOy/svU3RAgZWoTiAjUu+cGJlXYeSAW+vOr+gU3Js/NzBqyLW6zDXZnQyIxFOYPOwfECzVt6fiAIjxqQdExhGSGgLnt10m1rtClyozj696Z9bv4I9lDm9bwM1kSMY1c3oyW0gFc7e/wjaK4IOGTRCsVWay7C55zr+79+ZW0hX/NqNOkrrKkTc4EsJiWqiDkCMlqNYYLSY+Fve+koDA72T5PgznqfBNKp2eMokSmO6Z6V/HM/hSZ1QREkK1zEnso="
+      cache:
+        - yarn: true
+      before_install:
+        - cd frontend
+      install:
+        - yarn install
+      ignore:
+        - ./src/serviceWorker.js
+      script:
+        - ./node_modules/.bin/eslint src
+        - yarn test --coverage --watchAll=false
+        - cd .. && sonar-scanner
+      after_success:
+        - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 
-        - language: python
-          python:
-              - '3.7'
-          before_install:
-              - cd backend/adoorback
-          install:
-              - pip install -r requirements.txt
-          script:
-              - python manage.py makemigrations account feed comment like
-              - python manage.py migrate
-              - coverage run --omit='manage.py','./adoorback/*.py','./*/tests.py','./*/urls.py','./*/views.py' --source='.' manage.py test
-              - coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py','./*/urls.py','./*/views.py' --source='.' manage.py test
-              - coverage report -m
-              - coverage xml
+    - language: python
+      python:
+<<<<<<< HEAD
+        - '3.7'
+=======
+        - "3.7"
+>>>>>>> 3b7c9dd44edcedc8e9f31adc0bf772c3ff541908
+      addons:
+        sonarcloud:
+          organization: "swsnu"
+          token:
+            secure: "dXD8jIeWATIBfl30J1DtZcQyXXvSeXXka2knpRuaEl3c+PxcRoomt7XcDAhNXLVzz7B7PfaN6gP77F2r7KGwpJoZ8XxddU395OEgzI8/USYmVhaf57g0YnZixr6wPNR0EGkxPPa+JEts7LWD5q4VTAId74nQJ5us7OIfMo7iD9n5kGLICrKwG+nkviOzFg1SIuXkV72eQz10IXze6sXQf32gR58fAHh+LI2oHvrP9iaYiRMtJEL0JlxZsvnkey0LuUiuRqdqUCHRVRZJoij5RHLhTLYqIbv6yPq/KDdfDhRVCoL483JntvTNkyoCRq/JYgT5o3Hjvsp2tuNM3ay422yFU9ZJv/P82V0fL+iU15Udlh3OkdfUz3iwxsL5tUq+0Pa+sQMJHub1Z69bE9RcDGWnROqnHJyLcM0U5vZCyobFkOy/svU3RAgZWoTiAjUu+cGJlXYeSAW+vOr+gU3Js/NzBqyLW6zDXZnQyIxFOYPOwfECzVt6fiAIjxqQdExhGSGgLnt10m1rtClyozj696Z9bv4I9lDm9bwM1kSMY1c3oyW0gFc7e/wjaK4IOGTRCsVWay7C55zr+79+ZW0hX/NqNOkrrKkTc4EsJiWqiDkCMlqNYYLSY+Fve+koDA72T5PgznqfBNKp2eMokSmO6Z6V/HM/hSZ1QREkK1zEnso="
+      before_install:
+        - cd backend/adoorback
+      install:
+        - pip install -r requirements.txt
+      script:
+        - pylint **/*.py --load-plugins pylint_django
+        - python manage.py makemigrations account feed comment like
+        - python manage.py migrate
+        - coverage run --source='.' --omit='*/migrations/*','manage.py','*/wsgi.py','*/asgi.py','*/utils/' ./manage.py test
+        - coverage run --branch --source='.' --omit='*/migrations/*','manage.py','*/wsgi.py','*/asgi.py','*/utils/' ./manage.py test
+        - coverage xml
+        - cd ../..
+        - sonar-scanner

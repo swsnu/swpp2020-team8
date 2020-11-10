@@ -1,6 +1,7 @@
 from django.test import TestCase
-from adoorback.utils.seed import set_seed
 from django.contrib.auth import get_user_model
+
+from adoorback.utils.seed import set_seed
 
 
 N = 10
