@@ -1,7 +1,7 @@
 import React from 'react';
 import ArticleItem from '../../components/posts/PostItem';
 import QuestionItem from '../../components/posts/QuestionItem';
-import NewPost from '../../components/NewPost';
+import NewPost from '../../components/posts/NewPost';
 
 const sampleArticleObj = {
   id: 4756,
