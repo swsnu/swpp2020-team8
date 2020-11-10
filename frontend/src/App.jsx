@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
+import Login from './pages/Login';
+
+
 
 import NewPost from './components/NewPost';
+
 import { GlobalStyle, MainWrapper, FeedWrapper } from './styles';
 import Header from './components/Header';
 import QuestionListWidget from './components/QuestionListWidget';
 import FriendListWidget from './components/FriendListWidget';
 
 import SignUp from './pages/SignUp';
-import Login from './pages/Login';
 import QuestionSelection from './pages/QuestionSelection';
 import FriendFeed from './pages/FriendFeed';
 import AnonymousFeed from './pages/AnonymousFeed';
