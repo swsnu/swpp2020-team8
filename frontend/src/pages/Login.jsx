@@ -25,7 +25,7 @@ export default function Login() {
   const [loginInfo, setLoginInfo] = useState({ email: '', password: '' });
   const isLoggedIn = useSelector((state) => getIsLoggedIn(state));
   const user = useSelector((state) => state.userReducer.user);
-  const loginError = useSelector((state) => state.userReducer.error);
+  const loginError = useSelector((state) => state.userReducer.loginError);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
