@@ -1,5 +1,8 @@
+from django.utils import timezone
 from rest_framework import generics
 from rest_framework import permissions
+from celery.schedules import crontab
+from celery.task import periodic_task
 
 from feed.serializers import ArticleSerializer, ResponseSerializer, \
     QuestionSerializer, QuestionDetailSerializer, PostSerializer
@@ -7,8 +10,16 @@ from feed.models import Article, Response, Question, Post
 from adoorback.permissions import IsAuthorOrReadOnly
 
 
+@periodic_task(run_every=crontab(minute=21, hour=8))
+def select_daily_questions():
+    questions = Question.objects.all().filter(selected_date__isnull=True).order_by('?')[:30]
+    for question in questions:
+        question.selected_date = timezone.now()
+        question.save()
+
+
 class DailyQuestionList(generics.ListAPIView):
-    queryset = Question.objects.all().filter(id__lte=30)
+    queryset = Question.objects.daily_questions()
     serializer_class = QuestionSerializer
     model = serializer_class.Meta.model
     permission_classes = [permissions.IsAuthenticated]

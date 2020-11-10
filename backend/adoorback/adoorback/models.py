@@ -6,8 +6,6 @@ class AdoorModel(models.Model):
         abstract = True
 
     content = models.TextField()
-    # share_with_friends = models.BooleanField()
-    # share_anonymously = models.BooleanField()
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
 

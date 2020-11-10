@@ -3,8 +3,9 @@ import logging
 import sys
 import pandas as pd
 
-from faker import Faker
+from django.utils import timezone
 from django.contrib.auth import get_user_model
+from faker import Faker
 
 from adoorback.utils.content_types import get_content_type
 from feed.models import Article, Response, Question, Post
@@ -57,6 +58,12 @@ def set_seed(n):
     logging.info(f"{Article.objects.all().count()} Article(s) created!") if DEBUG else None
     logging.info(f"{Question.objects.all().count()} Question(s) created!") \
         if DEBUG else None
+
+    # Select Daily Questions
+    daily_questions = Question.objects.all().filter(selected_date__isnull=True).order_by('?')[:30]
+    for question in daily_questions:
+        question.selected_date = timezone.now()
+        question.save()
 
     # Seed Response
     questions = Question.objects.all()

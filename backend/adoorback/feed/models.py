@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
@@ -52,6 +53,9 @@ class QuestionManager(models.Manager):
 
     def custom_questions_only(self, **kwargs):
         return self.filter(is_admin_question=False, **kwargs)
+
+    def daily_questions(self, **kwargs):
+        return self.filter(selected_date__date=datetime.date.today(), **kwargs)
 
 
 class Question(AdoorModel):
