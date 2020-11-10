@@ -22,7 +22,7 @@ const PostItemWrapper = styled.div`
 PostItemWrapper.displayName = 'PostItemWrapper';
 
 const ContentWrapper = styled.div`
-  margin: 12px 0 8px;
+  margin: 12px 0;
 `;
 
 export default function PostItem({ postObj }) {

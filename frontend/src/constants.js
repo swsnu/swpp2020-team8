@@ -32,6 +32,7 @@ export const mockArticle = {
     profile_pic:
       'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
   }, // blank or null if anonymous
+  created_at: '2020-09-23T10:38:47.975019+08:00',
   content:
     '안녕하세요 반가워요 잘있어요 다시만나요 이거는 질문없이 쓰는 그냥 뻘글이에요 이쁘죠?????',
   comment: [
