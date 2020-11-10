@@ -65,7 +65,7 @@ export default function Login() {
         type="password"
         onChange={handleChange}
       />
-      {loginError.length && (
+      {loginError && loginError.length && (
         <WarningMessage id="login-error-message">
           이메일 혹은 비밀번호를 다시 확인해주세요
         </WarningMessage>
