@@ -2483,8 +2483,6 @@ axios@^0.21.0:
   dependencies:
     follow-redirects "^1.10.0"
 
-axobject-query@^2.0.2, axobject-query@^2.1.2:
-
 axobject-query@^2.0.2, axobject-query@^2.2.0:
 
   version "2.2.0"

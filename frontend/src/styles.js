@@ -1,6 +1,4 @@
-// global style
 // TODO: reset css, declare common styles here
-
 import styled, { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyle = createGlobalStyle`
@@ -46,7 +44,7 @@ export const CommonInput = styled.input`
 
 export const MainWrapper = styled.main`
   width: 1280px;
-  margin: 16px auto 100px auto;
+  margin: 80px auto 100px auto;
   display: flex;
 `;
 
@@ -83,4 +81,15 @@ export const CommonButton = styled.button`
   :hover {
     opacity: ${(props) => !props.disabled && 1};
   }
+`;
+
+export const PostItemHeaderWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+export const PostItemFooterWrapper = styled.div`
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
 `;
