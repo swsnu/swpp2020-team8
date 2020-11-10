@@ -35,16 +35,17 @@ export const mockArticle = {
   created_at: '2020-09-23T10:38:47.975019+08:00',
   content:
     '안녕하세요 반가워요 잘있어요 다시만나요 이거는 질문없이 쓰는 그냥 뻘글이에요 이쁘죠?????',
-  comment: [
+  comments: [
     {
       id: 1272,
       post_id: 383,
       content: '재밌네요',
-      writer: 1,
-      writer_detail: {
+      author: 1,
+      author_detail: {
         id: 123,
         username: 'curious',
-        profile_pic: '어쩌구'
+        profile_pic:
+          'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
       },
       referenced_comments: 1272,
       is_reply: false,
@@ -53,10 +54,11 @@ export const mockArticle = {
           id: 1273,
           post_id: 383,
           content: '같이하고싶어요',
-          writer: 2,
-          writer_detail: {
+          author: 2,
+          author_detail: {
             id: 2,
-            profile_pic: '',
+            profile_pic:
+              'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg',
             username: '아이폰'
           },
           is_poster_owner: false,
@@ -76,10 +78,11 @@ export const mockArticle = {
       id: 1274,
       post_id: 383,
       content: '퍼가요!!!!',
-      writer: 3,
-      writer_detail: {
+      author: 3,
+      author_detail: {
         id: 2,
-        profile_pic: '',
+        profile_pic:
+          'https://images.vexels.com/media/users/3/144928/isolated/preview/ebbccaf76f41f7d83e45a42974cfcd87-dog-illustration-by-vexels.png',
         username: '아이폰'
       },
       referenced_comments: 1274,
@@ -106,15 +109,16 @@ export const mockResponse = {
   },
   content:
     '스타벅스에서 먹는 바닐라크림콜드브루! 시럽은 1번만 넣고 에스프레소휩을 올리면 행복~',
-  comment: [
+  comments: [
     {
       id: 1274,
       post_id: 383,
       content: '오 마져 맛이써!!!!',
-      writer: 3,
-      writer_detail: {
+      author: 3,
+      author_detail: {
         id: 2,
-        profile_pic: '',
+        profile_pic:
+          'https://images.vexels.com/media/users/3/144928/isolated/preview/ebbccaf76f41f7d83e45a42974cfcd87-dog-illustration-by-vexels.png',
         username: '아이폰'
       },
       referenced_comments: 1274,
