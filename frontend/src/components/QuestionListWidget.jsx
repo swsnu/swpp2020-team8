@@ -18,6 +18,9 @@ import {
 } from '../styles';
 
 const useStyles = makeStyles((theme) => ({
+  card: {
+    borderColor: '#eee'
+  },
   cardContent: {
     padding: '0 !important'
   },
@@ -44,7 +47,7 @@ const QuestionListWidget = ({ initialIsFolded = false }) => {
 
   return (
     <WidgetWrapper>
-      <Card variant="outlined">
+      <Card variant="outlined" className={classes.card}>
         <CardContent className={classes.cardContent}>
           <WidgetTitleWrapper>
             <Typography variant="h6" className={classes.title}>
