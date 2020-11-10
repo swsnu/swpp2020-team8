@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
+import ShareSettings from './ShareSettings';
+
 
 const NewPostWrapper = styled.div`
   width: 650px;
@@ -7,7 +9,10 @@ const NewPostWrapper = styled.div`
   margin-top: 50px;
   border: 1px solid #ddd;
   padding: 10px 10px;
-  padding-bottom: 30px;
+
+
+  padding-bottom: 50px;
+
 `;
 
 export const NewPostInput = styled.textarea`
@@ -60,6 +65,7 @@ export default function NewPost() {
         value={postInfo.content}
         onChange={onInputChange}
       />
+      <ShareSettings />
     </NewPostWrapper>
   );
 }
