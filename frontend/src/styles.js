@@ -1,13 +1,17 @@
-// global style
 // TODO: reset css, declare common styles here
-
 import styled, { createGlobalStyle } from 'styled-components';
 
-const GlobalStyle = createGlobalStyle`
+export const GlobalStyle = createGlobalStyle`
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
   body {
     margin: 0;
+    font-family: 'Noto Sans KR', sans-serif;
   }
 
+  a {
+    text-decoration: none;
+    color: #000;
+  }
   h1 {
     font-size: 24px;
     color: rgb(50, 50, 50);
@@ -38,6 +42,27 @@ export const CommonInput = styled.input`
   }
 `;
 
+export const MainWrapper = styled.main`
+  width: 1280px;
+  margin: 80px auto 100px auto;
+  display: flex;
+`;
+
+export const FeedWrapper = styled.div`
+  width: 700px;
+  margin: 0 40px;
+`;
+
+export const WidgetWrapper = styled.div`
+  width: 300px;
+`;
+
+export const WidgetTitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+`;
+
 export const FlexDiv = styled.div`
   display: flex;
 `;
@@ -58,4 +83,13 @@ export const CommonButton = styled.button`
   }
 `;
 
-export default GlobalStyle;
+export const PostItemHeaderWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+export const PostItemFooterWrapper = styled.div`
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+`;

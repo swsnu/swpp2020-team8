@@ -9,6 +9,7 @@ node_modules
 
 # testing
 /frontend/coverage
+backend/adoorback/.coverage
 
 # production
 /frontend/build

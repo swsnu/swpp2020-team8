@@ -1,0 +1,79 @@
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
+import IconButton from '@material-ui/core/IconButton';
+import AuthorProfile from './AuthorProfile';
+import CreateTime from './CreateTime';
+import PostAuthorButtons from './PostAuthorButtons';
+import QuestionBox from './QuestionBox';
+import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
+
+const PostItemWrapper = styled.div`
+  background: #fff;
+  padding: 16px;
+  font-size: 14px;
+  border: 1px solid #eee;
+  margin: 8px 0;
+  position: relative;
+  border-radius: 4px;
+`;
+
+PostItemWrapper.displayName = 'PostItemWrapper';
+
+const ContentWrapper = styled.div`
+  margin: 12px 0 8px;
+`;
+
+export default function PostItem({ articleObj }) {
+  // TODO: fix
+  const isAuthor = true;
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+
+  const toggleLike = () => {
+    if (liked) {
+      setLikeCount((prev) => prev - 1);
+    } else {
+      setLikeCount((prev) => prev + 1);
+    }
+    setLiked((prev) => !prev);
+  };
+  const handleEdit = () => {};
+  const handleDelete = () => {};
+
+  return (
+    <PostItemWrapper>
+      <PostItemHeaderWrapper>
+        <AuthorProfile author={articleObj.author_detail} />
+        {isAuthor && (
+          <PostAuthorButtons
+            onClickEdit={handleEdit}
+            onClickDelete={handleDelete}
+          />
+        )}
+      </PostItemHeaderWrapper>
+      {articleObj.question_detail && (
+        <QuestionBox questionObj={articleObj.question_detail} />
+      )}
+      <ContentWrapper>{articleObj.content}</ContentWrapper>
+      <CreateTime createdTime={articleObj.created_at} />
+      <PostItemFooterWrapper>
+        {liked ? (
+          <IconButton color="primary" size="small" onClick={toggleLike}>
+            <FavoriteIcon color="primary" />
+          </IconButton>
+        ) : (
+          <IconButton color="primary" size="small" onClick={toggleLike}>
+            <FavoriteBorderIcon color="primary" />
+          </IconButton>
+        )}
+        {isAuthor && (
+          <div id="like-count" style={{ margin: '4px' }}>
+            {likeCount}
+          </div>
+        )}
+      </PostItemFooterWrapper>
+    </PostItemWrapper>
+  );
+}

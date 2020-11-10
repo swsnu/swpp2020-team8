@@ -7,7 +7,14 @@ export const mockStore = {
   questionReducer: {
     sampleQuestions: mockQuestions
   },
-  userReducer: {}
+  userReducer: {
+    error: false,
+    user: {
+      id: 0,
+      username: 'mock',
+      isLoggedIn: false
+    }
+  }
 };
 
 export const mockFriendReducer = {};
