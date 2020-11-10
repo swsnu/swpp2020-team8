@@ -1,10 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Login from './Login';
+import FriendFeed from './FriendFeed';
 
-describe('<Login/>', () => {
+describe('<FriendFeed/>', () => {
   it('should render without errors', () => {
-    const component = shallow(<Login />);
+    const component = shallow(<FriendFeed />);
     const wrapper = component.find('h1');
     expect(wrapper.length).toBe(1);
   });
