@@ -22,10 +22,10 @@ const PostItemWrapper = styled.div`
 PostItemWrapper.displayName = 'PostItemWrapper';
 
 const ContentWrapper = styled.div`
-  margin: 12px 0 8px;
+  margin: 12px 0;
 `;
 
-export default function PostItem({ articleObj }) {
+export default function PostItem({ postObj }) {
   // TODO: fix
   const isAuthor = true;
   const [liked, setLiked] = useState(false);
@@ -45,7 +45,7 @@ export default function PostItem({ articleObj }) {
   return (
     <PostItemWrapper>
       <PostItemHeaderWrapper>
-        <AuthorProfile author={articleObj.author_detail} />
+        <AuthorProfile author={postObj.author_detail} />
         {isAuthor && (
           <PostAuthorButtons
             onClickEdit={handleEdit}
@@ -53,11 +53,11 @@ export default function PostItem({ articleObj }) {
           />
         )}
       </PostItemHeaderWrapper>
-      {articleObj.question_detail && (
-        <QuestionBox questionObj={articleObj.question_detail} />
+      {postObj.question_detail && (
+        <QuestionBox questionObj={postObj.question_detail} />
       )}
-      <ContentWrapper>{articleObj.content}</ContentWrapper>
-      <CreateTime createdTime={articleObj.created_at} />
+      <ContentWrapper>{postObj.content}</ContentWrapper>
+      <CreateTime createdTime={postObj.created_at} />
       <PostItemFooterWrapper>
         {liked ? (
           <IconButton color="primary" size="small" onClick={toggleLike}>

@@ -19,13 +19,13 @@ const sampleQuestionObj = {
 
 describe('<QuestionItem/>', () => {
   it('should render without errors', () => {
-    const component = shallow(<QuestionItem articleObj={sampleQuestionObj} />);
+    const component = shallow(<QuestionItem questionObj={sampleQuestionObj} />);
     const questionItem = component.find('QuestionItemWrapper');
     expect(questionItem.length).toBe(1);
   });
 
   it('should toggle like', async () => {
-    const component = shallow(<QuestionItem articleObj={sampleQuestionObj} />);
+    const component = shallow(<QuestionItem questionObj={sampleQuestionObj} />);
     const likeButton = component.find('FavoriteBorderIcon').parent();
     let unlikeButton = component.find('FavoriteIcon').parent();
     const likeCount = component.find('#like-count').at(0).text();
@@ -42,7 +42,7 @@ describe('<QuestionItem/>', () => {
   });
 
   it('should toggle write', async () => {
-    const component = shallow(<QuestionItem articleObj={sampleQuestionObj} />);
+    const component = shallow(<QuestionItem questionObj={sampleQuestionObj} />);
     const writeButton = component.find('CreateIcon').parent();
     writeButton.simulate('click');
     const textArea = component.find('TextareaAutosize');
