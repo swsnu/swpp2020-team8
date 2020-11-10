@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { getSampleQuestions } from '../modules/question';
+import { postSelectedQuestions } from '../modules/user';
 import { CommonButton } from '../styles';
 
 const QuestionsWrapper = styled.div`
@@ -25,13 +26,14 @@ const QuestionItem = styled.div`
   cursor: pointer !important;
 `;
 
-const CustomLink = styled(Link)`
+const CustomLink = styled.div`
   color: #777;
   margin-top: -20px;
 `;
 
 export default function QuestionSelection() {
   const [selectedQuestions, setSelectedQuestions] = useState([]);
+  const history = useHistory();
 
   const sampleQuestions = useSelector(
     (state) => state.questionReducer.sampleQuestions
@@ -63,7 +65,11 @@ export default function QuestionSelection() {
     </QuestionItem>
   ));
 
-  const onClickSubmitButton = () => {};
+  const onClickSubmitButton = () => {
+    const selectedIds = selectedQuestions.map((item) => item.id);
+    dispatch(postSelectedQuestions(selectedIds));
+    history.push('/');
+  };
 
   return (
     <QuestionsWrapper>
@@ -78,7 +84,7 @@ export default function QuestionSelection() {
       >
         완료!
       </CommonButton>
-      <CustomLink to="/">건너뛰기</CustomLink>
+      <CustomLink onClick={onClickSubmitButton}>건너뛰기</CustomLink>
     </QuestionsWrapper>
   );
 }

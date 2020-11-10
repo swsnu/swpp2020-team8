@@ -9,13 +9,16 @@ export const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
 export const LOGIN_FAILURE = 'user/LOGIN_FAILURE';
 export const REMOVE_ERROR = 'user/REMOVE_ERROR';
 
+export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
+
 const initialState = {
   loginError: false,
   signUpError: {},
   user: {
     id: 0,
     username: '',
-    isLoggedIn: false
+    isLoggedIn: false,
+    questionHistory: null
   }
 };
 
@@ -23,7 +26,11 @@ export const requestSignUp = (signUpInfo) => {
   return async (dispatch) => {
     dispatch({ type: SIGN_UP_REQUEST });
     try {
-      const { data } = await axios.post('/user/sign-up', signUpInfo);
+      // const { data } = await axios.post('/user/sign-up', signUpInfo);
+      const data = await {
+        code: 200,
+        user: signUpInfo
+      };
       if (+data.code === 200) {
         dispatch({
           type: SIGN_UP_SUCCESS,
@@ -45,8 +52,12 @@ export const requestSignUp = (signUpInfo) => {
 };
 
 export const postSelectedQuestions = (selectedQuestions) => {
-  return async () => {
-    await axios.post('/user/select-questions', selectedQuestions);
+  return async (dispatch) => {
+    // await axios.post('/user/select-questions', selectedQuestions);
+    return dispatch({
+      type: UPDATE_QUESTION_SELECT,
+      selectedQuestions
+    });
   };
 };
 
@@ -144,6 +155,7 @@ export default function userReducer(state = initialState, action) {
     case SIGN_UP_SUCCESS:
       return {
         ...state,
+        user: action.user,
         signUpError: false
       };
     case SIGN_UP_FAILURE:
@@ -151,6 +163,16 @@ export default function userReducer(state = initialState, action) {
         ...state,
         signUpError: action.error
       };
+    case UPDATE_QUESTION_SELECT: {
+      const newUser = {
+        ...state.user,
+        questionHistory: action.selectedQuestions
+      };
+      return {
+        ...state,
+        user: newUser
+      };
+    }
     default:
       return state;
   }
