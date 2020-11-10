@@ -1,6 +1,7 @@
 import random
 import logging
 import sys
+import pandas as pd
 
 from faker import Faker
 from django.contrib.auth import get_user_model
@@ -11,8 +12,18 @@ from comment.models import Comment
 from like.models import Like
 
 
-
 DEBUG = False
+
+
+def set_question_seed():
+    df = pd.read_csv('adoorback/assets/questions.csv')
+
+    User = get_user_model()
+    admin = User.objects.get(username='adoor')
+
+    for i in df.index:
+        content = df.at[i, 'content']
+        Question.objects.create(author=admin, is_admin_question=True, content=content)
 
 
 def set_seed(n):
@@ -29,7 +40,8 @@ def set_seed(n):
 
     # Seed Superuser
     if User.objects.all().count() == 2:
-        admin = User.objects.create_superuser(username='adoor', email='adoor.team@gmail.com', password='adoor2020:)')
+        User.objects.create_superuser(username='adoor', email='adoor.team@gmail.com', password='adoor2020:)')
+    admin = User.objects.get(username='adoor')
     logging.info("Superuser created!") if DEBUG else None
 
     # Seed Article/AdminQuestion/CustomQuestionPost
@@ -37,12 +49,10 @@ def set_seed(n):
     for _ in range(n):
         user = random.choice(users)
         Article.objects.create(author=user, content=faker.catch_phrase())
-        Question.objects.create(author=admin, is_admin_question=True, content=faker.bs())
+        Question.objects.create(author=user, is_admin_question=True, content=faker.word())
         Question.objects.create(author=user, is_admin_question=False, content=faker.word())
     logging.info(f"{Article.objects.all().count()} Article(s) created!") if DEBUG else None
-    logging.info(f"{Question.objects.all().filter(is_admin_question=True).count()} Admin Question(s) created!") \
-        if DEBUG else None
-    logging.info(f"{Question.objects.all().filter(is_admin_question=False).count()} Custom Question(s) created!") \
+    logging.info(f"{Question.objects.all().count()} Question(s) created!") \
         if DEBUG else None
 
     # Seed Response
