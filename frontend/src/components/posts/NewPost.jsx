@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import ShareSettings from './ShareSettings';
+import ShareSettings from '../ShareSettings';
 
 const NewPostWrapper = styled.div`
   width: 650px;
