@@ -16,9 +16,7 @@ const initialState = {
 
 export const getSampleQuestions = () => {
   return (dispatch) => {
-    setTimeout(() => {
-      dispatch(getSampleQuestionsSuccess(mockQuestions));
-    }, 1000);
+    dispatch(getSampleQuestionsSuccess(mockQuestions));
   };
 };
 

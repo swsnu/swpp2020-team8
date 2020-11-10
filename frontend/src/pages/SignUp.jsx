@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+// import { useSelector } from 'react-redux';
 // import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+// import { requestSignUp } from '../modules/user';
+import { useHistory } from 'react-router-dom';
 import { CommonInput, CommonButton } from '../styles';
 
 const SignUpWrapper = styled.div`
@@ -37,6 +40,12 @@ const WarningMessage = styled.div`
 
 export default function SignUp() {
   // const dispatch = useDispatch();
+  const history = useHistory();
+  // const signUpError = useSelector((state) => state.userReducer.signUpError);
+  // useEffect(() => {
+  // deal with invalid field here
+  // }, [signUpError]);
+
   const [signUpInfo, setSignUpInfo] = useState({
     email: '',
     username: '',
@@ -60,8 +69,10 @@ export default function SignUp() {
   const onClickSubmitButton = () => {
     setIsSubmitted(true);
     // TODO: deal with invalid field error
-    setIsUsernameValid(false);
-    setIsEmailValid(false);
+    // dispatch(requestSignUp(signUpInfo));
+    setIsUsernameValid(true);
+    setIsEmailValid(true);
+    history.push('/select-questions');
   };
 
   return (

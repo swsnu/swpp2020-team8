@@ -6,9 +6,8 @@ import { getSampleQuestions } from '../modules/question';
 import { CommonButton } from '../styles';
 
 const QuestionsWrapper = styled.div`
-  margin: 0 auto;
+  margin: 80px auto;
   width: 500px;
-  margin-top: 120px;
   @media (max-width: 650px) {
     width: 90%;
   }
@@ -17,6 +16,7 @@ const QuestionsWrapper = styled.div`
 const QuestionItem = styled.div`
   padding: 12px;
   text-align: center;
+  font-size: 15px;
   border: 1px solid;
   border-color: ${(props) => (props.selected ? '#F12C56' : '#ccc')};
   border-radius: 24px;
@@ -59,7 +59,7 @@ export default function QuestionSelection() {
       id={question.id}
       className="question-item"
     >
-      {question.question}
+      {question.content}
     </QuestionItem>
   ));
 
