@@ -10,14 +10,17 @@ import { getIsLoggedIn } from '../selectors';
 const LoginWrapper = styled.div`
   width: 500px;
   margin: 0 auto;
-  margin-top: 50px;
+  margin-top: 130px;
+
+  @media (max-width: 650px) {
+    width: 90%;
+  }
 `;
 
 const WarningMessage = styled.div`
-  font-size: 20px;
+  font-size: 14px;
   color: #ff395b;
-  text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 4px;
 `;
 
 export default function Login() {
@@ -65,7 +68,7 @@ export default function Login() {
         type="password"
         onChange={handleChange}
       />
-      {loginError.length && (
+      {loginError && loginError.length && (
         <WarningMessage id="login-error-message">
           이메일 혹은 비밀번호를 다시 확인해주세요
         </WarningMessage>
