@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -9,6 +9,7 @@ import List from '@material-ui/core/List';
 import ListItemText from '@material-ui/core/ListItemText';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import { useSelector, useDispatch } from 'react-redux';
 import ListItemLink from './ListItemLink';
 import {
   WidgetWrapper,
@@ -16,6 +17,11 @@ import {
   FlexDiv,
   CommonButton
 } from '../styles';
+import {
+  getRecommendedQuestions,
+  getRandomQuestions,
+  getDailyQuestions
+} from '../modules/question';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -41,9 +47,55 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const QuestionListWidget = ({ initialIsFolded = false }) => {
-  const [isFolded, setIsFolded] = useState(initialIsFolded);
+const QuestionListWidget = ({
+  initialIsRandomQuestions = false,
+  initialIsFolded = false
+}) => {
   const classes = useStyles();
+  const [isRandomQuestions, setRandomQuestions] = useState(
+    initialIsRandomQuestions
+  );
+  const [isFolded, setIsFolded] = useState(initialIsFolded);
+
+  const recommendedQuestions = useSelector(
+    (state) => state.questionReducer.recommendedQuestions
+  );
+  const randomQuestions = useSelector(
+    (state) => state.questionReducer.randomQuestions
+  );
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getDailyQuestions());
+    dispatch(getRecommendedQuestions());
+  }, [dispatch]);
+
+  const recommendedQuestionList = recommendedQuestions
+    .slice(0, 5)
+    .map((question) => (
+      <ListItemLink key={question.id} href={`/questions/${question.id}`}>
+        <ListItemText
+          classes={{ primary: classes.question }}
+          primary={question.content}
+        />
+      </ListItemLink>
+    ));
+
+  const randomQuestionList = randomQuestions.slice(0, 5).map((question) => (
+    <ListItemLink key={question.id} href={`/questions/${question.id}`}>
+      <ListItemText
+        classes={{ primary: classes.question }}
+        primary={question.content}
+      />
+    </ListItemLink>
+  ));
+
+  const handleClickRefreshButton = () => {
+    if (!isRandomQuestions) {
+      setRandomQuestions(true);
+    }
+    dispatch(getRandomQuestions());
+  };
 
   return (
     <WidgetWrapper>
@@ -69,7 +121,13 @@ const QuestionListWidget = ({ initialIsFolded = false }) => {
                 </IconButton>
               ) : (
                 <>
-                  <IconButton href="" className={classes.iconButton}>
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleClickRefreshButton();
+                    }}
+                    className={classes.iconButton}
+                  >
                     <RefreshIcon className={classes.icon} />
                   </IconButton>
                   <IconButton
@@ -93,36 +151,7 @@ const QuestionListWidget = ({ initialIsFolded = false }) => {
               className={classes.list}
               aria-label="recommended question list"
             >
-              <ListItemLink href="">
-                <ListItemText
-                  classes={{ primary: classes.question }}
-                  primary="어디서 마시는 커피를 가장 좋아하는가?"
-                />
-              </ListItemLink>
-              <ListItemLink href="">
-                <ListItemText
-                  classes={{ primary: classes.question }}
-                  primary="가장 오래 통화해본 기억은?"
-                />
-              </ListItemLink>
-              <ListItemLink href="">
-                <ListItemText
-                  classes={{ primary: classes.question }}
-                  primary="사람들의 무리한 부탁을 잘 거절하는 편인가?"
-                />
-              </ListItemLink>
-              <ListItemLink href="">
-                <ListItemText
-                  classes={{ primary: classes.question }}
-                  primary="내일이 생의 마지막 날이라면 오늘 무엇을 하겠는가?"
-                />
-              </ListItemLink>
-              <ListItemLink href="">
-                <ListItemText
-                  classes={{ primary: classes.question }}
-                  primary="나는 운이 좋은 편이라고 생각하는가?"
-                />
-              </ListItemLink>
+              {isRandomQuestions ? randomQuestionList : recommendedQuestionList}
             </List>
           )}
         </CardContent>

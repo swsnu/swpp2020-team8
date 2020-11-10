@@ -25,7 +25,7 @@ export default function Login() {
   const [loginInfo, setLoginInfo] = useState({ email: '', password: '' });
   const isLoggedIn = useSelector((state) => getIsLoggedIn(state));
   const user = useSelector((state) => state.userReducer.user);
-  const loginError = useSelector((state) => state.userReducer.error);
+  const loginError = useSelector((state) => state.userReducer.loginError);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -65,7 +65,7 @@ export default function Login() {
         type="password"
         onChange={handleChange}
       />
-      {loginError.length && (
+      {loginError && loginError.length && (
         <WarningMessage id="login-error-message">
           이메일 혹은 비밀번호를 다시 확인해주세요
         </WarningMessage>
