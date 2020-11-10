@@ -1,24 +1,172 @@
 export const mockQuestions = [
   {
     id: 0,
-    question: '어디서 마시는 커피를 가장 좋아하는가?'
+    content: '어디서 마시는 커피를 가장 좋아하는가?'
   },
   {
     id: 1,
-    question: '가장 오래 통화해본 기억은?'
+    content: '가장 오래 통화해본 기억은?'
   },
   {
     id: 3,
-    question: '사람들의 무리한 부탁을 잘 거절하는 편인가?'
+    content: '사람들의 무리한 부탁을 잘 거절하는 편인가?'
   },
   {
     id: 4,
-    question: '내일이 생의 마지막 날이라면 오늘 무엇을 하겠는가?'
+    content: '내일이 생의 마지막 날이라면 오늘 무엇을 하겠는가?'
   },
   {
     id: 5,
-    question: '나는 운이 좋은 편이라고 생각하는가?'
+    content: '나는 운이 좋은 편이라고 생각하는가?'
   }
 ];
 
 export const mockData = [];
+
+export const mockArticle = {
+  id: 4756,
+  'content-type': 'Article', // or const int e.g. (1: Article, 2: Response...)
+  author_detail: {
+    id: 123,
+    username: 'curious',
+    profile_pic:
+      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+  }, // blank or null if anonymous
+  created_at: '2020-09-23T10:38:47.975019+08:00',
+  content:
+    '안녕하세요 반가워요 잘있어요 다시만나요 이거는 질문없이 쓰는 그냥 뻘글이에요 이쁘죠?????',
+  comment: [
+    {
+      id: 1272,
+      post_id: 383,
+      content: '재밌네요',
+      writer: 1,
+      writer_detail: {
+        id: 123,
+        username: 'curious',
+        profile_pic: '어쩌구'
+      },
+      referenced_comments: 1272,
+      is_reply: false,
+      replies: [
+        {
+          id: 1273,
+          post_id: 383,
+          content: '같이하고싶어요',
+          writer: 2,
+          writer_detail: {
+            id: 2,
+            profile_pic: '',
+            username: '아이폰'
+          },
+          is_poster_owner: false,
+          referenced_comments: 1272,
+          is_reply: true,
+          is_private: false,
+          create_dt: '2020-09-23T10:40:24.421000+08:00',
+          update_dt: '2020-09-23T10:40:24.428734+08:00'
+        }
+      ],
+      is_private: false,
+      create_dt: '2020-09-23T10:38:47.975019+08:00',
+      update_dt: '2020-09-23T10:39:35.849029+08:00'
+    },
+
+    {
+      id: 1274,
+      post_id: 383,
+      content: '퍼가요!!!!',
+      writer: 3,
+      writer_detail: {
+        id: 2,
+        profile_pic: '',
+        username: '아이폰'
+      },
+      referenced_comments: 1274,
+      is_reply: false,
+      is_private: true,
+      create_dt: '2020-09-23T10:40:42.268355+08:00',
+      update_dt: '2020-09-23T10:40:42.268384+08:00'
+    }
+  ]
+};
+export const mockResponse = {
+  id: 5999,
+  'content-type': 'Response',
+  author_detail: {
+    id: 123,
+    username: 'curious',
+    profile_pic:
+      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+  },
+  question: 1244,
+  question_detail: {
+    id: 1244,
+    content: '어디서 마시는 커피를 가장 좋아하는가?'
+  },
+  content:
+    '스타벅스에서 먹는 바닐라크림콜드브루! 시럽은 1번만 넣고 에스프레소휩을 올리면 행복~',
+  comment: [
+    {
+      id: 1274,
+      post_id: 383,
+      content: '오 마져 맛이써!!!!',
+      writer: 3,
+      writer_detail: {
+        id: 2,
+        profile_pic: '',
+        username: '아이폰'
+      },
+      referenced_comments: 1274,
+      is_reply: false,
+      is_private: true,
+      create_dt: '2020-09-23T10:40:42.268355+08:00',
+      update_dt: '2020-09-23T10:40:42.268384+08:00'
+    }
+  ],
+  created_at: '2020-11-05T14:16:13.801119+08:00',
+  updated_at: null
+};
+
+export const mockCustomQuestion = {
+  id: 4758,
+  'content-type': 'Question',
+  is_admin_question: 'true',
+  author_detail: {
+    id: 123,
+    username: 'curious',
+    profile_pic:
+      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+  },
+  content: '올해가 가기 전에 꼭 이루고 싶은 목표가 있다면~?',
+  comments: [],
+  created_at: '2020-11-05T14:16:13.801119+08:00',
+  updated_at: null
+};
+
+export const mockResponse2 = {
+  id: 4757,
+  'content-type': 'Response',
+  author_detail: {
+    id: 124,
+    username: 'jina.park',
+    profile_pic:
+      'https://images.vexels.com/media/users/3/144928/isolated/preview/ebbccaf76f41f7d83e45a42974cfcd87-dog-illustration-by-vexels.png'
+  },
+  question: 1244,
+  question_detail: {
+    id: 1244,
+    content: '나는 운이 좋은 편이라고 생각하는가?'
+  },
+  content: '예쓰 아임 어 럭키 걸 지나~',
+  comments: [],
+  created_at: '2020-11-05T14:16:13.801119+08:00',
+  updated_at: null
+};
+
+export const mockFriendFeed = [
+  mockArticle,
+  mockResponse,
+  mockCustomQuestion,
+  mockResponse2
+];

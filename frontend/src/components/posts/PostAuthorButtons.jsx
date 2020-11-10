@@ -14,7 +14,8 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 const useStyles = makeStyles(() => ({
   card: {
     position: 'absolute',
-    right: '12px'
+    right: '12px',
+    zIndex: 1
   }
 }));
 

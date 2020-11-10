@@ -21,7 +21,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: 'white',
     boxShadow: 'rgba(0, 0, 0, 0.08) 0px 1px 12px',
     display: 'flex',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    position: 'fixed',
+    top: 0,
+    left: 0
   },
   title: {
     display: 'none',
