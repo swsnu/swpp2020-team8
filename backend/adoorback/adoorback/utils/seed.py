@@ -48,8 +48,11 @@ def set_seed(n):
     users = User.objects.all()
     for _ in range(n):
         user = random.choice(users)
-        Article.objects.create(author=user, content=faker.catch_phrase())
-        Question.objects.create(author=user, is_admin_question=True, content=faker.word())
+        Article.objects.create(author=user,
+                               content=faker.catch_phrase(),
+                               share_with_friends=random.choice([True, False]),
+                               share_anonymously=random.choice([True, False]))
+        Question.objects.create(author=admin, is_admin_question=True, content=faker.word())
         Question.objects.create(author=user, is_admin_question=False, content=faker.word())
     logging.info(f"{Article.objects.all().count()} Article(s) created!") if DEBUG else None
     logging.info(f"{Question.objects.all().count()} Question(s) created!") \
@@ -59,7 +62,9 @@ def set_seed(n):
     questions = Question.objects.all()
     for _ in range(n):
         target = random.choice(questions)
-        Response.objects.create(author=user, content=faker.text(max_nb_chars=50), target=target)
+        Response.objects.create(author=user, content=faker.text(max_nb_chars=50), target=target,
+                                share_with_friends=random.choice([True, False]),
+                                share_anonymously=random.choice([True, False]))
     logging.info(f"{Response.objects.all().count()} Response(s) created!") if DEBUG else None
 
     # Seed Comment (target=Feed)

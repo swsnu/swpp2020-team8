@@ -16,13 +16,21 @@ User = get_user_model()
 
 class Article(AdoorModel):
     author = models.ForeignKey(User, related_name='article_set', on_delete=models.CASCADE)
+    share_with_friends = models.BooleanField(default=True)
+    share_anonymously = models.BooleanField(default=True)
 
     article_comments = GenericRelation(Comment)
     article_likes = GenericRelation(Like)
 
+    @property
+    def type(self):
+        return self.__class__.__name__
+
 
 class Response(AdoorModel):
     author = models.ForeignKey(User, related_name='response_set', on_delete=models.CASCADE)
+    share_with_friends = models.BooleanField(default=True)
+    share_anonymously = models.BooleanField(default=True)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.IntegerField()
@@ -30,6 +38,10 @@ class Response(AdoorModel):
 
     response_comments = GenericRelation(Comment)
     response_likes = GenericRelation(Like)
+
+    @property
+    def type(self):
+        return self.__class__.__name__
 
 
 class QuestionManager(models.Manager):
@@ -48,16 +60,34 @@ class Question(AdoorModel):
     selected_date = models.DateTimeField(null=True)
     is_admin_question = models.BooleanField()
 
-    question_responses = GenericRelation(Response)
+    responses = GenericRelation(Response)
     question_likes = GenericRelation(Like)
 
     objects = QuestionManager()
+
+    @property
+    def type(self):
+        return self.__class__.__name__
+
+
+class PostManager(models.Manager):
+    use_for_related_fields = True
+
+    def friend_posts_only(self, **kwargs):
+        return self.filter(share_with_friends=True, **kwargs)
+
+    def anonymous_posts_only(self, **kwargs):
+        return self.filter(share_anonymously=False, **kwargs)
 
 
 class Post(AdoorModel):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.IntegerField()
     target = GenericForeignKey('content_type', 'object_id')
+    share_with_friends = models.BooleanField(default=True)
+    share_anonymously = models.BooleanField(default=True)
+
+    objects = PostManager()
 
     class Meta:
         ordering = ['-created_at']
@@ -73,6 +103,9 @@ def create_post(sender, **kwargs):
         post = Post.objects.get(content_type=content_type, object_id=instance.id)
     except Post.DoesNotExist:
         post = Post(content_type=content_type, object_id=instance.id)
+    if instance.type != 'Question':
+        post.share_with_friends = instance.share_with_friends
+        post.share_anonymously = instance.share_anonymously
     post.content = instance.content
     post.created_at = instance.created_at
     post.updated_at = instance.updated_at
