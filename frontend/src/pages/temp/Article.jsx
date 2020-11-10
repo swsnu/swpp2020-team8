@@ -34,32 +34,34 @@ const sampleResponseObj = {
 
 const sampleQuestionObj = {
   id: 4758,
-  author_detail: {
-    id: 1,
-    username: 'admin',
-    profile_pic:
-      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
-  },
-  question_detail: {
-    id: 1244,
-    question: '어디서 마시는 커피를 가장 좋아하는가?'
-  },
-  created_at: '2020-11-05T14:16:13.801119+08:00'
-};
-
-const sampleCustomQuestionObj = {
-  id: 4758,
+  'content-type': 'Question',
+  is_admin_question: 'false',
   author_detail: {
     id: 123,
     username: 'curious',
     profile_pic:
       'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
   },
-  question_detail: {
-    id: 1244,
-    question: '어디서 마시는 커피를 가장 좋아하는가?'
+  content: '올해가 가기 전에 꼭 이루고 싶은 목표가 있다면~?',
+  comments: [],
+  created_at: '2020-11-05T14:16:13.801119+08:00',
+  updated_at: null
+};
+
+const sampleCustomQuestionObj = {
+  id: 4758,
+  'content-type': 'Question',
+  is_admin_question: 'false',
+  author_detail: {
+    id: 123,
+    username: 'curious',
+    profile_pic:
+      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
   },
-  created_at: '2020-11-05T14:16:13.801119+08:00'
+  content: '올해가 가기 전에 꼭 이루고 싶은 목표가 있다면~?',
+  comments: [],
+  created_at: '2020-11-05T14:16:13.801119+08:00',
+  updated_at: null
 };
 
 export default function Article() {
@@ -68,8 +70,8 @@ export default function Article() {
       <NewPost />
       <ArticleItem articleObj={sampleArticleObj} />
       <ArticleItem articleObj={sampleResponseObj} />
-      <QuestionItem articleObj={sampleQuestionObj} />
-      <QuestionItem articleObj={sampleCustomQuestionObj} />
+      <QuestionItem questionObj={sampleQuestionObj} />
+      <QuestionItem questionObj={sampleCustomQuestionObj} />
     </div>
   );
 }

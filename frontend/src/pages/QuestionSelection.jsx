@@ -56,7 +56,7 @@ export default function QuestionSelection() {
       id={question.id}
       className="question-item"
     >
-      {question.question}
+      {question.content}
     </QuestionItem>
   ));
 
