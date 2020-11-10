@@ -48,7 +48,6 @@ class Question(AdoorModel):
     is_admin_question = models.BooleanField()
 
     question_responses = GenericRelation(Response)
-    question_comments = GenericRelation(Comment)
     question_likes = GenericRelation(Like)
 
     objects = QuestionManager()
