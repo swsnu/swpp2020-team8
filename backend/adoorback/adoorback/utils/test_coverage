@@ -1,4 +1,4 @@
-pylint --load-plugins pylint_django */models.py */views.py */tests.py
-coverage run --omit='manage.py','./adoorback/*.py','./*/tests.py','./*/urls.py','./*/views.py' --source='.' manage.py test
-coverage run --branch --omit='manage.py','./adoorback/*.py','./*/tests.py','./*/urls.py','./*/views.py' --source='.' manage.py test
+pylint **/*.py --load-plugins pylint_django
+coverage run --source='.' --omit='*/migrations/*','manage.py','*/wsgi.py','*/asgi.py','*/utils/' ./manage.py test
+coverage run --branch --source='.' --omit='*/migrations/*','manage.py','*/wsgi.py','*/asgi.py','*/utils/' ./manage.py test
 coverage report -m

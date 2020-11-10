@@ -4,9 +4,10 @@ from django.dispatch import receiver
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.auth import get_user_model
+
 from comment.models import Comment
 from like.models import Like
-from django.contrib.auth import get_user_model
 from adoorback.models import AdoorModel
 
 
@@ -67,7 +68,7 @@ class Post(AdoorModel):
 @receiver(post_save, sender=Article)
 def create_post(sender, **kwargs):
     instance = kwargs['instance']
-    content_type = ContentType.objects.get_for_model(instance)
+    content_type = ContentType.objects.get_for_model(sender)
     try:
         post = Post.objects.get(content_type=content_type, object_id=instance.id)
     except Post.DoesNotExist:
@@ -83,5 +84,5 @@ def create_post(sender, **kwargs):
 @receiver(post_delete, sender=Article)
 def delete_post(sender, **kwargs):
     instance = kwargs['instance']
-    post = Post.objects.get(content_type=ContentType.objects.get_for_model(instance), object_id=instance.id)
+    post = Post.objects.get(content_type=ContentType.objects.get_for_model(sender), object_id=instance.id)
     post.delete()

@@ -1,8 +1,9 @@
 from django.test import TestCase
-from comment.models import Comment
-from feed.models import Article, Response
-from adoorback.utils.seed import set_seed, fill_data
 from django.contrib.auth import get_user_model
+
+from comment.models import Comment
+
+from adoorback.utils.seed import set_seed, fill_data
 from adoorback.utils.content_types import get_content_type
 
 
