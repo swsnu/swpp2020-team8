@@ -14,7 +14,6 @@ export const GlobalStyle = createGlobalStyle`
     text-decoration: none;
     color: #000;
   }
-
   h1 {
     font-size: 24px;
     color: rgb(50, 50, 50);
