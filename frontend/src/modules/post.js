@@ -1,5 +1,9 @@
-// import axios from '../apis';
-import { mockFriendFeed } from '../constants';
+// import axios from 'axios';
+
+import { mockFriendFeed, mockPost } from '../constants';
+
+export const GET_SELECTED_POST = 'post/GET_SELECTED_POST';
+export const GET_SELECTED_POST_SUCCESS = 'post/GET_SELECTED_POST_SUCCESS';
 
 export const GET_FRIEND_POSTS_REQUEST = 'post/GET_FRIEND_POSTS_REQUEST';
 export const GET_FRIEND_POSTS_SUCCESS = 'post/GET_FRIEND_POSTS_SUCCESS';
@@ -18,6 +22,29 @@ const initialState = {
   friendPosts: [],
   selectedUserPosts: [],
   selectedPost: {}
+};
+
+// export const getSelectedPost = (id) => {
+//   return async (dispatch) => {
+//     const { data } = await axios.get(`/api/feed/${id}`);
+//     return dispatch({
+//       type: GET_SELECTED_POST,
+//       post: data
+//     });
+//   };
+// };
+
+export const getSelectedPost = () => {
+  return (dispatch) => {
+    dispatch(getSelectedPostSuccess(mockPost));
+  };
+};
+
+export const getSelectedPostSuccess = (selectedPost) => {
+  return {
+    type: GET_SELECTED_POST_SUCCESS,
+    selectedPost
+  };
 };
 
 export const getPostsByType = (type, userId = null) => async (dispatch) => {
@@ -41,6 +68,12 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
 
 export default function postReducer(state = initialState, action) {
   switch (action.type) {
+    case GET_SELECTED_POST_SUCCESS: {
+      return {
+        ...state,
+        selectedPost: action.selectedPost
+      };
+    }
     case GET_ANON_POSTS_REQUEST:
     case GET_FRIEND_POSTS_REQUEST:
     case GET_USER_POSTS_REQUEST:

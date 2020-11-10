@@ -1,11 +1,21 @@
-import { mockQuestions } from './constants';
+import {
+  mockPost,
+  mockQuestions,
+  mockQuestionFeed,
+  mockRecommendQuestions
+} from './constants';
 
 export const mockStore = {
   friendReducer: {},
   notiReducer: {},
-  postReducer: {},
+  postReducer: {
+    selectedPost: mockPost
+  },
   questionReducer: {
-    sampleQuestions: mockQuestions
+    dailyQuestions: mockQuestionFeed,
+    randomQuestions: mockRecommendQuestions,
+    sampleQuestions: mockQuestions,
+    recommendedQuestions: mockRecommendQuestions
   },
   userReducer: {
     error: false,
