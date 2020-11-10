@@ -2,6 +2,8 @@
 /backend/adoorback/.idea/
 .idea/
 
+.DS_Store
+
 # dependencies
 node_modules
 /frontend/.pnp

@@ -20,17 +20,6 @@ class Article(AdoorModel):
     article_likes = GenericRelation(Like)
 
 
-class Response(AdoorModel):
-    author = models.ForeignKey(User, related_name='response_set', on_delete=models.CASCADE)
-
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.IntegerField()
-    target = GenericForeignKey('content_type', 'object_id')
-
-    response_comments = GenericRelation(Comment)
-    response_likes = GenericRelation(Like)
-
-
 class QuestionManager(models.Manager):
     use_for_related_fields = True
 
@@ -47,11 +36,18 @@ class Question(AdoorModel):
     selected_date = models.DateTimeField(null=True)
     is_admin_question = models.BooleanField()
 
-    question_responses = GenericRelation(Response)
     question_comments = GenericRelation(Comment)
     question_likes = GenericRelation(Like)
 
     objects = QuestionManager()
+
+
+class Response(AdoorModel):
+    author = models.ForeignKey(User, related_name='response_set', on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, related_name='response_set', on_delete=models.CASCADE)
+
+    response_comments = GenericRelation(Comment)
+    response_likes = GenericRelation(Like)
 
 
 class Post(AdoorModel):
