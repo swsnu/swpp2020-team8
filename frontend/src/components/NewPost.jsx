@@ -6,8 +6,7 @@ const NewPostWrapper = styled.div`
   width: 650px;
   margin: 0 auto;
   border: 1px solid #eee;
-  padding: 10px 10px;
-  padding-bottom: 50px;
+  padding: 10px;
   border-radius: 4px;
   box-sizing: border-box;
 `;

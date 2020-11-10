@@ -10,8 +10,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
 
 const ShareSettingsWrapper = styled.div`
-  float: right;
-  margin-bottom: auto;
+  display: flex;
+  flex-direction: row-reverse;
   font-size: 14px;
 `;
 

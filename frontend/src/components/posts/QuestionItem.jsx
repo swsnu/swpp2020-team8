@@ -12,6 +12,7 @@ import AuthorProfile from './AuthorProfile';
 import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
 import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
+import ShareSettings from '../ShareSettings';
 
 const QuestionItemWrapper = styled.div`
   background: #f4f4f4;
@@ -32,13 +33,14 @@ TextareaAutosize.displayName = 'TextareaAutosize';
 
 const useStyles = makeStyles((theme) => ({
   textArea: {
-    background: 'transparent',
+    background: 'white',
     width: '100%',
     border: 'none',
     resize: 'none',
     padding: theme.spacing(1),
     outline: 'none !important',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    margin: '8px 0'
   }
 }));
 
@@ -111,11 +113,14 @@ export default function QuestionItem({ articleObj }) {
         )}
       </PostItemFooterWrapper>
       {isWriting && (
-        <TextareaAutosize
-          className={classes.textArea}
-          aria-label="new response"
-          placeholder="답변을 작성해주세요."
-        />
+        <>
+          <TextareaAutosize
+            className={classes.textArea}
+            aria-label="new response"
+            placeholder="답변을 작성해주세요."
+          />
+          <ShareSettings />
+        </>
       )}
     </QuestionItemWrapper>
   );
