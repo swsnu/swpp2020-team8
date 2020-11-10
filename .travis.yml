@@ -1,7 +1,11 @@
 matrix:
   include:
     - language: node_js
+<<<<<<< HEAD
       node_js: '12'
+=======
+      node_js: "12"
+>>>>>>> 3b7c9dd44edcedc8e9f31adc0bf772c3ff541908
       addons:
         sonarcloud:
           organization: "swsnu"
@@ -24,7 +28,11 @@ matrix:
 
     - language: python
       python:
+<<<<<<< HEAD
         - '3.7'
+=======
+        - "3.7"
+>>>>>>> 3b7c9dd44edcedc8e9f31adc0bf772c3ff541908
       addons:
         sonarcloud:
           organization: "swsnu"
