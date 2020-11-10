@@ -54,10 +54,8 @@ def set_seed(n):
     for _ in range(n):
         user = random.choice(users)
         article = random.choice(articles)
-        question = random.choice(questions)
         response = random.choice(responses)
         Comment.objects.create(author=user, target=article, content=faker.catch_phrase(), is_private=_ % 2)
-        Comment.objects.create(author=user, target=question, content=faker.catch_phrase(), is_private=_ % 2)
         Comment.objects.create(author=user, target=response, content=faker.catch_phrase(), is_private=_ % 2)
     logging.info(f"{Comment.objects.all().count()} Comment(s) created!") if DEBUG else None
 
@@ -102,7 +100,7 @@ def fill_data():
             if user.question_set.all().count() == 0 else None
         Response.objects.create(author=user, content=faker.catch_phrase(), target=random.choice(questions)) \
             if user.response_set.all().count() == 0 else None
-        Comment.objects.create(author=user, content=faker.catch_phrase(), target=random.choice(posts)) \
+        Comment.objects.create(author=user, content=faker.catch_phrase(), target=random.choice(articles)) \
             if Comment.objects.comments_only().filter(author=user).count() == 0 else None
         Comment.objects.create(author=user, content=faker.catch_phrase(), target=random.choice(comments)) \
             if Comment.objects.replies_only().filter(author=user).count() == 0 else None

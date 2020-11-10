@@ -15,7 +15,7 @@ class CommentTestCase(TestCase):
         set_seed(N)
 
     def test_comment_count(self):
-        self.assertEqual(Comment.objects.all().count(), N*4)
+        self.assertEqual(Comment.objects.all().count(), N*3)
 
     def test_comment_str(self):
         comment = Comment.objects.all().last()
