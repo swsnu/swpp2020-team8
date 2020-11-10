@@ -1,7 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { getDailyQuestions } from '../modules/question';
+import QuestionList from '../components/posts/QuestionList';
 
-const QuestionFeed = () => {
-  return <h1>Question Feed</h1>;
-};
+export default function QuestionFeed() {
+  const dailyQuestions = useSelector(
+    (state) => state.questionReducer.dailyQuestions
+  );
+  const dispatch = useDispatch();
 
-export default QuestionFeed;
+  useEffect(() => {
+    dispatch(getDailyQuestions());
+  }, [dispatch]);
+  return <QuestionList questions={dailyQuestions} />;
+}
