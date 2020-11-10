@@ -9,12 +9,13 @@ node_modules
 
 # testing
 /frontend/coverage
-backend/adoorback/.coverage
+/backend/adoorback/.coverage
 
 # production
 /frontend/build
 
 # misc
+.DS_Store
 /frontend/.DS_Store
 /frontend/.env.local
 /frontend/.env.development.local
@@ -28,7 +29,6 @@ backend/adoorback/.coverage
 # backend
 /backend/swpp-env/*
 /backend/.vscode/*
-
 /backend/*.log
 /backend/*.pot
 /backend/*.pyc
@@ -41,4 +41,5 @@ backend/adoorback/.coverage
 /backend/*/*/__pycache__/
 /backend/*/__pycache__/
 /backend/*/*/*/__pycache__/
-/backend/adoorback/.coverage
+/backend/adoorback/*/migrations/*
+/backend/adoorback/db.sqlite3
