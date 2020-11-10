@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // TODO: share settings
-export default function QuestionItem({ articleObj }) {
+export default function QuestionItem({ questionObj }) {
   // TODO: fix
   const isAuthor = true;
 
@@ -74,10 +74,10 @@ export default function QuestionItem({ articleObj }) {
   return (
     <QuestionItemWrapper>
       <PostItemHeaderWrapper>
-        {articleObj.author_detail.username !== 'admin' && (
-          <AuthorProfile author={articleObj.author_detail} />
+        {questionObj.author_detail.username !== 'admin' && (
+          <AuthorProfile author={questionObj.author_detail} />
         )}
-        {articleObj.author_detail.username !== 'admin' && isAuthor && (
+        {questionObj.author_detail.username !== 'admin' && isAuthor && (
           <PostAuthorButtons
             onClickEdit={handleEdit}
             onClickDelete={handleDelete}
@@ -85,11 +85,9 @@ export default function QuestionItem({ articleObj }) {
         )}
       </PostItemHeaderWrapper>
       <Question>
-        <Link to={`/questions/${articleObj.question_detail.id}`}>
-          {articleObj.question_detail.question}
-        </Link>
+        <Link to={`/questions/${questionObj.id}`}>{questionObj.content}</Link>
       </Question>
-      <CreateTime createTime={articleObj.create_at} />
+      <CreateTime createTime={questionObj.created_at} />
       <PostItemFooterWrapper>
         <IconButton color="secondary" size="small" onClick={handleSendButton}>
           <SendIcon color="secondary" />
