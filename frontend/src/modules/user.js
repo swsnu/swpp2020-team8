@@ -14,6 +14,7 @@ const initialState = {
     username: '',
     isLoggedIn: false
   }
+
 };
 
 export const signUp = (signUpInfo) => {
@@ -71,10 +72,12 @@ export const logoutSuccess = (user) => {
   return {
     type: LOGOUT,
     user
+
   };
 };
 
 export const removeError = () => {
+
   return {
     type: REMOVE_ERROR
   };
@@ -106,6 +109,7 @@ export default function userReducer(state = initialState, action) {
       return {
         user: null,
         error: false
+
       };
     default:
       return state;

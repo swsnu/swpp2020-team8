@@ -13,6 +13,7 @@ const getMockReducer = jest.fn(
   }
 );
 
+
 export const getMockStore = (userState) => {
   const mockUserReducer = getMockReducer(userState);
 
@@ -29,4 +30,6 @@ export const getMockStore = (userState) => {
   return mockStore;
 };
 
+
 export default getMockStore;
+
