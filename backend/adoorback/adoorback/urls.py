@@ -20,8 +20,8 @@ from django.urls import include, path
 
 
 urlpatterns = [
-    # path('likes/', include('like.urls')),
-    # path('comments/', include('comment.urls')),
+    path('api/likes/', include('like.urls')),
+    path('api/comments/', include('comment.urls')),
     # path('notifications/', include('notification.urls')),
     path('api/admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
     path('api/secret/', admin.site.urls),
