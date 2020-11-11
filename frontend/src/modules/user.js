@@ -73,11 +73,7 @@ export const requestLogin = (email, password) => {
     dispatch(login());
     try {
       const { data } = await axios.post('api/auth/login/', email, password);
-      // if (+data.code === 200) {
       dispatch(loginSuccess(data.user));
-      // } else {
-      // dispatch(loginFailure(data.loginError));
-      // }
     } catch (error) {
       dispatch(loginFailure(error));
     }
