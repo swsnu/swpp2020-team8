@@ -37,6 +37,11 @@ export const mockQuestions = [
   }
 ];
 
+export const mockPost = {
+  id: 1,
+  content: '사람들의 무리한 부탁을 잘 거절하는 편'
+};
+
 export const mockData = [];
 
 export const mockRecommendQuestions = [

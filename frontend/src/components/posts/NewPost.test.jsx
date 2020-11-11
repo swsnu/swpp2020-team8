@@ -1,7 +1,7 @@
 import { mount } from 'enzyme';
 import React from 'react';
 import { Router } from 'react-router-dom';
-import history from '../history';
+import history from '../../history';
 import NewPost from './NewPost';
 
 describe('<NewPost />', () => {
