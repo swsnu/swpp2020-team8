@@ -1,4 +1,5 @@
-import axios from 'axios';
+import axios from '../apis';
+// import axios from 'axios';
 
 export const SIGN_UP_REQUEST = 'user/SIGN_UP_REQUEST';
 export const SIGN_UP_SUCCESS = 'user/SIGN_UP_SUCCESS';
@@ -26,7 +27,7 @@ export const requestSignUp = (signUpInfo) => {
   return async (dispatch) => {
     dispatch({ type: SIGN_UP_REQUEST });
     try {
-      // const { data } = await axios.post('/user/sign-up', signUpInfo);
+      // const { data } = await axios.post('api/auth/register', signUpInfo);
       const data = await {
         code: 200,
         user: signUpInfo
@@ -53,7 +54,7 @@ export const requestSignUp = (signUpInfo) => {
 
 export const postSelectedQuestions = (selectedQuestions) => {
   return async (dispatch) => {
-    // await axios.post('/user/select-questions', selectedQuestions);
+    // await axios.post('api/user/select-questions', selectedQuestions);
     return dispatch({
       type: UPDATE_QUESTION_SELECT,
       selectedQuestions
@@ -72,12 +73,12 @@ export const requestLogin = (email, password) => {
   return async (dispatch) => {
     dispatch(login());
     try {
-      const { data } = await axios.post('/api/user/login', email, password);
-      if (+data.code === 200) {
-        dispatch(loginSuccess(data.user));
-      } else {
-        dispatch(loginFailure(data.loginError));
-      }
+      const { data } = await axios.post('api/auth/login/', email, password);
+      // if (+data.code === 200) {
+      dispatch(loginSuccess(data.user));
+      // } else {
+      // dispatch(loginFailure(data.loginError));
+      // }
     } catch (error) {
       dispatch(loginFailure(error));
     }

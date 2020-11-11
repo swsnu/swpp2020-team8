@@ -1,7 +1,7 @@
 import React from 'react';
 import PostItem from './PostItem';
 import QuestionItem from './QuestionItem';
-import NewPost from '../NewPost';
+import NewPost from './NewPost';
 
 export default function PostList({ posts }) {
   const postList = posts.map((post) => {

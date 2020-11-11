@@ -4,12 +4,12 @@ import Toolbar from '@material-ui/core/Toolbar';
 import InputBase from '@material-ui/core/InputBase';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
-import Link from '@material-ui/core/Link';
 import Button from '@material-ui/core/Button';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import SearchIcon from '@material-ui/icons/Search';
+import { Link } from 'react-router-dom';
 import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
 
@@ -113,36 +113,36 @@ const Header = ({ signedIn }) => {
 
   const renderHeaderSignedInItems = (
     <>
-      <Button
+      <Link
         className={classes.tabButton}
-        href="/friends"
+        to="/friends"
         size="large"
         style={{
           color: pathname === '/friends' ? primaryColor : borderColor
         }}
       >
         친구들의 글
-      </Button>
-      <Button
+      </Link>
+      <Link
         className={classes.tabButton}
-        href="/anonymous"
+        to="/anonymous"
         size="large"
         style={{
           color: pathname === '/anonymous' ? primaryColor : borderColor
         }}
       >
         익명 글
-      </Button>
-      <Button
+      </Link>
+      <Link
         className={classes.tabButton}
-        href="/questions"
+        to="/questions"
         size="large"
         style={{
           color: pathname === '/questions' ? primaryColor : borderColor
         }}
       >
         질문 모음
-      </Button>
+      </Link>
       <div className={classes.grow} />
       <div className={classes.sectionDesktop}>
         <div className={classes.search}>
@@ -193,9 +193,9 @@ const Header = ({ signedIn }) => {
       <div className={classes.grow}>
         <AppBar position="static" className={classes.header}>
           <Toolbar>
-            <Link href="/friends" component="button" className={classes.title}>
+            <span href="/friends" component="button" className={classes.title}>
               adoor
-            </Link>
+            </span>
             {signedIn ? (
               renderHeaderSignedInItems
             ) : (
