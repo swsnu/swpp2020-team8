@@ -28,23 +28,6 @@ class Article(AdoorModel):
         return self.__class__.__name__
 
 
-class Response(AdoorModel):
-    author = models.ForeignKey(User, related_name='response_set', on_delete=models.CASCADE)
-    share_with_friends = models.BooleanField(default=True)
-    share_anonymously = models.BooleanField(default=True)
-
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.IntegerField()
-    target = GenericForeignKey('content_type', 'object_id')
-
-    response_comments = GenericRelation(Comment)
-    response_likes = GenericRelation(Like)
-
-    @property
-    def type(self):
-        return self.__class__.__name__
-
-
 class QuestionManager(models.Manager):
     use_for_related_fields = True
 
@@ -64,10 +47,23 @@ class Question(AdoorModel):
     selected_date = models.DateTimeField(null=True)
     is_admin_question = models.BooleanField()
 
-    responses = GenericRelation(Response)
     question_likes = GenericRelation(Like)
 
     objects = QuestionManager()
+
+    @property
+    def type(self):
+        return self.__class__.__name__
+
+
+class Response(AdoorModel):
+    author = models.ForeignKey(User, related_name='response_set', on_delete=models.CASCADE)
+    share_with_friends = models.BooleanField(default=True)
+    share_anonymously = models.BooleanField(default=True)
+    question = models.ForeignKey(Question, related_name='response_set', on_delete=models.CASCADE)
+
+    response_comments = GenericRelation(Comment)
+    response_likes = GenericRelation(Like)
 
     @property
     def type(self):

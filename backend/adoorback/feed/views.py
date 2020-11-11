@@ -4,7 +4,8 @@ from rest_framework import permissions
 from celery.schedules import crontab
 from celery.task import periodic_task
 
-from feed.serializers import ArticleSerializer, ResponseSerializer, \
+from feed.serializers import ArticleSerializer, ArticleDetailSerializer, \
+    ResponseSerializer, ResponseDetailSerializer, \
     QuestionSerializer, QuestionDetailSerializer, PostSerializer
 from feed.models import Article, Response, Question, Post
 from adoorback.permissions import IsAuthorOrReadOnly
@@ -42,7 +43,7 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
     Retrieve, update, or destroy an article.
     """
     queryset = Article.objects.all()
-    serializer_class = ArticleSerializer
+    serializer_class = ArticleDetailSerializer
     permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly]
 
 
@@ -84,7 +85,7 @@ class ResponseDetail(generics.RetrieveUpdateDestroyAPIView):
     Retrieve, update, or destroy a response.
     """
     queryset = Response.objects.all()
-    serializer_class = ResponseSerializer
+    serializer_class = ResponseDetailSerializer
     permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly]
 
 

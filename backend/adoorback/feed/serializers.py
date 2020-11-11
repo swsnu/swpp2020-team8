@@ -27,30 +27,47 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class ArticleSerializer(AdoorBaseSerializer):
+
+    class Meta(AdoorBaseSerializer.Meta):
+        model = Article
+        fields = AdoorBaseSerializer.Meta.fields + ['share_with_friends', 'share_anonymously']
+
+
+class ArticleDetailSerializer(AdoorBaseSerializer):
     comments = CommentSerializer(source='article_comments', many=True, read_only=True)
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Article
-        fields = AdoorBaseSerializer.Meta.fields + ['comments']
-
-
-class ResponseSerializer(AdoorBaseSerializer):
-    comments = CommentSerializer(source='response_comments', many=True, read_only=True)
-
-    class Meta(AdoorBaseSerializer.Meta):
-        model = Response
-        fields = AdoorBaseSerializer.Meta.fields + ['comments']
+        fields = AdoorBaseSerializer.Meta.fields + ['share_with_friends', 'share_anonymously', 'comments']
 
 
 class QuestionSerializer(AdoorBaseSerializer):
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Question
+        fields = AdoorBaseSerializer.Meta.fields + ['selected_date', 'is_admin_question']
 
 
-class QuestionDetailSerializer(QuestionSerializer):
-    responses = ResponseSerializer(many=True, read_only=True)
+class ResponseDetailSerializer(AdoorBaseSerializer):
+    question = QuestionSerializer(read_only=True)
+    comments = CommentSerializer(source='response_comments', many=True, read_only=True)
 
-    class Meta(QuestionSerializer):
+    class Meta(AdoorBaseSerializer.Meta):
+        model = Response
+        fields = AdoorBaseSerializer.Meta.fields + ['share_with_friends', 'share_anonymously', 'question', 'comments']
+
+
+class ResponseSerializer(AdoorBaseSerializer):
+    question = QuestionSerializer(read_only=True)
+
+    class Meta(AdoorBaseSerializer.Meta):
+        model = Response
+        fields = AdoorBaseSerializer.Meta.fields + ['share_with_friends', 'share_anonymously', 'question']
+
+
+class QuestionDetailSerializer(AdoorBaseSerializer):
+    response_set = ResponseSerializer(many=True, read_only=True)
+
+    class Meta(AdoorBaseSerializer.Meta):
         model = Question
-        fields = AdoorBaseSerializer.Meta.fields + ['responses']
+        fields = AdoorBaseSerializer.Meta.fields + ['selected_date', 'is_admin_question', 'response_set']
