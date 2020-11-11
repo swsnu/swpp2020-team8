@@ -33,3 +33,7 @@ class Comment(AdoorModel):
     comment_likes = GenericRelation(Like)
 
     objects = CommentManager()
+
+    @property
+    def type(self):
+        return self.__class__.__name__
