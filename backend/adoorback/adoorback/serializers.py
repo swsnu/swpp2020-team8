@@ -8,7 +8,7 @@ User = get_user_model()
 
 
 class AdoorBaseSerializer(serializers.ModelSerializer):
-    author = serializers.HyperlinkedIdentityField(view_name='user-detail')
+    author = serializers.HyperlinkedIdentityField(view_name='user-detail', read_only=True)
     author_detail = serializers.SerializerMethodField(read_only=True)
     like_count = serializers.SerializerMethodField(read_only=True)
     current_user_liked = serializers.SerializerMethodField(read_only=True)

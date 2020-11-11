@@ -19,9 +19,9 @@ class LikeList(generics.ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 
-class LikeDetail(generics.RetrieveUpdateDestroyAPIView):
+class LikeDetail(generics.DestroyAPIView):
     """
-    Retrieve, update, or destroy a like.
+    Destroy a like.
     """
     queryset = Like.objects.all()
     serializer_class = LikeSerializer

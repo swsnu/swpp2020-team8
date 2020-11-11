@@ -19,7 +19,7 @@ class CommentSerializer(AdoorBaseSerializer):
     target_type = serializers.SerializerMethodField(read_only=True)
     target_id = serializers.SerializerMethodField(read_only=True)
     is_reply = serializers.SerializerMethodField(read_only=True)
-    replies = RecursiveReplyField(many=True)
+    replies = RecursiveReplyField(many=True, read_only=True)
 
     def get_target_type(self, obj):
         return obj.target.type
