@@ -9,6 +9,7 @@ const NewPostWrapper = styled.div`
   padding: 10px;
   border-radius: 4px;
   box-sizing: border-box;
+  background: #fff;
 `;
 
 export const NewPostInput = styled.textarea`
@@ -23,6 +24,7 @@ export const NewPostInput = styled.textarea`
   border: none;
   margin: 4px 0;
   box-sizing: border-box;
+  background: #fff;
   ::placeholder,
   ::-webkit-input-placeholder {
     color: #aaa;
