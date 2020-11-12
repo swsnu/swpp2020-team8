@@ -1,6 +1,6 @@
 import axios from '../apis';
 
-import { mockFriendFeed, mockPost } from '../constants';
+import { mockFriendFeed, mockAnonymousFeed, mockPost } from '../constants';
 
 export const GET_SELECTED_POST = 'post/GET_SELECTED_POST';
 export const GET_SELECTED_POST_SUCCESS = 'post/GET_SELECTED_POST_SUCCESS';
@@ -53,6 +53,9 @@ export const getSelectedPostSuccess = (selectedPost) => {
 
 export const getPostsByType = (type, userId = null) => async (dispatch) => {
   const postType = type.toUpperCase();
+  let resultFeed;
+  if (postType === 'ANON') resultFeed = mockAnonymousFeed;
+  else resultFeed = mockFriendFeed;
   dispatch({ type: `post/GET_${postType}_POSTS_REQUEST` });
   // let result;
   try {
@@ -67,7 +70,7 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
   }
   dispatch({
     type: `post/GET_${postType}_POSTS_SUCCESS`,
-    result: [...mockFriendFeed]
+    result: [...resultFeed]
   });
 };
 
@@ -114,7 +117,7 @@ export default function postReducer(state = initialState, action) {
     case GET_ANON_POSTS_SUCCESS:
       return {
         ...state,
-        anonymousPosts: action.result
+        anonymousPosts: [...action.result]
       };
     case GET_FRIEND_POSTS_SUCCESS:
       return {
