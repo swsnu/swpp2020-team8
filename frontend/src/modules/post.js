@@ -1,6 +1,7 @@
-// import axios from '../apis';
+import axios from '../apis';
 
-import { mockFriendFeed, mockAnonymousFeed, mockPost } from '../constants';
+// import { mockFriendFeed, mockAnonymousFeed, mockPost } from '../constants';
+import mockPost from '../constants';
 
 export const GET_SELECTED_POST = 'post/GET_SELECTED_POST';
 export const GET_SELECTED_POST_SUCCESS = 'post/GET_SELECTED_POST_SUCCESS';
@@ -53,16 +54,16 @@ export const getSelectedPostSuccess = (selectedPost) => {
 
 export const getPostsByType = (type, userId = null) => async (dispatch) => {
   const postType = type.toUpperCase();
-  let resultFeed;
-  if (postType === 'ANON') resultFeed = mockAnonymousFeed;
-  else resultFeed = mockFriendFeed;
+  // let resultFeed;
+  // if (postType === 'ANON') resultFeed = mockAnonymousFeed;
+  // else resultFeed = mockFriendFeed;
   dispatch({ type: `post/GET_${postType}_POSTS_REQUEST` });
-  // let result;
+  let result;
   try {
     if (userId) {
-      // result = await axios.get(`feed/${userId}/`);
+      result = await axios.get(`feed/${userId}/`);
     } else {
-      // const result = await axios.get(`api/feed/${type}/`);
+      result = await axios.get(`api/feed/${type}/`);
       // console.log(result);
     }
   } catch (err) {
@@ -70,7 +71,7 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
   }
   dispatch({
     type: `post/GET_${postType}_POSTS_SUCCESS`,
-    result: [...resultFeed]
+    result: [...result]
   });
 };
 
