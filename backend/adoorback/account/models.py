@@ -7,7 +7,6 @@ from django.core.validators import int_list_validator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
-from django.urls import reverse
 
 
 class User(AbstractUser):
@@ -30,9 +29,3 @@ class User(AbstractUser):
         if not self.slug:
             self.slug = slugify(self.username)
         super().save(*args, **kwargs)
-    #
-    # def get_absolute_url(self):
-    #     """
-    #     Get url for user's detail view.
-    #     """
-    #     return reverse("account:user-detail", kwargs={"pk": self.id})
