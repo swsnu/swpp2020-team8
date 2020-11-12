@@ -22,6 +22,9 @@ import {
   getRandomQuestions,
   getDailyQuestions
 } from '../modules/question';
+import CustomQuestionModal from './CustomQuestionModal';
+
+CommonButton.displayName = 'CommonButton';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -56,6 +59,17 @@ const QuestionListWidget = ({
     initialIsRandomQuestions
   );
   const [isFolded, setIsFolded] = useState(initialIsFolded);
+  const [isCustomQuestionModalOpen, setCustomQuestionModalOpen] = useState(
+    false
+  );
+
+  const handleModalOpen = () => {
+    setCustomQuestionModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setCustomQuestionModalOpen(false);
+  };
 
   const recommendedQuestions = useSelector(
     (state) => state.questionReducer.recommendedQuestions
@@ -156,7 +170,15 @@ const QuestionListWidget = ({
           )}
         </CardContent>
       </Card>
-      <CommonButton margin="16px 0">새로운 질문 만들기</CommonButton>
+      <CommonButton margin="16px 0" onClick={handleModalOpen}>
+        새로운 질문 만들기
+      </CommonButton>
+      {isCustomQuestionModalOpen && (
+        <CustomQuestionModal
+          open={isCustomQuestionModalOpen}
+          handleClose={handleModalClose}
+        />
+      )}
     </WidgetWrapper>
   );
 };

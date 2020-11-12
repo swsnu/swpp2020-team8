@@ -40,7 +40,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     outline: 'none !important',
     boxSizing: 'border-box',
-    margin: '8px 0'
+    margin: '8px 0',
+    fontFamily: 'Noto Sans KR',
+    fontsize: '14px'
   }
 }));
 
@@ -53,6 +55,7 @@ export default function QuestionItem({ questionObj }) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isWriting, setIsWriting] = useState(false);
+  const [response, setResponse] = useState('');
 
   const toggleLike = () => {
     if (liked) {
@@ -70,6 +73,10 @@ export default function QuestionItem({ questionObj }) {
   const handleSendButton = () => {};
   const handleEdit = () => {};
   const handleDelete = () => {};
+
+  const handleResponseInputChange = (e) => {
+    setResponse(e.target.value);
+  };
 
   return (
     <QuestionItemWrapper>
@@ -116,6 +123,8 @@ export default function QuestionItem({ questionObj }) {
             className={classes.textArea}
             aria-label="new response"
             placeholder="답변을 작성해주세요."
+            onChange={handleResponseInputChange}
+            value={response}
           />
           <ShareSettings />
         </>
