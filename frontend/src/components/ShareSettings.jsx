@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FormGroup,
   FormControlLabel,
@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { createPost } from '../modules/post';
 
 const ShareSettingsWrapper = styled.div`
@@ -26,11 +27,17 @@ const useStyles = makeStyles(() => ({
 export default function ShareSettings({ newPost, resetContent }) {
   const dispatch = useDispatch();
   const classes = useStyles();
-
+  const location = useLocation();
   const [shareState, setShareState] = useState({
-    shareWithFriends: true,
-    shareAnonymously: false
+    shareWithFriends: false,
+    shareAnonymously: true
   });
+
+  useEffect(() => {
+    if (location.pathname === '/friends') {
+      setShareState({ shareWithFriends: true, shareAnonymously: false });
+    }
+  }, [location]);
 
   const handleChange = (e) => {
     const { name, checked } = e.target;
