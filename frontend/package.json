@@ -84,5 +84,6 @@
     "collectCoverageFrom": [
       "!src/constants/*"
     ]
-  }
+  },
+  "proxy": "http://localhost:8000"
 }

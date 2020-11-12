@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import history from '../history';
+import { useHistory } from 'react-router-dom';
 import { CommonInput, CommonButton } from '../styles';
 
 import { requestLogin, removeError } from '../modules/user';
-import { getIsLoggedIn } from '../selectors';
 
 const LoginWrapper = styled.div`
   width: 500px;
   margin: 0 auto;
-  margin-top: 50px;
+  margin-top: 120px;
 `;
 
 const WarningMessage = styled.div`
@@ -21,9 +20,9 @@ const WarningMessage = styled.div`
 `;
 
 export default function Login() {
+  const history = useHistory();
   const dispatch = useDispatch();
   const [loginInfo, setLoginInfo] = useState({ email: '', password: '' });
-  const isLoggedIn = useSelector((state) => getIsLoggedIn(state));
   const user = useSelector((state) => state.userReducer.user);
   const loginError = useSelector((state) => state.userReducer.loginError);
 
@@ -34,8 +33,8 @@ export default function Login() {
 
   // TODO: handle with isLoggedIn users
   useEffect(() => {
-    if (isLoggedIn || user?.id) history.push('/friends');
-  }, [isLoggedIn, user]);
+    if (user && user?.id) history.push('/friends');
+  }, [user]);
 
   const onClickSubmitButton = () => {
     const { email, password } = loginInfo;
