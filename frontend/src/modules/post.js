@@ -1,4 +1,4 @@
-import axios from '../apis';
+// import axios from '../apis';
 
 import { mockFriendFeed, mockAnonymousFeed, mockPost } from '../constants';
 
@@ -62,8 +62,8 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
     if (userId) {
       // result = await axios.get(`feed/${userId}/`);
     } else {
-      const result = await axios.get(`api/feed/${type}/`);
-      console.log(result);
+      // const result = await axios.get(`api/feed/${type}/`);
+      // console.log(result);
     }
   } catch (err) {
     dispatch({ type: `post/GET_${postType}_POSTS_FAILURE`, error: err });
@@ -81,8 +81,8 @@ export const createPost = (newPost) => async (dispatch) => {
 
   // const postType = `${newPost.type.toLowerCase()}s`;
   const mockAuthor = {
-    id: 1,
-    username: 'admin',
+    id: 13,
+    username: 'curious',
     profile_pic:
       'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
   };

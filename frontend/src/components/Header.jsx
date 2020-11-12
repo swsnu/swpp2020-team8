@@ -9,7 +9,7 @@ import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import SearchIcon from '@material-ui/icons/Search';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
 
@@ -189,23 +189,23 @@ const Header = ({ signedIn }) => {
       <div className={classes.grow}>
         <AppBar position="static" className={classes.header}>
           <Toolbar>
-            <span href="/friends" component="button" className={classes.title}>
+            <NavLink to="/friends" className={classes.title}>
               adoor
-            </span>
+            </NavLink>
             {signedIn ? (
               renderHeaderSignedInItems
             ) : (
               <>
                 <div className={classes.grow} />
-                <Button
+                <Link
                   component="a"
-                  href="/login"
+                  to="/login"
                   variant="outlined"
                   size="medium"
                   className={classes.logoutButton}
                 >
                   로그인
-                </Button>
+                </Link>
               </>
             )}
           </Toolbar>

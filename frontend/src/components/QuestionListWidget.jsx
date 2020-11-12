@@ -10,6 +10,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { useSelector, useDispatch } from 'react-redux';
+import styled from 'styled-components';
 import ListItemLink from './ListItemLink';
 import {
   WidgetWrapper,
@@ -26,9 +27,22 @@ import CustomQuestionModal from './CustomQuestionModal';
 
 CommonButton.displayName = 'CommonButton';
 
+const NewQuestionButton = styled(CommonButton)`
+  transform: translateX(-10px);
+  position: fixed;
+  top: 410px;
+  width: 275px;
+  box-shadow: '0 5px 10px rgba(154, 160, 185, 0.05), 0 5px 10px rgba(166, 173, 201, 0.2)';
+`;
+
 const useStyles = makeStyles((theme) => ({
   card: {
-    borderColor: '#eee'
+    transform: 'translateX(-10px)',
+    position: 'fixed',
+    width: '275px',
+    borderColor: '#eee',
+    boxShadow:
+      '0 5px 10px rgba(154, 160, 185, 0.05), 0 5px 10px rgba(166, 173, 201, 0.2)'
   },
   cardContent: {
     padding: '0 !important'
@@ -170,9 +184,9 @@ const QuestionListWidget = ({
           )}
         </CardContent>
       </Card>
-      <CommonButton margin="16px 0" onClick={handleModalOpen}>
+      <NewQuestionButton margin="16px 0" onClick={handleModalOpen}>
         새로운 질문 만들기
-      </CommonButton>
+      </NewQuestionButton>
       {isCustomQuestionModalOpen && (
         <CustomQuestionModal
           open={isCustomQuestionModalOpen}
