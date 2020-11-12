@@ -29,3 +29,7 @@ class Like(models.Model):
 
     def __str__(self):
         return f'{self.user} likes {self.content_type} ({self.object_id})'
+
+    @property
+    def type(self):
+        return self.__class__.__name__

@@ -1,4 +1,5 @@
 import {
+  mockPost,
   mockQuestions,
   mockQuestionFeed,
   mockRecommendQuestions
@@ -7,7 +8,9 @@ import {
 export const mockStore = {
   friendReducer: {},
   notiReducer: {},
-  postReducer: {},
+  postReducer: {
+    selectedPost: mockPost
+  },
   questionReducer: {
     dailyQuestions: mockQuestionFeed,
     randomQuestions: mockRecommendQuestions,

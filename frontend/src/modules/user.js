@@ -1,14 +1,14 @@
 import axios from 'axios';
 
 export const SIGN_UP_SUCCESS = 'user/SIGN_UP_SUCCESS';
-export const LOGIN = 'user/LOGIN';
+export const LOGIN_REQUEST = 'user/LOGIN_REQUEST';
 export const LOGOUT = 'user/LOGOUT';
 export const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
-export const LOGIN_ERROR = 'user/LOGIN_ERROR';
+export const LOGIN_FAILURE = 'user/LOGIN_FAILURE';
 export const REMOVE_ERROR = 'user/REMOVE_ERROR';
 
 const initialState = {
-  error: false,
+  loginError: false,
   user: {
     id: 0,
     username: '',
@@ -31,7 +31,7 @@ export const requestLogin = (email, password) => {
       if (+data.code === 200) {
         dispatch(loginSuccess(data.user));
       } else {
-        dispatch(loginFailure(data.error));
+        dispatch(loginFailure(data.loginError));
       }
     } catch (error) {
       dispatch(loginFailure(error));
@@ -41,7 +41,7 @@ export const requestLogin = (email, password) => {
 
 export const login = () => {
   return {
-    type: LOGIN
+    type: LOGIN_REQUEST
   };
 };
 
@@ -55,7 +55,7 @@ export const loginSuccess = (user) => {
 
 export const loginFailure = (error) => {
   return {
-    type: LOGIN_ERROR,
+    type: LOGIN_FAILURE,
     error
   };
 };
@@ -82,30 +82,30 @@ export const removeError = () => {
 
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
-    case LOGIN:
+    case LOGIN_REQUEST:
       return {
         user: null,
-        error: false
+        loginError: false
       };
     case LOGIN_SUCCESS:
       return {
         user: action.user,
-        error: false
+        loginError: false
       };
-    case LOGIN_ERROR:
+    case LOGIN_FAILURE:
       return {
         user: null,
-        error: action.error
+        loginError: action.loginError
       };
     case LOGOUT:
       return {
         user: null,
-        error: false
+        loginError: false
       };
     case REMOVE_ERROR:
       return {
         user: null,
-        error: false
+        loginError: false
       };
     default:
       return state;
