@@ -37,9 +37,8 @@ export default function Login() {
   }, [user, history]);
 
   const onClickSubmitButton = () => {
-    const { email, password } = loginInfo;
     dispatch(removeError());
-    dispatch(requestLogin({ email, password }));
+    dispatch(requestLogin(loginInfo));
   };
 
   const onClickSignupButton = () => {
@@ -51,8 +50,8 @@ export default function Login() {
       <h1>로그인</h1>
       <CommonInput
         id="email-input"
-        name="email"
-        value={loginInfo.email}
+        name="username"
+        value={loginInfo.username}
         placeholder="이메일"
         onChange={handleChange}
       />
@@ -71,7 +70,7 @@ export default function Login() {
       )}
       <CommonButton
         id="submit-button"
-        disabled={loginInfo.email === '' || loginInfo.password === ''}
+        disabled={loginInfo.username === '' || loginInfo.password === ''}
         margin="20px 0"
         onClick={onClickSubmitButton}
       >
