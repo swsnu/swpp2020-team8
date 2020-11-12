@@ -30,10 +30,6 @@ class UserDetail(generics.RetrieveAPIView):
     serializer_class = UserDetailedSerializer
 
 
-def user_profile(request):
-    return redirect('accounts:user-list')
-
-
 class SignupQuestionList(generics.ListAPIView):
     queryset = Question.objects.all().order_by('?')[:5]
     serializer_class = QuestionSerializer
