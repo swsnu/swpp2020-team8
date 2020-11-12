@@ -40,7 +40,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     outline: 'none !important',
     boxSizing: 'border-box',
-    margin: '8px 0'
+    margin: '8px 0',
+    fontFamily: 'Noto Sans KR',
+    fontsize: '14px'
   }
 }));
 

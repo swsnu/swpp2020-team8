@@ -34,7 +34,7 @@ export default function Login() {
   // TODO: handle with isLoggedIn users
   useEffect(() => {
     if (user && user?.id) history.push('/friends');
-  }, [user]);
+  }, [user, history]);
 
   const onClickSubmitButton = () => {
     const { email, password } = loginInfo;

@@ -11,6 +11,12 @@ import 'jest-styled-components';
 import history from '../history';
 import QuestionListWidget from './QuestionListWidget';
 
+jest.mock('../components/CustomQuestionModal', () => {
+  return jest.fn(() => {
+    return <div className="custom-question-modal" />;
+  });
+});
+
 describe('<QuestionListWidget/>', () => {
   const store = createStore(
     rootReducer,
@@ -68,5 +74,13 @@ describe('<QuestionListWidget/>', () => {
     // expect(refreshButton.length).toBe(3);
     refreshButton.simulate('click');
     expect(mockfn).toHaveBeenCalledTimes(0);
+  });
+
+  it('should open custom question modal', () => {
+    const component = getWrapper();
+    const questionButton = component.find('CommonButton');
+    expect(questionButton.length).toBe(1);
+    questionButton.simulate('click');
+    expect(component.find('.custom-question-modal').length).toBe(1);
   });
 });

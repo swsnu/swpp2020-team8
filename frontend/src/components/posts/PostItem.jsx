@@ -35,7 +35,7 @@ export default function PostItem({ postObj }) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
 
-  const commentList = postObj.comments.map((comment) => {
+  const commentList = postObj.comments?.map((comment) => {
     return <CommentItem key={comment.id} commentObj={comment} />;
   });
 
