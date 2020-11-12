@@ -27,6 +27,6 @@ urlpatterns = [
     path('api/user/', include('account.urls')),
     path('api/admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
     path('api/secret/', admin.site.urls),
-    path('api/auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api/user/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
