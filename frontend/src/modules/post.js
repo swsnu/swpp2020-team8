@@ -17,6 +17,10 @@ export const GET_USER_POSTS_REQUEST = 'post/GET_USER_POSTS_REQUEST';
 export const GET_USER_POSTS_SUCCESS = 'post/GET_USER_POSTS_SUCCESS';
 export const GET_USER_POSTS_FAILURE = 'post/GET_USER_POSTS_FAILURE';
 
+export const CREATE_POST_REQUEST = 'post/CREATE_POST_REQUEST';
+export const CREATE_POST_SUCCESS = 'post/CREATE_POST_SUCCESS';
+export const CREATE_POST_FAILURE = 'post/CREATE_POST_FAILURE';
+
 const initialState = {
   anonymousPosts: [],
   friendPosts: [],
@@ -67,6 +71,34 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
   });
 };
 
+export const createPost = (newPost) => async (dispatch) => {
+  dispatch({
+    type: CREATE_POST_REQUEST
+  });
+
+  // const postType = `${newPost.type.toLowerCase()}s`;
+  const mockAuthor = {
+    id: 1,
+    username: 'admin',
+    profile_pic:
+      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+  };
+  // let result;
+  try {
+    // await axios.post(`api/feed/${postType}/`, newPost);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  } catch (error) {
+    dispatch({
+      type: CREATE_POST_FAILURE,
+      error
+    });
+  }
+  dispatch({
+    type: CREATE_POST_SUCCESS,
+    newPost: { ...newPost, author_detail: mockAuthor }
+  });
+};
+
 export default function postReducer(state = initialState, action) {
   switch (action.type) {
     case GET_SELECTED_POST_SUCCESS: {
@@ -94,6 +126,24 @@ export default function postReducer(state = initialState, action) {
         ...state,
         selectedUserPosts: [...action.result]
       };
+    case CREATE_POST_REQUEST:
+    case CREATE_POST_FAILURE:
+      return { ...state };
+    case CREATE_POST_SUCCESS: {
+      const { newPost } = action;
+      const newFriendPosts = newPost.shareWithFriends
+        ? [newPost, ...state.friendPosts]
+        : state.friendPosts;
+      const newAnonPosts = newPost.shareAnonymously
+        ? [newPost, ...state.anonymousPosts]
+        : state.anonymousPosts;
+      return {
+        ...state,
+        anonymousPosts: newAnonPosts,
+        friendPosts: newFriendPosts
+      };
+    }
+
     default:
       return state;
   }
