@@ -73,7 +73,7 @@ const QuestionListWidget = ({
   const recommendedQuestionList = recommendedQuestions
     .slice(0, 5)
     .map((question) => (
-      <ListItemLink key={question.id} href={`/questions/${question.id}`}>
+      <ListItemLink key={question.id} to={`/questions/${question.id}`}>
         <ListItemText
           classes={{ primary: classes.question }}
           primary={question.content}
@@ -82,7 +82,7 @@ const QuestionListWidget = ({
     ));
 
   const randomQuestionList = randomQuestions.slice(0, 5).map((question) => (
-    <ListItemLink key={question.id} href={`/questions/${question.id}`}>
+    <ListItemLink key={question.id} to={`/questions/${question.id}`}>
       <ListItemText
         classes={{ primary: classes.question }}
         primary={question.content}
