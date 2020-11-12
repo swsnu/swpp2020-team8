@@ -23,10 +23,10 @@ urlpatterns = [
     path('api/likes/', include('like.urls')),
     path('api/comments/', include('comment.urls')),
     # path('notifications/', include('notification.urls')),
+    path('api/feed/', include('feed.urls')),
+    path('api/user/', include('account.urls')),
     path('api/admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
     path('api/secret/', admin.site.urls),
     path('api/auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('api/user/', include('account.urls')),
-    path('api/feed/', include('feed.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -28,7 +28,11 @@ DEBUG = True
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
 }
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -58,7 +62,7 @@ SITE_ID = 1
 
 AUTH_USER_MODEL = 'account.User'
 
-LOGIN_REDIRECT_URL = '/api/feed/friend/'
+LOGIN_REDIRECT_URL = '/api/users/me/'
 
 # reference: https://github.com/jazzband/django-redis
 CACHES = {
