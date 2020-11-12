@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabButton: {
     fontSize: '16px',
+    color: borderColor,
     '&:hover': {
       color: primaryColor
     },
