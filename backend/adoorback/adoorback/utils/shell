@@ -8,12 +8,11 @@ from feed.models import Question, Article, Response, Post
 from comment.models import Comment
 from like.models import Like
 from django.contrib.contenttypes.models import ContentType
-from adoorback.utils.seed import set_seed, set_question_seed
+from adoorback.utils.seed import set_seed
 from adoorback.utils.content_types import get_content_type
 User = get_user_model()
 
 set_seed(10)
-set_question_seed()
 
 user = User.objects.all().last()
 
