@@ -22,6 +22,9 @@ class User(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ['username']
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.username)

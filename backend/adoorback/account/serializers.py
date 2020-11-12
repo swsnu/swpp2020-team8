@@ -7,16 +7,16 @@ User = get_user_model()
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'question_history',
-                  'created_at', 'updated_at']
+        fields = ['id', 'username', 'email', 'question_history']
 
 
-class UserDetailedSerializer(serializers.ModelSerializer):
+class UserDetailedSerializer(serializers.HyperlinkedModelSerializer):
     article_set = ArticleSerializer(many=True, read_only=True)
+    url = serializers.HyperlinkedIdentityField(view_name="accounts:user-detail")
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'question_history', 'profile_image',
-                  'article_set', 'created_at', 'updated_at']
+        fields = ['id', 'username', 'email', 'question_history', 'profile_image', 'article_set', 'url']
