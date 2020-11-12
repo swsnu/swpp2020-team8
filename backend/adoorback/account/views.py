@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.shortcuts import redirect
 from rest_framework import generics
-from rest_framework.permissions import IsAdminUser
 
 from account.serializers import UserProfileSerializer, UserDetailedSerializer
 from feed.serializers import QuestionSerializer
@@ -12,7 +12,12 @@ User = get_user_model()
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        queryset = User.objects.filter(id=self.request.user.id)
+        if self.request.user.is_superuser:
+            queryset = User.objects.all()
+        return queryset
 
 
 class UserCreate(generics.ListCreateAPIView):
@@ -23,6 +28,10 @@ class UserCreate(generics.ListCreateAPIView):
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserDetailedSerializer
+
+
+def user_profile(request):
+    return redirect('accounts:user-list')
 
 
 class SignupQuestionList(generics.ListAPIView):

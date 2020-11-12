@@ -62,7 +62,7 @@ SITE_ID = 1
 
 AUTH_USER_MODEL = 'account.User'
 
-LOGIN_REDIRECT_URL = '/api/users/me/'
+LOGIN_REDIRECT_URL = '/api/user/'
 
 # reference: https://github.com/jazzband/django-redis
 CACHES = {

@@ -49,7 +49,7 @@ class FeedTestCase(TestCase):
         response = Response.objects.all().last()
         response_id = response.id
 
-        response.target.delete()
+        response.question.delete()
         self.assertEqual(Response.objects.all().filter(id=response_id).count(), 0)
 
     # post content must change to reflect target content
