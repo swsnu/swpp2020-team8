@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
+import { useSelector } from 'react-redux';
 import Login from './pages/Login';
 import { GlobalStyle, MainWrapper, FeedWrapper } from './styles';
 import Header from './components/Header';
@@ -26,7 +27,11 @@ const theme = createMuiTheme({
 
 const App = () => {
   // TODO: signedIn redux state
-  const [signedIn] = useState(true);
+  const [signedIn, setSignedIn] = useState(false);
+  const user = useSelector((state) => state.userReducer.user);
+  useEffect(() => {
+    if (user && user.email && user.questionHistory != null) setSignedIn(true);
+  }, [user]);
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -37,13 +42,19 @@ const App = () => {
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={SignUp} />
           <Route exact path="/select-questions" component={QuestionSelection} />
-          <Redirect path="/" to="/login" />
+          <Redirect path="/" to="/signup" />
         </Switch>
       ) : (
         <MainWrapper>
           <QuestionListWidget />
           <FeedWrapper>
             <Switch>
+              <Route
+                exact
+                path="/select-questions"
+                component={QuestionSelection}
+              />
+
               <PrivateRoute
                 exact
                 path="/friends"

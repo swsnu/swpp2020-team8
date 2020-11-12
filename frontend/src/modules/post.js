@@ -1,4 +1,4 @@
-// import axios from 'axios';
+import axios from '../apis';
 
 import { mockFriendFeed, mockAnonymousFeed, mockPost } from '../constants';
 
@@ -58,7 +58,8 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
     if (userId) {
       // result = await axios.get(`feed/${userId}/`);
     } else {
-      // result = await axios.get(`feed/${type}/`);
+      const result = await axios.get(`api/feed/${type}/`);
+      console.log(result);
     }
   } catch (err) {
     dispatch({ type: `post/GET_${postType}_POSTS_FAILURE`, error: err });
