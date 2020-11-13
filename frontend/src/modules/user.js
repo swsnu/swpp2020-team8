@@ -1,5 +1,6 @@
 // import axios from '../apis';
 import axios from 'axios';
+import Cookie from 'js.cookie';
 
 export const SIGN_UP_REQUEST = 'user/SIGN_UP_REQUEST';
 export const SIGN_UP_SUCCESS = 'user/SIGN_UP_SUCCESS';
@@ -54,7 +55,7 @@ export const requestSignUp = (signUpInfo) => {
 
 export const postSelectedQuestions = (selectedQuestions) => {
   return async (dispatch) => {
-    // await axios.post('api/user/select-questions', selectedQuestions);
+    await axios.post('api/user/select-questions', selectedQuestions);
     return dispatch({
       type: UPDATE_QUESTION_SELECT,
       selectedQuestions
@@ -69,25 +70,62 @@ export const signUp = (signUpInfo) => {
   };
 };
 
+async function getUser() {
+  const info = await fetch('/api/user/me/', {
+    method: 'GET',
+    credentials: 'include'
+  });
+  const currentUser = await info.json();
+  return currentUser;
+}
+
 export const requestLogin = (loginInfo) => {
   return async (dispatch) => {
     try {
-      await axios.get('api/feed/friend');
+      await axios.get('api/feed/friend/');
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(e);
     }
     dispatch(login());
-    const csrf = getCookies(document.cookie);
-    axios.defaults.headers.common.X_CSRFToken = csrf;
-    try {
-      const { data } = await axios.post('api/user/login/', {
-        username: loginInfo.username,
-        password: loginInfo.password
-      });
-      dispatch(loginSuccess(data.user));
-    } catch (error) {
-      dispatch(loginFailure(error));
+
+    const csrftoken = Cookie.get('csrftoken');
+
+    const response = await fetch('api/user/login/', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+      },
+      redirect: 'follow',
+      body: JSON.stringify(loginInfo)
+    });
+
+    if (response.status === 200) {
+      await fetch('api/user/token/', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(loginInfo)
+      }).then((jwtToken) =>
+        jwtToken
+          .json()
+          .then((data) => ({
+            data: data,
+            status: jwtToken.status
+          }))
+          .then((res) => {
+            Cookie.set('jwt_token_refresh', res.data.refresh);
+            Cookie.set('jwt_token_access', res.data.access);
+          })
+      );
+      const currentUser = await getUser();
+      dispatch(loginSuccess(currentUser));
+    } else {
+      dispatch(loginFailure(response.status));
     }
   };
 };
@@ -131,19 +169,6 @@ export const removeError = () => {
   return {
     type: REMOVE_ERROR
   };
-};
-
-const getCookies = (cookie) => {
-  const cookies = cookie.split(';');
-  let res = null;
-  // eslint-disable-next-line consistent-return
-  cookies.forEach((item) => {
-    const [key, token] = item.split('=');
-    if (key === 'csrftoken') {
-      res = token;
-    }
-  });
-  return res;
 };
 
 export default function userReducer(state = initialState, action) {

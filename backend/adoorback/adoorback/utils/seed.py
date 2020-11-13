@@ -1,7 +1,6 @@
 import random
 import logging
 import sys
-import pandas as pd
 
 from django.utils import timezone
 from django.contrib.auth import get_user_model

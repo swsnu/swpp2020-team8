@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from faker import Faker
 
 from adoorback.utils.content_types import get_content_type
-from feed.models import Article, Response, Question, Post
+from feed.models import Article, Response, Question
 from comment.models import Comment
 from like.models import Like
 
