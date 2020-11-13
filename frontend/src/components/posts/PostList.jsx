@@ -5,7 +5,7 @@ import NewPost from './NewPost';
 
 export default function PostList({ posts }) {
   const postList = posts.map((post) => {
-    if (post['content-type'] === 'Question')
+    if (post['content-type'] === 'Question' || post.type === 'Question')
       return <QuestionItem key={post.id} questionObj={post} />;
     return <PostItem key={post.id} postObj={post} />;
   });

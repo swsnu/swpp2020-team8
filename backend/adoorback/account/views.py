@@ -1,38 +1,36 @@
-from django.http import HttpResponse
 from django.contrib.auth import get_user_model
-from django.views.decorators.csrf import ensure_csrf_cookie
-from django.views.decorators.http import require_http_methods
+from django.shortcuts import redirect
 from rest_framework import generics
 
-from account.serializers import UserProfileSerializer
+from account.serializers import UserProfileSerializer, UserDetailedSerializer
 from feed.serializers import QuestionSerializer
 from feed.models import Question
+
 User = get_user_model()
+
+
+class UserList(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserProfileSerializer
+
+    def get_queryset(self):
+        queryset = User.objects.filter(id=self.request.user.id)
+        if self.request.user.is_superuser:
+            queryset = User.objects.all()
+        return queryset
+
+
+class UserCreate(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserProfileSerializer
+
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserDetailedSerializer
 
 
 class SignupQuestionList(generics.ListAPIView):
     queryset = Question.objects.all().order_by('?')[:5]
     serializer_class = QuestionSerializer
     model = serializer_class.Meta.model
-
-
-class UserList(generics.ListCreateAPIView):
-    """
-    List all users, or create a new user.
-    """
-    queryset = User.objects.all()
-    serializer_class = UserProfileSerializer
-
-
-class UserDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update, or destroy a user.
-    """
-    queryset = User.objects.all()
-    serializer_class = UserProfileSerializer
-
-
-@require_http_methods(['GET'])
-@ensure_csrf_cookie
-def token(request):
-    return HttpResponse(status=204)

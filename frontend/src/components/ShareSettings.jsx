@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FormGroup,
   FormControlLabel,
@@ -8,6 +8,9 @@ import {
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import { createPost } from '../modules/post';
 
 const ShareSettingsWrapper = styled.div`
   display: flex;
@@ -21,13 +24,20 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export default function ShareSettings() {
+export default function ShareSettings({ newPost, resetContent }) {
+  const dispatch = useDispatch();
   const classes = useStyles();
-
+  const location = useLocation();
   const [shareState, setShareState] = useState({
     shareWithFriends: false,
-    shareAnonymously: false
+    shareAnonymously: true
   });
+
+  useEffect(() => {
+    if (location.pathname === '/friends') {
+      setShareState({ shareWithFriends: true, shareAnonymously: false });
+    }
+  }, [location]);
 
   const handleChange = (e) => {
     const { name, checked } = e.target;
@@ -35,7 +45,14 @@ export default function ShareSettings() {
   };
 
   const onClickSubmitButton = () => {
-    setShareState({ shareWithFriends: false, shareAnonymously: false });
+    if (!newPost.content) return;
+    const postObj = {
+      ...shareState,
+      ...newPost
+    };
+    dispatch(createPost(postObj));
+    setShareState({ shareWithFriends: true, shareAnonymously: false });
+    resetContent();
   };
 
   const controlShareWithFriends = (

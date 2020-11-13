@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 const NotificationItem = ({ link, message }) => {
   const classes = useStyles();
   return (
-    <ListItemLink href={link}>
+    <ListItemLink to={link}>
       <FaceIcon />
       <ListItemText classes={{ primary: classes.message }} primary={message} />
     </ListItemLink>

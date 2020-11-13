@@ -11,7 +11,7 @@ from feed.models import Article, Response, Question, Post
 from adoorback.permissions import IsAuthorOrReadOnly
 
 
-@periodic_task(run_every=crontab(minute=21, hour=8))
+@periodic_task(run_every=crontab(minute=0, hour=0))
 def select_daily_questions():
     questions = Question.objects.all().filter(selected_date__isnull=True).order_by('?')[:30]
     for question in questions:
