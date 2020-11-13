@@ -70,19 +70,21 @@ export const signUp = (signUpInfo) => {
 };
 
 export const requestLogin = (loginInfo) => {
-  const headers = {
-    'Content-Type': 'multipart/form-data'
-  };
   return async (dispatch) => {
-    // const username = email;
-    dispatch(login());
-    await axios.get('api/user/logout');
     try {
-      const { data } = await axios.post(
-        'api/user/login/',
-        { username: loginInfo.username, password: loginInfo.password },
-        headers
-      );
+      await axios.get('api/feed/friend');
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log(e);
+    }
+    dispatch(login());
+    const csrf = getCookies(document.cookie);
+    axios.defaults.headers.common.X_CSRFToken = csrf;
+    try {
+      const { data } = await axios.post('api/user/login/', {
+        username: loginInfo.username,
+        password: loginInfo.password
+      });
       dispatch(loginSuccess(data.user));
     } catch (error) {
       dispatch(loginFailure(error));
@@ -129,6 +131,19 @@ export const removeError = () => {
   return {
     type: REMOVE_ERROR
   };
+};
+
+const getCookies = (cookie) => {
+  const cookies = cookie.split(';');
+  let res = null;
+  // eslint-disable-next-line consistent-return
+  cookies.forEach((item) => {
+    const [key, token] = item.split('=');
+    if (key === 'csrftoken') {
+      res = token;
+    }
+  });
+  return res;
 };
 
 export default function userReducer(state = initialState, action) {
