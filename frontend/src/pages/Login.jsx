@@ -22,7 +22,7 @@ const WarningMessage = styled.div`
 export default function Login() {
   const history = useHistory();
   const dispatch = useDispatch();
-  const [loginInfo, setLoginInfo] = useState({ email: '', password: '' });
+  const [loginInfo, setLoginInfo] = useState({ username: '', password: '' });
   const user = useSelector((state) => state.userReducer.user);
   const loginError = useSelector((state) => state.userReducer.loginError);
 
@@ -49,10 +49,10 @@ export default function Login() {
     <LoginWrapper>
       <h1>로그인</h1>
       <CommonInput
-        id="email-input"
+        id="username-input"
         name="username"
         value={loginInfo.username}
-        placeholder="이메일"
+        placeholder="닉네임"
         onChange={handleChange}
       />
       <CommonInput
@@ -65,7 +65,7 @@ export default function Login() {
       />
       {loginError && loginError.length && (
         <WarningMessage id="login-error-message">
-          이메일 혹은 비밀번호를 다시 확인해주세요
+          닉네임 혹은 비밀번호를 다시 확인해주세요
         </WarningMessage>
       )}
       <CommonButton
