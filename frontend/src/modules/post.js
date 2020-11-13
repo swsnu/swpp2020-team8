@@ -76,30 +76,31 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
 
 export const createPost = (newPost) => async (dispatch) => {
   dispatch({
-    type: CREATE_POST_REQUEST
+    type: CREATE_POST_REQUEST,
+    newPost
   });
 
-  // const postType = `${newPost.type.toLowerCase()}s`;
-  const mockAuthor = {
-    id: 13,
-    username: 'curious',
-    profile_pic:
-      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
-  };
-  // let result;
-  try {
-    // await axios.post(`api/feed/${postType}/`, newPost);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-  } catch (error) {
-    dispatch({
-      type: CREATE_POST_FAILURE,
-      error
-    });
-  }
-  dispatch({
-    type: CREATE_POST_SUCCESS,
-    newPost: { ...newPost, author_detail: mockAuthor }
-  });
+  // // const postType = `${newPost.type.toLowerCase()}s`;
+  // const mockAuthor = {
+  //   id: 13,
+  //   username: 'curious',
+  //   profile_pic:
+  //     'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+  // };
+  // // let result;
+  // try {
+  //   // await axios.post(`api/feed/${postType}/`, newPost);
+  //   await new Promise((resolve) => setTimeout(resolve, 500));
+  // } catch (error) {
+  //   dispatch({
+  //     type: CREATE_POST_FAILURE,
+  //     error
+  //   });
+  // }
+  // dispatch({
+  //   type: CREATE_POST_SUCCESS,
+  //   newPost: { ...newPost, author_detail: mockAuthor }
+  // });
 };
 
 export default function postReducer(state = initialState, action) {
@@ -129,23 +130,23 @@ export default function postReducer(state = initialState, action) {
         ...state,
         selectedUserPosts: [...action.result]
       };
-    case CREATE_POST_REQUEST:
-    case CREATE_POST_FAILURE:
-      return { ...state };
-    case CREATE_POST_SUCCESS: {
-      const { newPost } = action;
-      const newFriendPosts = newPost.shareWithFriends
-        ? [newPost, ...state.friendPosts]
-        : state.friendPosts;
-      const newAnonPosts = newPost.shareAnonymously
-        ? [newPost, ...state.anonymousPosts]
-        : state.anonymousPosts;
-      return {
-        ...state,
-        anonymousPosts: newAnonPosts,
-        friendPosts: newFriendPosts
-      };
-    }
+    // case CREATE_POST_REQUEST:
+    // case CREATE_POST_FAILURE:
+    //   return { ...state };
+    // case CREATE_POST_SUCCESS: {
+    //   const { newPost } = action;
+    //   const newFriendPosts = newPost.shareWithFriends
+    //     ? [newPost, ...state.friendPosts]
+    //     : state.friendPosts;
+    //   const newAnonPosts = newPost.shareAnonymously
+    //     ? [newPost, ...state.anonymousPosts]
+    //     : state.anonymousPosts;
+    //   return {
+    //     ...state,
+    //     anonymousPosts: newAnonPosts,
+    //     friendPosts: newFriendPosts
+    //   };
+    // }
 
     default:
       return state;
