@@ -13,7 +13,8 @@ from adoorback.permissions import IsAuthorOrReadOnly
 
 @periodic_task(run_every=crontab(minute=0, hour=0))
 def select_daily_questions():
-    questions = Question.objects.all().filter(selected_date__isnull=True).order_by('?')[:30]
+    questions = Question.objects.all().filter(
+        selected_date__isnull=True).order_by('?')[:30]
     for question in questions:
         question.selected_date = timezone.now()
         question.save()
@@ -23,7 +24,7 @@ class DailyQuestionList(generics.ListAPIView):
     queryset = Question.objects.daily_questions()
     serializer_class = QuestionSerializer
     model = serializer_class.Meta.model
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
 
 class ArticleList(generics.ListCreateAPIView):
