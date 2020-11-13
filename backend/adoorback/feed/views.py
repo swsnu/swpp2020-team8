@@ -8,7 +8,7 @@ from feed.serializers import ArticleSerializer, ArticleDetailSerializer, \
     ResponseSerializer, ResponseDetailSerializer, \
     QuestionSerializer, QuestionDetailSerializer, PostSerializer
 from feed.models import Article, Response, Question, Post
-from adoorback.permissions import IsAuthorOrReadOnly
+from adoorback.permissions import IsOwnerOrReadOnly
 
 
 @periodic_task(run_every=crontab(minute=0, hour=0))
@@ -20,6 +20,8 @@ def select_daily_questions():
 
 
 class DailyQuestionList(generics.ListAPIView):
+    if Question.objects.daily_questions().count() == 0:
+        select_daily_questions()
     queryset = Question.objects.daily_questions()
     serializer_class = QuestionSerializer
     model = serializer_class.Meta.model
@@ -44,7 +46,7 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Article.objects.all()
     serializer_class = ArticleDetailSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
 
 class QuestionList(generics.ListCreateAPIView):
@@ -65,7 +67,7 @@ class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Question.objects.all()
     serializer_class = QuestionDetailSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
 
 class ResponseList(generics.ListCreateAPIView):
@@ -86,7 +88,7 @@ class ResponseDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Response.objects.all()
     serializer_class = ResponseDetailSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
 
 class PostList(generics.ListCreateAPIView):

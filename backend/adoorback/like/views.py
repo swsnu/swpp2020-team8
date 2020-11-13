@@ -4,7 +4,7 @@ from rest_framework import permissions
 from like.models import Like
 from like.serializers import LikeSerializer
 
-from adoorback.permissions import IsAuthorOrReadOnly
+from adoorback.permissions import IsOwnerOrReadOnly
 
 
 class LikeList(generics.ListCreateAPIView):
@@ -25,4 +25,4 @@ class LikeDetail(generics.DestroyAPIView):
     """
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]

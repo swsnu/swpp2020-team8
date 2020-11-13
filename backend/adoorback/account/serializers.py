@@ -10,7 +10,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'question_history']
+        fields = ['id', 'username', 'email', 'question_history', 'password']
+        extra_kwargs = {'password': {'write_only': True}}
 
 
 class UserDetailedSerializer(serializers.HyperlinkedModelSerializer):

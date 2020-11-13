@@ -4,7 +4,7 @@ from rest_framework import permissions
 from comment.models import Comment
 from comment.serializers import CommentSerializer
 
-from adoorback.permissions import IsAuthorOrReadOnly
+from adoorback.permissions import IsOwnerOrReadOnly
 
 
 class CommentList(generics.ListCreateAPIView):
@@ -25,4 +25,4 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
