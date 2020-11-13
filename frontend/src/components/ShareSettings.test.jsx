@@ -4,7 +4,7 @@ import { Router } from 'react-router-dom';
 import history from '../history';
 import ShareSettings from './ShareSettings';
 
-describe('<NewPost />', () => {
+describe('<ShareSettings />', () => {
   const getWrapper = () =>
     mount(
       <Router history={history}>
