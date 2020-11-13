@@ -9,10 +9,15 @@ import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import SearchIcon from '@material-ui/icons/Search';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
+import styled from 'styled-components';
 import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
 
+const TitleLink = styled(NavLink)`
+  ${'' /* font-family: 'Quicksand', sans-serif; */}
+  font-family: 'Pacifico', cursive;
+`;
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1
@@ -162,12 +167,11 @@ const Header = ({ signedIn }) => {
             toggleNotiOpen();
           }}
         >
-          <Badge badgeContent={3} color="secondary">
+          <Badge badgeContent={3} color="primary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
         <IconButton
-          href=""
           aria-label="account of current user"
           className={classes.iconButton}
         >
@@ -189,23 +193,23 @@ const Header = ({ signedIn }) => {
       <div className={classes.grow}>
         <AppBar position="static" className={classes.header}>
           <Toolbar>
-            <span href="/friends" component="button" className={classes.title}>
+            <TitleLink to="/friends" className={classes.title}>
               adoor
-            </span>
+            </TitleLink>
             {signedIn ? (
               renderHeaderSignedInItems
             ) : (
               <>
                 <div className={classes.grow} />
-                <Button
+                <Link
                   component="a"
-                  href="/login"
+                  to="/login"
                   variant="outlined"
                   size="medium"
                   className={classes.logoutButton}
                 >
                   로그인
-                </Button>
+                </Link>
               </>
             )}
           </Toolbar>

@@ -9,6 +9,7 @@ const NewPostWrapper = styled.div`
   padding: 10px;
   border-radius: 4px;
   box-sizing: border-box;
+  background: #fff;
 `;
 
 export const NewPostInput = styled.textarea`
@@ -23,6 +24,7 @@ export const NewPostInput = styled.textarea`
   border: none;
   margin: 4px 0;
   box-sizing: border-box;
+  background: #fff;
   ::placeholder,
   ::-webkit-input-placeholder {
     color: #aaa;
@@ -37,7 +39,8 @@ export const NewPostInput = styled.textarea`
 
 export default function NewPost() {
   const [postInfo, setPostInfo] = useState({
-    content: ''
+    content: '',
+    type: 'Article'
   });
 
   const textareaRef = useRef(null);
@@ -52,6 +55,11 @@ export default function NewPost() {
     const { name, value } = e.target;
     setPostInfo((prev) => ({ ...prev, [name]: value }));
   };
+
+  const resetContent = () => {
+    setPostInfo((prev) => ({ ...prev, content: '' }));
+  };
+
   return (
     <NewPostWrapper>
       <NewPostInput
@@ -62,7 +70,7 @@ export default function NewPost() {
         value={postInfo.content}
         onChange={onInputChange}
       />
-      <ShareSettings />
+      <ShareSettings newPost={postInfo} resetContent={resetContent} />
     </NewPostWrapper>
   );
 }

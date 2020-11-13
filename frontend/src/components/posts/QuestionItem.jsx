@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -55,7 +55,28 @@ export default function QuestionItem({ questionObj }) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isWriting, setIsWriting] = useState(false);
-  const [response, setResponse] = useState('');
+  const [newPost, setNewPost] = useState({
+    question_id: null,
+    question_detail: questionObj,
+    content: null,
+    type: 'Response'
+  });
+
+  useEffect(() => {
+    if (questionObj && questionObj.id) {
+      setNewPost((prev) => ({
+        ...prev,
+        question_id: questionObj.id
+      }));
+    }
+  }, [questionObj]);
+
+  const handleContentChange = (e) => {
+    setNewPost((prev) => ({
+      ...prev,
+      content: e.target.value
+    }));
+  };
 
   const toggleLike = () => {
     if (liked) {
@@ -74,8 +95,8 @@ export default function QuestionItem({ questionObj }) {
   const handleEdit = () => {};
   const handleDelete = () => {};
 
-  const handleResponseInputChange = (e) => {
-    setResponse(e.target.value);
+  const resetContent = () => {
+    setNewPost((prev) => ({ ...prev, content: '' }));
   };
 
   return (
@@ -123,10 +144,10 @@ export default function QuestionItem({ questionObj }) {
             className={classes.textArea}
             aria-label="new response"
             placeholder="답변을 작성해주세요."
-            onChange={handleResponseInputChange}
-            value={response}
+            value={newPost.content}
+            onChange={handleContentChange}
           />
-          <ShareSettings />
+          <ShareSettings newPost={newPost} resetContent={resetContent} />
         </>
       )}
     </QuestionItemWrapper>

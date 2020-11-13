@@ -5,6 +5,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import { makeStyles } from '@material-ui/core/styles';
 import { TextareaAutosize, Button } from '@material-ui/core';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
+import { createPost } from '../modules/post';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -63,14 +65,24 @@ const SubmitButtonWrapper = styled.div`
 `;
 
 const CustomQuestionModal = ({ open, handleClose }) => {
+  const dispatch = useDispatch();
   const classes = useStyles();
-  const [newCustomQuestion, setNewCustomQuestion] = useState('');
+  const [newCustomQuestion, setNewCustomQuestion] = useState({
+    content: '',
+    type: 'Question',
+    shareWithFriends: true,
+    shareAnonymously: true
+  });
 
   const handleInputChange = (e) => {
-    setNewCustomQuestion(e.target.value);
+    setNewCustomQuestion((prev) => ({
+      ...prev,
+      content: e.target.value
+    }));
   };
 
   const onClickSubmitButton = () => {
+    dispatch(createPost(newCustomQuestion));
     handleClose();
   };
 
@@ -84,7 +96,7 @@ const CustomQuestionModal = ({ open, handleClose }) => {
           aria-label="new custom question"
           placeholder="새로운 질문을 작성해 보세요."
           rowsMin={3}
-          value={newCustomQuestion}
+          value={newCustomQuestion.content}
           onChange={handleInputChange}
         />
         <SubmitButtonWrapper>

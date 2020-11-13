@@ -1,4 +1,5 @@
-import axios from '../apis';
+// import axios from '../apis';
+import axios from 'axios';
 
 export const SIGN_UP_REQUEST = 'user/SIGN_UP_REQUEST';
 export const SIGN_UP_SUCCESS = 'user/SIGN_UP_SUCCESS';
@@ -68,11 +69,20 @@ export const signUp = (signUpInfo) => {
   };
 };
 
-export const requestLogin = (email, password) => {
+export const requestLogin = (loginInfo) => {
+  const headers = {
+    'Content-Type': 'multipart/form-data'
+  };
   return async (dispatch) => {
+    // const username = email;
     dispatch(login());
+    await axios.get('api/user/logout');
     try {
-      const { data } = await axios.post('api/auth/login/', email, password);
+      const { data } = await axios.post(
+        'api/user/login/',
+        { username: loginInfo.username, password: loginInfo.password },
+        headers
+      );
       dispatch(loginSuccess(data.user));
     } catch (error) {
       dispatch(loginFailure(error));

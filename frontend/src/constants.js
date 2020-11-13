@@ -253,16 +253,17 @@ export const mockArticle = {
   created_at: '2020-09-23T10:38:47.975019+08:00',
   content:
     '안녕하세요 반가워요 잘있어요 다시만나요 이거는 질문없이 쓰는 그냥 뻘글이에요 이쁘죠?????',
-  comment: [
+  comments: [
     {
       id: 1272,
       post_id: 383,
       content: '재밌네요',
-      writer: 1,
-      writer_detail: {
+      author: 1,
+      author_detail: {
         id: 123,
         username: 'curious',
-        profile_pic: '어쩌구'
+        profile_pic:
+          'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
       },
       referenced_comments: 1272,
       is_reply: false,
@@ -271,10 +272,11 @@ export const mockArticle = {
           id: 1273,
           post_id: 383,
           content: '같이하고싶어요',
-          writer: 2,
-          writer_detail: {
+          author: 2,
+          author_detail: {
             id: 2,
-            profile_pic: '',
+            profile_pic:
+              'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg',
             username: '아이폰'
           },
           is_poster_owner: false,
@@ -294,10 +296,11 @@ export const mockArticle = {
       id: 1274,
       post_id: 383,
       content: '퍼가요!!!!',
-      writer: 3,
-      writer_detail: {
+      author: 3,
+      author_detail: {
         id: 2,
-        profile_pic: '',
+        profile_pic:
+          'https://images.vexels.com/media/users/3/144928/isolated/preview/ebbccaf76f41f7d83e45a42974cfcd87-dog-illustration-by-vexels.png',
         username: '아이폰'
       },
       referenced_comments: 1274,
@@ -324,15 +327,16 @@ export const mockResponse = {
   },
   content:
     '스타벅스에서 먹는 바닐라크림콜드브루! 시럽은 1번만 넣고 에스프레소휩을 올리면 행복~',
-  comment: [
+  comments: [
     {
       id: 1274,
       post_id: 383,
       content: '오 마져 맛이써!!!!',
-      writer: 3,
-      writer_detail: {
+      author: 3,
+      author_detail: {
         id: 2,
-        profile_pic: '',
+        profile_pic:
+          'https://images.vexels.com/media/users/3/144928/isolated/preview/ebbccaf76f41f7d83e45a42974cfcd87-dog-illustration-by-vexels.png',
         username: '아이폰'
       },
       referenced_comments: 1274,
@@ -387,4 +391,77 @@ export const mockFriendFeed = [
   mockResponse,
   mockCustomQuestion,
   mockResponse2
+];
+
+export const mockAnonCustomQuestion = {
+  id: 4758,
+  'content-type': 'Question',
+  is_admin_question: 'true',
+  author_detail: {
+    id: -1
+    // username: '익명',
+    // profile_pic:
+    //   'https://i.guim.co.uk/img/media/d0105731685e5b2b3daecf2fa00c9affaba832f1/0_0_2560_1536/master/2560.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=8c7cd83e84ab106b0f522125757603a0'
+  },
+  content: '다들 유튜브 없이 얼마나 버틸 수 있을 것 같아?',
+  comments: [],
+  created_at: '2020-11-05T14:16:13.801119+08:00',
+  updated_at: null
+};
+
+export const mockAnonCustomQuestion2 = {
+  id: 4758,
+  'content-type': 'Question',
+  is_admin_question: 'true',
+  author_detail: {
+    id: -1
+    // username: '익명',
+    // profile_pic:
+    //   'https://i.guim.co.uk/img/media/d0105731685e5b2b3daecf2fa00c9affaba832f1/0_0_2560_1536/master/2560.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=8c7cd83e84ab106b0f522125757603a0'
+  },
+  content: '올해가 가기 전에 꼭 이루고 싶은 목표가 있다면~?',
+  comments: [],
+  created_at: '2020-11-05T14:16:13.801119+08:00',
+  updated_at: null
+};
+
+export const mockAnonArticle = {
+  id: 4756,
+  'content-type': 'Article', // or const int e.g. (1: Article, 2: Response...)
+  author_detail: {
+    id: -1
+    // username: '익명',
+    // profile_pic:
+    //   'https://i.guim.co.uk/img/media/d0105731685e5b2b3daecf2fa00c9affaba832f1/0_0_2560_1536/master/2560.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=8c7cd83e84ab106b0f522125757603a0'
+  }, // blank or null if anonymous
+  created_at: '2020-11-12T10:38:47.975019+08:00',
+  content: '다들 내가 누군지 절대 모르겠지?!!!!'
+};
+
+export const mockAnonResponse = {
+  id: 4757,
+  'content-type': 'Response',
+  author_detail: {
+    id: -1
+    // username: '익명',
+    // profile_pic:
+    //   'https://i.guim.co.uk/img/media/d0105731685e5b2b3daecf2fa00c9affaba832f1/0_0_2560_1536/master/2560.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=8c7cd83e84ab106b0f522125757603a0'
+  },
+  question: 1244,
+  question_detail: {
+    id: 1244,
+    content: '나는 운이 좋은 편이라고 생각하는가?'
+  },
+  content:
+    '나는 내가 운이 좋을때는 진짜 좋은데 아닐땐 진짜 아닌 것 같다고 생각해. 너무 당연한 소리를 한 것 같군.',
+  comments: [],
+  created_at: '2020-11-05T14:16:13.801119+08:00',
+  updated_at: null
+};
+
+export const mockAnonymousFeed = [
+  mockAnonCustomQuestion,
+  mockAnonArticle,
+  mockAnonCustomQuestion2,
+  mockAnonResponse
 ];
