@@ -1,5 +1,5 @@
 // import axios from 'axios';
-import { mockAnonymousFeed, mockFriendFeed } from '../constants';
+import { mockAnonymousFeed, mockArticle, mockFriendFeed } from '../constants';
 import store from '../store';
 import postReducer, * as actionCreators from './post';
 
@@ -128,5 +128,27 @@ describe('Todo Reducer', () => {
       selectedUserPosts: [],
       selectedPost: {}
     });
+  });
+
+  it('should add post to feed when create success', () => {
+    const newPost = {
+      ...mockArticle,
+      shareAnonymously: true,
+      shareWithFriends: true
+    };
+    const newState = postReducer(
+      {
+        anonymousPosts: [],
+        friendPosts: [],
+        selectedUserPosts: [],
+        selectedPost: {}
+      },
+      {
+        type: actionCreators.CREATE_POST_SUCCESS,
+        newPost
+      }
+    );
+    expect(newState.friendPosts.length).toEqual(1);
+    expect(newState.anonymousPosts.length).toEqual(1);
   });
 });
