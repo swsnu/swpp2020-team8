@@ -1,10 +1,11 @@
 import axios from 'axios';
 // import history from '@/history';
 
-const instance = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/'
-});
+const instance = axios.create();
 
+instance.defaults.headers.common['Content-Type'] = 'application/json';
+instance.defaults.xsrfCookieName = 'csrftoken';
+instance.defaults.xsrfHeaderName = 'X-CSRFToken';
 // instance.interceptors.response.use(
 //   (response) => {
 //     return response;

@@ -40,12 +40,12 @@ describe('<Login /> unit test', () => {
 
   it('should reflect input change', () => {
     const wrapper = getWrapper();
-    const input = wrapper.find('#email-input').at(0);
+    const input = wrapper.find('#username-input').at(0);
     expect(input.length).toBe(1);
     expect(input.prop('value')).toEqual('');
     const event = {
       preventDefault() {},
-      target: { name: 'email', value: 'test' }
+      target: { name: 'username', value: 'test' }
     };
     input.simulate('change', event);
   });
@@ -55,12 +55,12 @@ describe('<Login /> unit test', () => {
     const button = wrapper.find('#submit-button').at(0);
     expect(button.length).toBe(1);
 
-    const emailInput = wrapper.find('#email-input').at(0);
+    const usernameInput = wrapper.find('#username-input').at(0);
     const event = {
       preventDefault() {},
-      target: { name: 'email', value: 'test' }
+      target: { name: 'username', value: 'test' }
     };
-    emailInput.simulate('change', event);
+    usernameInput.simulate('change', event);
 
     const pwInput = wrapper.find('#password-input').at(0);
     const event2 = {
@@ -79,19 +79,4 @@ describe('<Login /> unit test', () => {
     button.simulate('click');
     expect(jest.fn()).toBeCalledTimes(0);
   });
-
-  // it('should handle with warning message', () => {
-  //   const mockStoreLoginError = getMockStore(stubStateLoginError);
-
-  //   const login = (
-  //     <Provider store={mockStoreLoginError}>
-  //       <Router history={history}>
-  //         <Login />
-  //       </Router>
-  //     </Provider>
-  //   );
-  //   const wrapper = mount(login);
-  //   const warningMessage = wrapper.find('WarningMessage');
-  //   expect(warningMessage.length).toBe(1);
-  // });
 });

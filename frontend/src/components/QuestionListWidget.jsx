@@ -10,6 +10,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { useSelector, useDispatch } from 'react-redux';
+import styled from 'styled-components';
 import ListItemLink from './ListItemLink';
 import {
   WidgetWrapper,
@@ -22,10 +23,26 @@ import {
   getRandomQuestions,
   getDailyQuestions
 } from '../modules/question';
+import CustomQuestionModal from './CustomQuestionModal';
+
+CommonButton.displayName = 'CommonButton';
+
+const NewQuestionButton = styled(CommonButton)`
+  transform: translateX(-10px);
+  position: fixed;
+  top: 410px;
+  width: 275px;
+  box-shadow: '0 5px 10px rgba(154, 160, 185, 0.05), 0 5px 10px rgba(166, 173, 201, 0.2)';
+`;
 
 const useStyles = makeStyles((theme) => ({
   card: {
-    borderColor: '#eee'
+    transform: 'translateX(-10px)',
+    position: 'fixed',
+    width: '275px',
+    borderColor: '#eee',
+    boxShadow:
+      '0 5px 10px rgba(154, 160, 185, 0.05), 0 5px 10px rgba(166, 173, 201, 0.2)'
   },
   cardContent: {
     padding: '0 !important'
@@ -56,6 +73,17 @@ const QuestionListWidget = ({
     initialIsRandomQuestions
   );
   const [isFolded, setIsFolded] = useState(initialIsFolded);
+  const [isCustomQuestionModalOpen, setCustomQuestionModalOpen] = useState(
+    false
+  );
+
+  const handleModalOpen = () => {
+    setCustomQuestionModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setCustomQuestionModalOpen(false);
+  };
 
   const recommendedQuestions = useSelector(
     (state) => state.questionReducer.recommendedQuestions
@@ -73,7 +101,7 @@ const QuestionListWidget = ({
   const recommendedQuestionList = recommendedQuestions
     .slice(0, 5)
     .map((question) => (
-      <ListItemLink key={question.id} href={`/questions/${question.id}`}>
+      <ListItemLink key={question.id} to={`/questions/${question.id}`}>
         <ListItemText
           classes={{ primary: classes.question }}
           primary={question.content}
@@ -82,7 +110,7 @@ const QuestionListWidget = ({
     ));
 
   const randomQuestionList = randomQuestions.slice(0, 5).map((question) => (
-    <ListItemLink key={question.id} href={`/questions/${question.id}`}>
+    <ListItemLink key={question.id} to={`/questions/${question.id}`}>
       <ListItemText
         classes={{ primary: classes.question }}
         primary={question.content}
@@ -156,7 +184,15 @@ const QuestionListWidget = ({
           )}
         </CardContent>
       </Card>
-      <CommonButton margin="16px 0">새로운 질문 만들기</CommonButton>
+      <NewQuestionButton margin="16px 0" onClick={handleModalOpen}>
+        새로운 질문 만들기
+      </NewQuestionButton>
+      {isCustomQuestionModalOpen && (
+        <CustomQuestionModal
+          open={isCustomQuestionModalOpen}
+          handleClose={handleModalClose}
+        />
+      )}
     </WidgetWrapper>
   );
 };

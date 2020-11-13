@@ -8,13 +8,15 @@ import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
 import QuestionBox from './QuestionBox';
 import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
+import CommentItem from '../comments/CommentItem';
+import NewComment from '../comments/NewComment';
 
 const PostItemWrapper = styled.div`
   background: #fff;
   padding: 16px;
   font-size: 14px;
   border: 1px solid #eee;
-  margin: 8px 0;
+  margin: 16px 0;
   position: relative;
   border-radius: 4px;
 `;
@@ -25,11 +27,17 @@ const ContentWrapper = styled.div`
   margin: 12px 0;
 `;
 
+const CommentWrapper = styled.div``;
+
 export default function PostItem({ postObj }) {
   // TODO: fix
   const isAuthor = true;
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+
+  const commentList = postObj.comments?.map((comment) => {
+    return <CommentItem key={comment.id} commentObj={comment} />;
+  });
 
   const toggleLike = () => {
     if (liked) {
@@ -74,6 +82,10 @@ export default function PostItem({ postObj }) {
           </div>
         )}
       </PostItemFooterWrapper>
+      <CommentWrapper>
+        {commentList}
+        <NewComment />
+      </CommentWrapper>
     </PostItemWrapper>
   );
 }

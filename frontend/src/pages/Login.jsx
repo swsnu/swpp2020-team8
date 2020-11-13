@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import history from '../history';
+import { useHistory } from 'react-router-dom';
 import { CommonInput, CommonButton } from '../styles';
 
 import { requestLogin, removeError } from '../modules/user';
-import { getIsLoggedIn } from '../selectors';
 
 const LoginWrapper = styled.div`
   width: 500px;
   margin: 0 auto;
-  margin-top: 50px;
+  margin-top: 120px;
 `;
 
 const WarningMessage = styled.div`
@@ -21,9 +20,9 @@ const WarningMessage = styled.div`
 `;
 
 export default function Login() {
+  const history = useHistory();
   const dispatch = useDispatch();
-  const [loginInfo, setLoginInfo] = useState({ email: '', password: '' });
-  const isLoggedIn = useSelector((state) => getIsLoggedIn(state));
+  const [loginInfo, setLoginInfo] = useState({ username: '', password: '' });
   const user = useSelector((state) => state.userReducer.user);
   const loginError = useSelector((state) => state.userReducer.loginError);
 
@@ -34,13 +33,12 @@ export default function Login() {
 
   // TODO: handle with isLoggedIn users
   useEffect(() => {
-    if (isLoggedIn || user?.id) history.push('/friends');
-  }, [isLoggedIn, user]);
+    if (user && user?.id) history.push('/friends');
+  }, [user, history]);
 
   const onClickSubmitButton = () => {
-    const { email, password } = loginInfo;
     dispatch(removeError());
-    dispatch(requestLogin({ email, password }));
+    dispatch(requestLogin(loginInfo));
   };
 
   const onClickSignupButton = () => {
@@ -51,10 +49,10 @@ export default function Login() {
     <LoginWrapper>
       <h1>로그인</h1>
       <CommonInput
-        id="email-input"
-        name="email"
-        value={loginInfo.email}
-        placeholder="이메일"
+        id="username-input"
+        name="username"
+        value={loginInfo.username}
+        placeholder="닉네임"
         onChange={handleChange}
       />
       <CommonInput
@@ -67,12 +65,12 @@ export default function Login() {
       />
       {loginError && loginError.length && (
         <WarningMessage id="login-error-message">
-          이메일 혹은 비밀번호를 다시 확인해주세요
+          닉네임 혹은 비밀번호를 다시 확인해주세요
         </WarningMessage>
       )}
       <CommonButton
         id="submit-button"
-        disabled={loginInfo.email === '' || loginInfo.password === ''}
+        disabled={loginInfo.username === '' || loginInfo.password === ''}
         margin="20px 0"
         onClick={onClickSubmitButton}
       >
