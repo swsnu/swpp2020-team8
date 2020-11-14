@@ -12,8 +12,10 @@ urlpatterns = [
     path('signup/', views.UserRegister.as_view(), name='user-register'),
     path('<int:pk>/info/', views.UserInfo.as_view(), name='user-info'),
     path('<int:pk>/', views.UserDetail.as_view(), name='user-detail'),
-    path('select-questions/', csrf_exempt(views.SignupQuestions.as_view()), name='signup-questions'),
-    path('token/', ensure_csrf_cookie(TokenObtainPairView.as_view()), name='token-obtain-pair'),
+    path('select-questions/', csrf_exempt(views.SignupQuestions.as_view()),
+         name='signup-questions'),
+    path('token/', ensure_csrf_cookie(TokenObtainPairView.as_view()),
+         name='token-obtain-pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token-verify'),
 ]
