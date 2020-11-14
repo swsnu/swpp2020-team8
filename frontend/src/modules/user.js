@@ -1,13 +1,19 @@
-// import axios from '../apis';
-import axios from 'axios';
+import Cookie from 'js.cookie';
+import axios from '../apis';
+// import axios from 'axios';
 
 export const SIGN_UP_REQUEST = 'user/SIGN_UP_REQUEST';
 export const SIGN_UP_SUCCESS = 'user/SIGN_UP_SUCCESS';
 export const SIGN_UP_FAILURE = 'user/SIGN_UP_FAILURE';
+
 export const LOGIN_REQUEST = 'user/LOGIN_REQUEST';
-export const LOGOUT = 'user/LOGOUT';
 export const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
 export const LOGIN_FAILURE = 'user/LOGIN_FAILURE';
+
+export const LOGOUT_REQUEST = 'user/LOGOUT_REQUEST';
+export const LOGOUT_SUCCESS = 'user/LOGOUT_SUCCESS';
+export const LOGOUT_FAILURE = 'user/LOGOUT_FAILURE';
+
 export const REMOVE_ERROR = 'user/REMOVE_ERROR';
 
 export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
@@ -15,12 +21,7 @@ export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
 const initialState = {
   loginError: false,
   signUpError: {},
-  user: {
-    id: 0,
-    username: '',
-    isLoggedIn: false,
-    questionHistory: null
-  }
+  user: null
 };
 
 export const requestSignUp = (signUpInfo) => {
@@ -54,7 +55,7 @@ export const requestSignUp = (signUpInfo) => {
 
 export const postSelectedQuestions = (selectedQuestions) => {
   return async (dispatch) => {
-    // await axios.post('api/user/select-questions', selectedQuestions);
+    await axios.post('api/user/select-questions', selectedQuestions);
     return dispatch({
       type: UPDATE_QUESTION_SELECT,
       selectedQuestions
@@ -69,37 +70,35 @@ export const signUp = (signUpInfo) => {
   };
 };
 
+async function getUser() {
+  const userInfo = await axios.get('/user/me/');
+  return userInfo.data;
+}
+
 export const requestLogin = (loginInfo) => {
   return async (dispatch) => {
-    try {
-      await axios.get('api/feed/friend');
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(e);
-    }
-    dispatch(login());
-    const csrf = getCookies(document.cookie);
-    axios.defaults.headers.common.X_CSRFToken = csrf;
-    try {
-      const { data } = await axios.post('api/user/login/', {
-        username: loginInfo.username,
-        password: loginInfo.password
-      });
-      dispatch(loginSuccess(data.user));
-    } catch (error) {
-      dispatch(loginFailure(error));
-    }
-  };
-};
+    dispatch({ type: 'question/LOGIN_REQUEST' });
 
-export const login = () => {
-  return {
-    type: LOGIN_REQUEST
+    let currentUser;
+    try {
+      // try login
+      await axios.post('user/login/', loginInfo);
+
+      // set jwt token set
+      const res = await axios.post('user/token/', loginInfo);
+      Cookie.set('jwt_token_refresh', res.data.refresh);
+      Cookie.set('jwt_token_access', res.data.access);
+
+      // set user info
+      currentUser = await getUser();
+    } catch (err) {
+      dispatch(loginFailure());
+    }
+    dispatch(loginSuccess(currentUser));
   };
 };
 
 export const loginSuccess = (user) => {
-  localStorage.setItem('user', JSON.stringify(user));
   return {
     type: LOGIN_SUCCESS,
     user
@@ -113,37 +112,24 @@ export const loginFailure = (error) => {
   };
 };
 
-export const logout = () => {
-  localStorage.setItem('user', null);
-  return {
-    type: LOGOUT
-  };
-};
+export const logout = () => async (dispatch) => {
+  // localStorage.setItem('user', null);
+  dispatch({ type: 'user/LOGOUT_REQUEST' });
+  try {
+    await axios.get('user/logout');
+  } catch (err) {
+    dispatch({ type: 'user/LOGOUT_FAILURE', error: err });
+  }
 
-export const logoutSuccess = (user) => {
-  return {
-    type: LOGOUT,
-    user
-  };
+  dispatch({
+    type: 'user/LOGOUT_SUCCESS'
+  });
 };
 
 export const removeError = () => {
   return {
     type: REMOVE_ERROR
   };
-};
-
-const getCookies = (cookie) => {
-  const cookies = cookie.split(';');
-  let res = null;
-  // eslint-disable-next-line consistent-return
-  cookies.forEach((item) => {
-    const [key, token] = item.split('=');
-    if (key === 'csrftoken') {
-      res = token;
-    }
-  });
-  return res;
 };
 
 export default function userReducer(state = initialState, action) {
@@ -161,9 +147,9 @@ export default function userReducer(state = initialState, action) {
     case LOGIN_FAILURE:
       return {
         user: null,
-        loginError: action.loginError
+        loginError: action.error
       };
-    case LOGOUT:
+    case LOGOUT_SUCCESS:
       return {
         user: null,
         loginError: false

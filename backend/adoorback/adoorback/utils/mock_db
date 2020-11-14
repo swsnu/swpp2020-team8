@@ -17,7 +17,7 @@ from adoorback.utils.mock_seed import set_seed
 from adoorback.utils.content_types import get_content_type
 User = get_user_model()
 
-set_seed(1000)
+set_seed()
 
 user = User.objects.all().last()
 

@@ -1,7 +1,6 @@
 import random
 import logging
 import sys
-import pandas as pd
 
 from django.utils import timezone
 from django.contrib.auth import get_user_model
@@ -14,17 +13,6 @@ from like.models import Like
 
 
 DEBUG = False
-
-
-def set_question_seed():
-    df = pd.read_csv('adoorback/assets/questions.csv')
-
-    User = get_user_model()
-    admin = User.objects.get(username='adoor')
-
-    for i in df.index:
-        content = df.at[i, 'content']
-        Question.objects.create(author=admin, is_admin_question=True, content=content)
 
 
 def set_seed(n):

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
@@ -23,18 +23,12 @@ export default function Login() {
   const history = useHistory();
   const dispatch = useDispatch();
   const [loginInfo, setLoginInfo] = useState({ username: '', password: '' });
-  const user = useSelector((state) => state.userReducer.user);
   const loginError = useSelector((state) => state.userReducer.loginError);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLoginInfo((prev) => ({ ...prev, [name]: value }));
   };
-
-  // TODO: handle with isLoggedIn users
-  useEffect(() => {
-    if (user && user?.id) history.push('/friends');
-  }, [user, history]);
 
   const onClickSubmitButton = () => {
     dispatch(removeError());
