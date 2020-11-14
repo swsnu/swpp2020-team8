@@ -1,4 +1,4 @@
-// import axios from 'axios';
+import axios from '../apis';
 import { mockAnonymousFeed, mockArticle, mockFriendFeed } from '../constants';
 import store from '../store';
 import postReducer, * as actionCreators from './post';
@@ -9,39 +9,49 @@ describe('postActions', () => {
   });
 
   it(`'getPostsByType:friend' should fetch posts correctly`, (done) => {
-    // const spy = jest.spyOn(axios, 'get').mockImplementation((url) => {
-    //   return new Promise((resolve, reject) => {
-    //     const result = {
-    //       status: 200,
-    //       data: mockFriendFeed
-    //     };
-    //     resolve(result);
-    //   });
-    // });
+    jest.mock('axios');
+
+    // axios.get.mockResolvedValue([]);
+    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const result = {
+          data: {
+            status: 200,
+            results: mockFriendFeed,
+            next: null
+          }
+        };
+        resolve(result);
+      });
+    });
 
     store.dispatch(actionCreators.getPostsByType('friend')).then(() => {
       const newState = store.getState();
+      expect(spy).toHaveBeenCalledTimes(1);
       expect(newState.postReducer.friendPosts).toMatchObject(mockFriendFeed);
       done();
     });
   });
 
   it(`'getPostsByType:anonymous' should fetch posts correctly`, (done) => {
-    // const spy = jest.spyOn(axios, 'get').mockImplementation((url) => {
-    //   return new Promise((resolve, reject) => {
-    //     const result = {
-    //       status: 200,
-    //       data: mockFriendFeed
-    //     };
-    //     resolve(result);
-    //   });
-    // });
+    jest.mock('axios');
+
+    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const result = {
+          data: { status: 200, next: null, results: mockAnonymousFeed }
+        };
+        resolve(result);
+      });
+    });
 
     store.dispatch(actionCreators.getPostsByType('anon')).then(() => {
       const newState = store.getState();
       expect(newState.postReducer.anonymousPosts).toMatchObject(
         mockAnonymousFeed
       );
+      expect(spy).toHaveBeenCalledTimes(1);
+
       done();
     });
   });
@@ -105,6 +115,7 @@ describe('Todo Reducer', () => {
       anonymousPosts: [],
       friendPosts: [],
       selectedUserPosts: [],
+      next: null,
       selectedPost: {}
     });
   });
@@ -115,7 +126,8 @@ describe('Todo Reducer', () => {
         anonymousPosts: [],
         friendPosts: [],
         selectedUserPosts: [],
-        selectedPost: {}
+        selectedPost: {},
+        next: null
       },
       {
         type: actionCreators.GET_FRIEND_POSTS_SUCCESS,
@@ -126,7 +138,8 @@ describe('Todo Reducer', () => {
       anonymousPosts: [],
       friendPosts: mockFriendFeed,
       selectedUserPosts: [],
-      selectedPost: {}
+      selectedPost: {},
+      next: undefined
     });
   });
 
@@ -141,7 +154,8 @@ describe('Todo Reducer', () => {
         anonymousPosts: [],
         friendPosts: [],
         selectedUserPosts: [],
-        selectedPost: {}
+        selectedPost: {},
+        next: null
       },
       {
         type: actionCreators.CREATE_POST_SUCCESS,

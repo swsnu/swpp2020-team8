@@ -1,6 +1,6 @@
-// import axios from '../apis';
+import axios from '../apis';
 
-import { mockFriendFeed, mockAnonymousFeed, mockPost } from '../constants';
+import { mockPost } from '../constants';
 
 export const GET_SELECTED_POST = 'post/GET_SELECTED_POST';
 export const GET_SELECTED_POST_SUCCESS = 'post/GET_SELECTED_POST_SUCCESS';
@@ -25,7 +25,8 @@ const initialState = {
   anonymousPosts: [],
   friendPosts: [],
   selectedUserPosts: [],
-  selectedPost: {}
+  selectedPost: {},
+  next: null
 };
 
 // export const getSelectedPost = (id) => {
@@ -53,24 +54,29 @@ export const getSelectedPostSuccess = (selectedPost) => {
 
 export const getPostsByType = (type, userId = null) => async (dispatch) => {
   const postType = type.toUpperCase();
-  let resultFeed;
-  if (postType === 'ANON') resultFeed = mockAnonymousFeed;
-  else resultFeed = mockFriendFeed;
+  // let resultFeed;
+  // if (postType === 'ANON') resultFeed = mockAnonymousFeed;
+  // else resultFeed = mockFriendFeed;
   dispatch({ type: `post/GET_${postType}_POSTS_REQUEST` });
-  // let result;
+  let result;
   try {
     if (userId) {
-      // result = await axios.get(`feed/${userId}/`);
+      result = await axios.get(`feed/${userId}/`);
     } else {
-      // const result = await axios.get(`api/feed/${type}/`);
-      // console.log(result);
+      result =
+        type === 'anon'
+          ? await axios.get('feed/anonymous')
+          : await axios.get(`feed/${type}/`);
     }
   } catch (err) {
     dispatch({ type: `post/GET_${postType}_POSTS_FAILURE`, error: err });
   }
+  console.log(result);
+  const { data } = result;
   dispatch({
     type: `post/GET_${postType}_POSTS_SUCCESS`,
-    result: [...resultFeed]
+    result: data.results,
+    next: data.next ?? null
   });
 };
 
@@ -118,17 +124,20 @@ export default function postReducer(state = initialState, action) {
     case GET_ANON_POSTS_SUCCESS:
       return {
         ...state,
-        anonymousPosts: [...action.result]
+        anonymousPosts: [...action.result],
+        next: action.next
       };
     case GET_FRIEND_POSTS_SUCCESS:
       return {
         ...state,
-        friendPosts: [...action.result]
+        friendPosts: [...action.result],
+        next: action.next
       };
     case GET_USER_POSTS_SUCCESS:
       return {
         ...state,
-        selectedUserPosts: [...action.result]
+        selectedUserPosts: [...action.result],
+        next: action.next
       };
     case CREATE_POST_REQUEST:
     case CREATE_POST_FAILURE:
