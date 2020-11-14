@@ -1,10 +1,10 @@
 // eslint-disable-next-line no-unused-vars
-import axios from 'axios';
 import {
   mockQuestions,
-  mockQuestionFeed,
+  // mockQuestionFeed,
   mockRecommendQuestions
 } from '../constants';
+import axios from '../apis';
 
 export const GET_SAMPLE_QUESTIONS = 'question/GET_SAMPLE_QUESTIONS';
 export const GET_SAMPLE_QUESTIONS_SUCCESS =
@@ -75,17 +75,16 @@ export const getRecommendedQuestions = (userId) => async (dispatch) => {
 };
 
 export const getDailyQuestions = () => async (dispatch) => {
-  // let res;
+  let res;
   dispatch({ type: 'question/GET_DAILY_QUESTIONS_REQUEST' });
   try {
-    // res = await axios.get('questions/daily/');
+    res = await axios.get('/api/feed/questions/daily/');
   } catch (err) {
     dispatch({ type: 'question/GET_DAILY_QUESTIONS_FAILURE', error: err });
   }
   dispatch({
     type: 'question/GET_DAILY_QUESTIONS_SUCCESS',
-    // dailyQuestions: res
-    res: [...mockQuestionFeed]
+    res: res.data.results
   });
 };
 
