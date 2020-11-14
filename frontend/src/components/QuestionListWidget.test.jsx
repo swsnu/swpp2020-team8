@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-boolean-value */
 import React from 'react';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
@@ -10,12 +11,7 @@ import rootReducer from '../modules';
 import 'jest-styled-components';
 import history from '../history';
 import QuestionListWidget from './QuestionListWidget';
-
-jest.mock('../components/CustomQuestionModal', () => {
-  return jest.fn(() => {
-    return <div className="custom-question-modal" />;
-  });
-});
+import CustomQuestionModal from './CustomQuestionModal';
 
 describe('<QuestionListWidget/>', () => {
   const store = createStore(
@@ -71,16 +67,14 @@ describe('<QuestionListWidget/>', () => {
     const mockfn = jest.fn();
     questionListWidget.handleClickRefreshButton = mockfn;
     const refreshButton = component.find('button').at(0);
-    // expect(refreshButton.length).toBe(3);
     refreshButton.simulate('click');
     expect(mockfn).toHaveBeenCalledTimes(0);
   });
 
   it('should open custom question modal', () => {
     const component = getWrapper();
-    const questionButton = component.find('CommonButton');
-    expect(questionButton.length).toBe(1);
+    const questionButton = component.find('NewQuestionButton');
     questionButton.simulate('click');
-    expect(component.find('.custom-question-modal').length).toBe(1);
+    expect(component.find(CustomQuestionModal)).toHaveLength(1);
   });
 });

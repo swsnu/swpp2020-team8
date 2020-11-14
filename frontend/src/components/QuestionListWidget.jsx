@@ -25,8 +25,6 @@ import {
 } from '../modules/question';
 import CustomQuestionModal from './CustomQuestionModal';
 
-CommonButton.displayName = 'CommonButton';
-
 const NewQuestionButton = styled(CommonButton)`
   transform: translateX(-10px);
   position: fixed;
@@ -34,6 +32,8 @@ const NewQuestionButton = styled(CommonButton)`
   width: 275px;
   box-shadow: '0 5px 10px rgba(154, 160, 185, 0.05), 0 5px 10px rgba(166, 173, 201, 0.2)';
 `;
+
+NewQuestionButton.displayName = 'NewQuestionButton';
 
 const useStyles = makeStyles((theme) => ({
   card: {
