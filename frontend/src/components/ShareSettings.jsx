@@ -8,6 +8,8 @@ import {
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
+import { createPost } from '../modules/post';
 
 const ShareSettingsWrapper = styled.div`
   display: flex;
@@ -21,11 +23,12 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export default function ShareSettings() {
+export default function ShareSettings({ newPost, resetContent }) {
+  const dispatch = useDispatch();
   const classes = useStyles();
 
   const [shareState, setShareState] = useState({
-    shareWithFriends: false,
+    shareWithFriends: true,
     shareAnonymously: false
   });
 
@@ -35,7 +38,14 @@ export default function ShareSettings() {
   };
 
   const onClickSubmitButton = () => {
-    setShareState({ shareWithFriends: false, shareAnonymously: false });
+    if (!newPost.content) return;
+    const postObj = {
+      ...shareState,
+      ...newPost
+    };
+    dispatch(createPost(postObj));
+    setShareState({ shareWithFriends: true, shareAnonymously: false });
+    resetContent();
   };
 
   const controlShareWithFriends = (

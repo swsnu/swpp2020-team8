@@ -1,11 +1,16 @@
 import axios from 'axios';
-// import history from '@/history';
+import Cookie from 'js.cookie';
 
-const instance = axios.create();
+const csrftoken = Cookie.get('csrftoken');
+
+const instance = axios.create({
+  baseURL: 'http://localhost:3000/api/',
+  withCredentials: true
+});
 
 instance.defaults.headers.common['Content-Type'] = 'application/json';
-instance.defaults.xsrfCookieName = 'csrftoken';
-instance.defaults.xsrfHeaderName = 'X-CSRFToken';
+instance.defaults.headers.common['X-CSRFToken'] = csrftoken;
+
 // instance.interceptors.response.use(
 //   (response) => {
 //     return response;
