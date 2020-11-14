@@ -17,11 +17,13 @@ describe('<CustomQuestionModal /> unit test', () => {
     composeWithDevTools(applyMiddleware(thunk))
   );
 
+  const mockfn = jest.fn();
+
   const getWrapper = () =>
     mount(
       <Provider store={store}>
         <Router history={history}>
-          <CustomQuestionModal open={true} />
+          <CustomQuestionModal open={true} handleClose={mockfn} />
         </Router>
       </Provider>
     );
@@ -29,5 +31,25 @@ describe('<CustomQuestionModal /> unit test', () => {
   it('should render without errors', () => {
     const component = getWrapper();
     expect(component.find('CustomQuestionModal').length).toBe(1);
+  });
+
+  it('should close modal when submit button clicked', () => {
+    const component = getWrapper();
+    expect(component.find('CustomQuestionModal').length).toBe(1);
+    const submitButton = component.find('button');
+    submitButton.simulate('click');
+    expect(mockfn).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle input change', () => {
+    const component = getWrapper();
+    expect(component.find('CustomQuestionModal').length).toBe(1);
+    const textarea = component.find('textarea').at(0);
+
+    const event = {
+      preventDefault() {},
+      target: { name: 'username', value: 'test' }
+    };
+    textarea.simulate('change', event);
   });
 });
