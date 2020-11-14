@@ -15,6 +15,18 @@ import Login from './Login';
 //   error: true,
 //   user: { id: 1, username: 'jina', isLoggedIn: false }
 // };
+const mockErrorStore = {
+  ...mockStore,
+  userReducer: {
+    loginError: '401',
+    error: false,
+    user: {
+      id: 0,
+      username: 'mock',
+      isLoggedIn: false
+    }
+  }
+};
 
 describe('<Login /> unit test', () => {
   const store = createStore(
@@ -23,10 +35,25 @@ describe('<Login /> unit test', () => {
     composeWithDevTools(applyMiddleware(thunk))
   );
 
+  const errStore = createStore(
+    rootReducer,
+    mockErrorStore,
+    composeWithDevTools(applyMiddleware(thunk))
+  );
+
   const handleSubmit = jest.fn();
   const getWrapper = () =>
     mount(
       <Provider store={store}>
+        <Router history={history}>
+          <Login handleSubmit={handleSubmit} />
+        </Router>
+      </Provider>
+    );
+
+  const getErrorWrapper = () =>
+    mount(
+      <Provider store={errStore}>
         <Router history={history}>
           <Login handleSubmit={handleSubmit} />
         </Router>
@@ -78,5 +105,17 @@ describe('<Login /> unit test', () => {
     expect(button.length).toBe(1);
     button.simulate('click');
     expect(jest.fn()).toBeCalledTimes(0);
+  });
+
+  it('warning message should not appear', () => {
+    const wrapper = getWrapper();
+    const msg = wrapper.find('WarningMessage');
+    expect(msg.length).toBe(0);
+  });
+
+  it('warning message should appear when error', () => {
+    const wrapper = getErrorWrapper();
+    const msg = wrapper.find('WarningMessage');
+    expect(msg.length).toBe(1);
   });
 });
