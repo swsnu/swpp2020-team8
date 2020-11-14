@@ -40,12 +40,14 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     outline: 'none !important',
     boxSizing: 'border-box',
-    margin: '8px 0'
+    margin: '8px 0',
+    fontFamily: 'Noto Sans KR',
+    fontsize: '14px'
   }
 }));
 
 // TODO: share settings
-export default function QuestionItem({ articleObj }) {
+export default function QuestionItem({ questionObj }) {
   // TODO: fix
   const isAuthor = true;
 
@@ -53,6 +55,19 @@ export default function QuestionItem({ articleObj }) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isWriting, setIsWriting] = useState(false);
+  const [newPost, setNewPost] = useState({
+    question_id: questionObj?.id,
+    question_detail: questionObj,
+    content: null,
+    type: 'Response'
+  });
+
+  const handleContentChange = (e) => {
+    setNewPost((prev) => ({
+      ...prev,
+      content: e.target.value
+    }));
+  };
 
   const toggleLike = () => {
     if (liked) {
@@ -71,13 +86,17 @@ export default function QuestionItem({ articleObj }) {
   const handleEdit = () => {};
   const handleDelete = () => {};
 
+  const resetContent = () => {
+    setNewPost((prev) => ({ ...prev, content: '' }));
+  };
+
   return (
     <QuestionItemWrapper>
       <PostItemHeaderWrapper>
-        {articleObj.author_detail.username !== 'admin' && (
-          <AuthorProfile author={articleObj.author_detail} />
+        {questionObj.author_detail.username !== 'admin' && (
+          <AuthorProfile author={questionObj.author_detail} />
         )}
-        {articleObj.author_detail.username !== 'admin' && isAuthor && (
+        {questionObj.author_detail.username !== 'admin' && isAuthor && (
           <PostAuthorButtons
             onClickEdit={handleEdit}
             onClickDelete={handleDelete}
@@ -85,11 +104,9 @@ export default function QuestionItem({ articleObj }) {
         )}
       </PostItemHeaderWrapper>
       <Question>
-        <Link to={`/questions/${articleObj.question_detail.id}`}>
-          {articleObj.question_detail.question}
-        </Link>
+        <Link to={`/questions/${questionObj.id}`}>{questionObj.content}</Link>
       </Question>
-      <CreateTime createTime={articleObj.create_at} />
+      <CreateTime createTime={questionObj.created_at} />
       <PostItemFooterWrapper>
         <IconButton color="secondary" size="small" onClick={handleSendButton}>
           <SendIcon color="secondary" />
@@ -117,9 +134,12 @@ export default function QuestionItem({ articleObj }) {
           <TextareaAutosize
             className={classes.textArea}
             aria-label="new response"
+            id="content-input"
             placeholder="답변을 작성해주세요."
+            value={newPost.content}
+            onChange={handleContentChange}
           />
-          <ShareSettings />
+          <ShareSettings newPost={newPost} resetContent={resetContent} />
         </>
       )}
     </QuestionItemWrapper>

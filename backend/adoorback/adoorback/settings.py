@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import datetime
 import os.path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -28,12 +29,20 @@ DEBUG = True
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 15
+    'PAGE_SIZE': 10,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
 }
 
-ALLOWED_HOSTS = [
+JWT_AUTH = {
+    'JWT_VERIFY': True,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+}
 
-]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -53,11 +62,14 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'rest_framework',
     'polymorphic',
+    'admin_honeypot',
 ]
 
 SITE_ID = 1
 
 AUTH_USER_MODEL = 'account.User'
+
+LOGIN_REDIRECT_URL = '/api/user/'
 
 # reference: https://github.com/jazzband/django-redis
 CACHES = {

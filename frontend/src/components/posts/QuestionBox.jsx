@@ -15,7 +15,7 @@ const QuestionBoxWrapper = styled.div`
 export default function QuestionBox({ questionObj }) {
   return (
     <Link to={`/questions/${questionObj.id}`}>
-      <QuestionBoxWrapper>{questionObj.question}</QuestionBoxWrapper>
+      <QuestionBoxWrapper>{questionObj.content}</QuestionBoxWrapper>
     </Link>
   );
 }

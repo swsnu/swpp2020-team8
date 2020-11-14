@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+
+import { useSelector } from 'react-redux';
 import Login from './pages/Login';
 import { GlobalStyle, MainWrapper, FeedWrapper } from './styles';
 import Header from './components/Header';
@@ -24,14 +26,19 @@ const theme = createMuiTheme({
 });
 
 const App = () => {
-  // TODO: signedIn redux state
-  const [signedIn] = useState(true);
+  const user = useSelector((state) => state.userReducer.user);
+  // let signedIn = user !== null;
+
+  // useEffect(() => {
+  //   if (user == null) signedIn = false;
+  //   else signedIn = true;
+  // }, [user]);
 
   return (
     <MuiThemeProvider theme={theme}>
       <GlobalStyle />
-      <Header signedIn={signedIn} />
-      {!signedIn ? (
+      <Header />
+      {user == null ? (
         <Switch>
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={SignUp} />
@@ -42,26 +49,18 @@ const App = () => {
         <MainWrapper>
           <QuestionListWidget />
           <FeedWrapper>
+            <Redirect exact path="/login" to="/friends" />
             <Switch>
-              <PrivateRoute
+              <Route
                 exact
-                path="/friends"
-                component={FriendFeed}
-                signedIn
+                path="/select-questions"
+                component={QuestionSelection}
               />
-              <PrivateRoute
-                exact
-                path="/anonymous"
-                component={AnonymousFeed}
-                signedIn
-              />
-              <PrivateRoute
-                exact
-                path="/questions"
-                component={QuestionFeed}
-                signedIn
-              />
-              <Redirect path="/" to="/friends" />
+
+              <PrivateRoute exact path="/friends" component={FriendFeed} />
+              <PrivateRoute exact path="/anonymous" component={AnonymousFeed} />
+              <PrivateRoute exact path="/questions" component={QuestionFeed} />
+              <Redirect exact path="/" to="/friends" />
             </Switch>
           </FeedWrapper>
           <FriendListWidget />

@@ -1,7 +1,10 @@
-from django.test import TestCase
-from feed.models import Article, Response, Question, Post
-from adoorback.utils.seed import set_seed, fill_data
+from test_plus.test import TestCase
+
 from django.contrib.auth import get_user_model
+
+from feed.models import Article, Response, Question, Post
+
+from adoorback.utils.seed import set_seed, fill_data
 from adoorback.utils.content_types import get_content_type
 
 
@@ -46,7 +49,7 @@ class FeedTestCase(TestCase):
         response = Response.objects.all().last()
         response_id = response.id
 
-        response.target.delete()
+        response.question.delete()
         self.assertEqual(Response.objects.all().filter(id=response_id).count(), 0)
 
     # post content must change to reflect target content
@@ -64,5 +67,3 @@ class FeedTestCase(TestCase):
         response.delete()
 
         self.assertEqual(Post.objects.all().filter(object_id=response.id).count(), 0)
-
-    # TODO: test behavior of admin questions

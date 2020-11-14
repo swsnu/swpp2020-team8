@@ -9,18 +9,17 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "@wojtekmaj/enzyme-adapter-react-17": "^0.3.1",
-    "axios": "^0.21.0",
     "autosize": "^4.0.2",
     "axios": "^0.21.0",
-    "connected-react-router": "^6.5.2",
     "babel-plugin-styled-components": "^1.11.1",
-    "date-fns": "^2.16.1",
-    "coveralls": "^3.1.0",
     "connected-react-router": "^6.5.2",
+    "coveralls": "^3.1.0",
+    "date-fns": "^2.16.1",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.5",
     "history": "^5.0.0",
     "jest-styled-components": "^7.0.3",
+    "js.cookie": "^0.0.4",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-redux": "^7.2.1",
@@ -82,7 +81,14 @@
   },
   "jest": {
     "collectCoverageFrom": [
-      "!src/constants/*"
+      "src/**/*.{js,jsx}",
+      "!src/constants/*",
+      "!src/index.jsx",
+      "!src/store/index.js",
+      "!src/serviceWorker.js",
+      "!src/utils/dateTimeHelpers.js",
+      "!src/styles.js"
     ]
-  }
+  },
+  "proxy": "http://localhost:8000"
 }

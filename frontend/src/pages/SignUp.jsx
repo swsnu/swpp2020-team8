@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
-// import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
+import { requestSignUp } from '../modules/user';
 import { CommonInput, CommonButton } from '../styles';
 
 const SignUpWrapper = styled.div`
   width: 500px;
   margin: 0 auto;
-  margin-top: 50px;
+  margin-top: 130px;
+
+  @media (max-width: 650px) {
+    width: 90%;
+  }
 `;
 
 const WarningMessage = styled.div`
@@ -15,24 +21,21 @@ const WarningMessage = styled.div`
   margin-bottom: 4px;
 `;
 
-// const CheckButton = styled.button`
-//   padding: 12px 11px;
-//   border-radius: 4px;
-//   color: #fff;
-//   font-size: 16px;
-//   outline: none;
-//   border: none;
-//   background-color: #ccc;
-//   width: 30%;
-//   margin: 4px;
-//   opacity: 0.8;
-//   :hover {
-//     opacity: 1;
-//   }
-// `;
-
 export default function SignUp() {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const user = useSelector((state) => state.userReducer.user);
+
+  // const signUpError = useSelector((state) => state.userReducer.signUpError);
+  // useEffect(() => {
+  // deal with invalid field here
+  // }, [signUpError]);
+
+  useEffect(() => {
+    if (user && user.email) history.push('/select-questions');
+  }, [user, history]);
+
   const [signUpInfo, setSignUpInfo] = useState({
     email: '',
     username: '',
@@ -56,8 +59,9 @@ export default function SignUp() {
   const onClickSubmitButton = () => {
     setIsSubmitted(true);
     // TODO: deal with invalid field error
-    setIsUsernameValid(false);
-    setIsEmailValid(false);
+    dispatch(requestSignUp(signUpInfo));
+    setIsUsernameValid(true);
+    setIsEmailValid(true);
   };
 
   return (
@@ -85,11 +89,9 @@ export default function SignUp() {
       {isSubmitted && !isUsernameValid && (
         <WarningMessage>중복된 닉네임이 존재합니다.</WarningMessage>
       )}
-      {/* <CheckButton onClick={onCheckUsername} color="#999">
-          중복확인
-        </CheckButton> */}
       <CommonInput
         name="password"
+        type="password"
         id="password-input"
         value={signUpInfo.password}
         placeholder="비밀번호"
