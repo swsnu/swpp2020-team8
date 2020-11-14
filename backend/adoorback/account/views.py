@@ -11,9 +11,6 @@ from account.serializers import UserProfileSerializer, UserDetailedSerializer
 from feed.serializers import QuestionSerializer
 from feed.models import Question
 
-from account.serializers import UserProfileSerializer
-from feed.serializers import QuestionSerializer
-from feed.models import Question
 User = get_user_model()
 
 
