@@ -26,11 +26,15 @@ describe('<ShareSettings />', () => {
     composeWithDevTools(applyMiddleware(thunk))
   );
 
+  const resetContent = jest.fn();
   const getWrapper = () =>
     mount(
       <Provider store={store}>
         <Router history={history}>
-          <ShareSettings newPost={{ content: '', type: 'Article' }} />
+          <ShareSettings
+            newPost={{ content: 'test', type: 'Article' }}
+            resetContent={resetContent}
+          />
         </Router>
       </Provider>
     );
@@ -44,7 +48,7 @@ describe('<ShareSettings />', () => {
     expect(wrapper.find('ShareSettings').length).toBe(1);
   });
 
-  it('should handles with toggles', async () => {
+  it('should handle with toggles', async () => {
     const wrapper = getWrapper();
     const shareWithFriendsToggle = wrapper.find('.share-with-friends').at(0);
     expect(shareWithFriendsToggle.length).toBe(1);
@@ -55,12 +59,35 @@ describe('<ShareSettings />', () => {
     });
   });
 
-  it('should handles with submit button', async () => {
+  it('should handle with submit button', async () => {
     const wrapper = getWrapper();
     const submitButton = wrapper.find('button');
     expect(submitButton.length).toBe(1);
     await act(async () => {
       submitButton.simulate('click');
     });
+    submitButton.simulate('click');
+
+    const shareWithFriendsToggle = wrapper.find('#share-with-friends').at(0);
+    expect(shareWithFriendsToggle.props().checked).toBeTruthy();
+    const shareAnon = wrapper.find('#share-anonymously').at(0);
+    expect(shareAnon.props().checked).toBeFalsy();
+  });
+
+  it('should not submitted when no content', () => {
+    const wrapper = mount(
+      <Provider store={store}>
+        <Router history={history}>
+          <ShareSettings
+            newPost={{ content: 'test', type: 'Article' }}
+            resetContent={resetContent}
+          />
+        </Router>
+      </Provider>
+    );
+    const submitButton = wrapper.find('button');
+    expect(submitButton.length).toBe(1);
+    submitButton.simulate('click');
+    expect(jest.fn()).toHaveBeenCalledTimes(0);
   });
 });
