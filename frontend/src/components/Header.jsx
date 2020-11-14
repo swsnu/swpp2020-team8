@@ -216,7 +216,6 @@ const Header = () => {
               <>
                 <div className={classes.grow} />
                 <Link
-                  component="a"
                   to="/login"
                   variant="outlined"
                   size="medium"
