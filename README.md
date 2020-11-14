@@ -23,6 +23,8 @@ yarn test --coverage --watchAll=false
 ### Run
 ```
 cd backend/adoorback
+rm -f tmp.db db.sqlite3
+rm -r */migrations
 pip install -r requirements.txt
 python manage.py makemigrations account feed comment like
 python manage.py migrate
