@@ -215,7 +215,8 @@ const Header = () => {
             ) : (
               <>
                 <div className={classes.grow} />
-                <Link
+                <Button
+                  component={Link}
                   id="login-link"
                   to="/login"
                   variant="outlined"
@@ -223,7 +224,7 @@ const Header = () => {
                   className={classes.logoutButton}
                 >
                   로그인
-                </Link>
+                </Button>
               </>
             )}
           </Toolbar>
