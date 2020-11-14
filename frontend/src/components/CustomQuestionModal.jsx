@@ -101,7 +101,6 @@ const CustomQuestionModal = ({ open, handleClose }) => {
         />
         <SubmitButtonWrapper>
           <Button
-            id="submit-button"
             size="medium"
             variant="contained"
             color="primary"
