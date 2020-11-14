@@ -34,3 +34,9 @@ python manage.py runserver
 ```
 
 ### Test
+
+```
+coverage run --source=‘.’ --omit=‘/migrations/’,’adoorback/’,’manage.py’,‘/wsgi.py’,‘/asgi.py’,‘/utils/*’ ./manage.py test
+coverage run --branch --source=‘.’ --omit=‘/migrations/’,’adoorback/’,’manage.py’,‘/wsgi.py’,‘/asgi.py’,‘/utils/*’ ./manage.py test
+coverage report -m
+```
