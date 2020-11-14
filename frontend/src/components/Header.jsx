@@ -190,6 +190,7 @@ const Header = () => {
           variant="outlined"
           size="medium"
           className={classes.logoutButton}
+          id="logout-button"
           onClick={(e) => {
             e.stopPropagation();
             handleClickLogout();

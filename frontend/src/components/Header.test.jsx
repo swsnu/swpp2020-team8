@@ -46,7 +46,7 @@ describe('<QuestionListWidget/>', () => {
   it('should render <NotificationDropdownList/> when clicking notification button', () => {
     // eslint-disable-next-line react/jsx-boolean-value
     jest.mock('react-redux', () => ({
-      useDisPatch: () => jest.fn()
+      useDispatch: () => jest.fn()
     }));
     const component = getWrapper();
     const notiButton = component.find('.noti-button');
@@ -54,45 +54,21 @@ describe('<QuestionListWidget/>', () => {
     expect(component.find(NotificationDropdownList)).toHaveLength(1);
   });
 
-  // it('should render without errors', () => {
-  //   const component = getWrapper().find('QuestionListWidget');
-  //   expect(component.length).toBe(1);
-  // });
+  it('should render and call logout when clicked', () => {
+    // eslint-disable-next-line react/jsx-boolean-value
+    jest.mock('react-redux', () => ({
+      useDispatch: () => jest.fn()
+    }));
+    const component = getWrapper();
+    const logout = component.find('#logout-button');
+    expect(logout.exists()).toBeTruthy();
+    logout.forEach((button) => {
+      button.simulate('click');
+    });
 
-  // it('should handle fold and unfold button clicks', () => {
-  //   const component = getWrapper();
-  //   const unfoldedButtons = component.find('button');
-
-  //   // Question: material ui를 id, class로 find하기 =>같은 class를 모두 잡아버림...
-  //   // fold
-  //   const foldButton = unfoldedButtons.at(1);
-  //   foldButton.simulate('click');
-  //   const foldedButtons = component.find('button');
-  //   expect(foldedButtons.length).toEqual(2); // unfold-button, custom-question-button
-
-  //   // unfold
-  //   const unfoldButton = foldedButtons.at(0);
-  //   unfoldButton.simulate('click');
-  //   expect(component.find('button').length).toEqual(3); // refresh, fold-button, custom-question-button
-  // });
-
-  // it('should call refresh button click', () => {
-  //   const component = getWrapper();
-  //   const questionListWidget = component.find('QuestionListWidget');
-  //   expect(questionListWidget.length).toBe(1);
-  //   const mockfn = jest.fn();
-  //   questionListWidget.handleClickRefreshButton = mockfn;
-  //   const refreshButton = component.find('button').at(0);
-  //   // expect(refreshButton.length).toBe(3);
-  //   refreshButton.simulate('click');
-  //   expect(mockfn).toHaveBeenCalledTimes(0);
-  // });
-
-  // it('should open custom question modal', () => {
-  //   const component = getWrapper();
-  //   const questionButton = component.find('CommonButton');
-  //   expect(questionButton.length).toBe(1);
-  //   questionButton.simulate('click');
-  //   expect(component.find('.custom-question-modal').length).toBe(1);
-  // });
+    setTimeout(() => {
+      const dispatch = jest.fn().mockImplementation(() => false);
+      expect(dispatch).toBeCalled();
+    }, 500);
+  });
 });
