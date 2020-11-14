@@ -1,3 +1,8 @@
+rm -f tmp.db db.sqlite3
+rm -r */migrations
+python manage.py makemigrations account feed comment like
+python manage.py migrate
+
 python manage.py shell
 
 from faker import Faker
@@ -8,11 +13,11 @@ from feed.models import Question, Article, Response, Post
 from comment.models import Comment
 from like.models import Like
 from django.contrib.contenttypes.models import ContentType
-from adoorback.utils.seed import set_seed
+from adoorback.utils.mock_seed import set_seed
 from adoorback.utils.content_types import get_content_type
 User = get_user_model()
 
-set_seed(10)
+set_seed()
 
 user = User.objects.all().last()
 

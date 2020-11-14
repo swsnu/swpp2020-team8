@@ -9,10 +9,17 @@ import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import SearchIcon from '@material-ui/icons/Search';
-import { Link } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
+import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
 import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
+import { logout } from '../modules/user';
 
+const TitleLink = styled(NavLink)`
+  ${'' /* font-family: 'Quicksand', sans-serif; */}
+  font-family: 'Pacifico', cursive;
+`;
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1
@@ -40,10 +47,14 @@ const useStyles = makeStyles((theme) => ({
   },
   tabButton: {
     fontSize: '16px',
+    color: borderColor,
     '&:hover': {
       color: primaryColor
     },
     marginLeft: theme.spacing(6)
+  },
+  tabActive: {
+    color: primaryColor
   },
   search: {
     position: 'relative',
@@ -101,11 +112,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // eslint-disable-next-line react/prop-types
-const Header = ({ signedIn }) => {
+const Header = () => {
   const classes = useStyles();
-  const { pathname } = window.location;
-
   const [isNotiOpen, setIsNotiOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.userReducer.user);
+
+  const handleClickLogout = () => {
+    dispatch(logout());
+  };
 
   const toggleNotiOpen = () => {
     setIsNotiOpen(!isNotiOpen);
@@ -113,36 +129,30 @@ const Header = ({ signedIn }) => {
 
   const renderHeaderSignedInItems = (
     <>
-      <Link
+      <NavLink
         className={classes.tabButton}
         to="/friends"
         size="large"
-        style={{
-          color: pathname === '/friends' ? primaryColor : borderColor
-        }}
+        activeClassName={classes.tabActive}
       >
         친구들의 글
-      </Link>
-      <Link
+      </NavLink>
+      <NavLink
         className={classes.tabButton}
         to="/anonymous"
         size="large"
-        style={{
-          color: pathname === '/anonymous' ? primaryColor : borderColor
-        }}
+        activeClassName={classes.tabActive}
       >
         익명 글
-      </Link>
-      <Link
+      </NavLink>
+      <NavLink
         className={classes.tabButton}
         to="/questions"
         size="large"
-        style={{
-          color: pathname === '/questions' ? primaryColor : borderColor
-        }}
+        activeClassName={classes.tabActive}
       >
         질문 모음
-      </Link>
+      </NavLink>
       <div className={classes.grow} />
       <div className={classes.sectionDesktop}>
         <div className={classes.search}>
@@ -166,12 +176,11 @@ const Header = ({ signedIn }) => {
             toggleNotiOpen();
           }}
         >
-          <Badge badgeContent={3} color="secondary">
+          <Badge badgeContent={3} color="primary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
         <IconButton
-          href=""
           aria-label="account of current user"
           className={classes.iconButton}
         >
@@ -181,6 +190,10 @@ const Header = ({ signedIn }) => {
           variant="outlined"
           size="medium"
           className={classes.logoutButton}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleClickLogout();
+          }}
         >
           로그아웃
         </Button>
@@ -193,23 +206,23 @@ const Header = ({ signedIn }) => {
       <div className={classes.grow}>
         <AppBar position="static" className={classes.header}>
           <Toolbar>
-            <span href="/friends" component="button" className={classes.title}>
+            <TitleLink to="/friends" className={classes.title}>
               adoor
-            </span>
-            {signedIn ? (
+            </TitleLink>
+            {user !== null ? (
               renderHeaderSignedInItems
             ) : (
               <>
                 <div className={classes.grow} />
-                <Button
+                <Link
                   component="a"
-                  href="/login"
+                  to="/login"
                   variant="outlined"
                   size="medium"
                   className={classes.logoutButton}
                 >
                   로그인
-                </Button>
+                </Link>
               </>
             )}
           </Toolbar>
