@@ -216,6 +216,7 @@ const Header = () => {
               <>
                 <div className={classes.grow} />
                 <Link
+                  id="login-link"
                   to="/login"
                   variant="outlined"
                   size="medium"

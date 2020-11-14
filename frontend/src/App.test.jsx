@@ -6,7 +6,7 @@ import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 import App from './App';
-import { mockStore } from './mockStore';
+import { mockStore, mockStoreBeforeLogin } from './mockStore';
 import rootReducer from './modules';
 import history from './history';
 
@@ -17,6 +17,12 @@ describe('App unit mount test', () => {
   const store = createStore(
     rootReducer,
     mockStore,
+    composeWithDevTools(applyMiddleware(thunk))
+  );
+
+  const storeBeforeLogin = createStore(
+    rootReducer,
+    mockStoreBeforeLogin,
     composeWithDevTools(applyMiddleware(thunk))
   );
 
@@ -32,5 +38,18 @@ describe('App unit mount test', () => {
   it('should mount', () => {
     const wrapper = getWrapper();
     expect(wrapper.find('App').length).toBe(1);
+  });
+
+  it('should display login button when not logged in', () => {
+    const wrapper = mount(
+      <Provider store={storeBeforeLogin}>
+        <Router history={history}>
+          <App />
+        </Router>
+      </Provider>
+    );
+
+    // const wrapper = getWrapperBeforeLogin();
+    expect(wrapper.find('#login-link')).toBeTruthy();
   });
 });
