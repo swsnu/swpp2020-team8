@@ -9,7 +9,6 @@ import PostAuthorButtons from './PostAuthorButtons';
 import QuestionBox from './QuestionBox';
 import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
 import CommentItem from '../comments/CommentItem';
-import NewComment from '../comments/NewComment';
 
 const PostItemWrapper = styled.div`
   background: #fff;
@@ -82,10 +81,7 @@ export default function PostItem({ postObj }) {
           </div>
         )}
       </PostItemFooterWrapper>
-      <CommentWrapper>
-        {commentList}
-        <NewComment />
-      </CommentWrapper>
+      <CommentWrapper>{commentList}</CommentWrapper>
     </PostItemWrapper>
   );
 }
