@@ -1,14 +1,19 @@
-// import axios from '../apis';
-import axios from 'axios';
 import Cookie from 'js.cookie';
+import axios from '../apis';
+// import axios from 'axios';
 
 export const SIGN_UP_REQUEST = 'user/SIGN_UP_REQUEST';
 export const SIGN_UP_SUCCESS = 'user/SIGN_UP_SUCCESS';
 export const SIGN_UP_FAILURE = 'user/SIGN_UP_FAILURE';
+
 export const LOGIN_REQUEST = 'user/LOGIN_REQUEST';
-export const LOGOUT = 'user/LOGOUT';
 export const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
 export const LOGIN_FAILURE = 'user/LOGIN_FAILURE';
+
+export const LOGOUT_REQUEST = 'user/LOGOUT_REQUEST';
+export const LOGOUT_SUCCESS = 'user/LOGOUT_SUCCESS';
+export const LOGOUT_FAILURE = 'user/LOGOUT_FAILURE';
+
 export const REMOVE_ERROR = 'user/REMOVE_ERROR';
 
 export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
@@ -16,12 +21,7 @@ export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
 const initialState = {
   loginError: false,
   signUpError: {},
-  user: {
-    id: 0,
-    username: '',
-    isLoggedIn: false,
-    questionHistory: null
-  }
+  user: null
 };
 
 export const requestSignUp = (signUpInfo) => {
@@ -71,73 +71,34 @@ export const signUp = (signUpInfo) => {
 };
 
 async function getUser() {
-  const info = await fetch('/api/user/me/', {
-    method: 'GET',
-    credentials: 'include'
-  });
-  const currentUser = await info.json();
-  return currentUser;
+  const userInfo = await axios.get('/user/me/');
+  return userInfo.data;
 }
 
 export const requestLogin = (loginInfo) => {
   return async (dispatch) => {
+    dispatch({ type: 'question/LOGIN_REQUEST' });
+
+    let currentUser;
     try {
-      await axios.get('api/feed/friend/');
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(e);
+      // try login
+      await axios.post('user/login/', loginInfo);
+
+      // set jwt token set
+      const res = await axios.post('user/token/', loginInfo);
+      Cookie.set('jwt_token_refresh', res.data.refresh);
+      Cookie.set('jwt_token_access', res.data.access);
+
+      // set user info
+      currentUser = await getUser();
+    } catch (err) {
+      dispatch(loginFailure());
     }
-    dispatch(login());
-
-    const csrftoken = Cookie.get('csrftoken');
-
-    const response = await fetch('api/user/login/', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrftoken
-      },
-      redirect: 'follow',
-      body: JSON.stringify(loginInfo)
-    });
-
-    if (response.status === 200) {
-      await fetch('api/user/token/', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(loginInfo)
-      }).then((jwtToken) =>
-        jwtToken
-          .json()
-          .then((data) => ({
-            data: data,
-            status: jwtToken.status
-          }))
-          .then((res) => {
-            Cookie.set('jwt_token_refresh', res.data.refresh);
-            Cookie.set('jwt_token_access', res.data.access);
-          })
-      );
-      const currentUser = await getUser();
-      dispatch(loginSuccess(currentUser));
-    } else {
-      dispatch(loginFailure(response.status));
-    }
-  };
-};
-
-export const login = () => {
-  return {
-    type: LOGIN_REQUEST
+    dispatch(loginSuccess(currentUser));
   };
 };
 
 export const loginSuccess = (user) => {
-  localStorage.setItem('user', JSON.stringify(user));
   return {
     type: LOGIN_SUCCESS,
     user
@@ -151,18 +112,18 @@ export const loginFailure = (error) => {
   };
 };
 
-export const logout = () => {
-  localStorage.setItem('user', null);
-  return {
-    type: LOGOUT
-  };
-};
+export const logout = () => async (dispatch) => {
+  // localStorage.setItem('user', null);
+  dispatch({ type: 'user/LOGOUT_REQUEST' });
+  try {
+    await axios.get('user/logout');
+  } catch (err) {
+    dispatch({ type: 'user/LOGOUT_FAILURE', error: err });
+  }
 
-export const logoutSuccess = (user) => {
-  return {
-    type: LOGOUT,
-    user
-  };
+  dispatch({
+    type: 'user/LOGOUT_SUCCESS'
+  });
 };
 
 export const removeError = () => {
@@ -186,9 +147,9 @@ export default function userReducer(state = initialState, action) {
     case LOGIN_FAILURE:
       return {
         user: null,
-        loginError: action.loginError
+        loginError: action.error
       };
-    case LOGOUT:
+    case LOGOUT_SUCCESS:
       return {
         user: null,
         loginError: false

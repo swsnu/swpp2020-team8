@@ -11,8 +11,10 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import SearchIcon from '@material-ui/icons/Search';
 import { NavLink, Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
 import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
+import { logout } from '../modules/user';
 
 const TitleLink = styled(NavLink)`
   ${'' /* font-family: 'Quicksand', sans-serif; */}
@@ -110,9 +112,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // eslint-disable-next-line react/prop-types
-const Header = ({ signedIn }) => {
+const Header = () => {
   const classes = useStyles();
   const [isNotiOpen, setIsNotiOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.userReducer.user);
+
+  const handleClickLogout = () => {
+    dispatch(logout());
+  };
 
   const toggleNotiOpen = () => {
     setIsNotiOpen(!isNotiOpen);
@@ -181,6 +190,10 @@ const Header = ({ signedIn }) => {
           variant="outlined"
           size="medium"
           className={classes.logoutButton}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleClickLogout();
+          }}
         >
           로그아웃
         </Button>
@@ -196,7 +209,7 @@ const Header = ({ signedIn }) => {
             <TitleLink to="/friends" className={classes.title}>
               adoor
             </TitleLink>
-            {signedIn ? (
+            {user !== null ? (
               renderHeaderSignedInItems
             ) : (
               <>
