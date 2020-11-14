@@ -1,7 +1,7 @@
 matrix:
   include:
     - language: node_js
-      node_js: '12'
+      node_js: "12"
       addons:
         sonarcloud:
           organization: "swsnu"
@@ -24,7 +24,7 @@ matrix:
 
     - language: python
       python:
-        - '3.7'
+        - "3.7"
       addons:
         sonarcloud:
           organization: "swsnu"
@@ -35,6 +35,8 @@ matrix:
       install:
         - pip install -r requirements.txt
       script:
+        - rm -f tmp.db db.sqlite3
+        - rm -r */migrations
         - pylint **/*.py --load-plugins pylint_django
         - python manage.py makemigrations account feed comment like
         - python manage.py migrate
