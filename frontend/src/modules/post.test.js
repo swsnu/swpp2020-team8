@@ -56,6 +56,69 @@ describe('postActions', () => {
     });
   });
 
+  it(`'getPostsByType:user' should fetch posts correctly`, (done) => {
+    jest.mock('axios');
+
+    // axios.get.mockResolvedValue([]);
+    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const result = {
+          data: {
+            status: 200,
+            results: mockFriendFeed,
+            next: null
+          }
+        };
+        resolve(result);
+      });
+    });
+
+    store.dispatch(actionCreators.getPostsByType('user', 2)).then(() => {
+      const newState = store.getState();
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(newState.postReducer.selectedUserPosts).toMatchObject(
+        mockFriendFeed
+      );
+      done();
+    });
+  });
+
+  it(`createPost should post correctly`, (done) => {
+    // jest.mock('axios');
+
+    // axios.get.mockResolvedValue([]);
+    // const spy = jest.spyOn(axios, 'post').mockImplementation(() => {
+    //   return new Promise((resolve) => {
+    //     const result = {
+    //       data: {
+    //         status: 200,
+    //         results: mockFriendFeed,
+    //         next: null
+    //       }
+    //     };
+    //     resolve(result);
+    //   });
+    // });
+    const newPost = {
+      ...mockArticle,
+      shareAnonymously: true,
+      shareWithFriends: true
+    };
+    const prevState = store.getState();
+
+    store.dispatch(actionCreators.createPost(newPost)).then(() => {
+      const newState = store.getState();
+      // expect(spy).toHaveBeenCalledTimes(1);
+      expect(newState.postReducer.anonymousPosts.length).toEqual(
+        prevState.postReducer.anonymousPosts.length + 1
+      );
+      expect(newState.postReducer.friendPosts.length).toEqual(
+        prevState.postReducer.friendPosts.length + 1
+      );
+      done();
+    });
+  });
+
   // it(`'createArticle' should post article correctly`, (done) => {
   //   const spy = jest.spyOn(axios, 'post').mockImplementation((url, article) => {
   //     return new Promise((resolve, reject) => {
@@ -108,7 +171,7 @@ describe('postActions', () => {
   // });
 });
 
-describe('Todo Reducer', () => {
+describe('Post Reducer', () => {
   it('should return default state', () => {
     const newState = postReducer(undefined, {}); // initialize
     expect(newState).toEqual({
@@ -164,5 +227,22 @@ describe('Todo Reducer', () => {
     );
     expect(newState.friendPosts.length).toEqual(1);
     expect(newState.anonymousPosts.length).toEqual(1);
+  });
+
+  it('should add post to feed when create success', () => {
+    const newState = postReducer(
+      {
+        anonymousPosts: [],
+        friendPosts: [],
+        selectedUserPosts: [],
+        selectedPost: {},
+        next: null
+      },
+      {
+        type: actionCreators.CREATE_POST_FAILURE
+      }
+    );
+    expect(newState.friendPosts.length).toEqual(0);
+    expect(newState.anonymousPosts.length).toEqual(0);
   });
 });

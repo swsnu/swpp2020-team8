@@ -1,5 +1,4 @@
 import axios from '../apis';
-
 import { mockPost } from '../constants';
 
 export const GET_SELECTED_POST = 'post/GET_SELECTED_POST';
