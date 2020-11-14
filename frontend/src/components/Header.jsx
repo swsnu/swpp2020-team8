@@ -215,15 +215,15 @@ const Header = () => {
             ) : (
               <>
                 <div className={classes.grow} />
-                <Link
-                  component="a"
+                <Button
+                  component={Link}
                   to="/login"
                   variant="outlined"
                   size="medium"
                   className={classes.logoutButton}
                 >
                   로그인
-                </Link>
+                </Button>
               </>
             )}
           </Toolbar>
