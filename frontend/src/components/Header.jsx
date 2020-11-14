@@ -190,6 +190,7 @@ const Header = () => {
           variant="outlined"
           size="medium"
           className={classes.logoutButton}
+          id="logout-button"
           onClick={(e) => {
             e.stopPropagation();
             handleClickLogout();
@@ -214,15 +215,16 @@ const Header = () => {
             ) : (
               <>
                 <div className={classes.grow} />
-                <Link
-                  component="a"
+                <Button
+                  component={Link}
+                  id="login-link"
                   to="/login"
                   variant="outlined"
                   size="medium"
                   className={classes.logoutButton}
                 >
                   로그인
-                </Link>
+                </Button>
               </>
             )}
           </Toolbar>

@@ -6,15 +6,15 @@ const CommentItemWrapper = styled.div`
   display: flex;
   padding: 8px 0;
 `;
-
+CommentItemWrapper.displayName = 'CommentItem';
 const CommentContent = styled.div`
   margin-left: 12px;
 `;
 export default function CommentItem({ commentObj }) {
   return (
-    <CommentItemWrapper isReply={commentObj.is_reply}>
+    <CommentItemWrapper>
       <AuthorProfile author={commentObj.author_detail} isComment />
-      <CommentContent>{commentObj.content}</CommentContent>
+      <CommentContent id="comment-content">{commentObj.content}</CommentContent>
     </CommentItemWrapper>
   );
 }

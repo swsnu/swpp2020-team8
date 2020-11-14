@@ -78,7 +78,7 @@ describe('<QuestionListWidget/>', () => {
 
   it('should open custom question modal', () => {
     const component = getWrapper();
-    const questionButton = component.find('CommonButton');
+    const questionButton = component.find('NewQuestionButton');
     expect(questionButton.length).toBe(1);
     questionButton.simulate('click');
     expect(component.find('.custom-question-modal').length).toBe(1);

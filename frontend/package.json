@@ -81,7 +81,13 @@
   },
   "jest": {
     "collectCoverageFrom": [
-      "!src/constants/*"
+      "src/**/*.{js,jsx}",
+      "!src/constants/*",
+      "!src/index.jsx",
+      "!src/store/index.js",
+      "!src/serviceWorker.js",
+      "!src/utils/dateTimeHelpers.js",
+      "!src/styles.js"
     ]
   },
   "proxy": "http://localhost:8000"

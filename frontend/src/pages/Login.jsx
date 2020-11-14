@@ -19,6 +19,8 @@ const WarningMessage = styled.div`
   margin-bottom: 10px;
 `;
 
+WarningMessage.displayName = 'WarningMessage';
+
 export default function Login() {
   const history = useHistory();
   const dispatch = useDispatch();
