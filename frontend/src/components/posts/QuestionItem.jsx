@@ -102,10 +102,10 @@ export default function QuestionItem({ questionObj }) {
   return (
     <QuestionItemWrapper>
       <PostItemHeaderWrapper>
-        {questionObj.author_detail.username !== 'admin' && (
+        {!questionObj.is_admin_question && (
           <AuthorProfile author={questionObj.author_detail} />
         )}
-        {questionObj.author_detail.username !== 'admin' && isAuthor && (
+        {!questionObj.is_admin_question && isAuthor && (
           <PostAuthorButtons
             onClickEdit={handleEdit}
             onClickDelete={handleDelete}

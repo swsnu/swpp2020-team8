@@ -1,4 +1,4 @@
-import { shallow } from 'enzyme/build';
+import { shallow } from 'enzyme';
 import React from 'react';
 import QuestionItem from './QuestionItem';
 
@@ -14,6 +14,7 @@ const sampleQuestionObj = {
     id: 1244,
     question: '어디서 마시는 커피를 가장 좋아하는가?'
   },
+  is_admin_question: true,
   created_at: '2020-11-05T14:16:13.801119+08:00'
 };
 
@@ -29,6 +30,7 @@ const sampleCustomQuestionObj = {
     id: 1244,
     question: '어디서 마시는 커피를 가장 좋아하는가?'
   },
+  is_admin_question: false,
   created_at: '2020-11-05T14:16:13.801119+08:00'
 };
 
@@ -80,5 +82,11 @@ describe('<QuestionItem/>', () => {
     writeButton.simulate('click');
     const textArea = component.find('TextareaAutosize');
     expect(textArea.length).toBe(1);
+
+    const event = {
+      preventDefault() {},
+      target: { value: 'test' }
+    };
+    textArea.simulate('change', event);
   });
 });
