@@ -4,7 +4,7 @@ import CreateTime from './CreateTime';
 
 const mockTime = new Date().toISOString();
 
-describe('<ArticlePreview />', () => {
+describe('<CreateTime />', () => {
   it('should render without errors', () => {
     const component = shallow(<CreateTime createdTime={mockTime} />);
     const wrapper = component.find('TimeWrapper');

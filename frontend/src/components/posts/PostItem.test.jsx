@@ -2,7 +2,7 @@ import { shallow } from 'enzyme/build';
 import React from 'react';
 import PostItem from './PostItem';
 
-const sampleArticleObj = {
+const samplepostObj = {
   id: 4756,
   author_detail: {
     id: 123,
@@ -33,7 +33,7 @@ const sampleResponseObj = {
 
 describe('<PostItem />', () => {
   it('should render article without errors', () => {
-    const component = shallow(<PostItem articleObj={sampleArticleObj} />);
+    const component = shallow(<PostItem postObj={samplepostObj} />);
     const wrapper = component.find('PostItemWrapper');
     expect(wrapper.length).toBe(1);
     const question = component.find('QuestionBox');
@@ -43,7 +43,7 @@ describe('<PostItem />', () => {
   });
 
   it('should render response and question without errors', () => {
-    const component = shallow(<PostItem articleObj={sampleResponseObj} />);
+    const component = shallow(<PostItem postObj={sampleResponseObj} />);
     const wrapper = component.find('PostItemWrapper');
     expect(wrapper.length).toBe(1);
     const question = component.find('QuestionBox');
@@ -51,7 +51,7 @@ describe('<PostItem />', () => {
   });
 
   it('should toggle like', async () => {
-    const component = shallow(<PostItem articleObj={sampleResponseObj} />);
+    const component = shallow(<PostItem postObj={sampleResponseObj} />);
     const likeButton = component.find('FavoriteBorderIcon').parent();
     let unlikeButton = component.find('FavoriteIcon').parent();
     const likeCount = component.find('#like-count').at(0).text();

@@ -1,8 +1,9 @@
 from django.test import TestCase
-from comment.models import Comment
-from feed.models import Article, Response
-from adoorback.utils.seed import set_seed, fill_data
 from django.contrib.auth import get_user_model
+
+from comment.models import Comment
+
+from adoorback.utils.seed import set_seed, fill_data
 from adoorback.utils.content_types import get_content_type
 
 
@@ -15,7 +16,7 @@ class CommentTestCase(TestCase):
         set_seed(N)
 
     def test_comment_count(self):
-        self.assertEqual(Comment.objects.all().count(), N*4)
+        self.assertEqual(Comment.objects.all().count(), N*3)
 
     def test_comment_str(self):
         comment = Comment.objects.all().last()

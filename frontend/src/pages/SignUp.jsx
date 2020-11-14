@@ -6,7 +6,11 @@ import { CommonInput, CommonButton } from '../styles';
 const SignUpWrapper = styled.div`
   width: 500px;
   margin: 0 auto;
-  margin-top: 50px;
+  margin-top: 130px;
+
+  @media (max-width: 650px) {
+    width: 90%;
+  }
 `;
 
 const WarningMessage = styled.div`

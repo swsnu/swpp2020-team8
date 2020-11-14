@@ -4,13 +4,15 @@ import notiReducer from './notification';
 import postReducer from './post';
 import questionReducer from './question';
 import userReducer from './user';
+import loadingReducer from './loading';
 
 const rootReducer = combineReducers({
   friendReducer,
   notiReducer,
   postReducer,
   questionReducer,
-  userReducer
+  userReducer,
+  loadingReducer
 });
 
 export default rootReducer;
