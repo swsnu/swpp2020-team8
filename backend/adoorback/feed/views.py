@@ -21,7 +21,6 @@ def select_daily_questions():
 
 
 class DailyQuestionList(generics.ListAPIView):
-    queryset = Question.objects.daily_questions()
     serializer_class = QuestionSerializer
     model = serializer_class.Meta.model
     permission_classes = [permissions.IsAuthenticated]
@@ -29,6 +28,7 @@ class DailyQuestionList(generics.ListAPIView):
     def get_queryset(self):
         if Question.objects.daily_questions().count() == 0:
             select_daily_questions()
+        return Question.objects.daily_questions()
 
 
 class ArticleList(generics.ListCreateAPIView):
