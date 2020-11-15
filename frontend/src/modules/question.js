@@ -78,7 +78,7 @@ export const getDailyQuestions = () => async (dispatch) => {
   let res;
   dispatch({ type: 'question/GET_DAILY_QUESTIONS_REQUEST' });
   try {
-    res = await axios.get('/api/feed/questions/daily/');
+    res = await axios.get('/feed/questions/daily/');
   } catch (err) {
     dispatch({ type: 'question/GET_DAILY_QUESTIONS_FAILURE', error: err });
   }
