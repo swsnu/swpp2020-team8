@@ -21,33 +21,31 @@ export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
 const initialState = {
   loginError: false,
   signUpError: {},
-  user: null
+  user: null,
+  userId: null
 };
 
 export const requestSignUp = (signUpInfo) => {
   return async (dispatch) => {
     dispatch({ type: SIGN_UP_REQUEST });
     try {
-      // const { data } = await axios.post('api/auth/register', signUpInfo);
-      const data = await {
-        code: 200,
-        user: signUpInfo
-      };
-      if (+data.code === 200) {
+      const { data } = await axios.post('user/signup/', signUpInfo);
+      if (data.id) {
         dispatch({
           type: SIGN_UP_SUCCESS,
-          user: data.user
+          user: data
         });
+        dispatch(requestLogin(signUpInfo));
       } else {
         dispatch({
           type: SIGN_UP_FAILURE,
-          error: {}
+          error: data
         });
       }
     } catch (error) {
       dispatch({
         type: SIGN_UP_FAILURE,
-        error
+        error: error.response?.data
       });
     }
   };
@@ -162,7 +160,7 @@ export default function userReducer(state = initialState, action) {
     case SIGN_UP_SUCCESS:
       return {
         ...state,
-        user: action.user,
+        userId: action.user.id,
         signUpError: false
       };
     case SIGN_UP_FAILURE:
