@@ -14,6 +14,7 @@ class User(AbstractUser):
     This model extends the Django Abstract User model
     """
     slug = models.SlugField(max_length=255, unique=True)
+    email = models.EmailField(unique=True)
     question_history = models.JSONField(null=True,
                                         validators=[int_list_validator(sep=',',
                                                                        allow_negative=True)])
