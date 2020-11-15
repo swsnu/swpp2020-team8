@@ -15,11 +15,29 @@ import Login from './Login';
 //   error: true,
 //   user: { id: 1, username: 'jina', isLoggedIn: false }
 // };
+const mockErrorStore = {
+  ...mockStore,
+  userReducer: {
+    loginError: '401',
+    error: false,
+    user: {
+      id: 0,
+      username: 'mock',
+      isLoggedIn: false
+    }
+  }
+};
 
 describe('<Login /> unit test', () => {
   const store = createStore(
     rootReducer,
     mockStore,
+    composeWithDevTools(applyMiddleware(thunk))
+  );
+
+  const errStore = createStore(
+    rootReducer,
+    mockErrorStore,
     composeWithDevTools(applyMiddleware(thunk))
   );
 
@@ -33,6 +51,15 @@ describe('<Login /> unit test', () => {
       </Provider>
     );
 
+  const getErrorWrapper = () =>
+    mount(
+      <Provider store={errStore}>
+        <Router history={history}>
+          <Login handleSubmit={handleSubmit} />
+        </Router>
+      </Provider>
+    );
+
   it('LoginPage should mount', () => {
     const wrapper = getWrapper();
     expect(wrapper.find('Login').length).toBe(1);
@@ -40,12 +67,12 @@ describe('<Login /> unit test', () => {
 
   it('should reflect input change', () => {
     const wrapper = getWrapper();
-    const input = wrapper.find('#email-input').at(0);
+    const input = wrapper.find('#username-input').at(0);
     expect(input.length).toBe(1);
     expect(input.prop('value')).toEqual('');
     const event = {
       preventDefault() {},
-      target: { name: 'email', value: 'test' }
+      target: { name: 'username', value: 'test' }
     };
     input.simulate('change', event);
   });
@@ -55,12 +82,12 @@ describe('<Login /> unit test', () => {
     const button = wrapper.find('#submit-button').at(0);
     expect(button.length).toBe(1);
 
-    const emailInput = wrapper.find('#email-input').at(0);
+    const usernameInput = wrapper.find('#username-input').at(0);
     const event = {
       preventDefault() {},
-      target: { name: 'email', value: 'test' }
+      target: { name: 'username', value: 'test' }
     };
-    emailInput.simulate('change', event);
+    usernameInput.simulate('change', event);
 
     const pwInput = wrapper.find('#password-input').at(0);
     const event2 = {
@@ -80,18 +107,15 @@ describe('<Login /> unit test', () => {
     expect(jest.fn()).toBeCalledTimes(0);
   });
 
-  // it('should handle with warning message', () => {
-  //   const mockStoreLoginError = getMockStore(stubStateLoginError);
+  it('warning message should not appear', () => {
+    const wrapper = getWrapper();
+    const msg = wrapper.find('WarningMessage');
+    expect(msg.length).toBe(0);
+  });
 
-  //   const login = (
-  //     <Provider store={mockStoreLoginError}>
-  //       <Router history={history}>
-  //         <Login />
-  //       </Router>
-  //     </Provider>
-  //   );
-  //   const wrapper = mount(login);
-  //   const warningMessage = wrapper.find('WarningMessage');
-  //   expect(warningMessage.length).toBe(1);
-  // });
+  it('warning message should appear when error', () => {
+    const wrapper = getErrorWrapper();
+    const msg = wrapper.find('WarningMessage');
+    expect(msg.length).toBe(1);
+  });
 });

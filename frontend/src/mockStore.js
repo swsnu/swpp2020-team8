@@ -27,4 +27,22 @@ export const mockStore = {
   }
 };
 
+export const mockStoreBeforeLogin = {
+  friendReducer: {},
+  notiReducer: {},
+  postReducer: {
+    selectedPost: mockPost
+  },
+  questionReducer: {
+    dailyQuestions: mockQuestionFeed,
+    randomQuestions: mockRecommendQuestions,
+    sampleQuestions: mockQuestions,
+    recommendedQuestions: mockRecommendQuestions
+  },
+  userReducer: {
+    error: false,
+    user: null
+  }
+};
+
 export const mockFriendReducer = {};

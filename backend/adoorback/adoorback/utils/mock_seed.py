@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from faker import Faker
 
 from adoorback.utils.content_types import get_content_type
-from feed.models import Article, Response, Question, Post
+from feed.models import Article, Response, Question
 from comment.models import Comment
 from like.models import Like
 
@@ -27,7 +27,7 @@ def set_question_seed():
         Question.objects.create(author=admin, is_admin_question=True, content=content)
 
 
-def set_seed(n):
+def set_seed():
     if DEBUG:
         logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
 
@@ -47,19 +47,16 @@ def set_seed(n):
 
     # Seed Article/AdminQuestion/CustomQuestionPost
     users = User.objects.all()
-    for _ in range(n//5):
+    for _ in range(50):
         user = random.choice(users)
         Article.objects.create(author=user,
                                content=faker.catch_phrase(),
                                share_with_friends=random.choice([True, False]),
                                share_anonymously=random.choice([True, False]))
-        Question.objects.create(author=user, is_admin_question=True, content=faker.word())
         Question.objects.create(author=user, is_admin_question=False, content=faker.word())
     logging.info(f"{Article.objects.all().count()} Article(s) created!") if DEBUG else None
     logging.info(f"{Question.objects.all().count()} Question(s) created!") \
         if DEBUG else None
-    if n > 10:
-        set_question_seed()
 
     # Select Daily Questions
     daily_questions = Question.objects.all().filter(selected_date__isnull=True).order_by('?')[:30]
@@ -68,7 +65,7 @@ def set_seed(n):
         question.save()
 
     # Seed Response
-    for _ in range(n):
+    for _ in range(150):
         question = random.choice(daily_questions)
         Response.objects.create(author=user, content=faker.text(max_nb_chars=50), question=question,
                                 share_with_friends=random.choice([True, False]),
@@ -77,9 +74,8 @@ def set_seed(n):
 
     # Seed Comment (target=Feed)
     articles = Article.objects.all()
-    questions = Question.objects.all()
     responses = Response.objects.all()
-    for _ in range(n * 3):
+    for _ in range(300):
         user = random.choice(users)
         article = random.choice(articles)
         response = random.choice(responses)
@@ -90,7 +86,7 @@ def set_seed(n):
     # Seed Reply Comment (target=Comment)
     comment_model = get_content_type("comment")
     comments = Comment.objects.all()
-    for _ in range(n * 6):
+    for _ in range(600):
         user = random.choice(users)
         comment = random.choice(comments)
         Comment.objects.create(author=user, target=comment,
@@ -100,10 +96,10 @@ def set_seed(n):
 
     # Seed Like
     replies = Comment.objects.replies_only()
-    for _ in range(n * 10):
+    for _ in range(1000):
         user = random.choice(users)
         article = random.choice(articles)
-        question = random.choice(questions)
+        question = random.choice(daily_questions)
         response = random.choice(responses)
         comment = random.choice(comments)
         reply = random.choice(replies)
@@ -113,29 +109,3 @@ def set_seed(n):
         Like.objects.create(user=user, target=comment)
         Like.objects.create(user=user, target=reply)
     logging.info(f"{Like.objects.all().count()} Like(s) created!") if DEBUG else None
-
-
-def fill_data():
-    User = get_user_model()
-    faker = Faker()
-
-    # Fill Empty Seed Data
-    questions = Question.objects.all()
-    articles = Article.objects.all()
-    comments = Comment.objects.all()
-    posts = Post.objects.all()
-    for user in User.objects.all():
-        Article.objects.create(author=user, content=faker.catch_phrase()) \
-            if user.article_set.all().count() == 0 else None
-        Question.objects.create(author=user, content=faker.catch_phrase(), is_admin_question=False) \
-            if user.question_set.all().count() == 0 else None
-        Response.objects.create(author=user, content=faker.catch_phrase(), question=random.choice(questions)) \
-            if user.response_set.all().count() == 0 else None
-        Comment.objects.create(author=user, content=faker.catch_phrase(), target=random.choice(articles)) \
-            if Comment.objects.comments_only().filter(author=user).count() == 0 else None
-        Comment.objects.create(author=user, content=faker.catch_phrase(), target=random.choice(comments)) \
-            if Comment.objects.replies_only().filter(author=user).count() == 0 else None
-        Like.objects.create(user=user, target=random.choice(posts)) \
-            if Like.objects.feed_likes_only().filter(user=user).count() == 0 else None
-        Like.objects.create(user=user, target=random.choice(comments)) \
-            if Like.objects.comment_likes_only().filter(user=user).count() == 0 else None

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -56,20 +56,11 @@ export default function QuestionItem({ questionObj }) {
   const [likeCount, setLikeCount] = useState(0);
   const [isWriting, setIsWriting] = useState(false);
   const [newPost, setNewPost] = useState({
-    question_id: null,
+    question_id: questionObj?.id,
     question_detail: questionObj,
     content: null,
     type: 'Response'
   });
-
-  useEffect(() => {
-    if (questionObj && questionObj.id) {
-      setNewPost((prev) => ({
-        ...prev,
-        question_id: questionObj.id
-      }));
-    }
-  }, [questionObj]);
 
   const handleContentChange = (e) => {
     setNewPost((prev) => ({
@@ -143,6 +134,7 @@ export default function QuestionItem({ questionObj }) {
           <TextareaAutosize
             className={classes.textArea}
             aria-label="new response"
+            id="content-input"
             placeholder="답변을 작성해주세요."
             value={newPost.content}
             onChange={handleContentChange}

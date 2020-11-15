@@ -119,7 +119,7 @@ export default function questionReducer(state = initialState, action) {
     case GET_RANDOM_QUESTIONS:
       const { dailyQuestions } = state;
       const randomQuestions = dailyQuestions
-        .sort(() => Math.random() - Math.random())
+        .sort(() => 0.5 - Math.random())
         .slice(0, 5);
       return {
         ...state,

@@ -47,16 +47,16 @@ const FriendListWidget = () => {
             </Button>
           </WidgetTitleWrapper>
           <List className={classes.list} aria-label="friend list">
-            <ListItemLink to="">
+            <ListItemLink to="/">
               <FriendItem username="jinsun.goo" />
             </ListItemLink>
-            <ListItemLink to="">
+            <ListItemLink to="/">
               <FriendItem username="curie.yoo" />
             </ListItemLink>
-            <ListItemLink to="">
+            <ListItemLink to="/">
               <FriendItem username="jaewon.kim" />
             </ListItemLink>
-            <ListItemLink to="">
+            <ListItemLink to="/">
               <FriendItem username="jina.park" />
             </ListItemLink>
           </List>

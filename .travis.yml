@@ -35,6 +35,7 @@ matrix:
       install:
         - pip install -r requirements.txt
       script:
+        - rm -f tmp.db db.sqlite3
         - pylint **/*.py --load-plugins pylint_django
         - python manage.py makemigrations account feed comment like
         - python manage.py migrate
