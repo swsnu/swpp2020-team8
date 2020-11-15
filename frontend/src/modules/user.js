@@ -51,9 +51,9 @@ export const requestSignUp = (signUpInfo) => {
   };
 };
 
-export const postSelectedQuestions = (selectedQuestions) => {
+export const postSelectedQuestions = (selectedQuestions, userId) => {
   return async (dispatch) => {
-    await axios.post('api/user/select-questions', selectedQuestions);
+    await axios.post(`user/${userId}/info/`, selectedQuestions);
     return dispatch({
       type: UPDATE_QUESTION_SELECT,
       selectedQuestions
@@ -92,6 +92,7 @@ export const requestLogin = (loginInfo) => {
     } catch (err) {
       dispatch(loginFailure());
     }
+
     dispatch(loginSuccess(currentUser));
   };
 };

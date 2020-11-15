@@ -1,7 +1,7 @@
+/* eslint-disable no-param-reassign */
 import axios from 'axios';
 import Cookie from 'js.cookie';
-
-const csrftoken = Cookie.get('csrftoken');
+// eslint-disable-next-line import/no-cycle
 
 const instance = axios.create({
   baseURL: 'http://localhost:3000/api/',
@@ -9,16 +9,13 @@ const instance = axios.create({
 });
 
 instance.defaults.headers.common['Content-Type'] = 'application/json';
-instance.defaults.headers.common['X-CSRFToken'] = csrftoken;
 
-// instance.interceptors.response.use(
-//   (response) => {
-//     return response;
-//   },
-//   (error) => {
-//     // if error == unauthorized
-//     // history.push('/login');
-//   }
-// );
+instance.interceptors.request.use((config) => {
+  const token = Cookie.get('csrftoken');
+  config.headers.Authorization = token;
+  config.headers['X-CSRFToken'] = token;
+
+  return config;
+});
 
 export default instance;
