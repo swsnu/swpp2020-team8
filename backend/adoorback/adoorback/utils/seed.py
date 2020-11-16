@@ -64,17 +64,12 @@ def set_seed(n):
     questions = Question.objects.all()
     for _ in range(n):
         question = random.choice(questions)
-<<<<<<< HEAD
-        Response.objects.create(author=user, question=question)
-    logging.info(f"{Response.objects.all().count()} Response(s) created!") if DEBUG else None
-=======
         Response.objects.create(author=user, content=faker.text(max_nb_chars=50), question=question,
                                 share_with_friends=random.choice(
                                     [True, False]),
                                 share_anonymously=random.choice([True, False]))
     logging.info(
         f"{Response.objects.all().count()} Response(s) created!") if DEBUG else None
->>>>>>> 0ac7a44a49d53fa49d06b6941991a33dd435332a
 
     # Seed Comment (target=Feed)
     articles = Article.objects.all()
@@ -134,11 +129,7 @@ def fill_data():
             if user.article_set.all().count() == 0 else None
         Question.objects.create(author=user, content=faker.catch_phrase(), is_admin_question=False) \
             if user.question_set.all().count() == 0 else None
-<<<<<<< HEAD
-        Response.objects.create(author=user, question=random.choice(questions)) \
-=======
         Response.objects.create(author=user, content=faker.catch_phrase(), question=random.choice(questions)) \
->>>>>>> 0ac7a44a49d53fa49d06b6941991a33dd435332a
             if user.response_set.all().count() == 0 else None
         Comment.objects.create(author=user, content=faker.catch_phrase(), target=random.choice(articles)) \
             if Comment.objects.comments_only().filter(author=user).count() == 0 else None

@@ -23,13 +23,10 @@ class Article(AdoorModel):
     article_comments = GenericRelation(Comment)
     article_likes = GenericRelation(Like)
 
-<<<<<<< HEAD
-=======
     @property
     def type(self):
         return self.__class__.__name__
 
->>>>>>> 0ac7a44a49d53fa49d06b6941991a33dd435332a
 
 class QuestionManager(models.Manager):
     use_for_related_fields = True
@@ -50,10 +47,7 @@ class Question(AdoorModel):
     selected_date = models.DateTimeField(null=True)
     is_admin_question = models.BooleanField()
 
-<<<<<<< HEAD
     question_comments = GenericRelation(Comment)
-=======
->>>>>>> 0ac7a44a49d53fa49d06b6941991a33dd435332a
     question_likes = GenericRelation(Like)
 
     objects = QuestionManager()
@@ -85,14 +79,6 @@ class PostManager(models.Manager):
 
     def anonymous_posts_only(self, **kwargs):
         return self.filter(share_anonymously=False, **kwargs)
-
-
-class Response(AdoorModel):
-    author = models.ForeignKey(User, related_name='response_set', on_delete=models.CASCADE)
-    question = models.ForeignKey(Question, related_name='response_set', on_delete=models.CASCADE)
-
-    response_comments = GenericRelation(Comment)
-    response_likes = GenericRelation(Like)
 
 
 class Post(AdoorModel):
