@@ -47,6 +47,7 @@ class Question(AdoorModel):
     selected_date = models.DateTimeField(null=True)
     is_admin_question = models.BooleanField()
 
+    question_comments = GenericRelation(Comment)
     question_likes = GenericRelation(Like)
 
     objects = QuestionManager()

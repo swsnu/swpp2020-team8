@@ -37,6 +37,7 @@ matrix:
       script:
         - coverage run --source='.' --omit='*/migrations/*','manage.py','*/wsgi.py','*/asgi.py','*/utils/' ./manage.py test
         - coverage run --branch --source='.' --omit='*/migrations/*','manage.py','*/wsgi.py','*/asgi.py','*/utils/' ./manage.py test
+        - coverage report -m
         - coverage xml
         - rm -r */migrations
         - pylint **/*.py --load-plugins pylint_django

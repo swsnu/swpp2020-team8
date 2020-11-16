@@ -13,3 +13,8 @@ class ProfileTestCase(TestCase):
     def test_profile_count(self):
         User = get_user_model()
         self.assertEqual(User.objects.all().count(), 3)
+
+    def test_str(self):
+        User = get_user_model()
+        user = User.objects.all().last()
+        self.assertEqual(user.type, 'User')
