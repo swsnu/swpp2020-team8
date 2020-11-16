@@ -11,11 +11,13 @@ node_modules
 
 # testing
 /frontend/coverage
+/backend/adoorback/.coverage
 
 # production
 /frontend/build
 
 # misc
+.DS_Store
 /frontend/.DS_Store
 /frontend/.env.local
 /frontend/.env.development.local

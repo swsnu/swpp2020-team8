@@ -24,12 +24,15 @@ def set_seed(n):
 
     # Seed User
     for _ in range(2):
-        User.objects.create_user(username=faker.user_name(), email=faker.email(), password=faker.password(length=12))
-    logging.info(f"{User.objects.all().count()} User(s) created!") if DEBUG else None
+        User.objects.create_user(username=faker.user_name(
+        ), email=faker.email(), password=faker.password(length=12))
+    logging.info(
+        f"{User.objects.all().count()} User(s) created!") if DEBUG else None
 
     # Seed Superuser
     if User.objects.all().count() == 2:
-        User.objects.create_superuser(username='adoor', email='adoor.team@gmail.com', password='adoor2020:)')
+        User.objects.create_superuser(
+            username='adoor', email='adoor.team@gmail.com', password='adoor2020:)')
     admin = User.objects.get(username='adoor')
     logging.info("Superuser created!") if DEBUG else None
 
@@ -41,14 +44,18 @@ def set_seed(n):
                                content=faker.catch_phrase(),
                                share_with_friends=random.choice([True, False]),
                                share_anonymously=random.choice([True, False]))
-        Question.objects.create(author=admin, is_admin_question=True, content=faker.word())
-        Question.objects.create(author=user, is_admin_question=False, content=faker.word())
-    logging.info(f"{Article.objects.all().count()} Article(s) created!") if DEBUG else None
+        Question.objects.create(
+            author=admin, is_admin_question=True, content=faker.word())
+        Question.objects.create(
+            author=user, is_admin_question=False, content=faker.word())
+    logging.info(
+        f"{Article.objects.all().count()} Article(s) created!") if DEBUG else None
     logging.info(f"{Question.objects.all().count()} Question(s) created!") \
         if DEBUG else None
 
     # Select Daily Questions
-    daily_questions = Question.objects.all().filter(selected_date__isnull=True).order_by('?')[:30]
+    daily_questions = Question.objects.all().filter(
+        selected_date__isnull=True).order_by('?')[:30]
     for question in daily_questions:
         question.selected_date = timezone.now()
         question.save()
@@ -58,9 +65,11 @@ def set_seed(n):
     for _ in range(n):
         question = random.choice(questions)
         Response.objects.create(author=user, content=faker.text(max_nb_chars=50), question=question,
-                                share_with_friends=random.choice([True, False]),
+                                share_with_friends=random.choice(
+                                    [True, False]),
                                 share_anonymously=random.choice([True, False]))
-    logging.info(f"{Response.objects.all().count()} Response(s) created!") if DEBUG else None
+    logging.info(
+        f"{Response.objects.all().count()} Response(s) created!") if DEBUG else None
 
     # Seed Comment (target=Feed)
     articles = Article.objects.all()
@@ -70,9 +79,12 @@ def set_seed(n):
         user = random.choice(users)
         article = random.choice(articles)
         response = random.choice(responses)
-        Comment.objects.create(author=user, target=article, content=faker.catch_phrase(), is_private=_ % 2)
-        Comment.objects.create(author=user, target=response, content=faker.catch_phrase(), is_private=_ % 2)
-    logging.info(f"{Comment.objects.all().count()} Comment(s) created!") if DEBUG else None
+        Comment.objects.create(author=user, target=article,
+                               content=faker.catch_phrase(), is_private=_ % 2)
+        Comment.objects.create(author=user, target=response,
+                               content=faker.catch_phrase(), is_private=_ % 2)
+    logging.info(
+        f"{Comment.objects.all().count()} Comment(s) created!") if DEBUG else None
 
     # Seed Reply Comment (target=Comment)
     comment_model = get_content_type("comment")
@@ -99,7 +111,8 @@ def set_seed(n):
         Like.objects.create(user=user, target=response)
         Like.objects.create(user=user, target=comment)
         Like.objects.create(user=user, target=reply)
-    logging.info(f"{Like.objects.all().count()} Like(s) created!") if DEBUG else None
+    logging.info(
+        f"{Like.objects.all().count()} Like(s) created!") if DEBUG else None
 
 
 def fill_data():
