@@ -26,7 +26,10 @@
     "import/extensions": "off",
     "import/no-absolute-path": "off",
     "object-curly-newline": "off",
-    "react/jsx-filename-extension": [1, { "extensions": [".jsx"] }]
+    "react/jsx-filename-extension": [1, { "extensions": [".jsx"] }],
+    "react/jsx-props-no-spreading": "off",
+    "react/prop-types": "off",
+    "no-case-declarations": "off"
   },
   "globals": {
     "shallow": true,
