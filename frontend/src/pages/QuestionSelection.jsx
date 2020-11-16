@@ -68,8 +68,7 @@ export default function QuestionSelection() {
   ));
 
   const onClickSubmitButton = () => {
-    const selectedIds = selectedQuestions.map((item) => item.id);
-    dispatch(postSelectedQuestions(selectedIds, userId));
+    dispatch(postSelectedQuestions(selectedQuestions, userId));
     history.push('/');
   };
 
