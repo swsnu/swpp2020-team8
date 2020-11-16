@@ -1,8 +1,5 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-.idea/
-.DS_Store
-
 ## Frontend
 # dependencies
 node_modules
@@ -18,6 +15,7 @@ node_modules
 
 # misc
 .DS_Store
+.idea/
 /frontend/.DS_Store
 /frontend/.env.local
 /frontend/.env.development.local
@@ -42,7 +40,3 @@ node_modules
 /backend/*/*/__pycache__/
 /backend/*/__pycache__/
 /backend/*/*/*/__pycache__/
-
-# db
-/backend/adoorback/*/migrations/
-/backend/adoorback/db.sqlite3

@@ -1,0 +1,3 @@
+git rm --cached "파일경로"
+git rm -r --cached "폴더경로"
+(.gitignore에 있는
