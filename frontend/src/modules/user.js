@@ -21,8 +21,7 @@ export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
 const initialState = {
   loginError: false,
   signUpError: {},
-  user: null,
-  userId: null
+  user: null
 };
 
 export const requestSignUp = (signUpInfo) => {
@@ -92,7 +91,7 @@ export const requestLogin = (loginInfo) => {
       // set user info
       currentUser = await getUser();
     } catch (err) {
-      dispatch(loginFailure());
+      dispatch(loginFailure(err));
     }
 
     dispatch(loginSuccess(currentUser));
@@ -135,35 +134,45 @@ export const removeError = () => {
 
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
+    case SIGN_UP_REQUEST:
+      return {
+        ...state,
+        user: null,
+        signUpError: false
+      };
     case LOGIN_REQUEST:
       return {
+        ...state,
         user: null,
         loginError: false
       };
     case LOGIN_SUCCESS:
       return {
+        ...state,
         user: action.user,
         loginError: false
       };
     case LOGIN_FAILURE:
       return {
+        ...state,
         user: null,
         loginError: action.error
       };
     case LOGOUT_SUCCESS:
       return {
+        ...state,
         user: null,
         loginError: false
       };
     case REMOVE_ERROR:
       return {
+        ...state,
         user: null,
         loginError: false
       };
     case SIGN_UP_SUCCESS:
       return {
         ...state,
-        userId: action.user.id,
         signUpError: false
       };
     case SIGN_UP_FAILURE:
