@@ -33,13 +33,14 @@ describe('<QuestionItem/>', () => {
   const userMockQuestions = mockStore.questionReducer.dailyQuestions.filter(
     (item) => item.author_detail.id === mockStore.userReducer.user.id
   );
-
   const adminMockQuestions = mockStore.questionReducer.dailyQuestions.filter(
     (item) => item.is_admin_question
   );
 
-  const getWrapper = () =>
-    mount(
+  let wrapper;
+
+  beforeEach(() => {
+    wrapper = mount(
       <Provider store={store}>
         <Router history={history}>
           <QuestionItem id="user-question" questionObj={userMockQuestions[0]} />
@@ -50,15 +51,15 @@ describe('<QuestionItem/>', () => {
         </Router>
       </Provider>
     );
+  });
 
   it('should render without errors', () => {
-    const component = getWrapper();
-    const questionItem = component.find('QuestionItemWrapper');
+    const questionItem = wrapper.find('QuestionItemWrapper');
     expect(questionItem.length).toBe(2);
   });
 
   it('should not render <AuthorProfile/>, <PostAuthorButtons/> for admin questions', () => {
-    const component = getWrapper().find('#admin-question');
+    const component = wrapper.find('#admin-question');
     expect(component.length).toBe(1);
     const authorProfile = component.find('AuthorProfile');
     expect(authorProfile.length).toBe(0);
@@ -67,25 +68,39 @@ describe('<QuestionItem/>', () => {
   });
 
   it('should render <AuthorProfile/>, <PostAuthorButtons/> for author questions', () => {
-    const component = getWrapper().find('#user-question');
+    const component = wrapper.find('#user-question');
+    expect(component.length).toBe(1);
     const authorProfile = component.find('AuthorProfile');
     expect(authorProfile.length).toBe(1);
     const postAuthorButtons = component.find('PostAuthorButtons');
     expect(postAuthorButtons.length).toBe(1);
   });
 
-  it('should toggle like', async () => {
-    const wrapper = getWrapper();
+  it('should proper like icon according to the user likes', () => {
+    const component = wrapper.find('#user-question');
+    const likeIcon = component.find('FavoriteBorderIcon');
+    const unlikeIcon = component.find('FavoriteIcon');
 
+    if (userMockQuestions[0].current_user_liked) {
+      expect(unlikeIcon).toHaveLength(1);
+      expect(likeIcon).toHaveLength(0);
+    } else {
+      expect(likeIcon).toHaveLength(1);
+      expect(unlikeIcon).toHaveLength(0);
+    }
+  });
+
+  it('should toggle like', async () => {
     let component = wrapper.find('#user-question');
-    let likeButton = component.find('FavoriteBorderIcon');
-    let unlikeButton = component.find('FavoriteIcon').closest('button').at(0);
+    const likeIcon = component.find('FavoriteBorderIcon');
+    const unlikeButton = component.find('FavoriteIcon').closest('button').at(0);
     let likeCount = component.find('#like-count').at(0).text();
 
-    expect(+likeCount).toEqual(37);
-    expect(likeButton.length).toBe(0);
+    expect(likeIcon.length).toBe(0);
     expect(unlikeButton.length).toBe(1);
+    expect(+likeCount).toEqual(userMockQuestions[0].like_count);
 
+    // unlike
     await act(async () => {
       unlikeButton.prop('onClick')();
     });
@@ -93,54 +108,53 @@ describe('<QuestionItem/>', () => {
     wrapper.update();
 
     component = wrapper.find('#user-question');
-
-    unlikeButton = component.find('FavoriteIcon');
-    likeButton = component.find('FavoriteBorderIcon');
+    const unlikeIcon = component.find('FavoriteIcon');
+    const likeButton = component
+      .find('FavoriteBorderIcon')
+      .closest('button')
+      .at(0);
     likeCount = component.find('#like-count').at(0).text();
 
-    expect(unlikeButton.length).toBe(0);
+    expect(unlikeIcon.length).toBe(0);
     expect(likeButton.length).toBe(1);
+    expect(+likeCount).toEqual(userMockQuestions[0].like_count - 1);
 
-    expect(likeButton.length).toBe(1);
-    expect(+likeCount).toEqual(36);
-
+    // like
     await act(async () => {
       likeButton.simulate('click');
     });
+
     wrapper.update();
 
     component = wrapper.find('#user-question');
     likeCount = component.find('#like-count').at(0).text();
 
-    expect(+likeCount).toEqual(37);
+    expect(+likeCount).toEqual(userMockQuestions[0].like_count);
   });
 
   it('should toggle textarea when click write button', async () => {
-    const wrapper = getWrapper();
     let component = wrapper.find('#admin-question');
     let writeButton = component.find('CreateIcon').closest('button');
 
+    // open textarea
     writeButton.simulate('click');
-
     wrapper.update();
-    component = wrapper.find('#admin-question');
 
+    component = wrapper.find('#admin-question');
     let textArea = component.find('TextareaAutosize');
     expect(textArea.length).toBe(1);
 
+    // close textarea
     writeButton = component.find('CreateIcon').closest('button');
-
     writeButton.simulate('click');
-
     wrapper.update();
-    component = wrapper.find('#admin-question');
 
+    component = wrapper.find('#admin-question');
     textArea = component.find('TextareaAutosize');
     expect(textArea.length).toBe(0);
   });
 
   it('should handle textarea change', async () => {
-    const wrapper = getWrapper();
     let component = wrapper.find('#admin-question');
     const writeButton = component.find('CreateIcon').closest('button');
 
@@ -161,7 +175,6 @@ describe('<QuestionItem/>', () => {
   });
 
   it('should pass reset function', async () => {
-    const wrapper = getWrapper();
     let component = wrapper.find('#admin-question');
     const writeButton = component.find('CreateIcon').closest('button');
 
@@ -171,10 +184,6 @@ describe('<QuestionItem/>', () => {
 
     wrapper.update();
     component = wrapper.find('#admin-question');
-
-    // expect(typeof component.find('ShareSettings').props().resetContent).toBe(
-    //   'function'
-    // );
 
     const submitButton = component
       .find('.share-settings')
