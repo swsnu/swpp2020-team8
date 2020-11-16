@@ -42,5 +42,4 @@ node_modules
 /backend/*/*/*/__pycache__/
 
 # db
-/backend/adoorback/*/migrations/
 /backend/adoorback/db.sqlite3

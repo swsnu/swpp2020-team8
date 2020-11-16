@@ -3,7 +3,6 @@ Define Models for account APIs
 """
 
 
-from django.core.validators import int_list_validator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 

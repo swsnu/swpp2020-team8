@@ -77,7 +77,7 @@ class PostManager(models.Manager):
         return self.filter(share_with_friends=True, **kwargs)
 
     def anonymous_posts_only(self, **kwargs):
-        return self.filter(share_anonymously=False, **kwargs)
+        return self.filter(share_anonymously=True, **kwargs)
 
 
 class Post(AdoorModel):
