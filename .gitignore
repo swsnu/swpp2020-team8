@@ -3,7 +3,12 @@
 .idea/
 .DS_Store
 
+<<<<<<< HEAD
+.DS_Store
+
+=======
 ## Frontend
+>>>>>>> 0ac7a44a49d53fa49d06b6941991a33dd435332a
 # dependencies
 node_modules
 /frontend/.pnp
