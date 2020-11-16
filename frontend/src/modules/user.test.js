@@ -27,7 +27,7 @@ describe('user Actions', () => {
 
     jest.spyOn(axios, 'get').mockImplementation(() => {
       return new Promise((resolve) => {
-        const result = { data: userInfo };
+        const result = { data: { ...userInfo, question_history: null } };
         resolve(result);
       });
     });
@@ -130,7 +130,7 @@ describe('user Actions', () => {
 
     const getSpy = jest.spyOn(axios, 'get').mockImplementation(() => {
       return new Promise((resolve) => {
-        const result = { data: userInfo };
+        const result = { code: 200, data: userInfo };
         resolve(result);
       });
     });
