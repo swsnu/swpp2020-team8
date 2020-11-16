@@ -67,13 +67,6 @@ describe('user Actions', () => {
       email: 'user@user.com'
     };
 
-    // axios.post.mockRejectedValueOnce();
-    // const spy = jest.spyOn(axios, 'post').mockImplementation(() => {
-    //   return new Promise((resolve, reject) => {
-    //     const result = { data: userInfo };
-    //     reject(result);
-    //   });
-    // });
     axios.post.mockReturnValue(Promise.reject({ error: 'error' }));
     axios.get.mockReturnValue(Promise.reject({ error: 'error' }));
 
@@ -123,7 +116,7 @@ describe('user Actions', () => {
     // axios.get.mockResolvedValue([]);
     const spy = jest.spyOn(axios, 'post').mockImplementation(() => {
       return new Promise((resolve) => {
-        const result = { data: userInfo };
+        const result = { data: { ...userInfo, question_history: null } };
         resolve(result);
       });
     });
