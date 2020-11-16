@@ -1,4 +1,4 @@
-from test_plus.test import TestCase
+from test_plus.test import TestCase, APITestCase, CBVTestCase
 
 from django.contrib.auth import get_user_model
 
@@ -12,7 +12,7 @@ User = get_user_model()
 N = 10
 
 
-class FeedTestCase(TestCase):
+class FeedModelTestCase(TestCase):
     def setUp(self):
         set_seed(N)
 
@@ -20,6 +20,7 @@ class FeedTestCase(TestCase):
         self.assertEqual(Article.objects.all().count(), N)
         self.assertEqual(Question.objects.admin_questions_only().count(), N)
         self.assertEqual(Question.objects.custom_questions_only().count(), N)
+        self.assertLessEqual(Question.objects.daily_questions().count(), 30)
         self.assertEqual(Response.objects.all().count(), N)
         self.assertEqual(Post.objects.all().count(), N*4)
 
@@ -67,3 +68,11 @@ class FeedTestCase(TestCase):
         response.delete()
 
         self.assertEqual(Post.objects.all().filter(object_id=response.id).count(), 0)
+
+
+class FeedAPITestCase(CBVTestCase):
+
+    def test_post(self):
+        data = {'content': 'test_content'}
+        self.post('article-list', data=data, extra={'format': 'json'})
+        self.response_200()

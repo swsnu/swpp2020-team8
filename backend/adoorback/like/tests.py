@@ -21,6 +21,7 @@ class LikeTestCase(TestCase):
     def test_like_str(self):
         like = Like.objects.all().last()
         self.assertEqual(like.__str__(), f'{like.user} likes {like.content_type} ({like.object_id})')
+        self.assertEqual(like.type, 'Like')
 
     def test_on_delete_user_cascade(self):
         fill_data()

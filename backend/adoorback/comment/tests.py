@@ -21,6 +21,7 @@ class CommentTestCase(TestCase):
     def test_comment_str(self):
         comment = Comment.objects.all().last()
         self.assertEqual(comment.__str__(), comment.content)
+        self.assertEqual(comment.type, 'Comment')
 
     # comments of user must be deleted accordingly
     def test_on_delete_user_cascade(self):

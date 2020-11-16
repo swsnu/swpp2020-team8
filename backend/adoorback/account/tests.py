@@ -3,7 +3,6 @@ from django.contrib.auth import get_user_model
 
 from adoorback.utils.seed import set_seed
 
-
 N = 10
 
 
