@@ -36,7 +36,7 @@ describe('<PostEdit />', () => {
     const input = wrapper.find('#new-post-input').at(0);
     expect(input.length).toBe(1);
     expect(input.prop('value')).toEqual(
-      '사람들의 무리한 부탁을 잘 거절하는 편'
+      '안녕하세요 반가워요 잘있어요 다시만나요 이거는 질문없이 쓰는 그냥 뻘글이에요 이쁘죠?????'
     );
     const event = {
       preventDefault() {},

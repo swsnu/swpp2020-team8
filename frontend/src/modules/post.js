@@ -1,5 +1,10 @@
 import axios from '../apis';
-import { mockPost, mockResponse, mockArticle } from '../constants';
+import {
+  mockPost,
+  mockResponse,
+  mockArticle,
+  mockCustomQuestion
+} from '../constants';
 
 export const GET_SELECTED_POST = 'post/GET_SELECTED_POST';
 export const GET_SELECTED_POST_SUCCESS = 'post/GET_SELECTED_POST_SUCCESS';
@@ -43,6 +48,7 @@ export const getSelectedPost = () => {
     dispatch(getSelectedPostSuccess(mockResponse)); // Response
     dispatch(getSelectedPostSuccess(mockPost)); // Post
     dispatch(getSelectedPostSuccess(mockArticle)); // Article
+    dispatch(getSelectedPostSuccess(mockCustomQuestion)); // Article
   };
 };
 
