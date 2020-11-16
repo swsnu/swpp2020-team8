@@ -24,7 +24,7 @@ const initialState = {
   anonymousPosts: [],
   friendPosts: [],
   selectedUserPosts: [],
-  selectedPost: {},
+  selectedPost: null,
   next: null
 };
 
