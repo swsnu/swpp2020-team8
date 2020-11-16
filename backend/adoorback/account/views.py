@@ -14,14 +14,8 @@ from feed.models import Question
 User = get_user_model()
 
 
-class UserRegister(generics.GenericAPIView):
+class UserRegister(generics.CreateAPIView):
     serializer_class = UserProfileSerializer
-
-    def create(self, validated_data):
-        user = User.objects.create_user(username=validated_data['username'],
-                                        email=validated_data['email'],
-                                        password=validated_data['password'])
-        return user
 
 
 @api_view(["POST"])
