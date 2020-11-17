@@ -1,12 +1,19 @@
+import Cookie from 'js.cookie';
 import axios from '../apis';
+// import axios from 'axios';
 
 export const SIGN_UP_REQUEST = 'user/SIGN_UP_REQUEST';
 export const SIGN_UP_SUCCESS = 'user/SIGN_UP_SUCCESS';
 export const SIGN_UP_FAILURE = 'user/SIGN_UP_FAILURE';
+
 export const LOGIN_REQUEST = 'user/LOGIN_REQUEST';
-export const LOGOUT = 'user/LOGOUT';
 export const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
 export const LOGIN_FAILURE = 'user/LOGIN_FAILURE';
+
+export const LOGOUT_REQUEST = 'user/LOGOUT_REQUEST';
+export const LOGOUT_SUCCESS = 'user/LOGOUT_SUCCESS';
+export const LOGOUT_FAILURE = 'user/LOGOUT_FAILURE';
+
 export const REMOVE_ERROR = 'user/REMOVE_ERROR';
 
 export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
@@ -14,46 +21,40 @@ export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
 const initialState = {
   loginError: false,
   signUpError: {},
-  user: {
-    id: 0,
-    username: '',
-    isLoggedIn: false,
-    questionHistory: null
-  }
+  user: null
 };
 
 export const requestSignUp = (signUpInfo) => {
   return async (dispatch) => {
     dispatch({ type: SIGN_UP_REQUEST });
     try {
-      // const { data } = await axios.post('api/auth/register', signUpInfo);
-      const data = await {
-        code: 200,
-        user: signUpInfo
-      };
-      if (+data.code === 200) {
+      const { data } = await axios.post('user/signup/', signUpInfo);
+      if (data.id) {
         dispatch({
           type: SIGN_UP_SUCCESS,
-          user: data.user
+          user: data
         });
+        dispatch(requestLogin(signUpInfo));
       } else {
         dispatch({
           type: SIGN_UP_FAILURE,
-          error: {}
+          error: data
         });
       }
     } catch (error) {
       dispatch({
         type: SIGN_UP_FAILURE,
-        error
+        error: error.response?.data
       });
     }
   };
 };
 
-export const postSelectedQuestions = (selectedQuestions) => {
+export const postSelectedQuestions = (selectedQuestions, userId) => {
   return async (dispatch) => {
-    // await axios.post('api/user/select-questions', selectedQuestions);
+    await axios.patch(`user/${userId}/info/`, {
+      question_history: JSON.stringify(selectedQuestions)
+    });
     return dispatch({
       type: UPDATE_QUESTION_SELECT,
       selectedQuestions
@@ -68,26 +69,36 @@ export const signUp = (signUpInfo) => {
   };
 };
 
-export const requestLogin = (email, password) => {
-  return async (dispatch) => {
-    dispatch(login());
-    try {
-      const { data } = await axios.post('api/auth/login/', email, password);
-      dispatch(loginSuccess(data.user));
-    } catch (error) {
-      dispatch(loginFailure(error));
-    }
-  };
-};
+async function getUser() {
+  const userInfo = await axios.get('/user/me/');
+  return userInfo.data;
+}
 
-export const login = () => {
-  return {
-    type: LOGIN_REQUEST
+export const requestLogin = (loginInfo) => {
+  return async (dispatch) => {
+    dispatch({ type: 'question/LOGIN_REQUEST' });
+
+    let currentUser;
+    try {
+      // try login
+      await axios.post('user/login/', loginInfo);
+
+      // set jwt token set
+      const res = await axios.post('user/token/', loginInfo);
+      Cookie.set('jwt_token_refresh', res.data.refresh);
+      Cookie.set('jwt_token_access', res.data.access);
+
+      // set user info
+      currentUser = await getUser();
+    } catch (err) {
+      dispatch(loginFailure(err));
+    }
+
+    dispatch(loginSuccess(currentUser));
   };
 };
 
 export const loginSuccess = (user) => {
-  localStorage.setItem('user', JSON.stringify(user));
   return {
     type: LOGIN_SUCCESS,
     user
@@ -101,18 +112,18 @@ export const loginFailure = (error) => {
   };
 };
 
-export const logout = () => {
-  localStorage.setItem('user', null);
-  return {
-    type: LOGOUT
-  };
-};
+export const logout = () => async (dispatch) => {
+  // localStorage.setItem('user', null);
+  dispatch({ type: 'user/LOGOUT_REQUEST' });
+  try {
+    await axios.get('user/logout');
+  } catch (err) {
+    dispatch({ type: 'user/LOGOUT_FAILURE', error: err });
+  }
 
-export const logoutSuccess = (user) => {
-  return {
-    type: LOGOUT,
-    user
-  };
+  dispatch({
+    type: 'user/LOGOUT_SUCCESS'
+  });
 };
 
 export const removeError = () => {
@@ -123,35 +134,45 @@ export const removeError = () => {
 
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
+    case SIGN_UP_REQUEST:
+      return {
+        ...state,
+        user: null,
+        signUpError: false
+      };
     case LOGIN_REQUEST:
       return {
+        ...state,
         user: null,
         loginError: false
       };
     case LOGIN_SUCCESS:
       return {
+        ...state,
         user: action.user,
         loginError: false
       };
     case LOGIN_FAILURE:
       return {
+        ...state,
         user: null,
-        loginError: action.loginError
+        loginError: action.error
       };
-    case LOGOUT:
+    case LOGOUT_SUCCESS:
       return {
+        ...state,
         user: null,
         loginError: false
       };
     case REMOVE_ERROR:
       return {
+        ...state,
         user: null,
         loginError: false
       };
     case SIGN_UP_SUCCESS:
       return {
         ...state,
-        user: action.user,
         signUpError: false
       };
     case SIGN_UP_FAILURE:

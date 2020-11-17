@@ -28,7 +28,21 @@ const sampleResponseObj = {
   },
   content:
     '스타벅스에서 먹는 바닐라크림콜드브루! 시럽은 1번만 넣고 에스프레소휩을 올리면 행복~',
-  created_at: '2020-11-05T14:16:13.801119+08:00'
+  created_at: '2020-11-05T14:16:13.801119+08:00',
+  comments: [
+    {
+      id: 1272,
+      post_id: 383,
+      content: 'fun',
+      author: 1,
+      author_detail: {
+        id: 123,
+        username: 'curious',
+        profile_pic:
+          'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+      }
+    }
+  ]
 };
 
 describe('<PostItem />', () => {
@@ -65,5 +79,12 @@ describe('<PostItem />', () => {
     unlikeButton.simulate('click');
     await new Promise((resolve) => setTimeout(resolve, 500));
     expect(+likeCount).toEqual(0);
+  });
+
+  it('should toggle like', async () => {
+    const component = shallow(<PostItem postObj={sampleResponseObj} />);
+    expect(component.find('CommentItem').length).toEqual(
+      sampleResponseObj.comments.length
+    );
   });
 });
