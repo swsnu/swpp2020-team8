@@ -60,7 +60,7 @@ class FeedModelTestCase(TestCase):
         response.content = "modified content"
         response.save()
 
-        self.assertEqual(Post.objects.all().filter(content_type=get_content_type("response"),
+        self.assertEqual(Post.objects.all().filter(content_type=get_content_type("Response"),
                                                    object_id=response.id).last().content, response.content)
 
     # post content must be removed along with target

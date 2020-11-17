@@ -45,7 +45,7 @@ class Question(AdoorModel):
     author = models.ForeignKey(User, related_name='question_set', on_delete=models.CASCADE)
 
     selected_date = models.DateTimeField(null=True)
-    is_admin_question = models.BooleanField()
+    is_admin_question = models.BooleanField(default=False)
 
     question_comments = GenericRelation(Comment)
     question_likes = GenericRelation(Like)

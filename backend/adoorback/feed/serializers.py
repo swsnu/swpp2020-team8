@@ -42,6 +42,10 @@ class ArticleDetailSerializer(AdoorBaseSerializer):
 
 
 class QuestionSerializer(AdoorBaseSerializer):
+    is_admin_question = serializers.SerializerMethodField(read_only=True)
+
+    def get_is_admin_question(self, obj):
+        return obj.author.is_superuser
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Question
@@ -72,7 +76,11 @@ class ResponseSerializer(AdoorBaseSerializer):
 
 
 class QuestionDetailSerializer(AdoorBaseSerializer):
+    is_admin_question = serializers.SerializerMethodField(read_only=True)
     response_set = ResponseSerializer(many=True, read_only=True)
+
+    def get_is_admin_question(self, obj):
+        return obj.author.is_superuser
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Question
