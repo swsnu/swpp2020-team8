@@ -38,6 +38,8 @@ export default function QuestionSelection() {
   const sampleQuestions = useSelector(
     (state) => state.questionReducer.sampleQuestions
   );
+
+  const userId = useSelector((state) => state.userReducer.user?.id);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -66,8 +68,7 @@ export default function QuestionSelection() {
   ));
 
   const onClickSubmitButton = () => {
-    const selectedIds = selectedQuestions.map((item) => item.id);
-    dispatch(postSelectedQuestions(selectedIds));
+    dispatch(postSelectedQuestions(selectedQuestions, userId));
     history.push('/');
   };
 
