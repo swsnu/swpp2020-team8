@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 // import { getSelectedPost } from '../../modules/post';
 
@@ -60,7 +60,7 @@ export default function PostEdit() {
     content: ''
   });
   const textareaRef = useRef(null);
-  const selectedPost = useSelector((state) => state.postReducer.selectedPost);
+  // const selectedPost = useSelector((state) => state.postReducer.selectedPost);
   const dispatch = useDispatch();
 
   // TODO: fix with API Linking
@@ -69,9 +69,9 @@ export default function PostEdit() {
     setPostInfo(mockCustomQuestion);
   }, [dispatch]);
 
-  useEffect(() => {
-    setPostInfo(selectedPost);
-  }, [selectedPost]);
+  // useEffect(() => {
+  //   setPostInfo(selectedPost);
+  // }, [selectedPost]);
 
   useEffect(() => {
     textareaRef.current.style.height = '100px';

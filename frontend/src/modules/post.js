@@ -1,13 +1,21 @@
 import axios from '../apis';
-import {
-  mockPost,
-  mockResponse,
-  mockArticle,
-  mockCustomQuestion
-} from '../constants';
+import { mockResponse, mockArticle, mockCustomQuestion } from '../constants';
 
-export const GET_SELECTED_POST = 'post/GET_SELECTED_POST';
-export const GET_SELECTED_POST_SUCCESS = 'post/GET_SELECTED_POST_SUCCESS';
+export const GET_SELECTED_ARTICLE_REQUEST = 'post/GET_SELECTED_ARTICLE';
+export const GET_SELECTED_ARTICLE_SUCCESS = 'post/GET_SELECTED_ARTICLE_SUCCESS';
+export const GET_SELECTED_ARTICLE_FAILURE = 'post/GET_SELECTED_ARTICLE_FAILURE';
+
+export const GET_SELECTED_RESPONSE_REQUEST = 'post/GET_SELECTED_RESPONSE';
+export const GET_SELECTED_RESPONSE_SUCCESS =
+  'post/GET_SELECTED_RESPONSE_SUCCESS';
+export const GET_SELECTED_RESPONSE_FAILURE =
+  'post/GET_SELECTED_RESPONSE_FAILURE';
+
+export const GET_SELECTED_QUESTION_REQUEST = 'post/GET_SELECTED_QUESTION';
+export const GET_SELECTED_QUESTION_SUCCESS =
+  'post/GET_SELECTED_QUESTION_SUCCESS';
+export const GET_SELECTED_QUESTION_FAILURE =
+  'post/GET_SELECTED_QUESTION_FAILURE';
 
 export const GET_FRIEND_POSTS_REQUEST = 'post/GET_FRIEND_POSTS_REQUEST';
 export const GET_FRIEND_POSTS_SUCCESS = 'post/GET_FRIEND_POSTS_SUCCESS';
@@ -33,30 +41,39 @@ const initialState = {
   next: null
 };
 
-// export const getSelectedPost = (id) => {
-//   return async (dispatch) => {
-//     const { data } = await axios.get(`/api/feed/${id}`);
-//     return dispatch({
-//       type: GET_SELECTED_POST,
-//       post: data
-//     });
-//   };
-// };
-
-export const getSelectedPost = () => {
-  return (dispatch) => {
-    dispatch(getSelectedPostSuccess(mockResponse)); // Response
-    dispatch(getSelectedPostSuccess(mockPost)); // Post
-    dispatch(getSelectedPostSuccess(mockArticle)); // Article
-    dispatch(getSelectedPostSuccess(mockCustomQuestion)); // Article
-  };
-};
-
-export const getSelectedPostSuccess = (selectedPost) => {
-  return {
-    type: GET_SELECTED_POST_SUCCESS,
-    selectedPost
-  };
+// AFTER API Linking
+export const getSelectedPost = (type, postId) => async (dispatch) => {
+  const postType = type.toUpperCase();
+  dispatch({ type: `post/GET_SELECTED_${postType}_REQUEST` });
+  let result;
+  try {
+    switch (type) {
+      case 'article':
+        result = mockArticle;
+        // await axios.get(`feed/article/${postId}`);
+        break;
+      case 'response':
+        result = mockResponse;
+        // await axios.get(`feed/response/${postId}`);
+        break;
+      case 'question':
+        result = mockCustomQuestion;
+        // await axios.get(`feed/question/${postId}`);
+        break;
+      default:
+        console.log('Wrong type of post');
+        break;
+    }
+  } catch (err) {
+    dispatch({ type: `post/GET_SELECTED_${postType}_FAILURE`, error: err });
+  }
+  console.log(result, postId);
+  const { data } = result;
+  dispatch({
+    type: `post/GET_SELECTED_${postType}_SUCCESS`,
+    result: data.results,
+    next: data.next ?? null
+  });
 };
 
 export const getPostsByType = (type, userId = null) => async (dispatch) => {
@@ -118,7 +135,13 @@ export const createPost = (newPost) => async (dispatch) => {
 
 export default function postReducer(state = initialState, action) {
   switch (action.type) {
-    case GET_SELECTED_POST_SUCCESS: {
+    case GET_SELECTED_ARTICLE_REQUEST:
+    case GET_SELECTED_RESPONSE_REQUEST:
+    case GET_SELECTED_QUESTION_REQUEST:
+      return { ...initialState };
+    case GET_SELECTED_ARTICLE_SUCCESS:
+    case GET_SELECTED_RESPONSE_SUCCESS:
+    case GET_SELECTED_QUESTION_SUCCESS: {
       return {
         ...state,
         selectedPost: action.selectedPost
