@@ -3,7 +3,6 @@ from django.contrib.auth import get_user_model
 
 from comment.models import Comment
 from adoorback.serializers import AdoorBaseSerializer
-from adoorback.utils.content_types import get_content_type
 
 
 User = get_user_model()
