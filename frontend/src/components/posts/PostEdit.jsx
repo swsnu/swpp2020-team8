@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { getSelectedPost } from '../../modules/post';
+// import { getSelectedPost } from '../../modules/post';
+
 import ShareSettings from '../ShareSettings';
 
 const PostEditWrapper = styled.div`
@@ -37,6 +38,22 @@ export const PostEditInput = styled.textarea`
   overflow: hidden;
 `;
 
+const mockCustomQuestion = {
+  id: 4758,
+  'content-type': 'Question',
+  is_admin_question: 'true',
+  author_detail: {
+    id: 123,
+    username: 'curious',
+    profile_pic:
+      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+  },
+  content: '올해가 가기 전에 꼭 이루고 싶은 목표가 있다면~?',
+  comments: [],
+  created_at: '2020-11-05T14:16:13.801119+08:00',
+  updated_at: null
+};
+
 export default function PostEdit() {
   const [postInfo, setPostInfo] = useState({
     id: 0,
@@ -48,8 +65,8 @@ export default function PostEdit() {
 
   // TODO: fix with API Linking
   useEffect(() => {
-    dispatch(getSelectedPost());
-    // setPostInfo(selectedPost);
+    // dispatch(getSelectedPost());
+    setPostInfo(mockCustomQuestion);
   }, [dispatch]);
 
   useEffect(() => {
