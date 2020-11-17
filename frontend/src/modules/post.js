@@ -1,5 +1,5 @@
 import axios from '../apis';
-import { mockResponse, mockArticle, mockCustomQuestion } from '../constants';
+// import { mockResponse, mockArticle, mockCustomQuestion } from '../constants';
 
 export const GET_SELECTED_ARTICLE_REQUEST = 'post/GET_SELECTED_ARTICLE';
 export const GET_SELECTED_ARTICLE_SUCCESS = 'post/GET_SELECTED_ARTICLE_SUCCESS';
@@ -41,7 +41,6 @@ const initialState = {
   next: null
 };
 
-// AFTER API Linking
 export const getSelectedPost = (type, postId) => async (dispatch) => {
   const postType = type.toUpperCase();
   dispatch({ type: `post/GET_SELECTED_${postType}_REQUEST` });
@@ -49,16 +48,14 @@ export const getSelectedPost = (type, postId) => async (dispatch) => {
   try {
     switch (type) {
       case 'article':
-        result = mockArticle;
-        // await axios.get(`feed/article/${postId}`);
+        // result = mockArticle;
+        result = await axios.get(`feed/articles/${postId}`);
         break;
       case 'response':
-        result = mockResponse;
-        // await axios.get(`feed/response/${postId}`);
+        result = await axios.get(`feed/responses/${postId}`);
         break;
       case 'question':
-        result = mockCustomQuestion;
-        // await axios.get(`feed/question/${postId}`);
+        result = await axios.get(`feed/questions/${postId}`);
         break;
       default:
         console.log('Wrong type of post');
@@ -67,12 +64,10 @@ export const getSelectedPost = (type, postId) => async (dispatch) => {
   } catch (err) {
     dispatch({ type: `post/GET_SELECTED_${postType}_FAILURE`, error: err });
   }
-  console.log(result, postId);
-  const { data } = result;
+  // console.log(result.data, postId);
   dispatch({
     type: `post/GET_SELECTED_${postType}_SUCCESS`,
-    result: data.results,
-    next: data.next ?? null
+    selectedPost: result.data
   });
 };
 
