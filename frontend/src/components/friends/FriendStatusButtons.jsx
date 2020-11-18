@@ -2,6 +2,8 @@ import React from 'react';
 import { Button } from '@material-ui/core';
 
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
+import { deleteFriend } from '../../modules/friend';
 
 const FriendButton = styled(Button)`
   padding: 5px 0 !important;
@@ -9,7 +11,10 @@ const FriendButton = styled(Button)`
 `;
 
 export default function FriendStatusButtons({ isFriend, friendId }) {
-  const onClickDeleteFriendButton = () => {};
+  const dispatch = useDispatch();
+  const onClickDeleteFriendButton = () => {
+    dispatch(deleteFriend(friendId));
+  };
   const onClickDeleteRequestButton = () => {};
   const onClickAcceptRequestButton = () => {};
   return isFriend ? (
