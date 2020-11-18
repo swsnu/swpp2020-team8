@@ -28,6 +28,9 @@ const theme = createMuiTheme({
 
 const App = () => {
   const user = useSelector((state) => state.userReducer.user);
+  const signUpRedirectPath = user?.question_history
+    ? '/friends'
+    : 'select-questions';
   // let signedIn = user !== null;
 
   // useEffect(() => {
@@ -50,15 +53,14 @@ const App = () => {
         <MainWrapper>
           <QuestionListWidget />
           <FeedWrapper>
-            <Redirect exact path="/signup" to="/select-questions" />
-            <Redirect exact path="/login" to="/friends" />
             <Switch>
+              <Redirect from="/login" to="/friends" />
+              <Redirect from="/signup" to={signUpRedirectPath} />
               <Route
                 exact
                 path="/select-questions"
                 component={QuestionSelection}
               />
-
               <PrivateRoute exact path="/friends" component={FriendFeed} />
               <PrivateRoute exact path="/anonymous" component={AnonymousFeed} />
               <PrivateRoute exact path="/questions" component={QuestionFeed} />
