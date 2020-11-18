@@ -2,9 +2,14 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { getFriendList } from '../modules/friend';
-import FriendItem from '../components/FriendItem';
+import FriendItem from '../components/friends/FriendItem';
 
-const FriendListWrapper = styled.div``;
+const FriendListWrapper = styled.div`
+  padding: 16px;
+  border: 1px solid #e7e7e7;
+  padding-top: 0;
+  border-radius: 4px;
+`;
 
 export default function FriendsPage() {
   const dispatch = useDispatch();

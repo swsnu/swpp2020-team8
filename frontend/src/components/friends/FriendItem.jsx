@@ -2,6 +2,14 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import ListItemText from '@material-ui/core/ListItemText';
 import FaceIcon from '@material-ui/icons/Face';
+import styled from 'styled-components';
+import FriendStatusButtons from './FriendStatusButtons';
+
+const FriendItemWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin: ${(props) => (props.isWidget ? 'auto' : '8px 0')};
+`;
 
 const useStyles = makeStyles((theme) => ({
   username: {
@@ -15,14 +23,14 @@ const FriendItem = ({ friendObj, isWidget = false }) => {
   const classes = useStyles();
   const { username } = friendObj;
   return (
-    <>
+    <FriendItemWrapper isWidget={isWidget}>
       <FaceIcon />
       <ListItemText
         classes={{ primary: classes.username }}
         primary={username}
       />
-      {isWidget && <button type="button">should display buttons</button>}
-    </>
+      {!isWidget && <FriendStatusButtons friendId={friendObj.id} isFriend />}
+    </FriendItemWrapper>
   );
 };
 
