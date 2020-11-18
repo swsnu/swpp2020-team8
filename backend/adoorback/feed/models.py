@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 
 from comment.models import Comment
 from like.models import Like
-from adoorback.models import AdoorModel
+from adoorback.models import AdoorModel, AdoorTimestampedModel
 
 
 User = get_user_model()
@@ -69,6 +69,12 @@ class Response(AdoorModel):
     @property
     def type(self):
         return self.__class__.__name__
+
+class ResponseRequest(AdoorTimestampedModel):
+    actor = models.ForeignKey(User, related_name='sent_response_request_set', on_delete=models.CASCADE)
+    recipient = models.ForeignKey(User, related_name='received_response_request_set', on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    responded = models.BooleanField(default=False)
 
 
 class PostManager(models.Manager):
