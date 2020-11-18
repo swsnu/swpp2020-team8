@@ -7,6 +7,7 @@ from account import views
 
 urlpatterns = [
     path('', views.UserList.as_view(), name='user-list'),
+    path(r'search/', views.UserSearch.as_view(), name='user-search'),
     path('me/', views.current_user, name='current-user'),
     path('login/', views.user_login, name='user-login'),
     path('signup/', views.UserSignup.as_view(), name='user-signup'),

@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.test import Client
 from test_plus.test import TestCase
 from rest_framework.test import APIClient
 
@@ -39,13 +40,11 @@ class UserAPITestCase(APITestCase):
             self.assertGreaterEqual(response.data['count'], 1)
 
 
-class CSRFAPITestCase(TestCase):
-    client_class = APIClient(enforce_csrf_checks=True)
+class AuthAPITestCase(APITestCase):
 
-
-class AuthAPITestCase(CSRFAPITestCase):
     def test_csrf(self):
-        data = {"username": "test_username", "email": "test_email", "password": "test_password"}
+        self.client = APIClient(enforce_csrf_checks=True)
+        data = {"username": "test_username", "email": "test@email.com", "password": "test_password123@"}
         response = self.post('user-signup', data=data)
         self.assertEqual(response.status_code, 403)
 
@@ -56,7 +55,7 @@ class AuthAPITestCase(CSRFAPITestCase):
 
         response = self.post('user-signup', data=data, extra={'HTTP_X_CSRFTOKEN': csrftoken,
                                                               'content_type': 'application/json'})
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
 #
 #     def test_signup(self):
 #         client = Client()
