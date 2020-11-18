@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from faker import Faker
 
 from adoorback.utils.content_types import get_content_type
-from feed.models import Article, Response, Question, Post
+from feed.models import Article, Response, Question, Post, ResponseRequest
 from comment.models import Comment
 from like.models import Like
 
@@ -70,6 +70,15 @@ def set_seed(n):
                                 share_anonymously=random.choice([True, False]))
     logging.info(
         f"{Response.objects.all().count()} Response(s) created!") if DEBUG else None
+
+    # Seed Response Request
+    for _ in range(n):
+      question = random.choice(questions)
+      actor = User.objects.get(id=random.choice([1, 2, 3]))
+      recipient = User.objects.get(id=random.choice([1, 2, 3]))
+      ResponseRequest.objects.create(actor=actor, recipient=recipient, question=question)
+    logging.info(
+        f"{ResponseRequest.objects.all().count()} ResponseRequest(s) created!") if DEBUG else None
 
     # Seed Comment (target=Feed)
     articles = Article.objects.all()
