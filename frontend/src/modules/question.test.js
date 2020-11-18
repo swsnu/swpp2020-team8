@@ -38,14 +38,12 @@ describe('questionActions', () => {
       return Promise.reject(new Error('error'));
     });
 
-    store
-      .dispatch(actionCreators.getDailyQuestions())
-      .then(() => {
-        expect(spy).toHaveBeenCalled();
-      })
-      .catch(() => {
-        const newState = store.getState();
-        expect(newState.questionReducer.dailyQuestions).toBeFalsy();
-      });
+    store.dispatch(actionCreators.getDailyQuestions()).then(() => {
+      const newState = store.getState();
+      expect(spy).toHaveBeenCalled();
+      expect(newState.questionReducer.dailyQuestions).toMatchObject(
+        mockQuestionFeed
+      );
+    });
   });
 });
