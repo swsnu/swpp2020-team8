@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
@@ -11,6 +12,16 @@ import { mockStore } from '../mockStore';
 import SignUp from './SignUp';
 
 describe('<QuestionSelection /> unit test', () => {
+  jest.mock('axios');
+
+  // axios.get.mockResolvedValue([]);
+  jest.spyOn(axios, 'post').mockImplementation(() => {
+    return new Promise((resolve) => {
+      const result = { data: {} };
+      resolve(result);
+    });
+  });
+
   const store = createStore(
     rootReducer,
     mockStore,
