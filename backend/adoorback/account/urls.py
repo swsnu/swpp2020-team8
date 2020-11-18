@@ -12,8 +12,14 @@ urlpatterns = [
     path('signup/', views.UserSignup.as_view(), name='user-signup'),
     path('<int:pk>/info/', views.UserInfo.as_view(), name='user-info'),
     path('<int:pk>/', views.UserDetail.as_view(), name='user-detail'),
-    path('select-questions/', views.SignupQuestions.as_view(), name='signup-questions'),
-    path('token/', ensure_csrf_cookie(TokenObtainPairView.as_view()), name='token-obtain-pair'),
+    path('select-questions/', views.SignupQuestions.as_view(),
+         name='signup-questions'),
+    path('token/', ensure_csrf_cookie(TokenObtainPairView.as_view()),
+         name='token-obtain-pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token-verify'),
+    path('<int:pk>/friends/', views.UserFriendList.as_view(),
+         name='user-friend-list'),
+    # path('friendship/<int:pk>/', name='user-friendship'),
+    # path('friend-requests/<int:pk>/', name='user-friend-request)
 ]
