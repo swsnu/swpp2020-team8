@@ -14,6 +14,7 @@ import FriendFeed from './pages/FriendFeed';
 import AnonymousFeed from './pages/AnonymousFeed';
 import QuestionFeed from './pages/QuestionFeed';
 import PrivateRoute from './components/PrivateRoute';
+import FriendsPage from './pages/FriendsPage';
 
 const theme = createMuiTheme({
   palette: {
@@ -49,8 +50,8 @@ const App = () => {
         <MainWrapper>
           <QuestionListWidget />
           <FeedWrapper>
-            <Redirect exact path="/login" to="/friends" />
             <Redirect exact path="/signup" to="/select-questions" />
+            <Redirect exact path="/login" to="/friends" />
             <Switch>
               <Route
                 exact
@@ -61,6 +62,12 @@ const App = () => {
               <PrivateRoute exact path="/friends" component={FriendFeed} />
               <PrivateRoute exact path="/anonymous" component={AnonymousFeed} />
               <PrivateRoute exact path="/questions" component={QuestionFeed} />
+              <PrivateRoute
+                exact
+                path="/users/:id/friends"
+                component={FriendsPage}
+              />
+
               <Redirect exact path="/" to="/friends" />
             </Switch>
           </FeedWrapper>

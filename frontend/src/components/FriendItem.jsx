@@ -11,9 +11,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // eslint-disable-next-line react/prop-types
-const FriendItem = ({ username }) => {
+const FriendItem = ({ friendObj, isWidget = false }) => {
   const classes = useStyles();
-
+  const { username } = friendObj;
   return (
     <>
       <FaceIcon />
@@ -21,6 +21,7 @@ const FriendItem = ({ username }) => {
         classes={{ primary: classes.username }}
         primary={username}
       />
+      {isWidget && <button type="button">should display buttons</button>}
     </>
   );
 };

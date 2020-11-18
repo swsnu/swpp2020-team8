@@ -5,8 +5,8 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import CardContent from '@material-ui/core/CardContent';
 import List from '@material-ui/core/List';
-import ListItemLink from './ListItemLink';
-import FriendItem from './FriendItem';
+// import ListItemLink from './ListItemLink';
+// import FriendItem from './FriendItem';
 import { WidgetWrapper, WidgetTitleWrapper } from '../styles';
 
 const useStyles = makeStyles({
@@ -47,7 +47,7 @@ const FriendListWidget = () => {
             </Button>
           </WidgetTitleWrapper>
           <List className={classes.list} aria-label="friend list">
-            <ListItemLink to="/">
+            {/* <ListItemLink to="/">
               <FriendItem username="jinsun.goo" />
             </ListItemLink>
             <ListItemLink to="/">
@@ -58,7 +58,7 @@ const FriendListWidget = () => {
             </ListItemLink>
             <ListItemLink to="/">
               <FriendItem username="jina.park" />
-            </ListItemLink>
+            </ListItemLink> */}
           </List>
         </CardContent>
       </Card>

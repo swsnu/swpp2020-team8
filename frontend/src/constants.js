@@ -465,3 +465,30 @@ export const mockAnonymousFeed = [
   mockAnonCustomQuestion2,
   mockAnonResponse
 ];
+
+export const mockFriendList = [
+  {
+    id: 1,
+    profile_pic:
+      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg',
+    username: 'jaewon.kim'
+  },
+  {
+    id: 2,
+    profile_pic:
+      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg',
+    username: 'jina.park'
+  },
+  {
+    id: 3,
+    profile_pic:
+      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg',
+    username: 'jinsun.9'
+  },
+  {
+    id: 4,
+    profile_pic:
+      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg',
+    username: 'curie.yoo'
+  }
+];
