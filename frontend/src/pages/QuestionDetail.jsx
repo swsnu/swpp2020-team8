@@ -4,7 +4,7 @@ import { useParams } from 'react-router';
 import { getSelectedPost } from '../modules/post';
 import QuestionItem from '../components/posts/QuestionItem';
 
-export default function ResponseDetail() {
+export default function QuestionDetail() {
   const selectedPost = useSelector((state) => state.postReducer.selectedPost);
   const { id } = useParams();
   const dispatch = useDispatch();

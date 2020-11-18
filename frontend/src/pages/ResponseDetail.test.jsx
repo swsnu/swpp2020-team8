@@ -5,68 +5,34 @@ import { Router } from 'react-router-dom';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
-import ArticleDetail from './ArticleDetail';
+import ResponseDetail from './ResponseDetail';
 import PostItem from '../components/posts/PostItem';
 import rootReducer from '../modules';
 import { mockStore } from '../mockStore';
 import 'jest-styled-components';
 import history from '../history';
 
-const mockArticle = {
-  id: 4756,
-  'content-type': 'Article', // or const int e.g. (1: Article, 2: Response...)
+const mockResponse = {
+  id: 5999,
+  'content-type': 'Response',
   author_detail: {
     id: 123,
     username: 'curious',
     profile_pic:
       'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
-  }, // blank or null if anonymous
-  created_at: '2020-09-23T10:38:47.975019+08:00',
+  },
+  question: 1244,
+  question_detail: {
+    id: 1244,
+    content: '어디서 마시는 커피를 가장 좋아하는가?'
+  },
   content:
-    '안녕하세요 반가워요 잘있어요 다시만나요 이거는 질문없이 쓰는 그냥 뻘글이에요 이쁘죠?????',
+    '스타벅스에서 먹는 바닐라크림콜드브루! 시럽은 1번만 넣고 에스프레소휩을 올리면 행복~',
   comments: [
-    {
-      id: 1272,
-      post_id: 383,
-      content: '재밌네요',
-      author: 1,
-      author_detail: {
-        id: 123,
-        username: 'curious',
-        profile_pic:
-          'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
-      },
-      referenced_comments: 1272,
-      is_reply: false,
-      replies: [
-        {
-          id: 1273,
-          post_id: 383,
-          content: '같이하고싶어요',
-          author: 2,
-          author_detail: {
-            id: 2,
-            profile_pic:
-              'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg',
-            username: '아이폰'
-          },
-          is_poster_owner: false,
-          referenced_comments: 1272,
-          is_reply: true,
-          is_private: false,
-          create_dt: '2020-09-23T10:40:24.421000+08:00',
-          update_dt: '2020-09-23T10:40:24.428734+08:00'
-        }
-      ],
-      is_private: false,
-      create_dt: '2020-09-23T10:38:47.975019+08:00',
-      update_dt: '2020-09-23T10:39:35.849029+08:00'
-    },
-
     {
       id: 1274,
       post_id: 383,
-      content: '퍼가요!!!!',
+      content: '오 마져 맛이써!!!!',
       author: 3,
       author_detail: {
         id: 2,
@@ -80,10 +46,12 @@ const mockArticle = {
       create_dt: '2020-09-23T10:40:42.268355+08:00',
       update_dt: '2020-09-23T10:40:42.268384+08:00'
     }
-  ]
+  ],
+  created_at: '2020-11-05T14:16:13.801119+08:00',
+  updated_at: null
 };
 
-describe('Article Detail Page', () => {
+describe('Response Detail Page', () => {
   const store = createStore(
     rootReducer,
     mockStore,
@@ -94,7 +62,7 @@ describe('Article Detail Page', () => {
     mount(
       <Provider store={store}>
         <Router history={history}>
-          <ArticleDetail />
+          <ResponseDetail />
         </Router>
       </Provider>
     );
@@ -104,7 +72,7 @@ describe('Article Detail Page', () => {
       useDispatch: () => jest.fn()
     }));
     const wrapper = getWrapper();
-    const postDetail = wrapper.find('ArticleDetail');
+    const postDetail = wrapper.find('ResponseDetail');
     expect(postDetail.length).toBe(1);
   });
 
@@ -113,9 +81,9 @@ describe('Article Detail Page', () => {
       mount(
         <Provider store={store}>
           <Router history={history}>
-            <ArticleDetail>
-              <PostItem postObj={mockArticle} />
-            </ArticleDetail>
+            <ResponseDetail>
+              <PostItem postObj={mockResponse} />
+            </ResponseDetail>
           </Router>
         </Provider>
       );
