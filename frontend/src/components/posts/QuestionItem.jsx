@@ -13,6 +13,7 @@ import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
 import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
 import ShareSettings from '../ShareSettings';
+import QuestionSendModal from '../QuestionSendModal';
 
 const QuestionItemWrapper = styled.div`
   background: #f4f4f4;
@@ -61,6 +62,7 @@ export default function QuestionItem({ questionObj }) {
     content: null,
     type: 'Response'
   });
+  const [isQuestionSendModalOpen, setQuestionSendModalOpen] = useState(false);
 
   const handleContentChange = (e) => {
     setNewPost((prev) => ({
@@ -82,7 +84,14 @@ export default function QuestionItem({ questionObj }) {
     setIsWriting(!isWriting);
   };
 
-  const handleSendButton = () => {};
+  const handleSendButton = () => {
+    setQuestionSendModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setQuestionSendModalOpen(false);
+  };
+
   const handleEdit = () => {};
   const handleDelete = () => {};
 
@@ -141,6 +150,13 @@ export default function QuestionItem({ questionObj }) {
           />
           <ShareSettings newPost={newPost} resetContent={resetContent} />
         </>
+      )}
+      {isQuestionSendModalOpen && (
+        <QuestionSendModal
+          questionObj={questionObj}
+          open={isQuestionSendModalOpen}
+          handleClose={handleModalClose}
+        />
       )}
     </QuestionItemWrapper>
   );
