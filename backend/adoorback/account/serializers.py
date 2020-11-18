@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
 from feed.serializers import ArticleSerializer
-from friendship.serializers import FriendshipSerialier
+from friendship.serializers import FriendshipSerializer
 
 User = get_user_model()
 
@@ -30,4 +30,4 @@ class UserDetailedSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'question_history',
-                  'profile_image', 'article_set', 'url']
+                  'profile_image', 'article_set', 'friend_set', 'url']

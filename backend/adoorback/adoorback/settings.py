@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'like.apps.LikeConfig',
     'comment.apps.CommentConfig',
     'notification.apps.NotificationConfig',
+    'friendship.apps.FriendshipConfig',
     'account.apps.AccountConfig',
     'django.contrib.admin',
     'django.contrib.auth',

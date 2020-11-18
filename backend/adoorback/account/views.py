@@ -10,6 +10,8 @@ from adoorback.permissions import IsOwnerOrReadOnly
 from account.serializers import UserProfileSerializer, UserDetailedSerializer
 from feed.serializers import QuestionSerializer
 from feed.models import Question
+from friendship.models import Friendship
+from friendship.serializers import FriendshipSerializer
 
 User = get_user_model()
 
@@ -71,3 +73,16 @@ class UserInfo(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+
+class UserFriendList(generics.ListCreateAPIView):
+    """
+    List all friends.
+    """
+    queryset = Friendship.objects.all()
+    serializer_class = FriendshipSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user,
+                        friend=self.request.data['target_id'])

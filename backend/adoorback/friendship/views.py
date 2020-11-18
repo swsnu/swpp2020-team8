@@ -9,13 +9,13 @@ from friendship.models import Friendship
 from adoorback.permissions import IsOwnerOrReadOnly
 
 
-class FriendList(generics.ListCreateAPIView):
+class UserFriendList(generics.ListCreateAPIView):
     """
-    List all friends.
+    List all friends, or add a friendship.
     """
     queryset = Friendship.objects.all()
     serializer_class = FriendshipSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        serializer.save(user=self.request.user)

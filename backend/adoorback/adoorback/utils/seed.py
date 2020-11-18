@@ -10,6 +10,7 @@ from adoorback.utils.content_types import get_content_type
 from feed.models import Article, Response, Question, Post
 from comment.models import Comment
 from like.models import Like
+from friendship.models import Friendship
 
 
 DEBUG = False
@@ -114,16 +115,27 @@ def set_seed(n):
     logging.info(
         f"{Like.objects.all().count()} Like(s) created!") if DEBUG else None
 
+    # Seed Friends
+    users = User.objects.all()
+    for _ in range(n):
+        from_user = random.choice(users)
+        to_user = random.choice(users)
+        Friendship.objects.create(user=from_user, friend=to_user)
+    logging.info(
+        f"{Friendship.objects.all().count()} Friendship(s) created!") if DEBUG else None
+
 
 def fill_data():
     User = get_user_model()
     faker = Faker()
 
     # Fill Empty Seed Data
+    users = User.objects.all()
     questions = Question.objects.all()
     articles = Article.objects.all()
     comments = Comment.objects.all()
     posts = Post.objects.all()
+    friends = Friendship.objects.all()
     for user in User.objects.all():
         Article.objects.create(author=user, content=faker.catch_phrase()) \
             if user.article_set.all().count() == 0 else None
@@ -139,3 +151,5 @@ def fill_data():
             if Like.objects.feed_likes_only().filter(user=user).count() == 0 else None
         Like.objects.create(user=user, target=random.choice(comments)) \
             if Like.objects.comment_likes_only().filter(user=user).count() == 0 else None
+        Friendship.objects.create(user=user, friend=random.choice(users)) \
+            if user.friend_set.all().count() == 0 else None
