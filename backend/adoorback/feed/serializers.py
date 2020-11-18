@@ -42,6 +42,10 @@ class ArticleDetailSerializer(AdoorBaseSerializer):
 
 
 class QuestionSerializer(AdoorBaseSerializer):
+    is_admin_question = serializers.SerializerMethodField(read_only=True)
+
+    def get_is_admin_question(self, obj):
+        return obj.author.is_superuser
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Question
@@ -54,19 +58,29 @@ class ResponseDetailSerializer(AdoorBaseSerializer):
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Response
-        fields = AdoorBaseSerializer.Meta.fields + ['share_with_friends', 'share_anonymously', 'question', 'comments']
+        fields = AdoorBaseSerializer.Meta.fields + ['question_id', 'share_with_friends',
+                                                    'share_anonymously', 'question', 'comments']
 
 
 class ResponseSerializer(AdoorBaseSerializer):
+    question_id = serializers.IntegerField()
     question = QuestionSerializer(read_only=True)
+
+    def get_question_id(self, obj):
+        return obj.question_id
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Response
-        fields = AdoorBaseSerializer.Meta.fields + ['share_with_friends', 'share_anonymously', 'question']
+        fields = AdoorBaseSerializer.Meta.fields + ['question_id', 'share_with_friends',
+                                                    'share_anonymously', 'question']
 
 
 class QuestionDetailSerializer(AdoorBaseSerializer):
+    is_admin_question = serializers.SerializerMethodField(read_only=True)
     response_set = ResponseSerializer(many=True, read_only=True)
+
+    def get_is_admin_question(self, obj):
+        return obj.author.is_superuser
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Question

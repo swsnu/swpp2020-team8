@@ -87,7 +87,7 @@ def set_seed(n):
         f"{Comment.objects.all().count()} Comment(s) created!") if DEBUG else None
 
     # Seed Reply Comment (target=Comment)
-    comment_model = get_content_type("comment")
+    comment_model = get_content_type("Comment")
     comments = Comment.objects.all()
     for _ in range(n):
         user = random.choice(users)

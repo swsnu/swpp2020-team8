@@ -13,4 +13,6 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         # Write permissions are only allowed to the owner of the object.
         if obj.type == 'Like':
             return obj.user == request.user
+        elif obj.type == 'User':
+            return obj == request.user
         return obj.author == request.user
