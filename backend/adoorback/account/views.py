@@ -14,7 +14,7 @@ from feed.models import Question
 User = get_user_model()
 
 
-class UserRegister(generics.CreateAPIView):
+class UserSignup(generics.CreateAPIView):
     serializer_class = UserProfileSerializer
 
 

@@ -28,7 +28,7 @@ class DailyQuestionList(generics.ListAPIView):
     def get_queryset(self):
         if Question.objects.daily_questions().count() == 0:
             select_daily_questions()
-        return Question.objects.daily_questions()
+        return Question.objects.daily_questions().order_by('-id')
 
 
 class ArticleList(generics.ListCreateAPIView):

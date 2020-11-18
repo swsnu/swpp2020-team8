@@ -12,8 +12,8 @@ class LikeSerializer(serializers.ModelSerializer):
     user = serializers.HyperlinkedIdentityField(
         view_name='user-detail', read_only=True)
     user_detail = serializers.SerializerMethodField(read_only=True)
-    target_type = serializers.SerializerMethodField(read_only=True)
-    target_id = serializers.SerializerMethodField(read_only=True)
+    target_type = serializers.SerializerMethodField()
+    target_id = serializers.SerializerMethodField()
 
     def get_user_detail(self, obj):
         user = obj.user
@@ -30,5 +30,4 @@ class LikeSerializer(serializers.ModelSerializer):
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Like
-        fields = ['id', 'type', 'target_id',
-                  'target_type', 'user', 'user_detail']
+        fields = ['id', 'type', 'target_type', 'target_id', 'user', 'user_detail']

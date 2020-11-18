@@ -40,3 +40,7 @@ node_modules
 /backend/*/*/__pycache__/
 /backend/*/__pycache__/
 /backend/*/*/*/__pycache__/
+
+# db
+/backend/adoorback/db.sqlite3
+

@@ -4,3 +4,5 @@ rm -f tmp.db db.sqlite3
 rm -r */migrations
 pylint **/*.py --load-plugins pylint_django
 coverage report -m
+python manage.py makemigrations account feed comment like
+python manage.py migrate
