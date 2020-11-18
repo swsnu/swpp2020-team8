@@ -41,32 +41,19 @@ const initialState = {
   next: null
 };
 
-export const getSelectedPost = (type, postId) => async (dispatch) => {
-  const postType = type.toUpperCase();
-  dispatch({ type: `post/GET_SELECTED_${postType}_REQUEST` });
+export const getSelectedPost = (postType, id) => async (dispatch) => {
+  const type = postType.toUpperCase().slice(0, -1);
   let result;
+  dispatch({ type: `post/GET_SELECTED_${type}_REQUEST` });
   try {
-    switch (type) {
-      case 'article':
-        result = await axios.get(`feed/articles/${postId}`);
-        break;
-      case 'response':
-        result = await axios.get(`feed/responses/${postId}`);
-        break;
-      case 'question':
-        result = await axios.get(`feed/questions/${postId}`);
-        break;
-      default:
-        console.log('Wrong type of post');
-        break;
-    }
+    result = await axios.get(`feed/${postType}/${id}/`);
   } catch (err) {
-    dispatch({ type: `post/GET_SELECTED_${postType}_FAILURE`, error: err });
+    dispatch({ type: `post/GET_SELECTED_${type}_FAILURE`, error: err });
   }
-  // console.log(result.data, postId);
+  console.log(result);
   dispatch({
-    type: `post/GET_SELECTED_${postType}_SUCCESS`,
-    selectedPost: result.data
+    type: `post/GET_SELECTED_${type}_SUCCESS`,
+    selectedPost: result?.data
   });
 };
 
