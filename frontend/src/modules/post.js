@@ -48,7 +48,6 @@ export const getSelectedPost = (type, postId) => async (dispatch) => {
   try {
     switch (type) {
       case 'article':
-        // result = mockArticle;
         result = await axios.get(`feed/articles/${postId}`);
         break;
       case 'response':
