@@ -37,7 +37,7 @@ export default function Login() {
     dispatch(requestLogin(loginInfo));
   };
 
-  const onKeySubmitButton = (e) => {
+  const onKeySubmit = (e) => {
     if (e.keyCode === 13) {
       dispatch(removeError());
       dispatch(requestLogin(loginInfo));
@@ -57,7 +57,7 @@ export default function Login() {
         value={loginInfo.username}
         placeholder="닉네임"
         onChange={handleChange}
-        onKeyDown={onKeySubmitButton}
+        onKeyDown={onKeySubmit}
       />
       <CommonInput
         id="password-input"
@@ -66,7 +66,7 @@ export default function Login() {
         placeholder="비밀번호"
         type="password"
         onChange={handleChange}
-        onKeyDown={onKeySubmitButton}
+        onKeyDown={onKeySubmit}
       />
       {loginError && loginError.length && (
         <WarningMessage id="login-error-message">
