@@ -44,7 +44,6 @@ const App = () => {
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={SignUp} />
           <Route exact path="/select-questions" component={QuestionSelection} />
-          <Route exact path="/:postType/:id" component={PostDetail} />
           <Redirect path="/" to="/login" />
         </Switch>
       ) : (
@@ -62,6 +61,11 @@ const App = () => {
               <PrivateRoute exact path="/friends" component={FriendFeed} />
               <PrivateRoute exact path="/anonymous" component={AnonymousFeed} />
               <PrivateRoute exact path="/questions" component={QuestionFeed} />
+              <PrivateRoute
+                exact
+                path="/:postType/:id"
+                component={PostDetail}
+              />
               <Redirect exact path="/" to="/friends" />
             </Switch>
           </FeedWrapper>
