@@ -6,14 +6,15 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 import styled from 'styled-components';
 // import { useDispatch } from 'react-redux';
-import Checkbox from '@material-ui/core/Checkbox';
+// import Checkbox from '@material-ui/core/Checkbox';
 // import ListItemIcon from '@material-ui/core/ListItemIcon';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+// import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
-// import FormHelperText from '@material-ui/core/FormHelperText';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
+// import FriendItem from './FriendItem';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -80,19 +81,38 @@ const Question = styled.div`
   font-size: 15px;
 `;
 
-const QuestionSendModal = ({ questionObj, open, handleClose, friends }) => {
-  const classes = useStyles();
+const FriendListWrapper = styled.div`
+  padding: 16px;
+  border: 1px solid whitesmoke;
+  padding-top: 0;
+  border-radius: 4px;
+  background: whitesmoke;
+`;
 
-  const FriendList = friends.map((friend) => {
-    return (
-      <FormControlLabel
-        className={classes.friendlist}
-        key={friend.id}
-        control={<Checkbox name="checked" />}
-        label={friend.username}
-      />
-    );
-  });
+FriendListWrapper.displayName = 'FriendListWrapper';
+
+const QuestionSendModal = ({ questionObj, open, handleClose, friendList }) => {
+  const classes = useStyles();
+  // const dispatch = useDispatch();
+  // const friendList = useSelector((state) => state.friendReducer.friendList);
+
+  // useEffect(() => {
+  //   dispatch(getFriendList());
+  // }, [dispatch]);
+
+  // const friendItemList = friendList.map((friend) => {
+  //   return (
+  //       <Checkbox
+  //         key={friend.id}
+  //         checked={checked}
+  //         onChange={handleChange}
+  //         inputProps={{ 'aria-label': 'primary checkbox' }}
+  //       />
+  //       <FriendItem username={friend.username} />
+  //   );
+  // });
+
+  const friendItemList = friendList;
 
   const onClickSendButton = () => {};
 
@@ -113,8 +133,8 @@ const QuestionSendModal = ({ questionObj, open, handleClose, friends }) => {
           <h3>{questionObj.content}</h3>
         </Question>
         <FormControl component="fieldset" className={classes.formControl}>
-          <FormGroup>{FriendList}</FormGroup>
-          {/* <FormHelperText>한 명 이상 선택해주세요!</FormHelperText> */}
+          <FormGroup>{friendItemList}</FormGroup>
+          <FormHelperText>한 명 이상 선택해주세요!</FormHelperText>
         </FormControl>
         <SubmitButtonWrapper>
           <Button

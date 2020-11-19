@@ -14,6 +14,7 @@ import PostAuthorButtons from './PostAuthorButtons';
 import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
 import ShareSettings from '../ShareSettings';
 import QuestionSendModal from '../QuestionSendModal';
+import { mockFriendList } from '../../constants';
 
 const QuestionItemWrapper = styled.div`
   background: #f4f4f4;
@@ -46,13 +47,6 @@ const useStyles = makeStyles((theme) => ({
     fontsize: '14px'
   }
 }));
-
-const friends = [
-  { id: 1, username: 'jinsun.goo' },
-  { id: 2, username: 'curie.yoo' },
-  { id: 3, username: 'jaewon.kim' },
-  { id: 4, username: 'jina.park' }
-];
 
 // TODO: share settings
 export default function QuestionItem({ questionObj }) {
@@ -163,7 +157,7 @@ export default function QuestionItem({ questionObj }) {
           questionObj={questionObj}
           open={isQuestionSendModalOpen}
           handleClose={handleModalClose}
-          friends={friends}
+          friends={mockFriendList}
         />
       )}
     </QuestionItemWrapper>

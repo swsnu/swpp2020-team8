@@ -465,3 +465,10 @@ export const mockAnonymousFeed = [
   mockAnonCustomQuestion2,
   mockAnonResponse
 ];
+
+export const mockFriendList = [
+  { id: 1, username: 'jinsun.goo' },
+  { id: 2, username: 'curie.yoo' },
+  { id: 3, username: 'jaewon.kim' },
+  { id: 4, username: 'jina.park' }
+];
