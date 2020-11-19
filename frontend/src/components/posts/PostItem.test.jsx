@@ -22,7 +22,7 @@ const sampleResponseObj = {
     profile_pic:
       'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
   },
-  question_detail: {
+  question: {
     id: 1244,
     question: '어디서 마시는 커피를 가장 좋아하는가?'
   },
