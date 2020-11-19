@@ -5,10 +5,13 @@ import DialogContent from '@material-ui/core/DialogContent';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 import styled from 'styled-components';
-import List from '@material-ui/core/List';
 // import { useDispatch } from 'react-redux';
-import ListItemLink from './ListItemLink';
-import FriendItem from './FriendItem';
+import Checkbox from '@material-ui/core/Checkbox';
+// import ListItemIcon from '@material-ui/core/ListItemIcon';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormGroup from '@material-ui/core/FormGroup';
+// import FormHelperText from '@material-ui/core/FormHelperText';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -45,6 +48,15 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '12px',
     color: 'grey',
     marginRight: theme.spacing(1)
+  },
+  list: {
+    paddingTop: 0
+  },
+  friend: {
+    fontSize: 14
+  },
+  formControl: {
+    margin: theme.spacing(3)
   }
 }));
 
@@ -60,8 +72,19 @@ const Question = styled.div`
   font-size: 15px;
 `;
 
-const QuestionSendModal = ({ questionObj, open, handleClose }) => {
+const QuestionSendModal = ({ questionObj, open, handleClose, friends }) => {
   const classes = useStyles();
+
+  const FriendList = friends.map((friend) => {
+    return (
+      <FormControlLabel
+        className={classes.friendlist}
+        key={friend.id}
+        control={<Checkbox name="checked" />}
+        label={friend.username}
+      />
+    );
+  });
 
   const onClickSendButton = () => {};
 
@@ -72,20 +95,10 @@ const QuestionSendModal = ({ questionObj, open, handleClose }) => {
         <Question>
           <h3>{questionObj.content}</h3>
         </Question>
-        <List className={classes.list} aria-label="friend list">
-          <ListItemLink to="/">
-            <FriendItem username="jinsun.goo" />
-          </ListItemLink>
-          <ListItemLink to="/">
-            <FriendItem username="curie.yoo" />
-          </ListItemLink>
-          <ListItemLink to="/">
-            <FriendItem username="jaewon.kim" />
-          </ListItemLink>
-          <ListItemLink to="/">
-            <FriendItem username="jina.park" />
-          </ListItemLink>
-        </List>
+        <FormControl component="fieldset" className={classes.formControl}>
+          <FormGroup>{FriendList}</FormGroup>
+          {/* <FormHelperText>한 명 이상 선택해주세요!</FormHelperText> */}
+        </FormControl>
         <SubmitButtonWrapper>
           <Button
             size="medium"

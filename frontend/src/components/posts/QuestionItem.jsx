@@ -47,6 +47,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const friends = [
+  { id: 1, username: 'jinsun.goo' },
+  { id: 2, username: 'curie.yoo' },
+  { id: 3, username: 'jaewon.kim' },
+  { id: 4, username: 'jina.park' }
+];
+
 // TODO: share settings
 export default function QuestionItem({ questionObj }) {
   // TODO: fix
@@ -156,6 +163,7 @@ export default function QuestionItem({ questionObj }) {
           questionObj={questionObj}
           open={isQuestionSendModalOpen}
           handleClose={handleModalClose}
+          friends={friends}
         />
       )}
     </QuestionItemWrapper>
