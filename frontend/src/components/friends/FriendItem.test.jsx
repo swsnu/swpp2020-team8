@@ -17,7 +17,7 @@ describe('<FriendItem/>', () => {
     const component = shallow(<FriendItem friendObj={mockFriend} isWidget />);
     expect(component.length).toBe(1);
     const wrapper = component.find('FriendItemWrapper').at(0);
-    expect(wrapper).toHaveStyleRule('margin', 'auto');
+    expect(wrapper).toHaveStyleRule('margin', '8px 16px');
   });
 
   it('should change margin when isWidget is false', () => {

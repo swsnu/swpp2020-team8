@@ -11,7 +11,7 @@ import FriendsPage from './FriendsPage';
 import 'jest-styled-components';
 import history from '../history';
 
-describe('Anonymous Feed Page unit mount test', () => {
+describe('Friends Page unit mount test', () => {
   const store = createStore(
     rootReducer,
     mockStore,
@@ -27,13 +27,13 @@ describe('Anonymous Feed Page unit mount test', () => {
       </Provider>
     );
 
-  it('Anonymous Feed Page should mount', async () => {
+  it('Friends Page should mount', async () => {
     jest.mock('react-redux', () => ({
       useDispatch: () => jest.fn()
     }));
 
     const wrapper = getWrapper();
-    const postList = wrapper.find('FriendListWrapper');
-    expect(postList.length).toBe(1);
+    const friendList = wrapper.find('FriendListWrapper');
+    expect(friendList.length).toBe(1);
   });
 });

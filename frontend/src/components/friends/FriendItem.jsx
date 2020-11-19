@@ -10,7 +10,7 @@ const FriendItemWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: ${(props) => (props.isWidget ? 'auto' : '8px 0')};
+  margin: ${(props) => (props.isWidget ? '8px 16px' : '8px 0')};
 `;
 
 FriendItemWrapper.displayName = 'FriendItemWrapper';
