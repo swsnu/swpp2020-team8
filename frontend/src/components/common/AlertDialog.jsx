@@ -19,10 +19,15 @@ export default function AlertDialog({ onConfirm, onClose, message, isOpen }) {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onConfirm} color="primary" autoFocus>
+        <Button
+          id="confirm-button"
+          onClick={onConfirm}
+          color="primary"
+          autoFocus
+        >
           확인
         </Button>
-        <Button onClick={onClose} color="secondary">
+        <Button id="cancel-button" onClick={onClose} color="secondary">
           취소
         </Button>
       </DialogActions>
