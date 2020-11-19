@@ -2,15 +2,22 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import ListItemText from '@material-ui/core/ListItemText';
 import FaceIcon from '@material-ui/icons/Face';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import FriendStatusButtons from './FriendStatusButtons';
 
 const FriendItemWrapper = styled.div`
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin: ${(props) => (props.isWidget ? 'auto' : '8px 0')};
 `;
 
+FriendItemWrapper.displayName = 'FriendItemWrapper';
+const FriendLink = styled(Link)`
+  display: flex;
+  align-items: center;
+`;
 const useStyles = makeStyles((theme) => ({
   username: {
     fontSize: 14,
@@ -24,12 +31,14 @@ const FriendItem = ({ friendObj, isWidget = false }) => {
   const { username } = friendObj;
   return (
     <FriendItemWrapper isWidget={isWidget}>
-      <FaceIcon />
-      <ListItemText
-        classes={{ primary: classes.username }}
-        primary={username}
-      />
-      {!isWidget && <FriendStatusButtons friendId={friendObj.id} isFriend />}
+      <FriendLink to={`/users/${friendObj.id}`}>
+        <FaceIcon />
+        <ListItemText
+          classes={{ primary: classes.username }}
+          primary={username}
+        />
+      </FriendLink>
+      {!isWidget && <FriendStatusButtons friendObj={friendObj} isFriend />}
     </FriendItemWrapper>
   );
 };

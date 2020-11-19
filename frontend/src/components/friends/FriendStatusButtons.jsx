@@ -1,24 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@material-ui/core';
-
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
-import { deleteFriend } from '../../modules/friend';
+import { acceptFriendRequest, deleteFriend } from '../../modules/friend';
+import AlertDialog from '../common/AlertDialog';
 
 const FriendButton = styled(Button)`
   padding: 5px 0 !important;
   margin: 0 4px;
 `;
 
-export default function FriendStatusButtons({ isFriend, friendId }) {
+export default function FriendStatusButtons({ isFriend, friendObj }) {
   const dispatch = useDispatch();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
   const onClickDeleteFriendButton = () => {
-    dispatch(deleteFriend(friendId));
+    setIsDeleteDialogOpen(true);
   };
-  const onClickDeleteRequestButton = () => {};
-  const onClickAcceptRequestButton = () => {};
+
+  const onConfirmDeleteFriend = () => {
+    dispatch(deleteFriend(friendObj.id));
+    setIsDeleteDialogOpen(false);
+  };
+
+  const onCancelDeleteFriend = () => {
+    setIsDeleteDialogOpen(false);
+  };
+
+  const onClickDeleteRequestButton = () => {
+    // todo: delete request action
+  };
+  const onClickAcceptRequestButton = () => {
+    dispatch(acceptFriendRequest(friendObj));
+    // todo: accept request action
+  };
+
   return isFriend ? (
-    <div id={friendId}>
+    <div id={friendObj.id}>
       <FriendButton
         variant="outlined"
         color="primary"
@@ -34,9 +52,15 @@ export default function FriendStatusButtons({ isFriend, friendId }) {
       >
         삭제
       </FriendButton>
+      <AlertDialog
+        message="친구를 삭제하시겠습니까?"
+        onConfirm={onConfirmDeleteFriend}
+        onClose={onCancelDeleteFriend}
+        isOpen={isDeleteDialogOpen}
+      />
     </div>
   ) : (
-    <div id={friendId}>
+    <div id={friendObj.id}>
       <FriendButton
         variant="outlined"
         color="primary"
