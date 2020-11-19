@@ -6,9 +6,10 @@ import FriendItem from '../components/friends/FriendItem';
 
 const FriendListWrapper = styled.div`
   padding: 16px;
-  border: 1px solid #e7e7e7;
+  border: 1px solid whitesmoke;
   padding-top: 0;
   border-radius: 4px;
+  background: whitesmoke;
 `;
 
 FriendListWrapper.displayName = 'FriendListWrapper';

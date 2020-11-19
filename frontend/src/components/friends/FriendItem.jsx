@@ -10,7 +10,11 @@ const FriendItemWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: #fff;
   margin: ${(props) => (props.isWidget ? '8px 16px' : '8px 0')};
+  padding: 6px;
+  border: 1px solid #e7e7e7;
+  border-radius: 4px;
 `;
 
 FriendItemWrapper.displayName = 'FriendItemWrapper';
