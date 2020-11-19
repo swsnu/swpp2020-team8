@@ -17,13 +17,12 @@ export default function PostDetail() {
   if (
     selectedPost?.type === 'Question' ||
     selectedPost?.['content-type'] === 'Question'
-  ) {
+  )
     return (
       <div id="post-detail-question">
         {selectedPost && <QuestionItem questionObj={selectedPost} />}
       </div>
     );
-  }
   return (
     <div id="post-detail-not-question">
       {selectedPost && <PostItem postObj={selectedPost} />}

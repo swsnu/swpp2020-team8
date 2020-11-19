@@ -9,7 +9,7 @@ import PostDetail from './PostDetail';
 import PostItem from '../components/posts/PostItem';
 import QuestionItem from '../components/posts/QuestionItem';
 import rootReducer from '../modules';
-import { mockStore } from '../mockStore';
+import { mockStore, mockStoreWithArticle } from '../mockStore';
 import 'jest-styled-components';
 import history from '../history';
 
@@ -107,6 +107,12 @@ describe('Post Detail Page', () => {
     composeWithDevTools(applyMiddleware(thunk))
   );
 
+  const storeWithArticle = createStore(
+    rootReducer,
+    mockStoreWithArticle,
+    composeWithDevTools(applyMiddleware(thunk))
+  );
+
   const getWrapper = () =>
     mount(
       <Provider store={store}>
@@ -128,7 +134,7 @@ describe('Post Detail Page', () => {
   it('should render article without errors', () => {
     const getWrapperTest = () =>
       mount(
-        <Provider store={store}>
+        <Provider store={storeWithArticle}>
           <Router history={history}>
             <PostDetail>
               <PostItem postObj={mockArticle} />
@@ -136,9 +142,6 @@ describe('Post Detail Page', () => {
           </Router>
         </Provider>
       );
-    jest.mock('react-redux', () => ({
-      useDispatch: () => jest.fn()
-    }));
     const wrapper = getWrapperTest();
     const postDetail = wrapper.find('PostItemWrapper');
     expect(postDetail.length).toBe(1);
@@ -155,9 +158,6 @@ describe('Post Detail Page', () => {
           </Router>
         </Provider>
       );
-    jest.mock('react-redux', () => ({
-      useDispatch: () => jest.fn()
-    }));
     const wrapper = getWrapperTest();
     const postDetail = wrapper.find('QuestionItemWrapper');
     expect(postDetail.length).toBe(1);
