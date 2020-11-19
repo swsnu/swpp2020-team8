@@ -4,7 +4,7 @@ import { mockFriendList } from '../constants';
 const initialState = {
   friendList: [],
   selectedUser: {},
-  selectedUserResults: []
+  selectedUserPosts: []
 };
 
 export const GET_FRIEND_LIST_REQUEST = 'friend/GET_FRIEND_LIST_REQUEST';
@@ -15,14 +15,16 @@ export const DELETE_FRIEND_REQUEST = 'friend/DELETE_FRIEND_REQUEST';
 export const DELETE_FRIEND_SUCCESS = 'friend/DELETE_FRIEND_SUCCESS';
 export const DELETE_FRIEND_FAILURE = 'friend/DELETE_FRIEND_FAILURE';
 
+export const ADD_TO_FRIEND_LIST = 'friend/ADD_TO_FRIEND_LIST';
+
 export const getFriendList = () => async (dispatch, getState) => {
   const userId = getState().userReducer.user?.id;
+  console.log(userId);
   dispatch({ type: GET_FRIEND_LIST_REQUEST });
   let result;
-  if (!userId) return;
   try {
     // result = await axios.get(`user/${userId}/friends/`);
-    result = await {
+    result = {
       data: {
         count: 4,
         results: mockFriendList
@@ -40,8 +42,7 @@ export const getFriendList = () => async (dispatch, getState) => {
 
 export const deleteFriend = (friendId) => async (dispatch, getState) => {
   const userId = getState().userReducer.user?.id;
-  dispatch({ type: DELETE_FRIEND_REQUEST });
-  if (!userId) return;
+  dispatch({ type: DELETE_FRIEND_REQUEST, userId });
   try {
     // await axios.delete(`/user/friendship/${friendId}/`);
   } catch (err) {
@@ -51,6 +52,21 @@ export const deleteFriend = (friendId) => async (dispatch, getState) => {
     type: DELETE_FRIEND_SUCCESS,
     friendId
   });
+};
+
+export const acceptFriendRequest = (friendObj) => {
+  // need api actions
+  return {
+    type: ADD_TO_FRIEND_LIST,
+    friend: friendObj
+  };
+};
+
+export const addFriend = (friendObj) => {
+  return {
+    type: ADD_TO_FRIEND_LIST,
+    friend: friendObj
+  };
 };
 
 export default function friendReducer(state = initialState, action) {
@@ -73,6 +89,13 @@ export default function friendReducer(state = initialState, action) {
       return {
         ...state,
         friendList: newFriendList
+      };
+    case ADD_TO_FRIEND_LIST:
+      return {
+        ...state,
+        friendList: state.friendList
+          ? [...state.friendList, action.friend]
+          : [action.friend]
       };
     default:
       return state;

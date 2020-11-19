@@ -42,7 +42,7 @@ const FriendListWidget = () => {
             <Typography variant="h6" className={classes.title}>
               친구
             </Typography>
-            <Button component="a" href="" variant="outlined" size="small">
+            <Button variant="outlined" size="small">
               친구 관리
             </Button>
           </WidgetTitleWrapper>

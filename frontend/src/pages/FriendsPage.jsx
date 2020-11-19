@@ -11,6 +11,8 @@ const FriendListWrapper = styled.div`
   border-radius: 4px;
 `;
 
+FriendListWrapper.displayName = 'FriendListWrapper';
+
 export default function FriendsPage() {
   const dispatch = useDispatch();
   const friendList = useSelector((state) => state.friendReducer.friendList);
@@ -19,12 +21,15 @@ export default function FriendsPage() {
     dispatch(getFriendList());
   }, [dispatch]);
 
-  const friendItemList = friendList.map((friend) => {
+  const friendItemList = friendList?.map((friend) => {
     return <FriendItem key={friend.id} friendObj={friend} />;
   });
   return (
     <FriendListWrapper>
-      <h3>친구 목록</h3>
+      <h3>
+        친구 목록
+        {`(${friendList?.length})`}
+      </h3>
       {friendItemList}
     </FriendListWrapper>
   );
