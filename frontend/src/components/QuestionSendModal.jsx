@@ -12,6 +12,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 // import FormHelperText from '@material-ui/core/FormHelperText';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -35,6 +37,12 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'bold',
     margin: 0,
     paddingBottom: 0
+  },
+  closeButton: {
+    position: 'absolute',
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500]
   },
   submitButton: {
     boxShadow: 'none',
@@ -90,7 +98,16 @@ const QuestionSendModal = ({ questionObj, open, handleClose, friends }) => {
 
   return (
     <Dialog fullWidth onClose={handleClose} maxWidth="sm" open={open}>
-      <DialogTitle className={classes.modalTitle}>질문 보내기</DialogTitle>
+      <DialogTitle className={classes.modalTitle} onClose={handleClose}>
+        질문 보내기
+        <IconButton
+          aria-label="close"
+          className={classes.closeButton}
+          onClick={handleClose}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
       <DialogContent className={classes.content}>
         <Question>
           <h3>{questionObj.content}</h3>
