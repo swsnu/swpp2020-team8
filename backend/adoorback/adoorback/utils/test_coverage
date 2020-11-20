@@ -17,7 +17,7 @@ coverage run --source='.' --branch --omit='*/migrations/*','adoorback/*','manage
 coverage report -m
 
 # model tests - individual models
-coverage run --source='.' ./manage.py test account.tests.UserTestCase
+coverage run --source='.' ./manage.py test account.tests.AuthAPITestCase
 coverage run --source='.' ./manage.py test comment.tests.CommentTestCase
 coverage run --source='.' ./manage.py test like.tests.LikeTestCase
 coverage run --source='.' ./manage.py test feed.tests.FeedTestCase
