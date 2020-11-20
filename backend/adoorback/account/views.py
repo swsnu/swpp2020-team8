@@ -3,12 +3,8 @@ import json
 from django.contrib.auth import get_user_model, authenticate, login
 from django.db import DataError, IntegrityError
 from django.http import JsonResponse, HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from rest_framework import generics
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.response import Response
-from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_200_OK
+from rest_framework.permissions import IsAuthenticated
 
 from adoorback.permissions import IsOwnerOrReadOnly
 from account.serializers import UserProfileSerializer, UserDetailedSerializer
