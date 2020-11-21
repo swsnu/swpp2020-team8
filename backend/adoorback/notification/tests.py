@@ -16,7 +16,7 @@ class NotificationTestCase(TestCase):
     
     def test_noti_count(self):
         # should be changed after adding friend/response-request noti
-        self.assertEqual(Notification.object.all().count(), N * 2)
+        self.assertEqual(Notification.objects.all().count(), N * 2)
 
     def test_noti_str(self):
         noti = Notification.objects.all().last()
@@ -101,10 +101,4 @@ class NotificationTestCase(TestCase):
         origin.delete()
         self.assertEqual(Notification.objects.all().filter(
             origin_type=get_content_type("Comment"),origin_id=origin_id).count(), 0)
-        # origin = like
-        noti = Notification.objects.all().filter(origin_type=get_content_type("Like")).last()
-        origin = noti.origin
-        origin_id = origin.id
-        origin.delete()
-        self.assertEqual(Notification.objects.all().filter(
-            origin_type=get_content_type("Like"), origin_id=origin_id).count(), 0)
+
