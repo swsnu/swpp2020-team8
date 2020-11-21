@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import IconButton from '@material-ui/core/IconButton';
+import { useDispatch, useSelector } from 'react-redux';
 import AuthorProfile from './AuthorProfile';
 import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
 import QuestionBox from './QuestionBox';
 import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
 import CommentItem from '../comments/CommentItem';
-import { mockArticle } from '../../constants';
 import NewComment from '../comments/NewComment';
+import { createComment } from '../../modules/post';
 
 const PostItemWrapper = styled.div`
   background: #fff;
@@ -31,14 +32,32 @@ const ContentWrapper = styled.div`
 const CommentWrapper = styled.div``;
 
 export default function PostItem({ postObj }) {
-  // TODO: fix
-  const isAuthor = true;
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.userReducer.user);
+  const isAuthor = user && user.id === postObj?.author_detail.id;
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
 
-  const commentList = mockArticle.comments?.map((comment) => {
+  useEffect(() => {
+    if (postObj) {
+      const count = postObj.like_count;
+      setLikeCount(+count);
+      setLiked(postObj.current_user_liked);
+    }
+  }, [postObj]);
+
+  const commentList = postObj?.comments?.map((comment) => {
     return <CommentItem key={comment.id} commentObj={comment} />;
   });
+
+  const handleSubmit = (content) => {
+    const newCommentObj = {
+      target_type: postObj.type,
+      target_id: postObj.id,
+      content
+    };
+    dispatch(createComment(newCommentObj));
+  };
 
   const toggleLike = () => {
     if (liked) {
@@ -84,7 +103,7 @@ export default function PostItem({ postObj }) {
         )}
       </PostItemFooterWrapper>
       <CommentWrapper>{commentList}</CommentWrapper>
-      <NewComment />
+      <NewComment onSubmit={handleSubmit} />
     </PostItemWrapper>
   );
 }

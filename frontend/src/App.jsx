@@ -37,8 +37,8 @@ const App = () => {
   useEffect(() => {
     dispatch(
       requestLogin({
-        username: 'test',
-        password: 'test'
+        username: 'adoor',
+        password: 'adoor2020:)'
       })
     );
   }, []);

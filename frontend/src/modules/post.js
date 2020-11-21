@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import axios from '../apis';
 import { mockPost } from '../constants';
 
@@ -19,6 +20,14 @@ export const GET_USER_POSTS_FAILURE = 'post/GET_USER_POSTS_FAILURE';
 export const CREATE_POST_REQUEST = 'post/CREATE_POST_REQUEST';
 export const CREATE_POST_SUCCESS = 'post/CREATE_POST_SUCCESS';
 export const CREATE_POST_FAILURE = 'post/CREATE_POST_FAILURE';
+
+export const CREATE_COMMENT_REQUEST = 'post/CREATE_COMMENT_REQUEST';
+export const CREATE_COMMENT_SUCCESS = 'post/CREATE_COMMENT_SUCCESS';
+export const CREATE_COMMENT_FAILURE = 'post/CREATE_COMMENT_FAILURE';
+
+export const CREATE_REPLY_REQUEST = 'post/CREATE_REPLY_REQUEST';
+export const CREATE_REPLY_SUCCESS = 'post/CREATE_REPLY_SUCCESS';
+export const CREATE_REPLY_FAILURE = 'post/CREATE_REPLY_FAILURE';
 
 const initialState = {
   anonymousPosts: [],
@@ -53,9 +62,6 @@ export const getSelectedPostSuccess = (selectedPost) => {
 
 export const getPostsByType = (type, userId = null) => async (dispatch) => {
   const postType = type.toUpperCase();
-  // let resultFeed;
-  // if (postType === 'ANON') resultFeed = mockAnonymousFeed;
-  // else resultFeed = mockFriendFeed;
   dispatch({ type: `post/GET_${postType}_POSTS_REQUEST` });
   let result;
   try {
@@ -84,17 +90,10 @@ export const createPost = (newPost) => async (dispatch) => {
     newPost
   });
 
-  // const postType = `${newPost.type.toLowerCase()}s`;
-  const mockAuthor = {
-    id: 13,
-    username: 'curious',
-    profile_pic:
-      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
-  };
-  // let result;
+  const postType = `${newPost.type.toLowerCase()}s`;
+  let result;
   try {
-    // await axios.post(`api/feed/${postType}/`, newPost);
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    result = await axios.post(`api/feed/${postType}/`, newPost);
   } catch (error) {
     dispatch({
       type: CREATE_POST_FAILURE,
@@ -103,7 +102,47 @@ export const createPost = (newPost) => async (dispatch) => {
   }
   dispatch({
     type: CREATE_POST_SUCCESS,
-    newPost: { ...newPost, author_detail: mockAuthor }
+    newPost: result.data
+  });
+};
+
+export const createComment = (newComment) => async (dispatch) => {
+  dispatch({
+    type: CREATE_COMMENT_REQUEST
+  });
+
+  let result;
+  try {
+    result = await axios.post(`comments/`, newComment);
+  } catch (error) {
+    dispatch({
+      type: CREATE_COMMENT_FAILURE,
+      error
+    });
+  }
+  dispatch({
+    type: CREATE_COMMENT_SUCCESS,
+    result: result.data
+  });
+};
+
+export const createReply = (newReply) => async (dispatch) => {
+  dispatch({
+    type: CREATE_REPLY_REQUEST
+  });
+
+  let result;
+  try {
+    result = await axios.post(`comments/`, newReply);
+  } catch (error) {
+    dispatch({
+      type: CREATE_REPLY_FAILURE,
+      error
+    });
+  }
+  dispatch({
+    type: CREATE_REPLY_SUCCESS,
+    result: result.data
   });
 };
 
@@ -152,6 +191,52 @@ export default function postReducer(state = initialState, action) {
         ...state,
         anonymousPosts: newAnonPosts,
         friendPosts: newFriendPosts
+      };
+    }
+    case CREATE_COMMENT_SUCCESS: {
+      const { target_type, target_id } = action.result;
+      const newFriendPosts = state.friendPosts?.map((post) => {
+        if (post.id === target_id && post.type === target_type) {
+          return {
+            ...post,
+            comments: post.comments
+              ? [...post.comments, action.result]
+              : [action.result]
+          };
+        }
+        return post;
+      });
+
+      const newUserPosts = state.selectedUserPosts?.map((post) => {
+        if (post.id === target_id && post.type === target_type) {
+          return {
+            ...post,
+            comments: post.comments
+              ? [...post.comments, action.result]
+              : [action.result]
+          };
+        }
+        return post;
+      });
+
+      const { selectedPost } = state;
+      const newSelectedPost =
+        selectedPost &&
+        selectedPost.id === target_id &&
+        selectedPost.type === target_type
+          ? {
+              ...selectedPost,
+              comments: selectedPost.comments
+                ? [...selectedPost.comments, action.result]
+                : [action.result]
+            }
+          : selectedPost;
+
+      return {
+        ...state,
+        friendPosts: newFriendPosts,
+        selectedUserPosts: newUserPosts,
+        selectedPost: newSelectedPost
       };
     }
 

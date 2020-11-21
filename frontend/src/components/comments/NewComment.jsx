@@ -5,16 +5,18 @@ import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRigh
 
 const NewCommentWrapper = styled.div`
   width: 100%;
+  display: flex;
 `;
 const NewCommentInput = styled.input`
   outline: none;
+  flex-grow: 1;
   padding: 6px;
   margin: 4px 0;
   border: 1px solid #ddd;
   border-radius: 4px;
 `;
 
-export default function NewComment({ isReply = false, commentId = null }) {
+export default function NewComment({ isReply = false, onSubmit }) {
   const [content, setContent] = useState('');
   const placeholder = isReply ? '답글을 입력하세요.' : '댓글을 입력하세요.';
 
@@ -22,15 +24,26 @@ export default function NewComment({ isReply = false, commentId = null }) {
     setContent(e.target.value);
   };
 
-  const handleSubmit = () => {
-    console.log(commentId);
+  const handleEnter = (e) => {
+    if (e.keyCode === 13) {
+      handleSubmit();
+      e.preventDefault();
+      e.stopPropagation();
+    }
   };
+
+  const handleSubmit = () => {
+    onSubmit(content);
+    setContent('');
+  };
+
   return (
     <NewCommentWrapper>
       {isReply && <SubdirectoryArrowRightIcon />}
       <NewCommentInput
         placeholder={placeholder}
         onChange={handleContentChange}
+        onKeyDown={handleEnter}
         value={content}
       />
       <Button
