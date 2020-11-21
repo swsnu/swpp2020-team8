@@ -11,6 +11,7 @@ from feed.models import Article, Response, Question, Post
 from comment.models import Comment
 from like.models import Like
 from friendship.models import Friendship
+from friendrequest.models import FriendRequest
 
 
 DEBUG = False
@@ -122,6 +123,13 @@ def set_seed(n):
     logging.info(
         f"{Friendship.objects.all().count()} Friendship(s) created!") if DEBUG else None
 
+    # Seed FriendRequest
+    for user in users:
+        recipient = random.choice(users.exclude(id=user.id))
+        FriendRequest.objects.create(actor=user, recipient=recipient)
+    logging.info(
+        f"{FriendRequest.objects.all().count()} FriendRequest(s) created!") if DEBUG else None
+
 
 def fill_data():
     User = get_user_model()
@@ -151,3 +159,6 @@ def fill_data():
         Friendship.objects.create(
             user=user, friend=random.choice(users.exclude(id=user.id))) \
             if user.friend_set.all().count() == 0 else None
+        FriendRequest.objects.create(
+            actor=user, recipient=random.choice(users.exclude(id=user.id))) \
+            if user.sent_friend_request_set.all().count() == 0 else None
