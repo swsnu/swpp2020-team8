@@ -8,6 +8,7 @@ import Box from '@material-ui/core/Box';
 import NotificationItem from '../components/NotificationItem';
 import FriendItem from '../components/friends/FriendItem';
 
+Tabs.displayName = 'Tabs';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -46,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function SimpleTabs() {
+export default function NotificationPage() {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
   const notifications = useSelector(
@@ -58,7 +59,7 @@ export default function SimpleTabs() {
   };
 
   const notificationList = notifications.map((noti) => (
-    <NotificationItem key={noti} notiObj={noti} isNotificationPage />
+    <NotificationItem key={noti.id} notiObj={noti} isNotificationPage />
   ));
 
   const friendRequestList = notifications
