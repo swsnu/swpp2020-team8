@@ -6,8 +6,9 @@ import { mockNotifications } from '../constants';
 describe('<NotificationItem/>', () => {
   it('should render without errors', () => {
     const component = shallow(
-      <NotificationItem notiObj={mockNotifications[0]} />
+      <NotificationItem notiObj={mockNotifications[0]} isNotificationPage />
     );
-    expect(component.length).toBe(1);
+    component.debug();
+    expect(component).toHaveLength(1);
   });
 });
