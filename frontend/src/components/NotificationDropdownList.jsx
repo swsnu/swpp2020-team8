@@ -43,6 +43,7 @@ const NotificationDropdownList = ({ notifications, setIsNotiOpen }) => {
     <Card variant="outlined" className={classes.notificationDropdown}>
       <ButtonWrapper>
         <Button
+          className="all-notifications"
           component={Link}
           to="/notifications"
           size="small"
