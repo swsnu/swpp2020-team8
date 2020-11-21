@@ -117,10 +117,10 @@ def set_seed():
         actor = like.user
         origin = like.target
         recipient = origin.author
+        target = like
         message = f'{actor} likes your {origin.type}'
-        print(message)
         Notification.objects.create(actor = actor, recipient = recipient, message = message,
-            origin=origin, target= like, is_read = False, is_visible = True)
+            origin=origin, target= target, is_read = False, is_visible = True)
 
     # Seed Notification for comments
     for comment in comments[:500]:
@@ -129,6 +129,5 @@ def set_seed():
         recipient = origin.author
         target = comment
         message = f'{actor} commented on your {origin.type}'
-        print(message)
         Notification.objects.create(actor = actor, recipient = recipient, message = message,
             origin = origin, target= target, is_read = False, is_visible = True)
