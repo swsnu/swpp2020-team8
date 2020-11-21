@@ -28,6 +28,8 @@ const ReplyWrapper = styled.div`
   margin-right: 12px;
 `;
 
+ReplyWrapper.displayName = 'ReplyWrapper';
+
 const ReplyIcon = styled(SubdirectoryArrowRightIcon)`
   margin-right: 3px;
   color: #777;
@@ -37,7 +39,12 @@ export default function CommentItem({ commentObj, isReply = false }) {
   const [isReplyInputOpen, setIsReplyInputOpen] = useState(false);
   const dispatch = useDispatch();
   const replyItems = commentObj?.replies?.map((reply) => (
-    <CommentItem key={reply.id} isReply commentObj={reply} />
+    <CommentItem
+      className="reply-item"
+      key={reply.id}
+      isReply
+      commentObj={reply}
+    />
   ));
 
   const handleReplySubmit = (content) => {

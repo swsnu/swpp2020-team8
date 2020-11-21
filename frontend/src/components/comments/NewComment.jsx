@@ -7,6 +7,8 @@ const NewCommentWrapper = styled.div`
   width: 100%;
   display: flex;
 `;
+
+NewCommentWrapper.displayName = 'NewCommentWrapper';
 const NewCommentInput = styled.input`
   outline: none;
   flex-grow: 1;
@@ -33,6 +35,7 @@ export default function NewComment({ isReply = false, onSubmit }) {
   };
 
   const handleSubmit = () => {
+    if (!content) return;
     onSubmit(content);
     setContent('');
   };
@@ -41,6 +44,7 @@ export default function NewComment({ isReply = false, onSubmit }) {
     <NewCommentWrapper>
       {isReply && <SubdirectoryArrowRightIcon />}
       <NewCommentInput
+        id="comment-input"
         placeholder={placeholder}
         onChange={handleContentChange}
         onKeyDown={handleEnter}
@@ -48,6 +52,7 @@ export default function NewComment({ isReply = false, onSubmit }) {
       />
       <Button
         onClick={handleSubmit}
+        id="submit-button"
         style={{ padding: '4px' }}
         color="secondary"
       >
