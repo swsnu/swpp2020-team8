@@ -116,9 +116,7 @@ def set_seed(n):
         f"{Like.objects.all().count()} Like(s) created!") if DEBUG else None
 
     # Seed Friendship
-    users = User.objects.all()
-    for _ in range(n):
-        user = random.choice(users)
+    for user in users:
         friend = random.choice(users.exclude(id=user.id))
         Friendship.objects.create(user=user, friend=friend)
     logging.info(
@@ -150,5 +148,6 @@ def fill_data():
             if Like.objects.feed_likes_only().filter(user=user).count() == 0 else None
         Like.objects.create(user=user, target=random.choice(comments)) \
             if Like.objects.comment_likes_only().filter(user=user).count() == 0 else None
-        Friendship.objects.create(user=user, friend=random.choice(users.exclude(id=user.id))) \
+        Friendship.objects.create(
+            user=user, friend=random.choice(users.exclude(id=user.id))) \
             if user.friend_set.all().count() == 0 else None

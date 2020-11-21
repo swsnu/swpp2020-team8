@@ -6,6 +6,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 
 from adoorback.models import AdoorModel
 
@@ -13,12 +14,14 @@ from adoorback.models import AdoorModel
 User = get_user_model()
 
 
-class Friendship(AdoorModel):
-    """ Model to represent Friendships """
+class Friendship(models.Model):
     user = models.ForeignKey(
         User, related_name='friend_set', on_delete=models.CASCADE)
     friend = models.ForeignKey(
         User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("user", "friend",)
 
     def __str__(self):
         return f'{self.user} is friends with {self.friend}'

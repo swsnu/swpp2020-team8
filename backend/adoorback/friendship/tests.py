@@ -14,23 +14,31 @@ class FriendshipTestCase(TestCase):
     def setUp(self):
         set_seed(N)
 
-    def test_friend_count(self):
-        self.assertEqual(Friendship.objects.all().count(), N*5)
+    def test_friendship_count(self):
+        user_count = User.objects.all().count()
+        self.assertEqual(Friendship.objects.all().count(), user_count)
 
+    def test_friendship_str(self):
+        friendship = Friendship.objects.all().last()
+        self.assertEqual(friendship.__str__(),
+                         f'{friendship.user} is friends with {friendship.friend}')
+        self.assertEqual(friendship.type, 'Friendship')
 
-class APITestCase(TestCase):
-    client_class = APIClient
+    def test_on_delete_user_cascade(self):
+        fill_data()
+        user = User.objects.get(id=2)
+        self.assertGreater(user.friend_set.all().count(), 0)
 
+        user.delete()
+        self.assertEqual(User.objects.all().filter(id=2).count(), 0)
+        self.assertEqual(Friendship.objects.all().filter(
+            user_id=2).count(), 0)
 
-class FriendshipAPITestCase(APITestCase):
+    def test_on_delete_friend_cascade(self):
+        fill_data()
+        user = User.objects.get(id=2)
+        friend = user.friend_set.all().first()
+        self.assertGreater(user.friend_set.all().count(), 0)
 
-    def setUp(self):
-        set_seed(N)
-
-    def test_friend_list(self):
-        current_user = self.make_user(username='current_user')
-
-        with self.login(username=current_user.username, password='password'):
-            response = self.get('friend-list')
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.data['count'], N*5)
+        friend.delete()
+        self.assertEqual(user.friend_set.all().count(), 0)
