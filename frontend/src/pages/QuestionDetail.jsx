@@ -5,6 +5,7 @@ import Switch from '@material-ui/core/Switch';
 import styled from 'styled-components';
 import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
+import { withRouter } from 'react-router';
 import QuestionItem from '../components/posts/QuestionItem';
 import { getResponsesByQuestion } from '../modules/question';
 import PostItem from '../components/posts/PostItem';
@@ -26,8 +27,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const QuestionDetail = (props) => {
-  const { history } = props;
-  const questionId = history.location.pathname.split('/')[2];
+  const { match } = props;
+  const questionId = match.params.id;
 
   const classes = useStyles();
   const [viewAnonymousResponses, setViewAnonymousResponses] = useState(false);
@@ -74,4 +75,4 @@ const QuestionDetail = (props) => {
   );
 };
 
-export default QuestionDetail;
+export default withRouter(QuestionDetail);
