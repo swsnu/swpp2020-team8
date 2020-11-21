@@ -10,6 +10,7 @@ from adoorback.utils.content_types import get_content_type
 from feed.models import Article, Response, Question, Post
 from comment.models import Comment
 from like.models import Like
+from notification.models import Notification
 
 
 DEBUG = False
@@ -113,6 +114,31 @@ def set_seed(n):
         Like.objects.create(user=user, target=reply)
     logging.info(
         f"{Like.objects.all().count()} Like(s) created!") if DEBUG else None
+
+    # Seed Notification for likes
+    likes = Like.objects.all()
+    for like in likes:
+        actor = like.user
+        origin = like.target
+        recipient = origin.author
+        message = f'{actor} likes your {origin.type}'
+        Notification.objects.create(actor = actor, recipient = recipient, message = message,
+            origin = origin, target= like, is_read = False, is_visible = True)
+
+    # Seed Notification for comments
+    for comment in comments:
+        actor = comment.author
+        origin = comment.target
+        recipient = origin.author
+        target = comment
+        message = f'{actor} commented on your {origin.type}'
+        Notification.objects.create(actor = actor, recipient = recipient, message = message,
+            origin = origin, target= target, is_read = False, is_visible = True)
+    # TODO: noti for friendship & response requests 
+    logging.info(
+        f"{Notification.objects.all().count()} Notification(s) created!") if DEBUG else None
+
+
 
 
 def fill_data():

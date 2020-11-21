@@ -11,6 +11,7 @@ from adoorback.utils.content_types import get_content_type
 from feed.models import Article, Response, Question
 from comment.models import Comment
 from like.models import Like
+from notification.models import Notification
 
 
 DEBUG = False
@@ -84,7 +85,7 @@ def set_seed():
     logging.info(f"{Comment.objects.all().count()} Comment(s) created!") if DEBUG else None
 
     # Seed Reply Comment (target=Comment)
-    comment_model = get_content_type("comment")
+    comment_model = get_content_type('Comment')
     comments = Comment.objects.all()
     for _ in range(600):
         user = random.choice(users)
@@ -109,3 +110,25 @@ def set_seed():
         Like.objects.create(user=user, target=comment)
         Like.objects.create(user=user, target=reply)
     logging.info(f"{Like.objects.all().count()} Like(s) created!") if DEBUG else None
+
+# Seed Notification for likes
+    likes = Like.objects.all()
+    for like in likes[:500]:
+        actor = like.user
+        origin = like.target
+        recipient = origin.author
+        message = f'{actor} likes your {origin.type}'
+        print(message)
+        Notification.objects.create(actor = actor, recipient = recipient, message = message,
+            origin=origin, target= like, is_read = False, is_visible = True)
+
+    # Seed Notification for comments
+    for comment in comments[:500]:
+        actor = comment.author
+        origin = comment.target
+        recipient = origin.author
+        target = comment
+        message = f'{actor} commented on your {origin.type}'
+        print(message)
+        Notification.objects.create(actor = actor, recipient = recipient, message = message,
+            origin = origin, target= target, is_read = False, is_visible = True)
