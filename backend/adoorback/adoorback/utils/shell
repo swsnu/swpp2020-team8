@@ -1,4 +1,4 @@
-python manage.py shell
+python3 manage.py shell
 
 from faker import Faker
 import random
