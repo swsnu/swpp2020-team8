@@ -105,9 +105,17 @@ export const createPost = (newPost) => async (dispatch) => {
       error
     });
   }
+  let resultPost = result.data;
+  if (resultPost.type === 'Question') {
+    resultPost = {
+      ...resultPost,
+      share_anonymously: true,
+      share_with_friends: true
+    };
+  }
   dispatch({
     type: CREATE_POST_SUCCESS,
-    newPost: result.data
+    newPost: resultPost
   });
 };
 

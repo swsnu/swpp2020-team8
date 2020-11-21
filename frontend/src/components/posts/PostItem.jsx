@@ -81,9 +81,7 @@ export default function PostItem({ postObj }) {
           />
         )}
       </PostItemHeaderWrapper>
-      {postObj.question_detail && (
-        <QuestionBox questionObj={postObj.question_detail} />
-      )}
+      {postObj.question && <QuestionBox questionObj={postObj.question} />}
       <ContentWrapper>{postObj.content}</ContentWrapper>
       <CreateTime createdTime={postObj.created_at} />
       <PostItemFooterWrapper>

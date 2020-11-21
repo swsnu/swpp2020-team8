@@ -25,7 +25,7 @@ export default function AuthorProfile({ author, isComment = false }) {
         <FaceIcon style={{ marginRight: '4px' }} />
       )}
 
-      <div>{author.username}</div>
+      <div style={{ fontSize: '14px' }}>{author.username}</div>
     </AuthorProfileWrapper>
   );
 }
