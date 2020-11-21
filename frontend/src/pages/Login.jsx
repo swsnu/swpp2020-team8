@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
@@ -12,6 +14,14 @@ const LoginWrapper = styled.div`
   margin-top: 120px;
 `;
 
+const SignUpButton = styled.button`
+  float: right;
+  border: none;
+  background: #fff;
+  color: #777;
+  font-size: 16px;
+`;
+
 const WarningMessage = styled.div`
   font-size: 20px;
   color: #ff395b;
@@ -19,22 +29,18 @@ const WarningMessage = styled.div`
   margin-bottom: 10px;
 `;
 
+WarningMessage.displayName = 'WarningMessage';
+
 export default function Login() {
   const history = useHistory();
   const dispatch = useDispatch();
-  const [loginInfo, setLoginInfo] = useState({ email: '', password: '' });
-  const user = useSelector((state) => state.userReducer.user);
+  const [loginInfo, setLoginInfo] = useState({ username: '', password: '' });
   const loginError = useSelector((state) => state.userReducer.loginError);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLoginInfo((prev) => ({ ...prev, [name]: value }));
   };
-
-  // TODO: handle with isLoggedIn users
-  useEffect(() => {
-    if (user && user?.id) history.push('/friends');
-  }, [user, history]);
 
   const onClickSubmitButton = () => {
     dispatch(removeError());
@@ -49,10 +55,10 @@ export default function Login() {
     <LoginWrapper>
       <h1>로그인</h1>
       <CommonInput
-        id="email-input"
+        id="username-input"
         name="username"
         value={loginInfo.username}
-        placeholder="이메일"
+        placeholder="닉네임"
         onChange={handleChange}
       />
       <CommonInput
@@ -65,7 +71,7 @@ export default function Login() {
       />
       {loginError && loginError.length && (
         <WarningMessage id="login-error-message">
-          이메일 혹은 비밀번호를 다시 확인해주세요
+          닉네임 혹은 비밀번호를 다시 확인해주세요
         </WarningMessage>
       )}
       <CommonButton
@@ -76,13 +82,14 @@ export default function Login() {
       >
         로그인
       </CommonButton>
-      <CommonButton
+      <SignUpButton
+        type="button"
         id="signup-button"
         margin="5px 0"
         onClick={onClickSignupButton}
       >
         회원가입
-      </CommonButton>
+      </SignUpButton>
     </LoginWrapper>
   );
 }

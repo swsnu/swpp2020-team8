@@ -15,10 +15,10 @@ class CommentManager(models.Manager):
     use_for_related_fields = True
 
     def comments_only(self, **kwargs):
-        return self.exclude(content_type=get_content_type("comment"), **kwargs)
+        return self.exclude(content_type=get_content_type("Comment"), **kwargs)
 
     def replies_only(self, **kwargs):
-        return self.filter(content_type=get_content_type("comment"), **kwargs)
+        return self.filter(content_type=get_content_type("Comment"), **kwargs)
 
 
 class Comment(AdoorModel):

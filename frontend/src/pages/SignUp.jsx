@@ -21,30 +21,42 @@ const WarningMessage = styled.div`
   margin-bottom: 4px;
 `;
 
+const LoginButton = styled.button`
+  float: right;
+  border: none;
+  background: #fff;
+  color: #777;
+  font-size: 16px;
+  margin-top: -16px;
+`;
+
 export default function SignUp() {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const user = useSelector((state) => state.userReducer.user);
+  const { user, signUpError } = useSelector((state) => state.userReducer);
 
-  // const signUpError = useSelector((state) => state.userReducer.signUpError);
-  // useEffect(() => {
-  // deal with invalid field here
-  // }, [signUpError]);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isUsernameValid, setIsUsernameValid] = useState(true);
+  const [isEmailValid, setIsEmailValid] = useState(true);
 
   useEffect(() => {
-    if (user && user.email) history.push('/select-questions');
+    if (user && user.id) {
+      history.push('/select-questions');
+    }
   }, [user, history]);
+
+  useEffect(() => {
+    if (!isSubmitted) return;
+    if (signUpError && signUpError.username) setIsUsernameValid(false);
+    if (signUpError && signUpError.email) setIsEmailValid(false);
+  }, [isSubmitted, signUpError]);
 
   const [signUpInfo, setSignUpInfo] = useState({
     email: '',
     username: '',
     password: ''
   });
-
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isUsernameValid, setIsUsernameValid] = useState(false);
-  const [isEmailValid, setIsEmailValid] = useState(false);
 
   const isFilled =
     signUpInfo.username.length &&
@@ -58,10 +70,9 @@ export default function SignUp() {
 
   const onClickSubmitButton = () => {
     setIsSubmitted(true);
-    // TODO: deal with invalid field error
-    dispatch(requestSignUp(signUpInfo));
     setIsUsernameValid(true);
     setIsEmailValid(true);
+    dispatch(requestSignUp(signUpInfo));
   };
 
   return (
@@ -76,7 +87,7 @@ export default function SignUp() {
         invalid={isSubmitted && !isEmailValid}
       />
       {isSubmitted && !isEmailValid && (
-        <WarningMessage>중복된 이메일이 존재합니다.</WarningMessage>
+        <WarningMessage>이메일이 유효하지 않습니다 :(</WarningMessage>
       )}
       <CommonInput
         name="username"
@@ -87,7 +98,7 @@ export default function SignUp() {
         invalid={isSubmitted && !isUsernameValid}
       />
       {isSubmitted && !isUsernameValid && (
-        <WarningMessage>중복된 닉네임이 존재합니다.</WarningMessage>
+        <WarningMessage>닉네임이 유효하지 않습니다 :(</WarningMessage>
       )}
       <CommonInput
         name="password"
@@ -104,6 +115,14 @@ export default function SignUp() {
       >
         다음 단계로
       </CommonButton>
+      <LoginButton
+        type="button"
+        id="login-button"
+        margin="5px 0"
+        onClick={() => history.push('/login')}
+      >
+        로그인
+      </LoginButton>
     </SignUpWrapper>
   );
 }

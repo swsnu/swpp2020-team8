@@ -12,10 +12,10 @@ class LikeManager(models.Manager):
     use_for_related_fields = True
 
     def comment_likes_only(self, **kwargs):
-        return self.exclude(content_type=get_content_type("comment"), **kwargs)
+        return self.filter(content_type=get_content_type("Comment"), **kwargs)
 
     def feed_likes_only(self, **kwargs):
-        return self.filter(content_type=get_content_type("comment"), **kwargs)
+        return self.exclude(content_type=get_content_type("Comment"), **kwargs)
 
 
 class Like(models.Model):

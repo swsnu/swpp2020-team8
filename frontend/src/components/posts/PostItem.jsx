@@ -9,7 +9,7 @@ import PostAuthorButtons from './PostAuthorButtons';
 import QuestionBox from './QuestionBox';
 import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
 import CommentItem from '../comments/CommentItem';
-import NewComment from '../comments/NewComment';
+import { mockArticle } from '../../constants';
 
 const PostItemWrapper = styled.div`
   background: #fff;
@@ -35,7 +35,7 @@ export default function PostItem({ postObj }) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
 
-  const commentList = postObj.comments?.map((comment) => {
+  const commentList = mockArticle.comments?.map((comment) => {
     return <CommentItem key={comment.id} commentObj={comment} />;
   });
 
@@ -82,10 +82,7 @@ export default function PostItem({ postObj }) {
           </div>
         )}
       </PostItemFooterWrapper>
-      <CommentWrapper>
-        {commentList}
-        <NewComment />
-      </CommentWrapper>
+      <CommentWrapper>{commentList}</CommentWrapper>
     </PostItemWrapper>
   );
 }

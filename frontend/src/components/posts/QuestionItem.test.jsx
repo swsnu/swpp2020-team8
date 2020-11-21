@@ -81,4 +81,30 @@ describe('<QuestionItem/>', () => {
     const textArea = component.find('TextareaAutosize');
     expect(textArea.length).toBe(1);
   });
+
+  it('should change input content', async () => {
+    const component = shallow(<QuestionItem questionObj={sampleQuestionObj} />);
+    const writeButton = component.find('CreateIcon').parent();
+    writeButton.simulate('click');
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    const contentEvent = {
+      preventDefault() {},
+      target: { name: 'username', value: 'hello' }
+    };
+    const contentInput = component.find('#content-input');
+    contentInput.simulate('change', contentEvent);
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    const textArea = component.find('TextareaAutosize');
+    // expect(textArea.pro).toBe(1);
+    expect(textArea.prop('value')).toEqual('hello');
+  });
+
+  it('should pass reset function', () => {
+    const component = shallow(<QuestionItem questionObj={sampleQuestionObj} />);
+    const writeButton = component.find('CreateIcon').parent();
+    writeButton.simulate('click');
+    expect(typeof component.find('ShareSettings').props().resetContent).toBe(
+      'function'
+    );
+  });
 });

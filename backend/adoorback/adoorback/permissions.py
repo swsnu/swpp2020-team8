@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 
-class IsAuthorOrReadOnly(permissions.BasePermission):
+class IsOwnerOrReadOnly(permissions.BasePermission):
     """
     Custom permission to only allow authors of an object to edit it.
     """
@@ -10,7 +10,9 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        # Write permissions are only allowed to the author of the object.
+        # Write permissions are only allowed to the owner of the object.
         if obj.type == 'Like':
             return obj.user == request.user
+        elif obj.type == 'User':
+            return obj == request.user
         return obj.author == request.user

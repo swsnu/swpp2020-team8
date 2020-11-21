@@ -1,34 +1,55 @@
 /* eslint-disable react/jsx-boolean-value */
 import React from 'react';
-import { shallow } from 'enzyme';
+import { mount } from 'enzyme';
+import { Provider } from 'react-redux';
+import { Router } from 'react-router-dom';
+import { createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import thunk from 'redux-thunk';
+import history from '../history';
+import rootReducer from '../modules';
 import CustomQuestionModal from './CustomQuestionModal';
 
-describe('<CustomQuestionModal/>', () => {
+describe('<CustomQuestionModal /> unit test', () => {
+  const store = createStore(
+    rootReducer,
+    {},
+    composeWithDevTools(applyMiddleware(thunk))
+  );
+
+  const mockfn = jest.fn();
+
+  const getWrapper = () =>
+    mount(
+      <Provider store={store}>
+        <Router history={history}>
+          <CustomQuestionModal open={true} handleClose={mockfn} />
+        </Router>
+      </Provider>
+    );
+
   it('should render without errors', () => {
-    const component = shallow(<CustomQuestionModal />);
-    expect(component.length).toBe(1);
+    const component = getWrapper();
+    expect(component.find('CustomQuestionModal').length).toBe(1);
+  });
+
+  it('should close modal when submit button clicked', () => {
+    const component = getWrapper();
+    expect(component.find('CustomQuestionModal').length).toBe(1);
+    const submitButton = component.find('button');
+    submitButton.simulate('click');
+    expect(mockfn).toHaveBeenCalledTimes(1);
   });
 
   it('should handle input change', () => {
-    const handleInputChange = jest.fn();
+    const component = getWrapper();
+    expect(component.find('CustomQuestionModal').length).toBe(1);
+    const textarea = component.find('textarea').at(0);
+
     const event = {
       preventDefault() {},
-      target: { value: 'content' }
+      target: { name: 'username', value: 'test' }
     };
-    const component = shallow(
-      <CustomQuestionModal onChange={handleInputChange} open={true} />
-    );
-    const textArea = component.find('#new-custom-question');
-    textArea.simulate('change', event);
-  });
-
-  it('sholud close modal when submit button clicked', () => {
-    const mockfn = jest.fn();
-    const component = shallow(
-      <CustomQuestionModal open={true} handleClose={mockfn} />
-    );
-    const submitButton = component.find('#submit-button');
-    submitButton.simulate('click');
-    expect(mockfn).toHaveBeenCalledTimes(1);
+    textarea.simulate('change', event);
   });
 });

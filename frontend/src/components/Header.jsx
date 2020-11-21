@@ -11,8 +11,10 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import SearchIcon from '@material-ui/icons/Search';
 import { NavLink, Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
 import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
+import { logout } from '../modules/user';
 
 const TitleLink = styled(NavLink)`
   ${'' /* font-family: 'Quicksand', sans-serif; */}
@@ -110,9 +112,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // eslint-disable-next-line react/prop-types
-const Header = ({ signedIn }) => {
+const Header = () => {
   const classes = useStyles();
   const [isNotiOpen, setIsNotiOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.userReducer.user);
+
+  const handleClickLogout = () => {
+    dispatch(logout());
+  };
 
   const toggleNotiOpen = () => {
     setIsNotiOpen(!isNotiOpen);
@@ -175,12 +184,19 @@ const Header = ({ signedIn }) => {
           aria-label="account of current user"
           className={classes.iconButton}
         >
-          <AccountCircle />
+          <Link to={`/users/${user?.id}/friends`}>
+            <AccountCircle />
+          </Link>
         </IconButton>
         <Button
           variant="outlined"
           size="medium"
           className={classes.logoutButton}
+          id="logout-button"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleClickLogout();
+          }}
         >
           로그아웃
         </Button>
@@ -196,20 +212,21 @@ const Header = ({ signedIn }) => {
             <TitleLink to="/friends" className={classes.title}>
               adoor
             </TitleLink>
-            {signedIn ? (
+            {user !== null ? (
               renderHeaderSignedInItems
             ) : (
               <>
                 <div className={classes.grow} />
-                <Link
-                  component="a"
+                <Button
+                  component={Link}
+                  id="login-link"
                   to="/login"
                   variant="outlined"
                   size="medium"
                   className={classes.logoutButton}
                 >
                   로그인
-                </Link>
+                </Button>
               </>
             )}
           </Toolbar>

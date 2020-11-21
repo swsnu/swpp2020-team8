@@ -29,7 +29,8 @@ const initialState = {
   anonymousPosts: [],
   friendPosts: [],
   selectedUserPosts: [],
-  selectedPost: {}
+  selectedPost: {},
+  next: null
 };
 
 export const getSelectedPost = () => {
@@ -57,21 +58,26 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
     if (userId) {
       result = await axios.get(`feed/${userId}/`);
     } else {
-      result = await axios.get(`api/feed/${type}/`);
-      // console.log(result);
+      result =
+        type === 'anon'
+          ? await axios.get('feed/anonymous')
+          : await axios.get(`feed/${type}/`);
     }
   } catch (err) {
     dispatch({ type: `post/GET_${postType}_POSTS_FAILURE`, error: err });
   }
+  const { data } = result;
   dispatch({
     type: `post/GET_${postType}_POSTS_SUCCESS`,
-    result: [...result]
+    result: data.results,
+    next: data.next ?? null
   });
 };
 
 export const createPost = (newPost) => async (dispatch) => {
   dispatch({
-    type: CREATE_POST_REQUEST
+    type: CREATE_POST_REQUEST,
+    newPost
   });
 
   // const postType = `${newPost.type.toLowerCase()}s`;
@@ -114,17 +120,20 @@ export default function postReducer(state = initialState, action) {
     case GET_ANON_POSTS_SUCCESS:
       return {
         ...state,
-        anonymousPosts: [...action.result]
+        anonymousPosts: [...action.result],
+        next: action.next
       };
     case GET_FRIEND_POSTS_SUCCESS:
       return {
         ...state,
-        friendPosts: [...action.result]
+        friendPosts: [...action.result],
+        next: action.next
       };
     case GET_USER_POSTS_SUCCESS:
       return {
         ...state,
-        selectedUserPosts: [...action.result]
+        selectedUserPosts: [...action.result],
+        next: action.next
       };
     case CREATE_POST_REQUEST:
     case CREATE_POST_FAILURE:

@@ -46,12 +46,14 @@ export default function PostEdit() {
   const selectedPost = useSelector((state) => state.postReducer.selectedPost);
   const dispatch = useDispatch();
 
+  // TODO: fix with API Linking
   useEffect(() => {
     dispatch(getSelectedPost());
+    // setPostInfo(selectedPost);
   }, [dispatch]);
 
   useEffect(() => {
-    if (selectedPost && selectedPost.id) setPostInfo(selectedPost);
+    setPostInfo(selectedPost);
   }, [selectedPost]);
 
   useEffect(() => {
