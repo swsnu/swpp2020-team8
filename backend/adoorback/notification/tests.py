@@ -102,3 +102,18 @@ class NotificationTestCase(TestCase):
         self.assertEqual(Notification.objects.all().filter(
             origin_type=get_content_type("Comment"),origin_id=origin_id).count(), 0)
 
+class APITestCase(TestCase):
+    client_class = APIClient
+    
+class NotificationAPITestCase(APITestCase):
+
+    def setUp(self):
+        set_seed(N)
+
+    def test_noti_list(self):
+        current_user = self.make_user(username='current_user')
+
+        with self.login(username=current_user.username, password='password'):
+            response = self.get('notification-list')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['count'], N*2)
