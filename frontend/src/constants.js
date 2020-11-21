@@ -492,3 +492,78 @@ export const mockFriendList = [
     username: 'curie.yoo'
   }
 ];
+
+export const mockFriendRequestList = [
+  {
+    id: 1,
+    profile_pic:
+      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg',
+    username: 'byeongon.chun'
+  },
+  {
+    id: 2,
+    profile_pic:
+      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg',
+    username: 'yunmo.koo'
+  }
+];
+
+export const mockNotifications = [
+  {
+    id: 1,
+    actor_detail: {
+      id: 2,
+      profile_pic:
+        'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg',
+      username: 'jaewon.kim'
+    },
+    origin_type: 'FriendRequest',
+    target_type: 'User',
+    is_read: false,
+    message: 'jaewon.kim님이 친구요청을 보냈습니다.',
+    link: '/user/2'
+  },
+  {
+    id: 2,
+    actor_detail: {
+      id: 3,
+      profile_pic:
+        'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg',
+      username: 'jina.park'
+    },
+    origin_type: 'Comment',
+    target_type: 'Article',
+    is_read: false,
+    message: 'jina.park님이 당신의 게시글에 댓글을 남겼습니다: "와우".',
+    link: '/article/1'
+  },
+  {
+    id: 3,
+    actor_detail: {
+      id: 3,
+      profile_pic:
+        'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg',
+      username: 'jina.park'
+    },
+    origin_type: 'Like',
+    target_type: 'Article',
+    is_read: false,
+    message: 'jina.park님이 당신의 게시글에 좋아요를 눌렀습니다.',
+    link: '/article/1'
+  },
+  {
+    id: 4,
+    actor_detail: {
+      id: 4,
+      profile_pic:
+        'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg',
+      username: 'curious.curie'
+    },
+    origin_type: 'ResponseRequest',
+    target_type: 'User',
+    message:
+      'curious.curie님이 질문에 대한 답변을 요청했습니다: "나에게 소개원실이란?".',
+    is_read: false,
+    link: '/questions/2'
+  }
+];

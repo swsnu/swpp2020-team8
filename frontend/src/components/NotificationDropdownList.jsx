@@ -3,6 +3,9 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import Button from '@material-ui/core/Button';
 import NotificationItem from './NotificationItem';
 
 const useStyles = makeStyles({
@@ -22,21 +25,38 @@ const useStyles = makeStyles({
   }
 });
 
-const NotificationDropdownList = () => {
+const ButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 16px 0px 16px;
+}
+`;
+
+const NotificationDropdownList = ({ notifications, setIsNotiOpen }) => {
   const classes = useStyles();
+  const notificationList = notifications.map((noti) => (
+    <NotificationItem key={noti.id} notiObj={noti} />
+  ));
 
   return (
     <Card variant="outlined" className={classes.notificationDropdown}>
+      <ButtonWrapper>
+        <Button
+          component={Link}
+          to="/notifications"
+          size="small"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsNotiOpen(false);
+          }}
+        >
+          알림 전체 보기
+        </Button>
+        <Button size="small">모두 읽음</Button>
+      </ButtonWrapper>
       <CardContent className={classes.notificationDropdownContent}>
-        <List>
-          <NotificationItem message="yuri.kim님이 친구 요청을 보냈습니다." />
-          <NotificationItem
-            message={'jina.park님이 "나에게 소개원실이란?" 질문을 보냈습니다.'}
-          />
-          <NotificationItem
-            message={'jaewon.kim님이 당신의 댓글에 답글을 남겼습니다: "배고파"'}
-          />
-        </List>
+        <List>{notificationList}</List>
       </CardContent>
     </Card>
   );

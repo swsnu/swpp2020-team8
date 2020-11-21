@@ -2,12 +2,15 @@ import {
   mockPost,
   mockQuestions,
   mockQuestionFeed,
-  mockRecommendQuestions
+  mockRecommendQuestions,
+  mockNotifications
 } from './constants';
 
 export const mockStore = {
   friendReducer: {},
-  notiReducer: {},
+  notiReducer: {
+    receivedNotifications: mockNotifications
+  },
   postReducer: {
     selectedPost: mockPost
   },

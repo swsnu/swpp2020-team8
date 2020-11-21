@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import InputBase from '@material-ui/core/InputBase';
@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
 import { logout } from '../modules/user';
+import { getNotifications } from '../modules/notification';
 
 const TitleLink = styled(NavLink)`
   ${'' /* font-family: 'Quicksand', sans-serif; */}
@@ -118,6 +119,13 @@ const Header = () => {
   const dispatch = useDispatch();
 
   const user = useSelector((state) => state.userReducer.user);
+  const notifications = useSelector(
+    (state) => state.notiReducer.receivedNotifications
+  );
+
+  useEffect(() => {
+    dispatch(getNotifications());
+  }, [isNotiOpen, dispatch]);
 
   const handleClickLogout = () => {
     dispatch(logout());
@@ -176,7 +184,7 @@ const Header = () => {
             toggleNotiOpen();
           }}
         >
-          <Badge badgeContent={3} color="primary">
+          <Badge badgeContent={notifications.length} color="primary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
@@ -184,7 +192,7 @@ const Header = () => {
           aria-label="account of current user"
           className={classes.iconButton}
         >
-          <Link to={`/users/${user?.id}/friends`}>
+          <Link to={`/users/${user?.id}`}>
             <AccountCircle />
           </Link>
         </IconButton>
@@ -232,7 +240,12 @@ const Header = () => {
           </Toolbar>
         </AppBar>
       </div>
-      {isNotiOpen && <NotificationDropdownList />}
+      {isNotiOpen && (
+        <NotificationDropdownList
+          setIsNotiOpen={setIsNotiOpen}
+          notifications={notifications}
+        />
+      )}
     </>
   );
 };

@@ -15,6 +15,7 @@ import AnonymousFeed from './pages/AnonymousFeed';
 import QuestionFeed from './pages/QuestionFeed';
 import PrivateRoute from './components/PrivateRoute';
 import FriendsPage from './pages/FriendsPage';
+import NotificationPage from './pages/NotificationPage';
 
 const theme = createMuiTheme({
   palette: {
@@ -69,7 +70,11 @@ const App = () => {
                 path="/users/:id/friends"
                 component={FriendsPage}
               />
-
+              <PrivateRoute
+                exact
+                path="/notifications"
+                component={NotificationPage}
+              />
               <Redirect exact path="/" to="/friends" />
             </Switch>
           </FeedWrapper>
