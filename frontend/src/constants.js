@@ -500,3 +500,55 @@ export const mockAnonymousFeed = [
   mockAnonCustomQuestion2,
   mockAnonResponse
 ];
+
+export const questionDetailPosts = {
+  id: 5,
+  type: 'Question',
+  author: 'http://localhost:8000/api/user/5/',
+  author_detail: {
+    id: 3,
+    username: 'adoor'
+  },
+  content: 'add',
+  like_count: 1,
+  current_user_liked: true,
+  created_at: '2020-11-21T14:59:33.371909+09:00',
+  updated_at: '2020-11-21T14:59:33.519895+09:00',
+  selected_date: '2020-11-21T14:59:33.519774+09:00',
+  is_admin_question: true,
+  response_set: [
+    {
+      id: 10,
+      type: 'Response',
+      author: 'http://localhost:8000/api/user/10/',
+      author_detail: {
+        id: 1,
+        username: 'hawkinscameron'
+      },
+      content: 'Something article true have.',
+      like_count: 1,
+      current_user_liked: true,
+      created_at: '2020-11-21T14:59:33.628261+09:00',
+      updated_at: '2020-11-21T14:59:33.628297+09:00',
+      question_id: 5,
+      share_with_friends: true,
+      share_anonymously: true,
+      question: {
+        id: 5,
+        type: 'Question',
+        author: 'http://localhost:8000/api/user/5/',
+        author_detail: {
+          id: 3,
+          username: 'adoor'
+        },
+        content: 'add',
+        like_count: 1,
+        current_user_liked: true,
+        created_at: '2020-11-21T14:59:33.371909+09:00',
+        updated_at: '2020-11-21T14:59:33.519895+09:00',
+        selected_date: '2020-11-21T14:59:33.519774+09:00',
+        is_admin_question: true
+      }
+    }
+  ]
+};
