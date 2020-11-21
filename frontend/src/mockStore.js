@@ -33,7 +33,9 @@ export const mockStore = {
 
 export const mockStoreBeforeLogin = {
   friendReducer: {},
-  notiReducer: {},
+  notiReducer: {
+    receivedNotifications: mockNotifications
+  },
   postReducer: {
     selectedPost: mockPost
   },

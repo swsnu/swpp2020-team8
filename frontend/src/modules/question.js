@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import axios from 'axios';
+import axios from '../apis';
 import {
   mockQuestions,
   mockQuestionFeed,
