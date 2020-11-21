@@ -25,6 +25,9 @@ class Notification(models.Model):
     is_visible = models.BooleanField(default=True)
     is_read = models.BooleanField(default=False)
 
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return self.message
 
