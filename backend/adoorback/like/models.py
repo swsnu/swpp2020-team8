@@ -1,9 +1,11 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from adoorback.utils.content_types import get_content_type
 
+from notification.models import Notification
 
 User = get_user_model()
 
@@ -25,6 +27,10 @@ class Like(models.Model):
     object_id = models.IntegerField(blank=True, null=True)
     target = GenericForeignKey('content_type', 'object_id')
 
+    like_targetted_notis = GenericRelation(Notification,
+        content_type_field='target_type', object_id_field='target_id')
+    like_originated_notis = GenericRelation(Notification,
+        content_type_field='origin_type', object_id_field='origin_id')
     objects = LikeManager()
 
     def __str__(self):

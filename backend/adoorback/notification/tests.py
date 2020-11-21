@@ -55,7 +55,56 @@ class NotificationTestCase(TestCase):
 
     # test on delete target 
     def test_on_delete_target_cascade(self):
-        noti = Notification.objects.all().filter(target_type=get_content_type("Like")).last()
-        noti_id = noti.id
+        # target = comment
+        noti = Notification.objects.all().filter(target_type=get_content_type("Comment")).last()
         target = noti.target
-    # test on delete origin 
+        target_id = target.id
+        target.delete()
+        self.assertEqual(Notification.objects.all().filter(
+            target_type=get_content_type("Comment"), target_id=target_id).count(), 0)
+
+        # target = like
+        noti = Notification.objects.all().filter(target_type=get_content_type("Like")).last()
+        target = noti.target
+        target_id = target.id
+        target.delete()
+        self.assertEqual(Notification.objects.all().filter(
+            target_type=get_content_type("Like"), target_id=target_id).count(), 0)
+
+    # test on delete origin
+    def test_on_delete_origin_cascade(self):
+        # origin = article
+        noti = Notification.objects.all().filter(origin_type=get_content_type("Article")).last()
+        origin = noti.origin
+        origin_id = origin.id
+        origin.delete()
+        self.assertEqual(Notification.objects.all().filter(
+            origin_type=get_content_type("Article"), origin_id=origin_id).count(), 0)
+        # origin = response
+        noti = Notification.objects.all().filter(origin_type=get_content_type("Response")).last()
+        origin = noti.origin
+        origin_id = origin.id
+        origin.delete()
+        self.assertEqual(Notification.objects.all().filter(
+            origin_type=get_content_type("Response"), origin_id=origin_id).count(), 0)
+        # origin = question
+        noti = Notification.objects.all().filter(origin_type=get_content_type("Question")).last()
+        origin = noti.origin
+        origin_id = origin.id
+        origin.delete()
+        self.assertEqual(Notification.objects.all().filter(
+            origin_type=get_content_type("Question"), origin_id=origin_id).count(), 0)
+        # origin = comment
+        noti = Notification.objects.all().filter(origin_type=get_content_type("Comment")).last()
+        origin = noti.origin
+        origin_id = origin.id
+        origin.delete()
+        self.assertEqual(Notification.objects.all().filter(
+            origin_type=get_content_type("Comment"),origin_id=origin_id).count(), 0)
+        # origin = like
+        noti = Notification.objects.all().filter(origin_type=get_content_type("Like")).last()
+        origin = noti.origin
+        origin_id = origin.id
+        origin.delete()
+        self.assertEqual(Notification.objects.all().filter(
+            origin_type=get_content_type("Like"), origin_id=origin_id).count(), 0)

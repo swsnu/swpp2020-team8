@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth import get_user_model
 from like.models import Like
+from notification.models import Notification
 from adoorback.models import AdoorModel
 from adoorback.utils.content_types import get_content_type
 
@@ -31,6 +32,10 @@ class Comment(AdoorModel):
 
     replies = GenericRelation('self')
     comment_likes = GenericRelation(Like)
+    comment_targetted_notis = GenericRelation(Notification,
+        content_type_field='target_type', object_id_field='target_id')
+    comment_originated_notis = GenericRelation(Notification,
+        content_type_field='origin_type', object_id_field='origin_id')
 
     objects = CommentManager()
 

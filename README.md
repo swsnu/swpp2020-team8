@@ -26,7 +26,7 @@ cd backend/adoorback
 rm -f tmp.db db.sqlite3
 rm -r */migrations
 pip install -r requirements.txt
-python manage.py makemigrations account feed comment like
+python manage.py makemigrations account feed comment like notification
 python manage.py migrate
 # for seed data
 python manage.py shell
@@ -41,7 +41,7 @@ python manage.py runserver
 rm -f tmp.db db.sqlite3
 rm -r */migrations
 pylint **/*.py --load-plugins pylint_django
-python manage.py makemigrations account feed comment like
+python manage.py makemigrations account feed comment like notification
 python manage.py migrate
 coverage run --source=‘.’ --omit=‘/migrations/’,’adoorback/’,’manage.py’,‘/wsgi.py’,‘/asgi.py’,‘/utils/*’ ./manage.py test
 coverage run --branch --source=‘.’ --omit=‘/migrations/’,’adoorback/’,’manage.py’,‘/wsgi.py’,‘/asgi.py’,‘/utils/*’ ./manage.py test
