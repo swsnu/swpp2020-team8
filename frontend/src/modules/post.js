@@ -1,13 +1,21 @@
 import axios from '../apis';
+// import { mockResponse, mockArticle, mockCustomQuestion } from '../constants';
 
-import {
-  // mockFriendFeed,
-  // mockAnonymousFeed,
-  mockCustomQuestion
-} from '../constants';
+export const GET_SELECTED_ARTICLE_REQUEST = 'post/GET_SELECTED_ARTICLE';
+export const GET_SELECTED_ARTICLE_SUCCESS = 'post/GET_SELECTED_ARTICLE_SUCCESS';
+export const GET_SELECTED_ARTICLE_FAILURE = 'post/GET_SELECTED_ARTICLE_FAILURE';
 
-export const GET_SELECTED_POST_REQUEST = 'post/GET_SELECTED_POST_REQUEST';
-export const GET_SELECTED_POST_SUCCESS = 'post/GET_SELECTED_POST_SUCCESS';
+export const GET_SELECTED_RESPONSE_REQUEST = 'post/GET_SELECTED_RESPONSE';
+export const GET_SELECTED_RESPONSE_SUCCESS =
+  'post/GET_SELECTED_RESPONSE_SUCCESS';
+export const GET_SELECTED_RESPONSE_FAILURE =
+  'post/GET_SELECTED_RESPONSE_FAILURE';
+
+export const GET_SELECTED_QUESTION_REQUEST = 'post/GET_SELECTED_QUESTION';
+export const GET_SELECTED_QUESTION_SUCCESS =
+  'post/GET_SELECTED_QUESTION_SUCCESS';
+export const GET_SELECTED_QUESTION_FAILURE =
+  'post/GET_SELECTED_QUESTION_FAILURE';
 
 export const GET_FRIEND_POSTS_REQUEST = 'post/GET_FRIEND_POSTS_REQUEST';
 export const GET_FRIEND_POSTS_SUCCESS = 'post/GET_FRIEND_POSTS_SUCCESS';
@@ -29,22 +37,24 @@ const initialState = {
   anonymousPosts: [],
   friendPosts: [],
   selectedUserPosts: [],
-  selectedPost: {},
+  selectedPost: null,
   next: null
 };
 
-export const getSelectedPost = () => {
-  return (dispatch) => {
-    // const { data } = await axios.get(`/api/feed/${id}`);
-    dispatch(getSelectedPostSuccess(mockCustomQuestion));
-  };
-};
-
-export const getSelectedPostSuccess = (selectedPost) => {
-  return {
-    type: GET_SELECTED_POST_SUCCESS,
-    selectedPost
-  };
+export const getSelectedPost = (postType, id) => async (dispatch) => {
+  const type = postType.toUpperCase().slice(0, -1);
+  let result;
+  dispatch({ type: `post/GET_SELECTED_${type}_REQUEST` });
+  try {
+    result = await axios.get(`feed/${postType}/${id}/`);
+  } catch (err) {
+    dispatch({ type: `post/GET_SELECTED_${type}_FAILURE`, error: err });
+  }
+  console.log(result);
+  dispatch({
+    type: `post/GET_SELECTED_${type}_SUCCESS`,
+    selectedPost: result?.data
+  });
 };
 
 export const getPostsByType = (type, userId = null) => async (dispatch) => {
@@ -105,9 +115,13 @@ export const createPost = (newPost) => async (dispatch) => {
 
 export default function postReducer(state = initialState, action) {
   switch (action.type) {
-    case GET_SELECTED_POST_REQUEST:
+    case GET_SELECTED_ARTICLE_REQUEST:
+    case GET_SELECTED_RESPONSE_REQUEST:
+    case GET_SELECTED_QUESTION_REQUEST:
       return { ...initialState };
-    case GET_SELECTED_POST_SUCCESS: {
+    case GET_SELECTED_ARTICLE_SUCCESS:
+    case GET_SELECTED_RESPONSE_SUCCESS:
+    case GET_SELECTED_QUESTION_SUCCESS: {
       return {
         ...state,
         selectedPost: action.selectedPost
