@@ -91,9 +91,14 @@ export const createPost = (newPost) => async (dispatch) => {
   });
 
   const postType = `${newPost.type.toLowerCase()}s`;
+  const payload = {
+    ...newPost,
+    share_anonymously: newPost.shareAnonymously,
+    share_with_friends: newPost.shareWithFriends
+  };
   let result;
   try {
-    result = await axios.post(`api/feed/${postType}/`, newPost);
+    result = await axios.post(`feed/${postType}/`, payload);
   } catch (error) {
     dispatch({
       type: CREATE_POST_FAILURE,
@@ -181,10 +186,10 @@ export default function postReducer(state = initialState, action) {
       return { ...state };
     case CREATE_POST_SUCCESS: {
       const { newPost } = action;
-      const newFriendPosts = newPost.shareWithFriends
+      const newFriendPosts = newPost.share_with_friends
         ? [newPost, ...state.friendPosts]
         : state.friendPosts;
-      const newAnonPosts = newPost.shareAnonymously
+      const newAnonPosts = newPost.share_anonymously
         ? [newPost, ...state.anonymousPosts]
         : state.anonymousPosts;
       return {

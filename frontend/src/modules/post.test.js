@@ -84,31 +84,29 @@ describe('postActions', () => {
   });
 
   it(`createPost should post correctly`, (done) => {
-    // jest.mock('axios');
+    jest.mock('axios');
 
-    // axios.get.mockResolvedValue([]);
-    // const spy = jest.spyOn(axios, 'post').mockImplementation(() => {
-    //   return new Promise((resolve) => {
-    //     const result = {
-    //       data: {
-    //         status: 200,
-    //         results: mockFriendFeed,
-    //         next: null
-    //       }
-    //     };
-    //     resolve(result);
-    //   });
-    // });
+    axios.get.mockResolvedValue([]);
     const newPost = {
       ...mockArticle,
-      shareAnonymously: true,
-      shareWithFriends: true
+      type: 'Article',
+      share_anonymously: true,
+      share_with_friends: true
     };
+    const spy = jest.spyOn(axios, 'post').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const result = {
+          data: newPost
+        };
+        resolve(result);
+      });
+    });
+
     const prevState = store.getState();
 
     store.dispatch(actionCreators.createPost(newPost)).then(() => {
       const newState = store.getState();
-      // expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
       expect(newState.postReducer.anonymousPosts.length).toEqual(
         prevState.postReducer.anonymousPosts.length + 1
       );
@@ -209,8 +207,8 @@ describe('Post Reducer', () => {
   it('should add post to feed when create success', () => {
     const newPost = {
       ...mockArticle,
-      shareAnonymously: true,
-      shareWithFriends: true
+      share_anonymously: true,
+      share_with_friends: true
     };
     const newState = postReducer(
       {

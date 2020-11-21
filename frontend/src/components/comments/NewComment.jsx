@@ -44,7 +44,7 @@ export default function NewComment({ isReply = false, onSubmit }) {
     <NewCommentWrapper>
       {isReply && <SubdirectoryArrowRightIcon />}
       <NewCommentInput
-        id="comment-input"
+        className="comment-input"
         placeholder={placeholder}
         onChange={handleContentChange}
         onKeyDown={handleEnter}

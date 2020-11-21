@@ -62,7 +62,7 @@ describe('<QuestionSelection /> unit test', () => {
       target: { name: 'password', value: 'hello' }
     };
     pwInput.simulate('change', pwEvent);
-    const submitButton = component.find('button');
+    const submitButton = component.find('button').first();
     submitButton.simulate('click');
     await new Promise((resolve) => setTimeout(resolve, 500));
     // expect(component.find('WarningMessage').length)
@@ -70,8 +70,8 @@ describe('<QuestionSelection /> unit test', () => {
 
   it('SignUp Page should mount', async () => {
     const wrapper = getWrapper();
-    const submitButton = wrapper.find('button');
-    expect(submitButton.length).toBe(1);
+    const submitButton = wrapper.find('button').first();
+    expect(submitButton.length).toBeTruthy();
     expect(submitButton.props().disabled).toBe(true);
     submitButton.simulate('click');
     await new Promise((resolve) => setTimeout(resolve, 500));
