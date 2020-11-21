@@ -28,34 +28,33 @@ export const requestSignUp = (signUpInfo) => {
   return async (dispatch) => {
     dispatch({ type: SIGN_UP_REQUEST });
     try {
-      // const { data } = await axios.post('api/auth/register', signUpInfo);
-      const data = await {
-        code: 200,
-        user: signUpInfo
-      };
-      if (+data.code === 200) {
+      const { data } = await axios.post('user/signup/', signUpInfo);
+      if (data.id) {
         dispatch({
           type: SIGN_UP_SUCCESS,
-          user: data.user
+          user: data
         });
+        dispatch(requestLogin(signUpInfo));
       } else {
         dispatch({
           type: SIGN_UP_FAILURE,
-          error: {}
+          error: data
         });
       }
     } catch (error) {
       dispatch({
         type: SIGN_UP_FAILURE,
-        error
+        error: error.response?.data
       });
     }
   };
 };
 
-export const postSelectedQuestions = (selectedQuestions) => {
+export const postSelectedQuestions = (selectedQuestions, userId) => {
   return async (dispatch) => {
-    await axios.post('api/user/select-questions', selectedQuestions);
+    await axios.patch(`user/${userId}/info/`, {
+      question_history: JSON.stringify(selectedQuestions)
+    });
     return dispatch({
       type: UPDATE_QUESTION_SELECT,
       selectedQuestions
@@ -92,8 +91,9 @@ export const requestLogin = (loginInfo) => {
       // set user info
       currentUser = await getUser();
     } catch (err) {
-      dispatch(loginFailure());
+      dispatch(loginFailure(err));
     }
+
     dispatch(loginSuccess(currentUser));
   };
 };
@@ -134,35 +134,45 @@ export const removeError = () => {
 
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
+    case SIGN_UP_REQUEST:
+      return {
+        ...state,
+        user: null,
+        signUpError: false
+      };
     case LOGIN_REQUEST:
       return {
+        ...state,
         user: null,
         loginError: false
       };
     case LOGIN_SUCCESS:
       return {
+        ...state,
         user: action.user,
         loginError: false
       };
     case LOGIN_FAILURE:
       return {
+        ...state,
         user: null,
         loginError: action.error
       };
     case LOGOUT_SUCCESS:
       return {
+        ...state,
         user: null,
         loginError: false
       };
     case REMOVE_ERROR:
       return {
+        ...state,
         user: null,
         loginError: false
       };
     case SIGN_UP_SUCCESS:
       return {
         ...state,
-        user: action.user,
         signUpError: false
       };
     case SIGN_UP_FAILURE:

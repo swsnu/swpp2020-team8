@@ -50,6 +50,7 @@ const App = () => {
           <QuestionListWidget />
           <FeedWrapper>
             <Redirect exact path="/login" to="/friends" />
+            <Redirect exact path="/signup" to="/select-questions" />
             <Switch>
               <Route
                 exact
