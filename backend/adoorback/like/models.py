@@ -5,6 +5,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from adoorback.utils.content_types import get_content_type
 
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+
 from notification.models import Notification
 
 User = get_user_model()
@@ -39,3 +42,15 @@ class Like(models.Model):
     @property
     def type(self):
         return self.__class__.__name__
+
+
+@receiver(post_save, sender=Like)
+def create_noti(sender, **kwargs):
+    instance = kwargs['instance']
+    target = instance
+    origin = instance.target
+    actor = instance.user
+    recipient = instance.target.author
+    message = f'{actor.username} likes your {origin.type}'
+    Notification.objects.create(actor = actor, recipient = recipient, message = message,
+            origin = origin, target = target, is_read = False, is_visible = True)

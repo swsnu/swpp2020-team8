@@ -8,6 +8,8 @@ from notification.models import Notification
 from adoorback.models import AdoorModel
 from adoorback.utils.content_types import get_content_type
 
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 User = get_user_model()
 
@@ -42,3 +44,16 @@ class Comment(AdoorModel):
     @property
     def type(self):
         return self.__class__.__name__
+
+@receiver(post_save, sender=Comment)
+def create_noti(sender, **kwargs):
+    instance = kwargs['instance']
+    target = instance
+    origin = instance.target
+    actor = instance.author
+    recipient = instance.target.author
+    message = f'{actor.username} commented on your {origin.type}'
+    Notification.objects.create(actor = actor, recipient = recipient, message = message,
+            origin = origin, target = target, is_read = False, is_visible = True)
+
+
