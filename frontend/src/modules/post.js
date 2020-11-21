@@ -76,7 +76,6 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
   } catch (err) {
     dispatch({ type: `post/GET_${postType}_POSTS_FAILURE`, error: err });
   }
-  console.log(result);
   const { data } = result;
   dispatch({
     type: `post/GET_${postType}_POSTS_SUCCESS`,
