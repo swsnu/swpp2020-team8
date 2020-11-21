@@ -7,7 +7,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
 from adoorback.permissions import IsOwnerOrReadOnly
-from account.serializers import UserProfileSerializer, UserDetailedSerializer
+from account.serializers import UserProfileSerializer, UserDetailedSerializer, UserFriendListSerializer, UserFriendRequestSerializer
 from feed.serializers import QuestionSerializer
 from feed.models import Question
 from friendship.models import Friendship
@@ -114,6 +114,15 @@ def user_friend_list(request, pk):
     if request.method == 'GET':
         if not request.user.is_authenticated:
             return HttpResponse(status=401)
-        serializer = UserProfileSerializer(request.user)
+        serializer = UserFriendListSerializer(request.user)
+        return JsonResponse(serializer.data, safe=False, status=200)
+    return HttpResponseNotAllowed(['GET'])
+
+
+def user_friend_request(request, pk):
+    if request.method == 'GET':
+        if not request.user.is_authenticated:
+            return HttpResponse(status=401)
+        serializer = UserFriendRequestSerializer(request.user)
         return JsonResponse(serializer.data, safe=False, status=200)
     return HttpResponseNotAllowed(['GET'])

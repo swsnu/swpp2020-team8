@@ -38,9 +38,16 @@ class UserAPITestCase(APITestCase):
         current_user = self.make_user(username='current_user')
 
         with self.login(username=current_user.username, password='password'):
-            User = get_user_model()
             response = self.get(
                 reverse('user-friend-list', args=[current_user.id-1]))
+            self.assertEqual(response.status_code, 200)
+
+    def test_friend_requests(self):
+        current_user = self.make_user(username='current_user')
+
+        with self.login(username=current_user.username, password='password'):
+            response = self.get(
+                reverse('user-friend-request', args=[current_user.id]))
             self.assertEqual(response.status_code, 200)
 
     def test_search(self):

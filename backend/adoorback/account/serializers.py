@@ -45,7 +45,6 @@ class UserFriendListSerializer(serializers.ModelSerializer):
 
 
 class UserFriendRequestSerializer(serializers.ModelSerializer):
-    friend_set = FriendshipSerializer(many=True)
     sent_friend_request_set = FriendRequestSerializer(many=True)
     received_friend_request_set = FriendRequestSerializer(many=True)
 
