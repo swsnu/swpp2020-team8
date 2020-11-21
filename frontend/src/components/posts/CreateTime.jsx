@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { getCreatedTime } from '../../utils/dateTimeHelpers';
 
@@ -13,5 +13,16 @@ const TimeWrapper = styled.div`
 TimeWrapper.displayName = 'TimeWrapper';
 
 export default function CreateTime({ createdTime }) {
-  return <TimeWrapper>{getCreatedTime(createdTime)}</TimeWrapper>;
+  const [displayTime, setDisplayTime] = useState(getCreatedTime(createdTime));
+
+  useEffect(() => {
+    const interval = setInterval(
+      () => setDisplayTime(getCreatedTime(createdTime)),
+      1000 * 30
+    );
+    return () => {
+      clearInterval(interval);
+    };
+  }, [createdTime]);
+  return <TimeWrapper>{displayTime}</TimeWrapper>;
 }
