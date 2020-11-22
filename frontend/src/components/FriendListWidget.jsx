@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import CardContent from '@material-ui/core/CardContent';
 import List from '@material-ui/core/List';
-import ListItemLink from './ListItemLink';
-import FriendItem from './FriendItem';
 import { WidgetWrapper, WidgetTitleWrapper } from '../styles';
+import { getFriendList } from '../modules/friend';
+import FriendItem from './friends/FriendItem';
 
 const useStyles = makeStyles({
   card: {
@@ -33,32 +34,31 @@ const useStyles = makeStyles({
 
 const FriendListWidget = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const friendList = useSelector((state) => state.friendReducer.friendList);
+
+  useEffect(() => {
+    dispatch(getFriendList());
+  }, [dispatch]);
+
+  const friendItemList = friendList?.map((friend) => {
+    return <FriendItem key={friend.id} friendObj={friend} isWidget />;
+  });
 
   return (
-    <WidgetWrapper>
+    <WidgetWrapper id="friend-list-widget">
       <Card className={classes.card} variant="outlined">
         <CardContent className={classes.cardContent}>
           <WidgetTitleWrapper>
             <Typography variant="h6" className={classes.title}>
               친구
             </Typography>
-            <Button component="a" href="" variant="outlined" size="small">
+            <Button variant="outlined" size="small">
               친구 관리
             </Button>
           </WidgetTitleWrapper>
           <List className={classes.list} aria-label="friend list">
-            <ListItemLink to="/">
-              <FriendItem username="jinsun.goo" />
-            </ListItemLink>
-            <ListItemLink to="/">
-              <FriendItem username="curie.yoo" />
-            </ListItemLink>
-            <ListItemLink to="/">
-              <FriendItem username="jaewon.kim" />
-            </ListItemLink>
-            <ListItemLink to="/">
-              <FriendItem username="jina.park" />
-            </ListItemLink>
+            {friendItemList}
           </List>
         </CardContent>
       </Card>
