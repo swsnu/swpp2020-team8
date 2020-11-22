@@ -21,7 +21,7 @@ class UserTestCase(TestCase):
 
     def test_str(self):
         User = get_user_model()
-        user = User.objects.all().last()
+        user = User.objects.last()
         self.assertEqual(user.type, 'User')
 
 
@@ -143,6 +143,15 @@ class AuthAPITestCase(APITestCase):
         # duplicate user
         response = client.post('/api/user/signup/',
                                signup_data, content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+
+        # invalid json
+        invalid_signup_data = {
+            "username": "test_username",
+            "password": "abc",
+            "email": "wa@"
+        }
+        response = client.post('/api/user/signup/', invalid_signup_data, content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
     def test_user_list(self):

@@ -16,7 +16,7 @@ User = get_user_model()
 
 set_seed(10)
 
-user = User.objects.all().last()
+user = User.objects.last()
 
 article = Article.objects.all().last()
 response = Response.objects.all().last()

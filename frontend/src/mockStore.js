@@ -1,5 +1,6 @@
 import {
   mockPost,
+  mockCustomQuestion,
   mockQuestions,
   mockQuestionFeed,
   mockRecommendQuestions
@@ -9,7 +10,7 @@ export const mockStore = {
   friendReducer: {},
   notiReducer: {},
   postReducer: {
-    selectedPost: mockPost
+    selectedPost: mockCustomQuestion
   },
   questionReducer: {
     dailyQuestions: mockQuestionFeed,
@@ -42,6 +43,28 @@ export const mockStoreBeforeLogin = {
   userReducer: {
     error: false,
     user: null
+  }
+};
+
+export const mockStoreWithArticle = {
+  friendReducer: {},
+  notiReducer: {},
+  postReducer: {
+    selectedPost: mockPost
+  },
+  questionReducer: {
+    dailyQuestions: mockQuestionFeed,
+    randomQuestions: mockRecommendQuestions,
+    sampleQuestions: mockQuestions,
+    recommendedQuestions: mockRecommendQuestions
+  },
+  userReducer: {
+    error: false,
+    user: {
+      id: 0,
+      username: 'mock',
+      isLoggedIn: false
+    }
   }
 };
 

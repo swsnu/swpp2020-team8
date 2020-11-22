@@ -36,7 +36,7 @@ describe('<PostEdit />', () => {
     const input = wrapper.find('#new-post-input').at(0);
     expect(input.length).toBe(1);
     expect(input.prop('value')).toEqual(
-      '사람들의 무리한 부탁을 잘 거절하는 편'
+      '올해가 가기 전에 꼭 이루고 싶은 목표가 있다면~?'
     );
     const event = {
       preventDefault() {},
