@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import LockIcon from '@material-ui/icons/Lock';
-import ChatIcon from '@material-ui/icons/Chat';
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
 import AuthorProfile from '../posts/AuthorProfile';
 import NewComment from './NewComment';
@@ -66,12 +65,7 @@ export default function CommentItem({ commentObj, isReply = false }) {
           {commentObj.content}
         </CommentContent>
         {!isReply && (
-          <ReplyWrapper onClick={toggleReplyInputOpen}>
-            <ChatIcon
-              style={{ fontSize: '15px', color: '#999', marginRight: '3px' }}
-            />
-            답글
-          </ReplyWrapper>
+          <ReplyWrapper onClick={toggleReplyInputOpen}>답글</ReplyWrapper>
         )}
         {commentObj.is_private && (
           <LockIcon style={{ fontSize: '15px', color: '#999' }} />

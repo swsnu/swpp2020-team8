@@ -100,8 +100,8 @@ export default function PostItem({ postObj }) {
           </div>
         )}
       </PostItemFooterWrapper>
-      <CommentWrapper>{commentList}</CommentWrapper>
       <NewComment onSubmit={handleSubmit} />
+      <CommentWrapper>{commentList}</CommentWrapper>
     </PostItemWrapper>
   );
 }
