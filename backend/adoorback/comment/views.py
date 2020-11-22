@@ -8,7 +8,7 @@ from adoorback.permissions import IsOwnerOrReadOnly
 from adoorback.utils.content_types import get_content_type
 
 
-class CommentList(generics.CreateAPIView):
+class CommentList(generics.ListCreateAPIView):
     """
     List all comments, or create a new comment.
     """

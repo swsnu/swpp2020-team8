@@ -19,7 +19,7 @@ def select_daily_questions():
 
 
 class DailyQuestionList(generics.ListAPIView):
-    serializer_class = fs.QuestionAnonymousSerializer()
+    serializer_class = fs.QuestionAnonymousSerializer
     model = serializer_class.Meta.model
     permission_classes = [permissions.IsAuthenticated]
 

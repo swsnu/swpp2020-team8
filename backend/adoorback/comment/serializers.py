@@ -20,7 +20,6 @@ class CommentBaseSerializer(AdoorBaseSerializer):
     target_type = serializers.SerializerMethodField()
     target_id = serializers.SerializerMethodField()
     is_reply = serializers.SerializerMethodField(read_only=True)
-    replies = RecursiveReplyField(many=True, read_only=True)
 
     def get_target_type(self, obj):
         return obj.target.type
@@ -33,24 +32,29 @@ class CommentBaseSerializer(AdoorBaseSerializer):
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Comment
-        fields = AdoorBaseSerializer.Meta.fields + ['is_reply', 'target_id', 'target_type',
-                                                    'is_private', 'replies']
-
-        def get_related_field(self, obj):
-            return CommentFriendSerializer()
+        fields = AdoorBaseSerializer.Meta.fields + ['is_reply', 'is_private',
+                                                    'target_type', 'target_id']
 
 
 class CommentFriendSerializer(CommentBaseSerializer):
-    author = AuthorFriendSerializer()
+    author = AuthorFriendSerializer(read_only=True)
+    replies = RecursiveReplyField(many=True, read_only=True)
 
     class Meta(CommentBaseSerializer.Meta):
         model = Comment
-        fields = CommentBaseSerializer.Meta.fields + ['author']
+        fields = CommentBaseSerializer.Meta.fields + ['author', 'replies']
+
+    def get_related_field(self, obj):
+        return CommentFriendSerializer()
 
 
 class CommentAnonymousSerializer(CommentBaseSerializer):
-    author = AuthorAnonymousSerializer()
+    author = AuthorAnonymousSerializer(read_only=True)
+    replies = RecursiveReplyField(many=True, read_only=True)
 
     class Meta(CommentBaseSerializer.Meta):
         model = Comment
-        fields = CommentBaseSerializer.Meta.fields + ['author']
+        fields = CommentBaseSerializer.Meta.fields + ['author', 'replies']
+
+    def get_related_field(self, obj):
+        return CommentAnonymousSerializer()

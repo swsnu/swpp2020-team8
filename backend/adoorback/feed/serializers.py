@@ -54,7 +54,7 @@ class ArticleBaseSerializer(AdoorBaseSerializer):
 
 
 class ArticleFriendSerializer(ArticleBaseSerializer):
-    author = AuthorFriendSerializer()
+    author = AuthorFriendSerializer(read_only=True)
     comments = CommentFriendSerializer(source='article_comments', many=True, read_only=True)
 
     class Meta(ArticleBaseSerializer.Meta):
@@ -83,7 +83,7 @@ class QuestionBaseSerializer(AdoorBaseSerializer):
 
 
 class QuestionPublicSerializer(QuestionBaseSerializer):
-    author = AuthorFriendSerializer()
+    author = AuthorFriendSerializer(read_only=True)
 
     class Meta(QuestionBaseSerializer.Meta):
         model = Question
@@ -91,7 +91,7 @@ class QuestionPublicSerializer(QuestionBaseSerializer):
 
 
 class QuestionAnonymousSerializer(QuestionBaseSerializer):
-    author = AuthorAnonymousSerializer()
+    author = AuthorAnonymousSerializer(read_only=True)
 
     class Meta(QuestionBaseSerializer.Meta):
         model = Question
@@ -106,8 +106,8 @@ class ResponseBaseSerializer(AdoorBaseSerializer):
 
 
 class ResponseFriendSerializer(ResponseBaseSerializer):
-    author = AuthorFriendSerializer()
-    question_id = serializers.IntegerField(read_only=True)
+    author = AuthorFriendSerializer(read_only=True)
+    question_id = serializers.IntegerField()
     question = QuestionBaseSerializer(read_only=True)
     comments = CommentFriendSerializer(source='response_comments', many=True, read_only=True)
 
@@ -120,13 +120,17 @@ class ResponseFriendSerializer(ResponseBaseSerializer):
 
 
 class ResponseAnonymousSerializer(ResponseBaseSerializer):
-    author = AuthorAnonymousSerializer()
+    author = AuthorAnonymousSerializer(read_only=True)
+    question_id = serializers.IntegerField()
     question = QuestionBaseSerializer(read_only=True)
     comments = CommentAnonymousSerializer(source='response_comments', many=True, read_only=True)
 
+    def get_question_id(self, obj):
+        return obj.question_id
+
     class Meta(ResponseBaseSerializer.Meta):
         model = Article
-        fields = ResponseBaseSerializer.Meta.fields + ['author', 'question', 'comments']
+        fields = ResponseBaseSerializer.Meta.fields + ['author', 'question_id', 'question', 'comments']
 
 
 class QuestionDetailPublicSerializer(QuestionPublicSerializer):

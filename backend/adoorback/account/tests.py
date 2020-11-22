@@ -117,6 +117,15 @@ class AuthAPITestCase(APITestCase):
         response = client.post('/api/user/signup/', signup_data, content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
+        # invalid json
+        invalid_signup_data = {
+            "username": "test_username",
+            "password": "abc",
+            "email": "wa@"
+        }
+        response = client.post('/api/user/signup/', invalid_signup_data, content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+
     def test_user_list(self):
         current_user = self.make_user(username='current_user')
         admin_user = self.make_user(username='admin_user')
