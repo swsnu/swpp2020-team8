@@ -26,7 +26,8 @@ class IsShared(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if obj.type == 'Question' or obj.share_anonymously:
             return True
-        elif obj.share_with_friends and obj.author == request.user:  # fix after friendship is implemented
+        # TODO: fix after friendship is implemented
+        elif obj.share_with_friends and obj.author == request.user:
             return True
         else:
             return obj.author == request.user

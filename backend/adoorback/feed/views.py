@@ -19,7 +19,7 @@ def select_daily_questions():
 
 
 class DailyQuestionList(generics.ListAPIView):
-    serializer_class = fs.QuestionAnonymousSerializer
+    serializer_class = fs.QuestionResponsiveSerializer
     model = serializer_class.Meta.model
     permission_classes = [permissions.IsAuthenticated]
 
@@ -50,7 +50,7 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         article = Article.objects.get(id=self.kwargs.get('pk'))
-        if article.author == self.request.user:  # modify after implementing friendship
+        if article.author == self.request.user:  # TODO: modify after implementing friendship
             return fs.ArticleFriendSerializer
         return fs.ArticleAnonymousSerializer
 
@@ -60,25 +60,38 @@ class QuestionList(generics.ListCreateAPIView):
     List all questions, or create a new question.
     """
     queryset = Question.objects.all()
-    serializer_class = fs.QuestionAnonymousSerializer
+    serializer_class = fs.QuestionResponsiveSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
 
-class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
+class QuestionAllResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve, update, or destroy a question.
     """
     queryset = Question.objects.all()
+    serializer_class = fs.QuestionDetailAllResponsesSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly, IsShared]
 
-    def get_serializer_class(self):
-        question = Question.objects.get(id=self.kwargs.get('pk'))
-        if question.author == self.request.user:  # modify after implementing friendship
-            return fs.QuestionDetailPublicSerializer
-        return fs.QuestionDetailAnonymousSerializer
+
+class QuestionFriendResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update, or destroy a question.
+    """
+    queryset = Question.objects.all()
+    serializer_class = fs.QuestionDetailFriendResponsesSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly, IsShared]
+
+
+class QuestionAnonymousResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update, or destroy a question.
+    """
+    queryset = Question.objects.all()
+    serializer_class = fs.QuestionDetailAnonymousResponsesSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly, IsShared]
 
 
 class ResponseList(generics.CreateAPIView):
@@ -102,7 +115,7 @@ class ResponseDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         response = Response.objects.get(id=self.kwargs.get('pk'))
-        if response.author == self.request.user:  # modify after implementing friendship
+        if response.author == self.request.user:  # TODO: modify after implementing friendship
             return fs.ResponseFriendSerializer
         return fs.ResponseAnonymousSerializer
 
