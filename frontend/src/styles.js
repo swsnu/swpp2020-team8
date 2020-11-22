@@ -56,6 +56,7 @@ export const FeedWrapper = styled.div`
 
 export const WidgetWrapper = styled.div`
   width: 300px;
+  transform: 'translateX(-10px)';
 `;
 
 export const WidgetTitleWrapper = styled.div`

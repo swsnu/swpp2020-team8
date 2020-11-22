@@ -26,19 +26,18 @@ import {
 import CustomQuestionModal from './CustomQuestionModal';
 
 const NewQuestionButton = styled(CommonButton)`
-  transform: translateX(-10px);
-  position: fixed;
-  top: 410px;
   width: 275px;
   box-shadow: '0 5px 10px rgba(154, 160, 185, 0.05), 0 5px 10px rgba(166, 173, 201, 0.2)';
+`;
+
+const QuestionWidgetWrapper = styled.div`
+  position: fixed;
 `;
 
 NewQuestionButton.displayName = 'NewQuestionButton';
 
 const useStyles = makeStyles((theme) => ({
   card: {
-    transform: 'translateX(-10px)',
-    position: 'fixed',
     width: '275px',
     borderColor: '#eee',
     boxShadow:
@@ -127,72 +126,76 @@ const QuestionListWidget = ({
 
   return (
     <WidgetWrapper>
-      <Card variant="outlined" className={classes.card}>
-        <CardContent className={classes.cardContent}>
-          <WidgetTitleWrapper>
-            <Typography variant="h6" className={classes.title}>
-              추천 질문
-            </Typography>
-            <FlexDiv>
-              {isFolded ? (
-                <IconButton
-                  href=""
-                  className={classes.iconButton}
-                  id="question-list-widget-unfold-button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setIsFolded(false);
-                  }}
-                >
-                  <ExpandMoreIcon className={classes.icon} />
-                </IconButton>
-              ) : (
-                <>
-                  <IconButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleClickRefreshButton();
-                    }}
-                    className={classes.iconButton}
-                  >
-                    <RefreshIcon className={classes.icon} />
-                  </IconButton>
+      <QuestionWidgetWrapper>
+        <Card variant="outlined" className={classes.card}>
+          <CardContent className={classes.cardContent}>
+            <WidgetTitleWrapper>
+              <Typography variant="h6" className={classes.title}>
+                추천 질문
+              </Typography>
+              <FlexDiv>
+                {isFolded ? (
                   <IconButton
                     href=""
-                    id="question-list-widget-fold-button"
                     className={classes.iconButton}
+                    id="question-list-widget-unfold-button"
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      setIsFolded(true);
+                      setIsFolded(false);
                     }}
                   >
-                    <ExpandLessIcon className={classes.icon} />
+                    <ExpandMoreIcon className={classes.icon} />
                   </IconButton>
-                </>
-              )}
-            </FlexDiv>
-          </WidgetTitleWrapper>
-          {!isFolded && (
-            <List
-              className={classes.list}
-              aria-label="recommended question list"
-            >
-              {isRandomQuestions ? randomQuestionList : recommendedQuestionList}
-            </List>
-          )}
-        </CardContent>
-      </Card>
-      <NewQuestionButton margin="16px 0" onClick={handleModalOpen}>
-        새로운 질문 만들기
-      </NewQuestionButton>
-      {isCustomQuestionModalOpen && (
-        <CustomQuestionModal
-          open={isCustomQuestionModalOpen}
-          handleClose={handleModalClose}
-        />
-      )}
+                ) : (
+                  <>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleClickRefreshButton();
+                      }}
+                      className={classes.iconButton}
+                    >
+                      <RefreshIcon className={classes.icon} />
+                    </IconButton>
+                    <IconButton
+                      href=""
+                      id="question-list-widget-fold-button"
+                      className={classes.iconButton}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setIsFolded(true);
+                      }}
+                    >
+                      <ExpandLessIcon className={classes.icon} />
+                    </IconButton>
+                  </>
+                )}
+              </FlexDiv>
+            </WidgetTitleWrapper>
+            {!isFolded && (
+              <List
+                className={classes.list}
+                aria-label="recommended question list"
+              >
+                {isRandomQuestions
+                  ? randomQuestionList
+                  : recommendedQuestionList}
+              </List>
+            )}
+          </CardContent>
+        </Card>
+        <NewQuestionButton margin="16px 0" onClick={handleModalOpen}>
+          새로운 질문 만들기
+        </NewQuestionButton>
+        {isCustomQuestionModalOpen && (
+          <CustomQuestionModal
+            open={isCustomQuestionModalOpen}
+            handleClose={handleModalClose}
+          />
+        )}
+      </QuestionWidgetWrapper>
     </WidgetWrapper>
   );
 };

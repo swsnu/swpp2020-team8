@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -48,17 +49,17 @@ const useStyles = makeStyles((theme) => ({
 
 // TODO: share settings
 export default function QuestionItem({ questionObj }) {
-  // TODO: fix
-  const isAuthor = true;
+  const user = useSelector((state) => state.userReducer.user);
+  const isAuthor = user.id === questionObj.author_detail.id;
 
   const classes = useStyles();
-  const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
+  const [liked, setLiked] = useState(questionObj.current_user_liked);
+  const [likeCount, setLikeCount] = useState(questionObj.like_count);
   const [isWriting, setIsWriting] = useState(false);
   const [newPost, setNewPost] = useState({
     question_id: questionObj?.id,
     question_detail: questionObj,
-    content: null,
+    content: '',
     type: 'Response'
   });
 
@@ -93,10 +94,10 @@ export default function QuestionItem({ questionObj }) {
   return (
     <QuestionItemWrapper>
       <PostItemHeaderWrapper>
-        {questionObj.author_detail.username !== 'admin' && (
+        {!questionObj.is_admin_question && (
           <AuthorProfile author={questionObj.author_detail} />
         )}
-        {questionObj.author_detail.username !== 'admin' && isAuthor && (
+        {!questionObj.is_admin_question && isAuthor && (
           <PostAuthorButtons
             onClickEdit={handleEdit}
             onClickDelete={handleDelete}
