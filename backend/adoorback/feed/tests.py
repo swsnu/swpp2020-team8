@@ -13,7 +13,7 @@ User = get_user_model()
 N = 10
 
 
-class FeedModelTestCase(TestCase):
+class FeedTestCase(TestCase):
     def setUp(self):
         set_seed(N)
 
@@ -217,7 +217,7 @@ class DailyQuestionTestCase(APITestCase):
             response = self.get('daily-question-list')
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data['count'], 30)
-            self.assertEqual(len(response.data['results']), 10)
+            self.assertEqual(len(response.data['results']), 15)
             self.assertTrue(response.data['results'][1]['selected_date'])
             self.assertGreater(response.data['results'][1]['id'],
                                response.data['results'][2]['id'])  # check order_by

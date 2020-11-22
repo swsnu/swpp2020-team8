@@ -50,7 +50,7 @@ export const MainWrapper = styled.main`
 `;
 
 export const FeedWrapper = styled.div`
-  width: 700px;
+  width: 720px;
   margin: 0 40px;
 `;
 
