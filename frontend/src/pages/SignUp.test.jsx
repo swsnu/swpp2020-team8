@@ -11,7 +11,7 @@ import history from '../history';
 import { mockStore } from '../mockStore';
 import SignUp from './SignUp';
 
-describe('<QuestionSelection /> unit test', () => {
+describe('Sign up page unit test', () => {
   jest.mock('axios');
 
   // axios.get.mockResolvedValue([]);
