@@ -4,9 +4,9 @@ from rest_framework.exceptions import NotAcceptable
 
 from feed.models import Article, Response, Question, Post
 from adoorback.serializers import AdoorBaseSerializer
+from adoorback.settings import BASE_URL
 from comment.serializers import CommentFriendSerializer
 from account.serializers import AuthorFriendSerializer, AuthorAnonymousSerializer
-from adoorback.settings import BASE_URL
 
 User = get_user_model()
 
