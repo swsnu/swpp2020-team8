@@ -216,7 +216,7 @@ class ResponseRequestSerializer(serializers.ModelSerializer):
     recipient_id = serializers.IntegerField(read_only=True)
     question_id = serializers.IntegerField(read_only=True)
     responded = serializers.BooleanField()
-    
+
     class Meta():
-      model = ResponseRequest
-      fields = ['id', 'actor_id', 'recipient_id', 'question_id', 'responded']
+        model = ResponseRequest
+        fields = ['id', 'actor_id', 'recipient_id', 'question_id', 'responded']

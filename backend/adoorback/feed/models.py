@@ -78,8 +78,9 @@ class ResponseRequest(AdoorTimestampedModel):
     responded = models.BooleanField(default=False)
 
     class Meta:
-        constraints = [models.UniqueConstraint(fields= ['actor', 'recipient', 'question'], name='unique_response_request')]
-    
+        constraints = [models.UniqueConstraint(fields= ['actor', 'recipient', 'question'],
+                                                name='unique_response_request')]
+
     def __str__(self):
         return self.question.content
 

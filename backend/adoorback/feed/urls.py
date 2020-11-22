@@ -15,7 +15,7 @@ urlpatterns = [
          views.QuestionAnonymousResponsesDetail.as_view(), name='question-detail-anonymous'),
     path('questions/<int:pk>/request-response/', views.ResponseRequestList.as_view(), name='response-request-list'),
     path('questions/<int:qid>/request-response/<int:rid>/', views.response_request, name='response-request-detail'),
-    
+
     path('friend/', views.FriendFeedPostList.as_view(), name='friend-feed-post-list'),
     path('anonymous/', views.AnonymousFeedPostList.as_view(), name='anonymous-feed-post-list'),
 ]

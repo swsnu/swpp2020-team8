@@ -1,15 +1,16 @@
+import json
+
+from django.contrib.auth import get_user_model
+from django.http import JsonResponse, HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.utils import timezone
 from rest_framework import generics
 from rest_framework import permissions
 from celery.schedules import crontab
 from celery.task import periodic_task
-from django.http import JsonResponse, HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 
-from django.contrib.auth import get_user_model
 import feed.serializers as fs
 from feed.models import Article, Response, Question, Post, ResponseRequest
 from adoorback.permissions import IsOwnerOrReadOnly, IsShared
-import json
 
 User = get_user_model()
 
@@ -117,13 +118,18 @@ def response_request(request, qid, rid):
     if not request.user.is_authenticated:
         return HttpResponse(status=401)
 
+    recipient = User.objects.get(id=rid)
+    question = Question.objects.get(id=qid)
+
     if request.method == 'POST':
-      #TODO: 친구에게만 질문 보내기 가능
-      recipient = User.objects.get(id=rid)
-      question = Question.objects.get(id=qid)
-      new_response_request = ResponseRequest(actor=request.user, recipient=recipient, question=question)
-      new_response_request.save()
-      return HttpResponse(status=201)
+        #TODO: 친구에게만 질문 보내기 가능
+        new_response_request = ResponseRequest(actor=request.user, recipient=recipient, question=question)
+        new_response_request.save()
+        return JsonResponse({'id': new_response_request.id,
+                              "actor_id": request.user.id,
+                              "recipient_id": recipient.id,
+                              "question_id": question.id,
+                              "responded": False}, status=201)
     elif request.method == 'PATCH':
         try:
             responseRequest = ResponseRequest.objects.get(question_id=qid, recipient_id=rid)
@@ -134,8 +140,12 @@ def response_request(request, qid, rid):
                 new_responded = json.loads(request.body)['responded']
                 responseRequest.responded = new_responded
                 responseRequest.save()
-                return HttpResponse(status=200)
-            except (KeyError, json.JSONDecodeError) as e:
+                return JsonResponse({'id': new_response_request.id,
+                              "actor_id": request.user.id,
+                              "recipient_id": recipient.id,
+                              "question_id": question.id,
+                              "responded": True}, status=200)
+            except (KeyError, json.JSONDecodeError):
                 return HttpResponseBadRequest()
         else:
             return HttpResponse(status=403)
