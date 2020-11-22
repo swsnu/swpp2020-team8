@@ -14,7 +14,7 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'question_history', 'url']
+        fields = ['id', 'username', 'email', 'password', 'profile_pic', 'question_history', 'url']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -25,23 +25,23 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class AuthorFriendSerializer(serializers.ModelSerializer):
-    profile = serializers.SerializerMethodField(read_only=True)
+    url = serializers.SerializerMethodField(read_only=True)
 
-    def get_profile(self, obj):
-        return {"id": obj.id, "username": obj.username, "url": f'{BASE_URL}/api/user/{obj.id}/'}
+    def get_url(self, obj):
+        return f'{BASE_URL}/api/user/{obj.id}/'
 
     class Meta:
         model = User
-        fields = ['profile']
+        fields = ['id', 'username', 'profile_pic', 'url']
 
 
 class AuthorAnonymousSerializer(serializers.ModelSerializer):
-    profile = serializers.SerializerMethodField(read_only=True)
+    color_hex = serializers.SerializerMethodField(read_only=True)
 
-    def get_profile(self, obj):
+    def get_color_hex(self, obj):
         author_hash = obj.id * 349875348725974 + 23943223849124
-        return {"color_hex": '#{0:06X}'.format(author_hash % 16777215)}  # mod max color HEX
+        return '#{0:06X}'.format(author_hash % 16777215)  # mod max color HEX
 
     class Meta:
         model = User
-        fields = ['profile']
+        fields = ['color_hex']
