@@ -70,12 +70,18 @@ class Response(AdoorModel):
     def type(self):
         return self.__class__.__name__
 
+# TODO: 친구에게만 보낼 수 있어야 함
 class ResponseRequest(AdoorTimestampedModel):
     actor = models.ForeignKey(User, related_name='sent_response_request_set', on_delete=models.CASCADE)
     recipient = models.ForeignKey(User, related_name='received_response_request_set', on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     responded = models.BooleanField(default=False)
 
+    class Meta:
+        constraints = [models.UniqueConstraint(fields= ['actor', 'recipient', 'question'], name='unique_response_request')]
+    
+    def __str__(self):
+        return self.question.content
 
 class PostManager(models.Manager):
     use_for_related_fields = True

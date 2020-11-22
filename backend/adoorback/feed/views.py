@@ -3,11 +3,15 @@ from rest_framework import generics
 from rest_framework import permissions
 from celery.schedules import crontab
 from celery.task import periodic_task
+from django.http import JsonResponse, HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 
+from django.contrib.auth import get_user_model
 import feed.serializers as fs
-from feed.models import Article, Response, Question, Post
+from feed.models import Article, Response, Question, Post, ResponseRequest
 from adoorback.permissions import IsOwnerOrReadOnly, IsShared
+import json
 
+User = get_user_model()
 
 @periodic_task(run_every=crontab(minute=0, hour=0))
 def select_daily_questions():
@@ -93,6 +97,60 @@ class QuestionAnonymousResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = fs.QuestionDetailAnonymousResponsesSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly, IsShared]
 
+
+class ResponseRequestList(generics.ListAPIView):
+    """
+    Get response requests of the selected question.
+    Create ResponseRequest of the selected question.
+    """
+    serializer_class = fs.ResponseRequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        question_id = self.kwargs['pk']
+        current_user_sent_response_request_set = self.request.user.sent_response_request_set.all()
+        responseRequests = current_user_sent_response_request_set.filter(question_id=question_id)
+        return responseRequests
+
+
+def response_request(request, qid, rid):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=401)
+
+    if request.method == 'POST':
+      #TODO: 친구에게만 질문 보내기 가능
+      recipient = User.objects.get(id=rid)
+      question = Question.objects.get(id=qid)
+      new_response_request = ResponseRequest(actor=request.user, recipient=recipient, question=question)
+      new_response_request.save()
+      return HttpResponse(status=201)
+    elif request.method == 'PATCH':
+        try:
+            responseRequest = ResponseRequest.objects.get(question_id=qid, recipient_id=rid)
+        except ResponseRequest.DoesNotExist:
+            return HttpResponse(status=404)
+        if request.user.id == responseRequest.recipient.id:
+            try:
+                new_responded = json.loads(request.body)['responded']
+                responseRequest.responded = new_responded
+                responseRequest.save()
+                return HttpResponse(status=200)
+            except (KeyError, json.JSONDecodeError) as e:
+                return HttpResponseBadRequest()
+        else:
+            return HttpResponse(status=403)
+    elif request.method == 'DELETE':
+        try:
+            responseRequest = ResponseRequest.objects.get(question_id=qid, recipient_id=rid)
+        except ResponseRequest.DoesNotExist:
+            return HttpResponse(status=404)
+        if request.user.id == responseRequest.actor.id:
+            responseRequest.delete()
+            return HttpResponse(status=200)
+        else:
+            return HttpResponse(status=403)
+
+    return HttpResponseNotAllowed(['GET'])
 
 class ResponseList(generics.CreateAPIView):
     """
