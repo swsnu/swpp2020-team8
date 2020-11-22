@@ -14,6 +14,8 @@ import FriendFeed from './pages/FriendFeed';
 import AnonymousFeed from './pages/AnonymousFeed';
 import QuestionFeed from './pages/QuestionFeed';
 import PrivateRoute from './components/PrivateRoute';
+import PostDetail from './pages/PostDetail';
+import FriendsPage from './pages/FriendsPage';
 
 const theme = createMuiTheme({
   palette: {
@@ -27,6 +29,9 @@ const theme = createMuiTheme({
 
 const App = () => {
   const user = useSelector((state) => state.userReducer.user);
+  const signUpRedirectPath = user?.question_history
+    ? '/friends'
+    : 'select-questions';
   // let signedIn = user !== null;
 
   // useEffect(() => {
@@ -49,18 +54,28 @@ const App = () => {
         <MainWrapper>
           <QuestionListWidget />
           <FeedWrapper>
-            <Redirect exact path="/login" to="/friends" />
-            <Redirect exact path="/signup" to="/select-questions" />
             <Switch>
+              <Redirect from="/login" to="/friends" />
+              <Redirect from="/signup" to={signUpRedirectPath} />
               <Route
                 exact
                 path="/select-questions"
                 component={QuestionSelection}
               />
-
               <PrivateRoute exact path="/friends" component={FriendFeed} />
               <PrivateRoute exact path="/anonymous" component={AnonymousFeed} />
               <PrivateRoute exact path="/questions" component={QuestionFeed} />
+              <PrivateRoute
+                exact
+                path="/:postType/:id"
+                component={PostDetail}
+              />
+              <PrivateRoute
+                exact
+                path="/users/:id/friends"
+                component={FriendsPage}
+              />
+
               <Redirect exact path="/" to="/friends" />
             </Switch>
           </FeedWrapper>

@@ -21,6 +21,15 @@ const WarningMessage = styled.div`
   margin-bottom: 4px;
 `;
 
+const LoginButton = styled.button`
+  float: right;
+  border: none;
+  background: #fff;
+  color: #777;
+  font-size: 16px;
+  margin-top: -16px;
+`;
+
 export default function SignUp() {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -106,6 +115,14 @@ export default function SignUp() {
       >
         다음 단계로
       </CommonButton>
+      <LoginButton
+        type="button"
+        id="login-button"
+        margin="5px 0"
+        onClick={() => history.push('/login')}
+      >
+        로그인
+      </LoginButton>
     </SignUpWrapper>
   );
 }
