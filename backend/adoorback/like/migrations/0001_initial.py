@@ -24,4 +24,8 @@ class Migration(migrations.Migration):
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='like_set', to=settings.AUTH_USER_MODEL)),
             ],
         ),
+        migrations.AddConstraint(
+            model_name='like',
+            constraint=models.UniqueConstraint(fields=('user', 'content_type', 'object_id'), name='unique_like'),
+        ),
     ]

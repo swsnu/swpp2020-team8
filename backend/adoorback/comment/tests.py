@@ -19,7 +19,7 @@ class CommentTestCase(TestCase):
         self.assertEqual(Comment.objects.all().count(), N*3)
 
     def test_comment_str(self):
-        comment = Comment.objects.all().last()
+        comment = Comment.objects.last()
         self.assertEqual(comment.__str__(), comment.content)
         self.assertEqual(comment.type, 'Comment')
 
@@ -85,7 +85,7 @@ class CommentAPITestCase(APITestCase):
             data = {"target_type": "Article", "target_id": 1, "content": "test_comment"}
             response = self.post('comment-list', data=data)
             self.assertEqual(response.status_code, 201)
-            comment_id = Comment.objects.all().last().id
+            comment_id = Comment.objects.last().id
             data = {"target_type": "Comment", "target_id": comment_id, "content": "test_reply"}
             response = self.post('comment-list', data=data)
             self.assertEqual(response.status_code, 201)
@@ -125,7 +125,7 @@ class CommentAPITestCase(APITestCase):
             self.assertEqual(response.status_code, 201)
 
         with self.login(username=current_user.username, password='password'):
-            pk = Comment.objects.all().last().id
+            pk = Comment.objects.last().id
             response = self.delete(self.reverse('comment-detail', pk=pk))
             self.assertEqual(response.status_code, 204)
 
@@ -135,6 +135,6 @@ class CommentAPITestCase(APITestCase):
             self.assertEqual(response.status_code, 201)
 
         with self.login(username=spy_user.username, password='password'):
-            pk = Comment.objects.all().last().id
+            pk = Comment.objects.last().id
             response = self.delete(self.reverse('comment-detail', pk=pk))
             self.assertEqual(response.status_code, 403)

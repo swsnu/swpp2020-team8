@@ -17,7 +17,7 @@ DEBUG = False
 
 def set_seed(n):
     if DEBUG:
-        logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
+        logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
     User = get_user_model()
     faker = Faker()
@@ -107,14 +107,13 @@ def set_seed(n):
         if DEBUG else None
 
     # Seed Like
-    replies = Comment.objects.replies_only()
-    for _ in range(n):
+    for i in range(n):
         user = random.choice(users)
-        article = random.choice(articles)
-        question = random.choice(questions)
-        response = random.choice(responses)
-        comment = random.choice(comments)
-        reply = random.choice(replies)
+        article = Article.objects.get(id=i+1)
+        question = Question.objects.get(id=i+1)
+        response = Response.objects.get(id=i+1)
+        comment = Comment.objects.comments_only()[i]
+        reply = Comment.objects.replies_only()[i]
         Like.objects.create(user=user, target=article)
         Like.objects.create(user=user, target=question)
         Like.objects.create(user=user, target=response)

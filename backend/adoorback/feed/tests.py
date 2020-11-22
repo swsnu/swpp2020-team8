@@ -48,7 +48,7 @@ class FeedTestCase(TestCase):
 
     # response must be deleted along with question
     def test_on_delete_question_cascade(self):
-        response = Response.objects.all().last()
+        response = Response.objects.last()
         response_id = response.id
 
         response.question.delete()
@@ -56,7 +56,7 @@ class FeedTestCase(TestCase):
 
     # post content must change to reflect target content
     def test_post_update(self):
-        response = Response.objects.all().last()
+        response = Response.objects.last()
         response.content = "modified content"
         response.save()
 
@@ -65,7 +65,7 @@ class FeedTestCase(TestCase):
 
     # post content must be removed along with target
     def test_post_delete(self):
-        response = Response.objects.all().last()
+        response = Response.objects.last()
         response.delete()
 
         self.assertEqual(Post.objects.all().filter(object_id=response.id).count(), 0)
@@ -112,15 +112,15 @@ class PostAPITestCase(APITestCase):
     def test_friend_feed(self):
         current_user = self.make_user(username='current_user')
 
-        Question.objects.create(author_id=1, content="test_question", is_admin_question=False)
-        Response.objects.create(author_id=1, content="test_response", question_id=1)
+        question = Question.objects.create(author_id=1, content="test_question", is_admin_question=False)
+        Response.objects.create(author_id=1, content="test_response", question_id=question.id)
         Article.objects.create(author_id=1, content="test_article")
         Article.objects.create(author_id=1, content="test_article", share_with_friends=False)
 
         with self.login(username=current_user.username, password='password'):
             response = self.get('friend-feed-post-list')
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data['results']), 3)
+            self.assertEqual(response.data['count'], 3)
             self.assertEqual(response.data['results'][0]['type'], 'Article')
             self.assertEqual(response.data['results'][1]['type'], 'Response')
             self.assertEqual(response.data['results'][2]['type'], 'Question')
@@ -136,8 +136,23 @@ class PostAPITestCase(APITestCase):
 
         with self.login(username=current_user.username, password='password'):
             response = self.get('anonymous-feed-post-list')
-            self.assertEqual(len(response.data['results']), 3)
+            self.assertEqual(response.data['count'], 3)
             self.assertEqual(response.data['results'][0]['share_anonymously'], True)
+
+    def test_user_feed(self):
+        current_user = self.make_user(username='current_user')
+        friend_user = self.make_user(username='friend_user')
+
+        fid = friend_user.id
+        Question.objects.create(author_id=fid, content="test_question", is_admin_question=False)
+        Response.objects.create(author_id=fid, content="test_response", question_id=1)
+        Article.objects.create(author_id=fid, content="test_article")
+        Article.objects.create(author_id=fid, content="test_article", share_with_friends=False)
+
+        user_id = User.objects.last().id
+        with self.login(username=current_user.username, password='password'):
+            response = self.get(self.reverse('user-feed-post-list', pk=user_id))
+            self.assertEqual(response.data['count'], 3)
 
 
 class ArticleAPITestCase(APITestCase):
@@ -147,18 +162,25 @@ class ArticleAPITestCase(APITestCase):
         spy_user = self.make_user(username='spy_user')
 
         with self.login(username=current_user.username, password='password'):
-            data = {"content": "test content"}
+            data = {"content": "test content", "share_anonymously": True}
             response = self.post('article-list', data=data)
             self.assertEqual(response.status_code, 201)
 
+        article_id = Article.objects.last().id
         data = {"content": "modified content"}
         with self.login(username=current_user.username, password='password'):
-            response = self.patch(self.reverse('article-detail', pk=1), data=data)
+            response = self.patch(self.reverse('article-detail', pk=article_id), data=data)
             self.assertEqual(response.status_code, 200)
 
         with self.login(username=spy_user.username, password='password'):
-            response = self.patch(self.reverse('article-detail', pk=1), data=data)
+            response = self.patch(self.reverse('article-detail', pk=article_id), data=data)
             self.assertEqual(response.status_code, 403)
+
+        # anonymous
+        with self.login(username=spy_user.username, password='password'):
+            response = self.get(self.reverse('article-detail', pk=article_id))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data['author']['profile']), 1)
 
 
 class QuestionAPITestCase(APITestCase):
@@ -167,19 +189,79 @@ class QuestionAPITestCase(APITestCase):
         current_user = self.make_user(username='current_user')
         spy_user = self.make_user(username='spy_user')
 
+        # seed
         with self.login(username=current_user.username, password='password'):
             data = {"content": "test content", "is_admin_question": True}
             response = self.post('question-list', data=data)
             self.assertEqual(response.status_code, 201)
 
+        question_id = Question.objects.last().id
+
         data = {"content": "modified content"}
         with self.login(username=current_user.username, password='password'):
-            response = self.patch(self.reverse('question-detail', pk=1), data=data)
+            response = self.patch(self.reverse('question-detail', pk=question_id), data=data)
             self.assertEqual(response.status_code, 200)
 
+        # not allowed
         with self.login(username=spy_user.username, password='password'):
-            response = self.patch(self.reverse('question-detail', pk=1), data=data)
+            response = self.patch(self.reverse('question-detail', pk=question_id), data=data)
             self.assertEqual(response.status_code, 403)
+
+    # TODO: fix after friendship implementation
+    def test_question_detail(self):
+        current_user = self.make_user(username='current_user')
+        spy_user = self.make_user(username='spy_user')
+
+        # seed
+        with self.login(username=current_user.username, password='password'):
+            data = {"content": "test content", "is_admin_question": True}
+            response = self.post('question-list', data=data)
+            self.assertEqual(response.status_code, 201)
+
+        question_id = Question.objects.all().last().id
+        with self.login(username=current_user.username, password='password'):
+            data = {"content": "test content", "question_id": question_id,
+                    "share_with_friends": True, "share_anonymously": True}
+            response = self.post('response-list', data=data)
+            self.assertEqual(response.status_code, 201)
+            data = {"content": "test content", "question_id": question_id,
+                    "share_with_friends": True, "share_anonymously": False}
+            response = self.post('response-list', data=data)
+            self.assertEqual(response.status_code, 201)
+            data = {"content": "test content", "question_id": question_id,
+                    "share_with_friends": False, "share_anonymously": True}
+            response = self.post('response-list', data=data)
+            self.assertEqual(response.status_code, 201)
+
+        # accessible question detail - anonymous
+        with self.login(username=spy_user.username, password='password'):
+            response = self.get(self.reverse('question-detail', pk=question_id))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data['response_set']), 2)
+            self.assertEqual(len(response.data['author']['profile']), 1)  # author anonymous
+
+            # response type toggle
+            response = self.get(self.reverse('question-detail-anonymous', pk=question_id))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data['anonymous_response_set']), 2)
+            response = self.get(self.reverse('question-detail-friend', pk=question_id))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data['friend_response_set']), 0)
+
+        # accessible question detail - friend
+        with self.login(username=current_user.username, password='password'):
+            response = self.get(self.reverse('question-detail', pk=question_id))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data['response_set']), 3)
+            self.assertGreater(len(response.data['author']['profile']), 1)  # author public
+
+            # response type toggle
+            response = self.get(self.reverse('question-detail-anonymous', pk=question_id))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data['anonymous_response_set']), 2)
+            response = self.get(self.reverse('question-detail-friend', pk=question_id))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data['friend_response_set']), 3)
 
 
 class ResponseAPITestCase(APITestCase):
@@ -190,19 +272,28 @@ class ResponseAPITestCase(APITestCase):
 
         with self.login(username=current_user.username, password='password'):
             question = Question.objects.create(author_id=1, content="test_question", is_admin_question=False)
-            data = {"content": "test content", "question_id": question.id}
+            data = {"content": "test content", "question_id": question.id, "share_anonymously": True}
             response = self.post('response-list', data=data)
             self.assertEqual(response.status_code, 201)
-            self.assertEqual(response.data['question_id'], Response.objects.all().last().question_id)
+            self.assertEqual(response.data['question_id'], Response.objects.last().question_id)
 
+        response_id = Response.objects.last().id
         data = {"content": "modified content"}
         with self.login(username=current_user.username, password='password'):
-            response = self.patch(self.reverse('response-detail', pk=1), data=data)
+            response = self.patch(self.reverse('response-detail', pk=response_id), data=data)
             self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['question_id'], Question.objects.last().id)
 
         with self.login(username=spy_user.username, password='password'):
-            response = self.patch(self.reverse('response-detail', pk=1), data=data)
+            response = self.patch(self.reverse('response-detail', pk=response_id), data=data)
             self.assertEqual(response.status_code, 403)
+
+        # anonymous
+        with self.login(username=spy_user.username, password='password'):
+            response = self.get(self.reverse('response-detail', pk=response_id))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data['author']['profile']), 1)
+            self.assertEqual(response.data['question_id'], Question.objects.last().id)
 
 
 class DailyQuestionTestCase(APITestCase):

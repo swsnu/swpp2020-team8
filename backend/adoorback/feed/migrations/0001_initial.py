@@ -68,6 +68,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('content', models.TextField()),
+                ('author_id', models.IntegerField()),
                 ('object_id', models.IntegerField()),
                 ('share_with_friends', models.BooleanField(default=True)),
                 ('share_anonymously', models.BooleanField(default=True)),
