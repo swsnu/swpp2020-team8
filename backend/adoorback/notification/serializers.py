@@ -2,7 +2,6 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
 from notification.models import Notification
-from adoorback.serializers import AdoorBaseSerializer
 
 
 User = get_user_model()
@@ -16,7 +15,6 @@ class NotificationSerializer(serializers.ModelSerializer):
     recipient = serializers.HyperlinkedIdentityField(
         view_name='user-detail', read_only=True)
     recipient_detail = serializers.SerializerMethodField(read_only=True)
- 
     target_type = serializers.SerializerMethodField()
     target_id = serializers.SerializerMethodField()
     origin_type = serializers.SerializerMethodField()

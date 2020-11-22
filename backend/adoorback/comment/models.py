@@ -3,13 +3,15 @@ from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth import get_user_model
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+
 from like.models import Like
 from notification.models import Notification
 from adoorback.models import AdoorModel
 from adoorback.utils.content_types import get_content_type
 
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
+
 
 User = get_user_model()
 
@@ -55,5 +57,3 @@ def create_noti(sender, **kwargs):
     message = f'{actor.username} commented on your {origin.type}'
     Notification.objects.create(actor = actor, recipient = recipient, message = message,
             origin = origin, target = target, is_read = False, is_visible = True)
-
-

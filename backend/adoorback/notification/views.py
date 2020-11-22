@@ -5,7 +5,6 @@ from notification.models import Notification
 from notification.serializers import NotificationSerializer
 
 from adoorback.permissions import IsRecipient
-from adoorback.utils.content_types import get_content_type
 
 
 class NotificationList(generics.ListAPIView):

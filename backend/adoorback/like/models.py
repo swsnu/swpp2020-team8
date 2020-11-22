@@ -2,12 +2,10 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from adoorback.utils.content_types import get_content_type
-
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
-
 from notification.models import Notification
 
 User = get_user_model()

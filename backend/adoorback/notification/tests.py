@@ -14,7 +14,6 @@ N = 10
 class NotificationTestCase(TestCase):
     def setUp(self):
         set_seed(N)
-    
     def test_noti_count(self):
         # should be changed after adding friend/response-request noti
         self.assertGreater(Notification.objects.all().count(), N * 2)
@@ -29,7 +28,7 @@ class NotificationTestCase(TestCase):
         like_noti = Notification.objects.filter(target_type=get_content_type('Like')).last()
         self.assertEqual(like_noti.target.type, 'Like')
 
-    # test on delete actor user 
+    # test on delete actor user
     def test_on_delete_actor_cascade(self):
         fill_data()
         user = User.objects.all().last()
@@ -55,7 +54,7 @@ class NotificationTestCase(TestCase):
         self.assertEqual(Notification.objects.all().filter(recipient_id=user_id).count(), 0)
 
 
-    # test on delete target 
+    # test on delete target
     def test_on_delete_target_cascade(self):
         # target = comment
         noti = Notification.objects.all().filter(target_type=get_content_type("Comment")).last()
@@ -106,7 +105,7 @@ class NotificationTestCase(TestCase):
 
 class APITestCase(TestCase):
     client_class = APIClient
-    
+
 class NotificationAPITestCase(APITestCase):
 
     def setUp(self):
@@ -121,7 +120,6 @@ class NotificationAPITestCase(APITestCase):
             self.assertEqual(response.data['count'], received_notis_count)
 
     def test_noti_update(self):
-    
         current_user = self.make_user(username='receiver')
         # create noti object that current user receives
         comment = Comment.objects.all().first()
@@ -136,14 +134,14 @@ class NotificationAPITestCase(APITestCase):
         received_noti = Notification.objects.filter(recipient=current_user).last()
         data = {"is_read": True }
         with self.login(username=current_user.username, password='password'):
-            response = self.patch(self.reverse('notification-update', pk=received_noti.id), data=data)
-            self.assertEqual(response.status_code, 200)   
-            self.assertEqual(response.data['is_read'], True)   
-
+            response = self.patch(self.reverse('notification-update',
+                pk=received_noti.id), data=data)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['is_read'], True)
         # test restriction
         spy_user = self.make_user(username='spy_user')
 
         with self.login(username=spy_user.username, password='password'):
-            response = self.patch(self.reverse('notification-update', pk=received_noti.id), data=data)
+            response = self.patch(self.reverse('notification-update',
+                pk=received_noti.id), data=data)
             self.assertEqual(response.status_code, 403)
-

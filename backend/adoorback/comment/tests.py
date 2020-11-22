@@ -4,7 +4,7 @@ from rest_framework.test import APIClient
 
 from comment.models import Comment
 
-from adoorback.utils.seed import set_seed, fill_data
+from adoorback.utils.seed import set_seed
 from adoorback.utils.content_types import get_content_type
 
 User = get_user_model()
