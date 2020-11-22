@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from test_plus.test import TestCase
 from rest_framework.test import APIClient
 
+from comment.models import Comment
 from notification.models import Notification
 
 from adoorback.utils.seed import set_seed, fill_data
@@ -16,7 +17,7 @@ class NotificationTestCase(TestCase):
     
     def test_noti_count(self):
         # should be changed after adding friend/response-request noti
-        self.assertEqual(Notification.objects.all().count(), N * 2)
+        self.assertGreater(Notification.objects.all().count(), N * 2)
 
     def test_noti_str(self):
         noti = Notification.objects.all().last()
@@ -42,7 +43,6 @@ class NotificationTestCase(TestCase):
 
     # test on delete recipient user
     def test_on_delete_recipient_cascade(self):
-        fill_data()
         user = User.objects.get(id=1)
         received_notis = user.received_noti_set.all()
         noti_received = Notification.objects.all().filter(recipient_id=1)
@@ -112,8 +112,28 @@ class NotificationAPITestCase(APITestCase):
 
     def test_noti_list(self):
         current_user = self.make_user(username='current_user')
-
+        received_notis_count = Notification.objects.filter(recipient=current_user).count()
         with self.login(username=current_user.username, password='password'):
             response = self.get('notification-list')
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.data['count'], N*2)
+            self.assertEqual(response.data['count'], received_notis_count)
+
+    def test_noti_update(self):
+        current_user = self.make_user(username='receiver')
+        # create noti object that current user receives
+        comment = Comment.objects.all().first()
+        actor = comment.author
+        origin = comment.target
+        recipient = current_user
+        target = comment
+        message = f'{actor} commented on your {origin.type}'
+        Notification.objects.create(actor = actor, recipient = recipient, message = message,
+            origin = origin, target= target, is_read = False, is_visible = True)
+
+        received_noti = Notification.objects.filter(recipient=current_user).last()
+        data = {"is_read": True }
+        with self.login(username=current_user.username, password='password'):
+            response = self.patch(self.reverse('notification-update', pk=received_noti.id), data=data)
+            self.assertEqual(response.status_code, 200)   
+            self.assertEqual(response.data['is_read'], True)   
+

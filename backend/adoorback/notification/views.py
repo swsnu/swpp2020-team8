@@ -4,29 +4,23 @@ from rest_framework import permissions
 from notification.models import Notification
 from notification.serializers import NotificationSerializer
 
-from adoorback.permissions import IsOwnerOrReadOnly
+from adoorback.permissions import IsRecipient
 from adoorback.utils.content_types import get_content_type
 
 
-class NotificationList(generics.ListCreateAPIView):
+class NotificationList(generics.ListAPIView):
     """
     List all comments, or create a new notification.
     """
-    queryset = Notification.objects.all().order_by('-id')
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    # def perform_create(self, serializer):
-    #     content_type_id = get_content_type(self.request.data['target_type']).id
-    #     serializer.save(author=self.request.user,
-    #                     content_type_id=content_type_id,
-    #                     object_id=self.request.data['target_id'])
+    def get_queryset(self):
+        queryset = Notification.objects.filter(recipient_id = self.request.user.id).order_by('-created_at')
+        return queryset
 
 
-class NotificationDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update, or destroy a notification.
-    """
+class NotificationDetail(generics.UpdateAPIView):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsRecipient]
