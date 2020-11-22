@@ -1,11 +1,11 @@
 import React from 'react';
-import axios from 'axios';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
+import axios from '../apis';
 import rootReducer from '../modules';
 import history from '../history';
 import { mockStore } from '../mockStore';
