@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 from comment.models import Comment
 from notification.models import Notification
 
-from adoorback.utils.seed import set_seed, fill_data
+from adoorback.utils.seed import set_seed
 from adoorback.utils.content_types import get_content_type
 
 User = get_user_model()
@@ -30,7 +30,6 @@ class NotificationTestCase(TestCase):
 
     # test on delete actor user
     def test_on_delete_actor_cascade(self):
-        fill_data()
         user = User.objects.all().last()
         user_id = user.id
         sent_notis = user.sent_noti_set.all()
