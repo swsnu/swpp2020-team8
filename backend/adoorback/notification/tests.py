@@ -32,25 +32,27 @@ class NotificationTestCase(TestCase):
     # test on delete actor user 
     def test_on_delete_actor_cascade(self):
         fill_data()
-        user = User.objects.get(id=2)
+        user = User.objects.all().last()
+        user_id = user.id
         sent_notis = user.sent_noti_set.all()
-        noti_acted = Notification.objects.all().filter(actor_id=2)
+        noti_acted = Notification.objects.all().filter(actor_id=user_id)
         self.assertEqual(sent_notis.count(), noti_acted.count())
 
         user.delete()
-        self.assertEqual(User.objects.all().filter(id=2).count(), 0)
-        self.assertEqual(Notification.objects.all().filter(actor_id=2).count(), 0)
+        self.assertEqual(User.objects.all().filter(id=user_id).count(), 0)
+        self.assertEqual(Notification.objects.all().filter(actor_id=user_id).count(), 0)
 
     # test on delete recipient user
     def test_on_delete_recipient_cascade(self):
-        user = User.objects.get(id=1)
+        user = User.objects.all().first()
+        user_id = user.id
         received_notis = user.received_noti_set.all()
-        noti_received = Notification.objects.all().filter(recipient_id=1)
+        noti_received = Notification.objects.all().filter(recipient_id=user_id)
         self.assertEqual(received_notis.count(), noti_received.count())
 
         user.delete()
-        self.assertEqual(User.objects.all().filter(id=1).count(), 0)
-        self.assertEqual(Notification.objects.all().filter(recipient_id=1).count(), 0)
+        self.assertEqual(User.objects.all().filter(id=user_id).count(), 0)
+        self.assertEqual(Notification.objects.all().filter(recipient_id=user_id).count(), 0)
 
 
     # test on delete target 
@@ -119,6 +121,7 @@ class NotificationAPITestCase(APITestCase):
             self.assertEqual(response.data['count'], received_notis_count)
 
     def test_noti_update(self):
+    
         current_user = self.make_user(username='receiver')
         # create noti object that current user receives
         comment = Comment.objects.all().first()
@@ -136,4 +139,11 @@ class NotificationAPITestCase(APITestCase):
             response = self.patch(self.reverse('notification-update', pk=received_noti.id), data=data)
             self.assertEqual(response.status_code, 200)   
             self.assertEqual(response.data['is_read'], True)   
+
+        # test restriction
+        spy_user = self.make_user(username='spy_user')
+
+        with self.login(username=spy_user.username, password='password'):
+            response = self.patch(self.reverse('notification-update', pk=received_noti.id), data=data)
+            self.assertEqual(response.status_code, 403)
 
