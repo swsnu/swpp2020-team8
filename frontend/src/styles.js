@@ -50,12 +50,13 @@ export const MainWrapper = styled.main`
 `;
 
 export const FeedWrapper = styled.div`
-  width: 700px;
+  width: 720px;
   margin: 0 40px;
 `;
 
 export const WidgetWrapper = styled.div`
   width: 300px;
+  transform: 'translateX(-10px)';
 `;
 
 export const WidgetTitleWrapper = styled.div`
