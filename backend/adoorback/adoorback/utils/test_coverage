@@ -1,5 +1,4 @@
-coverage run --source='.' --omit='*/migrations/*','adoorback/*','manage.py','*/wsgi.py','*/asgi.py','*/utils/*' ./manage.py test
-coverage run --branch --source='.' --omit='*/migrations/*','adoorback/*','manage.py','*/wsgi.py','*/asgi.py','*/utils/*' ./manage.py test
+# pylint
 rm -f tmp.db db.sqlite3
 rm -r */migrations
 pylint **/*.py --load-plugins pylint_django

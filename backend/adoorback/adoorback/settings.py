@@ -29,7 +29,7 @@ DEBUG = True
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
+    'PAGE_SIZE': 15,
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -38,11 +38,13 @@ REST_FRAMEWORK = {
 
 JWT_AUTH = {
     'JWT_VERIFY': True,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=30000),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+BASE_URL = 'http://localhost:8000'
 
 
 # Application definition

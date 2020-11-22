@@ -34,6 +34,11 @@ class Like(models.Model):
         content_type_field='origin_type', object_id_field='origin_id')
     objects = LikeManager()
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'content_type', 'object_id'], name='unique_like'),
+        ]
+
     def __str__(self):
         return f'{self.user} likes {self.content_type} ({self.object_id})'
 
