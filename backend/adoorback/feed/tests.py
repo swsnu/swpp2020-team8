@@ -48,7 +48,7 @@ class FeedTestCase(TestCase):
 
     # response must be deleted along with question
     def test_on_delete_question_cascade(self):
-        response = Response.objects.all().last()
+        response = Response.objects.last()
         response_id = response.id
 
         response.question.delete()
@@ -56,7 +56,7 @@ class FeedTestCase(TestCase):
 
     # post content must change to reflect target content
     def test_post_update(self):
-        response = Response.objects.all().last()
+        response = Response.objects.last()
         response.content = "modified content"
         response.save()
 
@@ -65,7 +65,7 @@ class FeedTestCase(TestCase):
 
     # post content must be removed along with target
     def test_post_delete(self):
-        response = Response.objects.all().last()
+        response = Response.objects.last()
         response.delete()
 
         self.assertEqual(Post.objects.all().filter(object_id=response.id).count(), 0)
@@ -80,8 +80,8 @@ class PostAPITestCase(APITestCase):
     def test_friend_feed(self):
         current_user = self.make_user(username='current_user')
 
-        Question.objects.create(author_id=1, content="test_question", is_admin_question=False)
-        Response.objects.create(author_id=1, content="test_response", question_id=1)
+        question = Question.objects.create(author_id=1, content="test_question", is_admin_question=False)
+        Response.objects.create(author_id=1, content="test_response", question_id=question.id)
         Article.objects.create(author_id=1, content="test_article")
         Article.objects.create(author_id=1, content="test_article", share_with_friends=False)
 
@@ -117,7 +117,7 @@ class PostAPITestCase(APITestCase):
         Article.objects.create(author_id=fid, content="test_article")
         Article.objects.create(author_id=fid, content="test_article", share_with_friends=False)
 
-        user_id = User.objects.all().last().id
+        user_id = User.objects.last().id
         with self.login(username=current_user.username, password='password'):
             response = self.get(self.reverse('user-feed-post-list', pk=user_id))
             self.assertEqual(response.data['count'], 3)
@@ -134,7 +134,7 @@ class ArticleAPITestCase(APITestCase):
             response = self.post('article-list', data=data)
             self.assertEqual(response.status_code, 201)
 
-        article_id = Article.objects.all().last().id
+        article_id = Article.objects.last().id
         data = {"content": "modified content"}
         with self.login(username=current_user.username, password='password'):
             response = self.patch(self.reverse('article-detail', pk=article_id), data=data)
@@ -163,7 +163,7 @@ class QuestionAPITestCase(APITestCase):
             response = self.post('question-list', data=data)
             self.assertEqual(response.status_code, 201)
 
-        question_id = Question.objects.all().last().id
+        question_id = Question.objects.last().id
         with self.login(username=current_user.username, password='password'):
             data = {"content": "test content", "question_id": question_id, "share_anonymously": True}
             response = self.post('response-list', data=data)
@@ -199,9 +199,9 @@ class ResponseAPITestCase(APITestCase):
             data = {"content": "test content", "question_id": question.id, "share_anonymously": True}
             response = self.post('response-list', data=data)
             self.assertEqual(response.status_code, 201)
-            self.assertEqual(response.data['question_id'], Response.objects.all().last().question_id)
+            self.assertEqual(response.data['question_id'], Response.objects.last().question_id)
 
-        response_id = Response.objects.all().last().id
+        response_id = Response.objects.last().id
         data = {"content": "modified content"}
         with self.login(username=current_user.username, password='password'):
             response = self.patch(self.reverse('response-detail', pk=response_id), data=data)

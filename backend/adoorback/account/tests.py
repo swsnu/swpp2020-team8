@@ -19,7 +19,7 @@ class UserTestCase(TestCase):
 
     def test_str(self):
         User = get_user_model()
-        user = User.objects.all().last()
+        user = User.objects.last()
         self.assertEqual(user.type, 'User')
 
 
