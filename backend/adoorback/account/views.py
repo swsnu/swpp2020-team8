@@ -7,8 +7,8 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
 from adoorback.permissions import IsOwnerOrReadOnly
-from account.serializers import UserProfileSerializer, UserDetailedSerializer
-from feed.serializers import QuestionSerializer
+from account.serializers import UserProfileSerializer
+from feed.serializers import QuestionAnonymousSerializer
 from feed.models import Question
 
 User = get_user_model()
@@ -61,7 +61,7 @@ def user_login(request):
 
 class SignupQuestions(generics.ListAPIView):
     queryset = Question.objects.all().order_by('?')[:5]
-    serializer_class = QuestionSerializer
+    serializer_class = QuestionAnonymousSerializer
     model = serializer_class.Meta.model
 
 
@@ -86,13 +86,7 @@ def current_user(request):
     return HttpResponseNotAllowed(['GET'])
 
 
-class UserDetail(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserDetailedSerializer
-    permission_classes = [IsAuthenticated]
-
-
-class UserInfo(generics.RetrieveUpdateAPIView):
+class UserDetail(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]

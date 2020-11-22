@@ -8,17 +8,8 @@ User = get_user_model()
 
 
 class AdoorBaseSerializer(serializers.ModelSerializer):
-    author = serializers.HyperlinkedIdentityField(view_name='user-detail', read_only=True)
-    author_detail = serializers.SerializerMethodField(read_only=True)
     like_count = serializers.SerializerMethodField(read_only=True)
     current_user_liked = serializers.SerializerMethodField(read_only=True)
-
-    def get_author_detail(self, obj):
-        author = obj.author
-        return {
-            "id": author.id,
-            "username": author.username,
-        }
 
     def get_like_count(self, obj):
         if isinstance(obj, Article):
@@ -43,5 +34,5 @@ class AdoorBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = None
-        fields = ['id', 'type', 'author', 'author_detail', 'content',
-                  'like_count', 'current_user_liked', 'created_at', 'updated_at']
+        fields = ['id', 'type', 'content', 'like_count', 'current_user_liked',
+                  'created_at', 'updated_at']
