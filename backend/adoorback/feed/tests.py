@@ -180,7 +180,7 @@ class ArticleAPITestCase(APITestCase):
         with self.login(username=spy_user.username, password='password'):
             response = self.get(self.reverse('article-detail', pk=article_id))
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data['author']['profile']), 1)
+            self.assertEqual(len(response.data['author_detail']), 1)
 
 
 class QuestionAPITestCase(APITestCase):
@@ -238,30 +238,30 @@ class QuestionAPITestCase(APITestCase):
             response = self.get(self.reverse('question-detail', pk=question_id))
             self.assertEqual(response.status_code, 200)
             self.assertEqual(len(response.data['response_set']), 2)
-            self.assertEqual(len(response.data['author']['profile']), 1)  # author anonymous
+            self.assertEqual(len(response.data['author_detail']), 1)  # author anonymous
 
             # response type toggle
             response = self.get(self.reverse('question-detail-anonymous', pk=question_id))
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data['anonymous_response_set']), 2)
+            self.assertEqual(len(response.data['response_set']), 2)
             response = self.get(self.reverse('question-detail-friend', pk=question_id))
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data['friend_response_set']), 0)
+            self.assertEqual(len(response.data['response_set']), 0)
 
         # accessible question detail - friend
         with self.login(username=current_user.username, password='password'):
             response = self.get(self.reverse('question-detail', pk=question_id))
             self.assertEqual(response.status_code, 200)
             self.assertEqual(len(response.data['response_set']), 3)
-            self.assertGreater(len(response.data['author']['profile']), 1)  # author public
+            self.assertGreater(len(response.data['author_detail']), 1)  # author public
 
             # response type toggle
             response = self.get(self.reverse('question-detail-anonymous', pk=question_id))
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data['anonymous_response_set']), 2)
+            self.assertEqual(len(response.data['response_set']), 2)
             response = self.get(self.reverse('question-detail-friend', pk=question_id))
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data['friend_response_set']), 3)
+            self.assertEqual(len(response.data['response_set']), 3)
 
 
 class ResponseAPITestCase(APITestCase):
@@ -292,7 +292,7 @@ class ResponseAPITestCase(APITestCase):
         with self.login(username=spy_user.username, password='password'):
             response = self.get(self.reverse('response-detail', pk=response_id))
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data['author']['profile']), 1)
+            self.assertEqual(len(response.data['author_detail']), 1)
             self.assertEqual(response.data['question_id'], Question.objects.last().id)
 
 
