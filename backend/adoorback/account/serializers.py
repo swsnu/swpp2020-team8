@@ -1,3 +1,5 @@
+import random
+
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
@@ -39,7 +41,7 @@ class AuthorAnonymousSerializer(serializers.ModelSerializer):
     color_hex = serializers.SerializerMethodField(read_only=True)
 
     def get_color_hex(self, obj):
-        author_hash = obj.id * 349875348725974 + 23943223849124
+        author_hash = obj.id * random.randint(4343, 54897) * random.randint(100, 938574)
         return '#{0:06X}'.format(author_hash % 16777215)  # mod max color HEX
 
     class Meta:
