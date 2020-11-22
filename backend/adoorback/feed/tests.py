@@ -164,28 +164,72 @@ class QuestionAPITestCase(APITestCase):
             self.assertEqual(response.status_code, 201)
 
         question_id = Question.objects.all().last().id
-        with self.login(username=current_user.username, password='password'):
-            data = {"content": "test content", "question_id": question_id, "share_anonymously": True}
-            response = self.post('response-list', data=data)
-            self.assertEqual(response.status_code, 201)
-            data = {"content": "test content", "question_id": question_id, "share_anonymously": False}
-            response = self.post('response-list', data=data)
-            self.assertEqual(response.status_code, 201)
 
         data = {"content": "modified content"}
         with self.login(username=current_user.username, password='password'):
             response = self.patch(self.reverse('question-detail', pk=question_id), data=data)
             self.assertEqual(response.status_code, 200)
 
+        # not allowed
         with self.login(username=spy_user.username, password='password'):
             response = self.patch(self.reverse('question-detail', pk=question_id), data=data)
             self.assertEqual(response.status_code, 403)
 
-        # anonymous
+    # TODO: fix after friendship implementation
+    def test_question_detail(self):
+        current_user = self.make_user(username='current_user')
+        spy_user = self.make_user(username='spy_user')
+
+        # seed
+        with self.login(username=current_user.username, password='password'):
+            data = {"content": "test content", "is_admin_question": True}
+            response = self.post('question-list', data=data)
+            self.assertEqual(response.status_code, 201)
+
+        question_id = Question.objects.all().last().id
+        with self.login(username=current_user.username, password='password'):
+            data = {"content": "test content", "question_id": question_id,
+                    "share_with_friends": True, "share_anonymously": True}
+            response = self.post('response-list', data=data)
+            self.assertEqual(response.status_code, 201)
+            data = {"content": "test content", "question_id": question_id,
+                    "share_with_friends": True, "share_anonymously": False}
+            response = self.post('response-list', data=data)
+            self.assertEqual(response.status_code, 201)
+            data = {"content": "test content", "question_id": question_id,
+                    "share_with_friends": False, "share_anonymously": True}
+            response = self.post('response-list', data=data)
+            self.assertEqual(response.status_code, 201)
+
+        # accessible question detail - anonymous
         with self.login(username=spy_user.username, password='password'):
             response = self.get(self.reverse('question-detail', pk=question_id))
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data['response_set']), 1)
+            self.assertEqual(len(response.data['response_set']), 2)
+            self.assertEqual(len(response.data['author']['profile']), 1)  # author anonymous
+
+            # response type toggle
+            response = self.get(self.reverse('question-detail-anonymous', pk=question_id))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data['anonymous_response_set']), 2)
+            response = self.get(self.reverse('question-detail-friend', pk=question_id))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data['friend_response_set']), 0)
+
+        # accessible question detail - friend
+        with self.login(username=current_user.username, password='password'):
+            response = self.get(self.reverse('question-detail', pk=question_id))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data['response_set']), 3)
+            self.assertGreater(len(response.data['author']['profile']), 1)  # author public
+
+            # response type toggle
+            response = self.get(self.reverse('question-detail-anonymous', pk=question_id))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data['anonymous_response_set']), 2)
+            response = self.get(self.reverse('question-detail-friend', pk=question_id))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data['friend_response_set']), 3)
 
 
 class ResponseAPITestCase(APITestCase):

@@ -56,14 +56,6 @@ class Question(AdoorModel):
     def type(self):
         return self.__class__.__name__
 
-    @property
-    def friend_response_set(self):
-        return self.response_set.all().filter(share_with_friends=True)
-
-    @property
-    def anonymous_response_set(self):
-        return self.response_set.all().filter(share_anonymously=True)
-
 
 class Response(AdoorModel):
     author = models.ForeignKey(User, related_name='response_set', on_delete=models.CASCADE)
@@ -83,6 +75,7 @@ class PostManager(models.Manager):
     use_for_related_fields = True
 
     def friend_posts_only(self, **kwargs):
+        # TODO: modify after friendship implementation
         return self.filter(share_with_friends=True, **kwargs)
 
     def anonymous_posts_only(self, **kwargs):

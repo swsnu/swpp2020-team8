@@ -12,6 +12,9 @@ class AdoorBaseSerializer(serializers.ModelSerializer):
     current_user_liked = serializers.SerializerMethodField(read_only=True)
 
     def get_like_count(self, obj):
+        current_user = self.context['request'].user
+        if obj.author != current_user:
+            return None
         if isinstance(obj, Article):
             return obj.article_likes.all().count()
         elif isinstance(obj, Question):
@@ -34,5 +37,4 @@ class AdoorBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = None
-        fields = ['id', 'type', 'content', 'like_count', 'current_user_liked',
-                  'created_at', 'updated_at']
+        fields = ['id', 'type', 'content', 'like_count', 'current_user_liked', 'created_at']

@@ -4,7 +4,7 @@ from rest_framework.exceptions import NotAcceptable
 
 from feed.models import Article, Response, Question, Post
 from adoorback.serializers import AdoorBaseSerializer
-from comment.serializers import CommentFriendSerializer, CommentAnonymousSerializer
+from comment.serializers import CommentFriendSerializer
 from account.serializers import AuthorFriendSerializer, AuthorAnonymousSerializer
 
 User = get_user_model()
@@ -21,7 +21,7 @@ class PostFriendSerializer(serializers.ModelSerializer):
             return ArticleFriendSerializer(obj.target, context=self.context).to_representation(obj.target)
         elif isinstance(obj.target, Question):
             self.Meta.model = Question
-            return QuestionPublicSerializer(obj.target, context=self.context).to_representation(obj.target)
+            return QuestionFriendSerializer(obj.target, context=self.context).to_representation(obj.target)
         elif isinstance(obj.target, Response):
             self.Meta.model = Response
             return ResponseFriendSerializer(obj.target, context=self.context).to_representation(obj.target)
@@ -46,29 +46,23 @@ class PostAnonymousSerializer(serializers.ModelSerializer):
         raise NotAcceptable(detail=None, code=404)
 
 
-class ArticleBaseSerializer(AdoorBaseSerializer):
-
-    class Meta(AdoorBaseSerializer.Meta):
-        model = Article
-        fields = AdoorBaseSerializer.Meta.fields + ['share_with_friends', 'share_anonymously']
-
-
-class ArticleFriendSerializer(ArticleBaseSerializer):
+class ArticleFriendSerializer(AdoorBaseSerializer):
     author = AuthorFriendSerializer(read_only=True)
     comments = CommentFriendSerializer(source='article_comments', many=True, read_only=True)
 
-    class Meta(ArticleBaseSerializer.Meta):
+    class Meta(AdoorBaseSerializer.Meta):
         model = Article
-        fields = ArticleBaseSerializer.Meta.fields + ['author', 'comments']
+        fields = AdoorBaseSerializer.Meta.fields + ['share_with_friends', 'share_anonymously',
+                                                    'author', 'comments']
 
 
-class ArticleAnonymousSerializer(ArticleBaseSerializer):
+class ArticleAnonymousSerializer(AdoorBaseSerializer):
     author = AuthorAnonymousSerializer()
-    comments = CommentAnonymousSerializer(source='article_comments', many=True, read_only=True)
 
-    class Meta(ArticleBaseSerializer.Meta):
+    class Meta(AdoorBaseSerializer.Meta):
         model = Article
-        fields = ArticleBaseSerializer.Meta.fields + ['author', 'comments']
+        fields = AdoorBaseSerializer.Meta.fields + ['share_with_friends', 'share_anonymously',
+                                                    'author']
 
 
 class QuestionBaseSerializer(AdoorBaseSerializer):
@@ -82,7 +76,71 @@ class QuestionBaseSerializer(AdoorBaseSerializer):
         fields = AdoorBaseSerializer.Meta.fields + ['selected_date', 'is_admin_question']
 
 
-class QuestionPublicSerializer(QuestionBaseSerializer):
+class ResponseBaseSerializer(AdoorBaseSerializer):
+    question = QuestionBaseSerializer(read_only=True)
+    question_id = serializers.IntegerField()
+
+    class Meta(AdoorBaseSerializer.Meta):
+        model = Response
+        fields = AdoorBaseSerializer.Meta.fields + ['share_with_friends', 'share_anonymously',
+                                                    'question', 'question_id']
+
+
+class ResponseFriendSerializer(ResponseBaseSerializer):
+    author = AuthorFriendSerializer(read_only=True)
+    comments = CommentFriendSerializer(source='response_comments', many=True, read_only=True)
+
+    class Meta(ResponseBaseSerializer.Meta):
+        model = Response
+        fields = ResponseBaseSerializer.Meta.fields + ['author', 'comments']
+
+
+class ResponseAnonymousSerializer(ResponseBaseSerializer):
+    author = AuthorAnonymousSerializer(read_only=True)
+
+    class Meta(ResponseBaseSerializer.Meta):
+        model = Article
+        fields = ResponseBaseSerializer.Meta.fields + ['author']
+
+
+class ResponseResponsiveSerializer(ResponseBaseSerializer):
+    author = serializers.SerializerMethodField(read_only=True)
+
+    def get_author(self, obj):
+        # TODO: need to modify after friendship implementation; are friends
+        if obj.author != self.context.get('request', None).user:
+            return AuthorAnonymousSerializer(obj.author).data
+        return AuthorFriendSerializer(obj.author).data
+
+    class Meta(ResponseBaseSerializer.Meta):
+        model = Article
+        fields = ResponseBaseSerializer.Meta.fields + ['author']
+
+
+class QuestionResponsiveSerializer(QuestionBaseSerializer):
+    """
+    for questions in question feed (no responses, author profile responsive)
+    """
+    author = serializers.SerializerMethodField(read_only=True)
+
+    def get_author(self, obj):
+        # TODO: need to modify after friendship implementation; are friends
+        if obj.author != self.context.get('request', None).user:
+            return AuthorAnonymousSerializer(obj.author).data
+        return AuthorFriendSerializer(obj.author).data
+
+    class Meta(QuestionBaseSerializer.Meta):
+        model = Question
+        fields = QuestionBaseSerializer.Meta.fields + ['author']
+
+
+class QuestionFriendSerializer(QuestionBaseSerializer):
+    """
+    for questions in friend feed (no responses)
+
+    function is redundant to `QuestionResponsiveSerializer`
+    but allows for faster responses when rendering friend/anonymous feeds.
+    """
     author = AuthorFriendSerializer(read_only=True)
 
     class Meta(QuestionBaseSerializer.Meta):
@@ -91,6 +149,12 @@ class QuestionPublicSerializer(QuestionBaseSerializer):
 
 
 class QuestionAnonymousSerializer(QuestionBaseSerializer):
+    """
+    for questions in anonymous feed (no responses)
+
+    function is redundant to `QuestionResponsiveSerializer`
+    but allows for faster responses when rendering friend/anonymous feeds.
+    """
     author = AuthorAnonymousSerializer(read_only=True)
 
     class Meta(QuestionBaseSerializer.Meta):
@@ -98,52 +162,50 @@ class QuestionAnonymousSerializer(QuestionBaseSerializer):
         fields = QuestionBaseSerializer.Meta.fields + ['author']
 
 
-class ResponseBaseSerializer(AdoorBaseSerializer):
+class QuestionDetailAllResponsesSerializer(QuestionResponsiveSerializer):
+    """
+    for question detail page w/ all responses (friend + anonymous)
+    """
+    response_set = serializers.SerializerMethodField()
 
-    class Meta(AdoorBaseSerializer.Meta):
-        model = Response
-        fields = AdoorBaseSerializer.Meta.fields + ['share_with_friends', 'share_anonymously']
+    def get_response_set(self, obj):
+        responses = obj.response_set.all().filter(author_id=self.context.get('request', None).user.id) | \
+            obj.response_set.all().filter(share_anonymously=True)
+        return ResponseResponsiveSerializer(responses, many=True, read_only=True,
+                                            context={'request': self.context.get('request', None)}).data
 
-
-class ResponseFriendSerializer(ResponseBaseSerializer):
-    author = AuthorFriendSerializer(read_only=True)
-    question_id = serializers.IntegerField()
-    question = QuestionBaseSerializer(read_only=True)
-    comments = CommentFriendSerializer(source='response_comments', many=True, read_only=True)
-
-    def get_question_id(self, obj):
-        return obj.question_id
-
-    class Meta(ResponseBaseSerializer.Meta):
-        model = Response
-        fields = ResponseBaseSerializer.Meta.fields + ['author', 'question_id', 'question', 'comments']
-
-
-class ResponseAnonymousSerializer(ResponseBaseSerializer):
-    author = AuthorAnonymousSerializer(read_only=True)
-    question_id = serializers.IntegerField()
-    question = QuestionBaseSerializer(read_only=True)
-    comments = CommentAnonymousSerializer(source='response_comments', many=True, read_only=True)
-
-    def get_question_id(self, obj):
-        return obj.question_id
-
-    class Meta(ResponseBaseSerializer.Meta):
-        model = Article
-        fields = ResponseBaseSerializer.Meta.fields + ['author', 'question_id', 'question', 'comments']
-
-
-class QuestionDetailPublicSerializer(QuestionPublicSerializer):
-    response_set = ResponseFriendSerializer(source='friend_response_set', many=True, read_only=True)
-
-    class Meta(QuestionPublicSerializer.Meta):
+    class Meta(QuestionResponsiveSerializer.Meta):
         model = Question
-        fields = QuestionPublicSerializer.Meta.fields + ['response_set']
+        fields = QuestionResponsiveSerializer.Meta.fields + ['response_set']
 
 
-class QuestionDetailAnonymousSerializer(QuestionAnonymousSerializer):
-    response_set = ResponseAnonymousSerializer(source='anonymous_response_set', many=True, read_only=True)
+class QuestionDetailFriendResponsesSerializer(QuestionResponsiveSerializer):
+    """
+    for question detail page w/ friend responses
+    """
+    friend_response_set = serializers.SerializerMethodField()
 
-    class Meta(QuestionAnonymousSerializer.Meta):
+    def get_friend_response_set(self, obj):
+        responses = obj.response_set.all().filter(author_id=self.context.get('request', None).user.id)
+        return ResponseFriendSerializer(responses, many=True, read_only=True,
+                                        context={'request': self.context.get('request', None)}).data
+
+    class Meta(QuestionResponsiveSerializer.Meta):
         model = Question
-        fields = QuestionAnonymousSerializer.Meta.fields + ['response_set']
+        fields = QuestionResponsiveSerializer.Meta.fields + ['friend_response_set']
+
+
+class QuestionDetailAnonymousResponsesSerializer(QuestionResponsiveSerializer):
+    """
+    for question detail page w/ anonymous responses
+    """
+    anonymous_response_set = serializers.SerializerMethodField()
+
+    def get_anonymous_response_set(self, obj):
+        responses = obj.response_set.all().filter(share_anonymously=True)
+        return ResponseAnonymousSerializer(responses, many=True, read_only=True,
+                                        context={'request': self.context.get('request', None)}).data
+
+    class Meta(QuestionResponsiveSerializer.Meta):
+        model = Question
+        fields = QuestionResponsiveSerializer.Meta.fields + ['anonymous_response_set']
