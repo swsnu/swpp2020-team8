@@ -166,6 +166,20 @@ export const createReply = (newReply, postKey) => async (dispatch) => {
   });
 };
 
+const getNewCommentsWithReply = (comments, reply) => {
+  const newComments = comments?.map((comment) => {
+    if (comment.id === reply.target_id) {
+      return {
+        ...comment,
+        replies: comment.replies ? [...comment.replies, reply] : [reply]
+      };
+    }
+    return comment;
+  });
+
+  return newComments;
+};
+
 export default function postReducer(state = initialState, action) {
   switch (action.type) {
     case GET_SELECTED_ARTICLE_REQUEST:
@@ -263,6 +277,43 @@ export default function postReducer(state = initialState, action) {
         friendPosts: newFriendPosts,
         selectedUserPosts: newUserPosts,
         selectedPost: newSelectedPost
+      };
+    }
+    case CREATE_REPLY_SUCCESS: {
+      const reply = action.result;
+      const targetPost = state.friendPosts.find((post) => {
+        const key = `${post.type}-${post.id}`;
+        return key === action.postKey;
+      });
+
+      let newComments = getNewCommentsWithReply(targetPost?.comments, reply);
+
+      console.log(newComments);
+
+      const newFriendPosts = state.friendPosts.map((post) => {
+        const key = `${post.type}-${post.id}`;
+        if (key === action.postKey) {
+          return { ...post, comments: newComments };
+        }
+        return post;
+      });
+
+      const selectedPostKey = `${state.selectedPost?.type}-${state.selectedPost?.id}`;
+      newComments = getNewCommentsWithReply(
+        state.selectedPost?.comments,
+        reply
+      );
+
+      console.log(selectedPostKey, action.postKey);
+      const newSelectedPost =
+        selectedPostKey === action.postKey
+          ? { ...state.selectedPost, comments: newComments }
+          : state.selectedPost;
+
+      return {
+        ...state,
+        selectedPost: newSelectedPost,
+        friendPosts: newFriendPosts
       };
     }
 
