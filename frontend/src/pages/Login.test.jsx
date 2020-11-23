@@ -99,6 +99,64 @@ describe('<Login /> unit test', () => {
     expect(jest.fn()).toBeCalledTimes(0);
   });
 
+  it('should handle login when enter key pressed on usernameInput', () => {
+    const wrapper = getWrapper();
+
+    const usernameInput = wrapper.find('#username-input').at(0);
+    const event = {
+      preventDefault() {},
+      target: { name: 'username', value: 'test' }
+    };
+    usernameInput.simulate('change', event);
+
+    const pwInput = wrapper.find('#password-input').at(0);
+    const event2 = {
+      preventDefault() {},
+      target: { name: 'password', value: 'test' }
+    };
+    pwInput.simulate('change', event2);
+    usernameInput.simulate('keyDown', { keyCode: 13 });
+    expect(jest.fn()).toBeCalledTimes(0);
+  });
+
+  it('should handle login when enter key pressed on pwInput', () => {
+    const wrapper = getWrapper();
+
+    const usernameInput = wrapper.find('#username-input').at(0);
+    const event = {
+      preventDefault() {},
+      target: { name: 'username', value: 'test' }
+    };
+    usernameInput.simulate('change', event);
+
+    const pwInput = wrapper.find('#password-input').at(0);
+    const event2 = {
+      preventDefault() {},
+      target: { name: 'password', value: 'test' }
+    };
+    pwInput.simulate('change', event2).simulate('keyDown', { keyCode: 13 });
+    expect(jest.fn()).toBeCalledTimes(0);
+  });
+
+  it('should handle login when enter key pressed on pwInput', () => {
+    const wrapper = getWrapper();
+
+    const usernameInput = wrapper.find('#username-input').at(0);
+    const event = {
+      preventDefault() {},
+      target: { name: 'username', value: 'test' }
+    };
+    usernameInput.simulate('change', event);
+
+    const pwInput = wrapper.find('#password-input').at(0);
+    const event2 = {
+      preventDefault() {},
+      target: { name: 'password', value: 'test' }
+    };
+    pwInput.simulate('change', event2).simulate('keyDown', { keyCode: 12 });
+    expect(jest.fn()).toBeCalledTimes(0);
+  });
+
   it('should handle signup', () => {
     const wrapper = getWrapper();
     const button = wrapper.find('#signup-button').at(0);
