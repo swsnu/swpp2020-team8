@@ -24,6 +24,8 @@ dill==0.3.3
 Django==3.1.2
 django-admin-honeypot==1.1.0
 django-celery-results==2.0.0
+django-common-helpers==0.9.2
+django-cron==0.5.1
 django-extensions==3.0.9
 django-mysql==3.9.0
 django-polymorphic==3.0.0
