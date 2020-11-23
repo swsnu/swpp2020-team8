@@ -29,6 +29,7 @@ export default function PostDetail() {
         <PostItem
           postObj={selectedPost}
           postKey={`${selectedPost.type}-${selectedPost.id}`}
+          isDetailPage
         />
       )}
     </div>
