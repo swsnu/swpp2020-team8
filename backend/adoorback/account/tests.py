@@ -44,17 +44,8 @@ class UserFriendshipCase(TestCase):
         user.delete()
         self.assertEqual(User.objects.all().filter(id=2).count(), 0)
         self.assertEqual(Friendship.objects.all().filter(user_id=2).count(), 0)
-
-    def test_on_delete_friend_cascade(self):
-        user = User.objects.get(id=2)
-        friend = User.objects.get(id=1)
-        self.assertEqual(user.friends.all().count(), 2)
-
-        friend.delete()
-        self.assertEqual(User.objects.all().filter(id=1).count(), 0)
         self.assertEqual(Friendship.objects.all().filter(
-            friend_id=1).count(), 0)
-        self.assertEqual(user.friends.all().count(), 1)
+            friend_id=2).count(), 0)
 
 
 class APITestCase(TestCase):
@@ -83,6 +74,7 @@ class UserAPITestCase(APITestCase):
                 reverse('user-friend-list', args=[current_user.id]))
             self.assertEqual(response.status_code, 200)
 
+        # other user (non-current_user) will get friend list of current_user with empty data
         with self.login(username=spy_user.username, password='password'):
             response = self.get(
                 reverse('user-friend-list', args=[current_user.id]))

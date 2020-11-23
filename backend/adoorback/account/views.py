@@ -110,7 +110,7 @@ class UserFriendList(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = []
-        friendship_set = self.request.user.friends.all().filter(
+        friendship_set = self.request.user.friends.filter(
             user_id=self.kwargs.get('pk'))
         for friendship in friendship_set:
             queryset.append(friendship.friend)

@@ -124,13 +124,6 @@ def set_seed(n):
     Friendship.objects.create(user=user_3, friend=user_1)
     Friendship.objects.create(user=user_1, friend=user_3)
 
-    # Seed FriendRequest
-    # for user in users:
-    #     recipient = random.choice(users.exclude(id=user.id))
-    #     FriendRequest.objects.create(actor=user, recipient=recipient)
-    # logging.info(
-    #     f"{FriendRequest.objects.all().count()} FriendRequest(s) created!") if DEBUG else None
-
 
 def fill_data():
     User = get_user_model()
@@ -157,6 +150,3 @@ def fill_data():
             if Like.objects.feed_likes_only().filter(user=user).count() == 0 else None
         Like.objects.create(user=user, target=random.choice(comments)) \
             if Like.objects.comment_likes_only().filter(user=user).count() == 0 else None
-        # Friendship.objects.create(
-        #     user=user, friend=random.choice(users.exclude(id=user.id))) \
-        #     if user.friend_set.all().count() == 0 else None
