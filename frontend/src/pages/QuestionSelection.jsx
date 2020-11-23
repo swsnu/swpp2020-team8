@@ -34,6 +34,10 @@ const CustomLink = styled.button`
   font-size: 16px;
 `;
 
+CommonButton.displayName = 'CommonButton';
+CustomLink.displayName = 'CustomLink';
+QuestionItem.displayName = 'QuestionItem';
+
 export default function QuestionSelection() {
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const history = useHistory();
