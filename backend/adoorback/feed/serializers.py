@@ -48,9 +48,11 @@ class PostAnonymousSerializer(serializers.ModelSerializer):
 
 
 class ArticleFriendSerializer(AdoorBaseSerializer):
-    author = serializers.HyperlinkedIdentityField(view_name='user-detail', read_only=True)
+    author = serializers.HyperlinkedIdentityField(
+        view_name='user-detail', read_only=True)
     author_detail = AuthorFriendSerializer(source='author', read_only=True)
-    comments = CommentFriendSerializer(source='article_comments', many=True, read_only=True)
+    comments = CommentFriendSerializer(
+        source='article_comments', many=True, read_only=True)
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Article
@@ -75,7 +77,8 @@ class QuestionBaseSerializer(AdoorBaseSerializer):
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Question
-        fields = AdoorBaseSerializer.Meta.fields + ['selected_date', 'is_admin_question']
+        fields = AdoorBaseSerializer.Meta.fields + \
+            ['selected_date', 'is_admin_question']
 
 
 class ResponseBaseSerializer(AdoorBaseSerializer):
@@ -89,13 +92,16 @@ class ResponseBaseSerializer(AdoorBaseSerializer):
 
 
 class ResponseFriendSerializer(ResponseBaseSerializer):
-    author = serializers.HyperlinkedIdentityField(view_name='user-detail', read_only=True)
+    author = serializers.HyperlinkedIdentityField(
+        view_name='user-detail', read_only=True)
     author_detail = AuthorFriendSerializer(source='author', read_only=True)
-    comments = CommentFriendSerializer(source='response_comments', many=True, read_only=True)
+    comments = CommentFriendSerializer(
+        source='response_comments', many=True, read_only=True)
 
     class Meta(ResponseBaseSerializer.Meta):
         model = Response
-        fields = ResponseBaseSerializer.Meta.fields + ['author', 'author_detail', 'comments']
+        fields = ResponseBaseSerializer.Meta.fields + \
+            ['author', 'author_detail', 'comments']
 
 
 class ResponseAnonymousSerializer(ResponseBaseSerializer):
@@ -108,7 +114,8 @@ class ResponseAnonymousSerializer(ResponseBaseSerializer):
 
 class ResponseResponsiveSerializer(ResponseBaseSerializer):
     author = serializers.SerializerMethodField(read_only=True)
-    author_detail = serializers.SerializerMethodField(source='author', read_only=True)
+    author_detail = serializers.SerializerMethodField(
+        source='author', read_only=True)
 
     def get_author_detail(self, obj):
         # TODO: need to modify after friendship implementation; are friends
@@ -123,7 +130,8 @@ class ResponseResponsiveSerializer(ResponseBaseSerializer):
 
     class Meta(ResponseBaseSerializer.Meta):
         model = Article
-        fields = ResponseBaseSerializer.Meta.fields + ['author', 'author_detail']
+        fields = ResponseBaseSerializer.Meta.fields + \
+            ['author', 'author_detail']
 
 
 class QuestionResponsiveSerializer(QuestionBaseSerializer):
@@ -131,7 +139,8 @@ class QuestionResponsiveSerializer(QuestionBaseSerializer):
     for questions in question feed (no responses, author profile responsive)
     """
     author = serializers.SerializerMethodField(read_only=True)
-    author_detail = serializers.SerializerMethodField(source='author', read_only=True)
+    author_detail = serializers.SerializerMethodField(
+        source='author', read_only=True)
 
     def get_author_detail(self, obj):
         # TODO: need to modify after friendship implementation; are friends
@@ -146,7 +155,8 @@ class QuestionResponsiveSerializer(QuestionBaseSerializer):
 
     class Meta(QuestionBaseSerializer.Meta):
         model = Question
-        fields = QuestionBaseSerializer.Meta.fields + ['author', 'author_detail']
+        fields = QuestionBaseSerializer.Meta.fields + \
+            ['author', 'author_detail']
 
 
 class QuestionFriendSerializer(QuestionBaseSerializer):
@@ -156,12 +166,14 @@ class QuestionFriendSerializer(QuestionBaseSerializer):
     function is redundant to `QuestionResponsiveSerializer`
     but allows for faster responses when rendering friend/anonymous feeds.
     """
-    author = serializers.HyperlinkedIdentityField(view_name='user-detail', read_only=True)
+    author = serializers.HyperlinkedIdentityField(
+        view_name='user-detail', read_only=True)
     author_detail = AuthorFriendSerializer(source='author', read_only=True)
 
     class Meta(QuestionBaseSerializer.Meta):
         model = Question
-        fields = QuestionBaseSerializer.Meta.fields + ['author', 'author_detail']
+        fields = QuestionBaseSerializer.Meta.fields + \
+            ['author', 'author_detail']
 
 
 class QuestionAnonymousSerializer(QuestionBaseSerializer):
@@ -202,7 +214,8 @@ class QuestionDetailFriendResponsesSerializer(QuestionResponsiveSerializer):
     response_set = serializers.SerializerMethodField()
 
     def get_response_set(self, obj):
-        responses = obj.response_set.all().filter(author_id=self.context.get('request', None).user.id)
+        responses = obj.response_set.all().filter(
+            author_id=self.context.get('request', None).user.id)
         return ResponseFriendSerializer(responses, many=True, read_only=True,
                                         context={'request': self.context.get('request', None)}).data
 
