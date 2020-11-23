@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -6,15 +7,20 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 import styled from 'styled-components';
 // import { useDispatch } from 'react-redux';
-// import Checkbox from '@material-ui/core/Checkbox';
+import Checkbox from '@material-ui/core/Checkbox';
 // import ListItemIcon from '@material-ui/core/ListItemIcon';
 // import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormGroup from '@material-ui/core/FormGroup';
+// import FormControl from '@material-ui/core/FormControl';
+// import FormGroup from '@material-ui/core/FormGroup';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
-// import FriendItem from './FriendItem';
+import List from '@material-ui/core/List';
+// import FriendItem from './friends/FriendItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import FaceIcon from '@material-ui/icons/Face';
+// import { Link } from 'react-router-dom';
+import { getFriendList } from '../modules/friend';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -64,8 +70,9 @@ const useStyles = makeStyles((theme) => ({
   friend: {
     fontSize: 14
   },
-  formControl: {
-    margin: theme.spacing(3)
+  username: {
+    fontSize: 14,
+    marginLeft: theme.spacing(1)
   }
 }));
 
@@ -81,40 +88,62 @@ const Question = styled.div`
   font-size: 15px;
 `;
 
-const FriendListWrapper = styled.div`
-  padding: 16px;
-  border: 1px solid whitesmoke;
-  padding-top: 0;
+const FriendItemWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  margin: ${(props) => (props.isWidget ? '8px 16px' : '8px 0')};
+  padding: 6px;
+  border: 1px solid #e7e7e7;
   border-radius: 4px;
-  background: whitesmoke;
 `;
 
-FriendListWrapper.displayName = 'FriendListWrapper';
+FriendItemWrapper.displayName = 'FriendItemWrapper';
 
-const QuestionSendModal = ({ questionObj, open, handleClose, friendList }) => {
+const QuestionSendFriendItem = ({ friendObj, isWidget = false }) => {
   const classes = useStyles();
-  // const dispatch = useDispatch();
-  // const friendList = useSelector((state) => state.friendReducer.friendList);
+  const { username } = friendObj;
+  const [checked, setChecked] = React.useState(false);
+  const handleChange = (event) => {
+    setChecked(event.target.checked);
+  };
 
-  // useEffect(() => {
-  //   dispatch(getFriendList());
-  // }, [dispatch]);
+  return (
+    <FriendItemWrapper isWidget={isWidget}>
+      <Checkbox
+        checked={checked}
+        onChange={handleChange}
+        inputProps={{ 'aria-label': 'primary checkbox' }}
+      />
+      <FaceIcon />
+      <ListItemText
+        classes={{ primary: classes.username }}
+        primary={username}
+      />
+    </FriendItemWrapper>
+  );
+};
 
-  // const friendItemList = friendList.map((friend) => {
-  //   return (
-  //       <Checkbox
-  //         key={friend.id}
-  //         checked={checked}
-  //         onChange={handleChange}
-  //         inputProps={{ 'aria-label': 'primary checkbox' }}
-  //       />
-  //       <FriendItem username={friend.username} />
-  //   );
-  // });
+const QuestionSendModal = ({ questionObj, open, handleClose }) => {
+  const classes = useStyles();
+  const dispatch = useDispatch();
+  const friendList = useSelector((state) => state.friendReducer.friendList);
 
-  const friendItemList = friendList;
+  useEffect(() => {
+    dispatch(getFriendList());
+  }, [dispatch]);
 
-  const onClickSendButton = () => {};
+  const friendItemList = friendList?.map((friend) => {
+    return (
+      <QuestionSendFriendItem key={friend.id} friendObj={friend} isWidget />
+    );
+  });
+
+  const onClickSendButton = () => {
+    // TODO: question send API Linking
+    handleClose();
+  };
 
   return (
     <Dialog fullWidth onClose={handleClose} maxWidth="sm" open={open}>
@@ -132,10 +161,10 @@ const QuestionSendModal = ({ questionObj, open, handleClose, friendList }) => {
         <Question>
           <h3>{questionObj.content}</h3>
         </Question>
-        <FormControl component="fieldset" className={classes.formControl}>
-          <FormGroup>{friendItemList}</FormGroup>
-          <FormHelperText>한 명 이상 선택해주세요!</FormHelperText>
-        </FormControl>
+        <List className={classes.list} aria-label="friend list">
+          {friendItemList}
+        </List>
+        <FormHelperText> 한 명 이상 선택해주세요 :)</FormHelperText>
         <SubmitButtonWrapper>
           <Button
             size="medium"
