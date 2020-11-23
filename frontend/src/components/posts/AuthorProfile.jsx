@@ -17,11 +17,17 @@ AnonIcon.displayName = 'AnonIcon';
 
 export default function AuthorProfile({ author, isComment = false }) {
   if (!author) return null;
-  const { id, username, color_hex: hex } = author;
+  const { id, username, profile_pic: picHex, color_hex: hex } = author;
   return (
     <AuthorProfileWrapper>
       {id ? (
-        <FaceIcon style={{ marginRight: '4px', width: isComment && '20px' }} />
+        <FaceIcon
+          style={{
+            color: picHex,
+            marginRight: '4px',
+            width: isComment && '20px'
+          }}
+        />
       ) : (
         <AnonIcon style={{ marginRight: '4px' }} hex={hex} />
       )}
