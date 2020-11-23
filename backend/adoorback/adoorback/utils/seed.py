@@ -7,17 +7,17 @@ from django.contrib.auth import get_user_model
 from faker import Faker
 
 from adoorback.utils.content_types import get_content_type
+from account.models import Friendship
 from feed.models import Article, Response, Question, Post
 from comment.models import Comment
 from like.models import Like
-
 
 DEBUG = False
 
 
 def set_seed(n):
     if DEBUG:
-        logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
+        logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
     User = get_user_model()
     faker = Faker()
@@ -98,14 +98,13 @@ def set_seed(n):
         if DEBUG else None
 
     # Seed Like
-    replies = Comment.objects.replies_only()
-    for _ in range(n):
+    for i in range(n):
         user = random.choice(users)
-        article = random.choice(articles)
-        question = random.choice(questions)
-        response = random.choice(responses)
-        comment = random.choice(comments)
-        reply = random.choice(replies)
+        article = Article.objects.get(id=i+1)
+        question = Question.objects.get(id=i+1)
+        response = Response.objects.get(id=i+1)
+        comment = Comment.objects.comments_only()[i]
+        reply = Comment.objects.replies_only()[i]
         Like.objects.create(user=user, target=article)
         Like.objects.create(user=user, target=question)
         Like.objects.create(user=user, target=response)
@@ -114,12 +113,24 @@ def set_seed(n):
     logging.info(
         f"{Like.objects.all().count()} Like(s) created!") if DEBUG else None
 
+    # Seed Friendship
+    user_1 = User.objects.get(id=1)
+    user_2 = User.objects.get(id=2)
+    user_3 = User.objects.get(id=3)
+    Friendship.objects.create(user=user_1, friend=user_2)
+    Friendship.objects.create(user=user_2, friend=user_1)
+    Friendship.objects.create(user=user_2, friend=user_3)
+    Friendship.objects.create(user=user_3, friend=user_2)
+    Friendship.objects.create(user=user_3, friend=user_1)
+    Friendship.objects.create(user=user_1, friend=user_3)
+
 
 def fill_data():
     User = get_user_model()
     faker = Faker()
 
     # Fill Empty Seed Data
+    users = User.objects.all()
     questions = Question.objects.all()
     articles = Article.objects.all()
     comments = Comment.objects.all()
