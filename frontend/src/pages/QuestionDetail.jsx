@@ -7,7 +7,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { withRouter } from 'react-router';
 import QuestionItem from '../components/posts/QuestionItem';
-import { getResponsesByQuestion } from '../modules/question';
+import {
+  getResponsesByQuestion,
+  getFriendResponsesByQuestion
+} from '../modules/question';
 import PostItem from '../components/posts/PostItem';
 
 const SwitchWrapper = styled.div`
@@ -42,11 +45,13 @@ const QuestionDetail = (props) => {
   );
 
   useEffect(() => {
-    dispatch(getResponsesByQuestion(viewAnonymousResponses, questionId));
+    dispatch(getFriendResponsesByQuestion(questionId));
   }, [dispatch, questionId]);
 
   const handleChangeViewAnonymousResponses = (event) => {
     setViewAnonymousResponses(event.target.checked);
+    if (event.target.checked) dispatch(getResponsesByQuestion(questionId));
+    else dispatch(getFriendResponsesByQuestion(questionId));
   };
 
   const responseList = responses.map((post) => (
