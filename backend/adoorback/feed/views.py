@@ -1,10 +1,13 @@
 import json
 
 from django.contrib.auth import get_user_model
-from django.http import JsonResponse, HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.utils import timezone
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework import status
+from rest_framework.response import Response as DRF_Response
+from rest_framework.decorators import api_view
 from celery.schedules import crontab
 from celery.task import periodic_task
 
@@ -113,50 +116,51 @@ class ResponseRequestList(generics.ListAPIView):
         responseRequests = current_user_sent_response_request_set.filter(question_id=question_id)
         return responseRequests
 
-
-def response_request(request, qid, rid):
+@api_view(["POST", "PATCH", "DELETE"])
+def response_request_detail(request, qid, rid):
     if not request.user.is_authenticated:
         return HttpResponse(status=401)
 
-    recipient = User.objects.get(id=rid)
-    question = Question.objects.get(id=qid)
+    try:
+        recipient = User.objects.get(id=rid)
+        question = Question.objects.get(id=qid)
+    except (User.DoesNotExist, Question.DoesNotExist):
+        return HttpResponse(status=404)
 
+    #TODO: 친구에게만 질문 보내기 가능
     if request.method == 'POST':
-        #TODO: 친구에게만 질문 보내기 가능
         new_response_request = ResponseRequest(actor=request.user, recipient=recipient, question=question)
         new_response_request.save()
-        return JsonResponse({'id': new_response_request.id,
-                              "actor_id": request.user.id,
-                              "recipient_id": recipient.id,
-                              "question_id": question.id,
-                              "responded": False}, status=201)
+        serializer = fs.ResponseRequestSerializer(new_response_request)
+        return DRF_Response(serializer.data, status=status.HTTP_201_CREATED)
+
     elif request.method == 'PATCH':
         try:
-            responseRequest = ResponseRequest.objects.get(question_id=qid, recipient_id=rid)
+            response_request = ResponseRequest.objects.get(question_id=qid, recipient_id=rid)
         except ResponseRequest.DoesNotExist:
             return HttpResponse(status=404)
-        if request.user.id == responseRequest.recipient.id:
+
+        if request.user.id == response_request.recipient.id:
             try:
                 new_responded = json.loads(request.body)['responded']
-                responseRequest.responded = new_responded
-                responseRequest.save()
-                return JsonResponse({'id': new_response_request.id,
-                              "actor_id": request.user.id,
-                              "recipient_id": recipient.id,
-                              "question_id": question.id,
-                              "responded": True}, status=200)
+                response_request.responded = new_responded
+                response_request.save()
+                serializer = fs.ResponseRequestSerializer(response_request)
+                return DRF_Response(serializer.data, status=status.HTTP_200_OK)
             except (KeyError, json.JSONDecodeError):
                 return HttpResponseBadRequest()
         else:
             return HttpResponse(status=403)
+
     elif request.method == 'DELETE':
         try:
-            responseRequest = ResponseRequest.objects.get(question_id=qid, recipient_id=rid)
+            response_request = ResponseRequest.objects.get(question_id=qid, recipient_id=rid)
         except ResponseRequest.DoesNotExist:
             return HttpResponse(status=404)
-        if request.user.id == responseRequest.actor.id:
-            responseRequest.delete()
-            return HttpResponse(status=200)
+
+        if request.user.id == response_request.actor.id:
+            response_request.delete()
+            return HttpResponse(status=204)
         else:
             return HttpResponse(status=403)
 
