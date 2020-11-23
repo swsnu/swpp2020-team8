@@ -29,14 +29,15 @@ export default function ShareSettings({ newPost, resetContent }) {
   const classes = useStyles();
   const location = useLocation();
   const [shareState, setShareState] = useState({
-    shareWithFriends: false,
-    shareAnonymously: true
+    shareWithFriends: true,
+    shareAnonymously: false
   });
 
   useEffect(() => {
-    if (location.pathname === '/friends') {
-      setShareState({ shareWithFriends: true, shareAnonymously: false });
+    if (location.pathname === '/anonymous') {
+      setShareState({ shareWithFriends: false, shareAnonymously: true });
     }
+    // setShareState({ shareWithFriends: false, shareAnonymously: true });
   }, [location]);
 
   const handleChange = (e) => {
@@ -51,8 +52,12 @@ export default function ShareSettings({ newPost, resetContent }) {
       ...newPost
     };
     dispatch(createPost(postObj));
-    setShareState({ shareWithFriends: true, shareAnonymously: false });
     resetContent();
+    if (location.pathname === '/anonymous') {
+      setShareState({ shareWithFriends: false, shareAnonymously: true });
+    } else {
+      setShareState({ shareWithFriends: true, shareAnonymously: false });
+    }
   };
 
   const controlShareWithFriends = (
@@ -98,6 +103,10 @@ export default function ShareSettings({ newPost, resetContent }) {
           variant="outlined"
           color="secondary"
           onClick={onClickSubmitButton}
+          disabled={
+            (!shareState.shareAnonymously && !shareState.shareWithFriends) ||
+            !newPost.content
+          }
         >
           게시
         </Button>
