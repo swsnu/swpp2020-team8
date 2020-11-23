@@ -19,8 +19,7 @@ export const ADD_TO_FRIEND_LIST = 'friend/ADD_TO_FRIEND_LIST';
 
 export const getFriendList = () => async (dispatch, getState) => {
   const userId = getState().userReducer.user?.id;
-  console.log(userId);
-  dispatch({ type: GET_FRIEND_LIST_REQUEST });
+  dispatch({ type: GET_FRIEND_LIST_REQUEST, userId });
   let result;
   try {
     // result = await axios.get(`user/${userId}/friends/`);

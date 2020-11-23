@@ -11,6 +11,7 @@ const CommentItemWrapper = styled.div`
   display: flex;
   align-items: center;
   padding: 8px 0;
+  font-size: 12px;
 `;
 CommentItemWrapper.displayName = 'CommentItem';
 
@@ -60,7 +61,7 @@ export default function CommentItem({ commentObj, isReply = false }) {
     <>
       <CommentItemWrapper>
         {isReply && <ReplyIcon />}
-        <AuthorProfile author={commentObj.author_detail} isComment />
+        <AuthorProfile author={commentObj.author?.profile} isComment />
         <CommentContent id="comment-content">
           {commentObj.content}
         </CommentContent>

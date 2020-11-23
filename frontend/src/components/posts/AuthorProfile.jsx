@@ -5,27 +5,30 @@ import FaceIcon from '@material-ui/icons/Face';
 const AuthorProfileWrapper = styled.div`
   display: flex;
   align-items: center;
+  font-weight: 500;
 `;
-const ProfileImage = styled.img`
+const AnonIcon = styled.div`
   border-radius: 50%;
-  margin-right: 8px;
-  width: ${(props) => (props.isComment ? '20px' : '30px')};
+  width: 26px;
+  height: 26px;
+  background: ${(props) => (props.hex ? props.hex : '#f12c56')};
 `;
+AnonIcon.displayName = 'AnonIcon';
 
 export default function AuthorProfile({ author, isComment = false }) {
+  if (!author) return null;
+  const { id, username, color_hex: hex } = author;
   return (
     <AuthorProfileWrapper>
-      {author.profile_pic ? (
-        <ProfileImage
-          id="profile-image"
-          src={author.profile_pic}
-          isComment={isComment}
-        />
+      {id ? (
+        <FaceIcon style={{ marginRight: '4px', width: isComment && '20px' }} />
       ) : (
-        <FaceIcon style={{ marginRight: '4px' }} />
+        <AnonIcon style={{ marginRight: '4px' }} hex={hex} />
       )}
 
-      <div style={{ fontSize: '14px' }}>{author.username}</div>
+      {username && (
+        <div style={{ fontSize: isComment ? '12px' : '14px' }}>{username}</div>
+      )}
     </AuthorProfileWrapper>
   );
 }

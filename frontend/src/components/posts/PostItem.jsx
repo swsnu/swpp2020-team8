@@ -34,7 +34,8 @@ const CommentWrapper = styled.div``;
 export default function PostItem({ postObj }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.userReducer.user);
-  const isAuthor = user && user.id === postObj?.author_detail.id;
+  const isAuthor =
+    postObj?.author && user && user.id === postObj.author.profile.id;
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
 
@@ -73,7 +74,7 @@ export default function PostItem({ postObj }) {
   return (
     <PostItemWrapper>
       <PostItemHeaderWrapper>
-        <AuthorProfile author={postObj.author_detail} />
+        <AuthorProfile author={postObj && postObj.author?.profile} />
         {isAuthor && (
           <PostAuthorButtons
             onClickEdit={handleEdit}
@@ -87,11 +88,11 @@ export default function PostItem({ postObj }) {
       <PostItemFooterWrapper>
         {liked ? (
           <IconButton color="primary" size="small" onClick={toggleLike}>
-            <FavoriteIcon color="primary" />
+            <FavoriteIcon className="unlike" color="primary" />
           </IconButton>
         ) : (
           <IconButton color="primary" size="small" onClick={toggleLike}>
-            <FavoriteBorderIcon color="primary" />
+            <FavoriteBorderIcon className="like" color="primary" />
           </IconButton>
         )}
         {isAuthor && (
