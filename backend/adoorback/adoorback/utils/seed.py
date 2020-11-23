@@ -32,7 +32,11 @@ def set_seed(n):
     # Seed Superuser
     if User.objects.count() == 2:
         User.objects.create_superuser(
-            username='adoor', email='adoor.team@gmail.com', password='adoor2020:)')
+            username='adoor', email='adoor.team@gmail.com', password='adoor2020:)',
+            question_history=",".join(map(str, faker.random_elements(
+                elements=range(1, 1501),
+                length=random.randint(3, 10),
+                unique=True))))
     admin = User.objects.get(username='adoor')
     logging.info("Superuser created!") if DEBUG else None
 
