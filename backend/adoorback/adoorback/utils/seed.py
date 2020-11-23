@@ -7,12 +7,10 @@ from django.contrib.auth import get_user_model
 from faker import Faker
 
 from adoorback.utils.content_types import get_content_type
+from account.models import Friendship
 from feed.models import Article, Response, Question, Post
 from comment.models import Comment
 from like.models import Like
-from friendship.models import Friendship
-from friendrequest.models import FriendRequest
-
 
 DEBUG = False
 
@@ -116,18 +114,22 @@ def set_seed(n):
         f"{Like.objects.all().count()} Like(s) created!") if DEBUG else None
 
     # Seed Friendship
-    for user in users:
-        friend = random.choice(users.exclude(id=user.id))
-        Friendship.objects.create(user=user, friend=friend)
-    logging.info(
-        f"{Friendship.objects.all().count()} Friendship(s) created!") if DEBUG else None
+    user_1 = User.objects.get(id=1)
+    user_2 = User.objects.get(id=2)
+    user_3 = User.objects.get(id=3)
+    Friendship.objects.create(user=user_1, friend=user_2)
+    Friendship.objects.create(user=user_2, friend=user_1)
+    Friendship.objects.create(user=user_2, friend=user_3)
+    Friendship.objects.create(user=user_3, friend=user_2)
+    Friendship.objects.create(user=user_3, friend=user_1)
+    Friendship.objects.create(user=user_1, friend=user_3)
 
     # Seed FriendRequest
-    for user in users:
-        recipient = random.choice(users.exclude(id=user.id))
-        FriendRequest.objects.create(actor=user, recipient=recipient)
-    logging.info(
-        f"{FriendRequest.objects.all().count()} FriendRequest(s) created!") if DEBUG else None
+    # for user in users:
+    #     recipient = random.choice(users.exclude(id=user.id))
+    #     FriendRequest.objects.create(actor=user, recipient=recipient)
+    # logging.info(
+    #     f"{FriendRequest.objects.all().count()} FriendRequest(s) created!") if DEBUG else None
 
 
 def fill_data():
@@ -155,9 +157,6 @@ def fill_data():
             if Like.objects.feed_likes_only().filter(user=user).count() == 0 else None
         Like.objects.create(user=user, target=random.choice(comments)) \
             if Like.objects.comment_likes_only().filter(user=user).count() == 0 else None
-        Friendship.objects.create(
-            user=user, friend=random.choice(users.exclude(id=user.id))) \
-            if user.friend_set.all().count() == 0 else None
-        FriendRequest.objects.create(
-            actor=user, recipient=random.choice(users.exclude(id=user.id))) \
-            if user.sent_friend_request_set.all().count() == 0 else None
+        # Friendship.objects.create(
+        #     user=user, friend=random.choice(users.exclude(id=user.id))) \
+        #     if user.friend_set.all().count() == 0 else None

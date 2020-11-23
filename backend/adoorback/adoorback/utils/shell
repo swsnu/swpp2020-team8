@@ -1,13 +1,13 @@
-python3 manage.py shell
+python manage.py shell
 
 from faker import Faker
 import random
 
 from django.contrib.auth import get_user_model
+from account.models import Friendship
 from feed.models import Question, Article, Response, Post
 from comment.models import Comment
 from like.models import Like
-from friendship.models import Friendship
 from friendrequest.models import FriendRequest
 from django.contrib.contenttypes.models import ContentType
 from adoorback.utils.seed import set_seed
@@ -24,8 +24,7 @@ question = Question.objects.all().last()
 comment = Comment.objects.all().last()
 like = Like.objects.all().last()
 post = Post.objects.all().last()
-friendship = Friendship.objects.all().last()
-friend_request = FriendRequest.objects.all().last()
+friendship = Friendship.objects.last()
 
 admin_question = Question.objects.admin_questions_only().last()
 custom_question = Question.objects.custom_questions_only().last()
