@@ -1,3 +1,5 @@
+import json
+
 from test_plus.test import TestCase
 from rest_framework.test import APIClient
 
@@ -312,3 +314,99 @@ class DailyQuestionTestCase(APITestCase):
             self.assertTrue(response.data['results'][1]['selected_date'])
             self.assertGreater(response.data['results'][1]['id'],
                                response.data['results'][2]['id'])  # check order_by
+
+class ResponseRequestAPITestCase(APITestCase):
+
+    def setUp(self):
+        set_seed(N)
+
+    def test_response_request_list(self):
+        current_user = self.make_user(username='current_user')
+        friend_user_1 = self.make_user(username='friend_user_1')
+        friend_user_2 = self.make_user(username='friend_user_2')
+
+        question_1 = Question.objects.create(author_id=current_user.id,
+                                            content="test_question", is_admin_question=False)
+        question_2 = Question.objects.create(author_id=current_user.id,
+                                            content="test_question", is_admin_question=False)
+        ResponseRequest.objects.create(actor=current_user, recipient=friend_user_1, question=question_1)
+        ResponseRequest.objects.create(actor=current_user, recipient=friend_user_2, question=question_2)
+        ResponseRequest.objects.create(actor=friend_user_1, recipient=friend_user_2, question=question_1)
+
+        with self.login(username=current_user.username, password='password'):
+            response = self.get(self.reverse('response-request-list', pk=question_1.id))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['count'], 1)
+
+    def test_response_request_detail(self):
+        current_user = self.make_user(username='current_user')
+        friend_user = self.make_user(username='friend_user')
+        user_adoor = User.objects.get(username='adoor')
+
+        question = Question.objects.create(author_id=current_user.id, content="test_question", is_admin_question=False)
+        ResponseRequest.objects.create(actor=friend_user, recipient=current_user, question=question)
+        adoor_received_response_request = ResponseRequest.objects.create(actor=current_user,
+                                                                         recipient=user_adoor, question=question)
+
+        # not authenticated
+        response = self.post(self.reverse('response-request-detail', qid=question.id, rid=friend_user.id))
+        self.assertEqual(response.status_code, 401)
+
+        # POST - non-exist question and user
+        with self.login(username=current_user.username, password='password'):
+            response = self.post(self.reverse('response-request-detail', qid=question.id+1, rid=friend_user.id+1))
+            self.assertEqual(response.status_code, 404)
+
+        # POST
+        with self.login(username=current_user.username, password='password'):
+            response = self.post(self.reverse('response-request-detail', qid=question.id, rid=friend_user.id))
+            self.assertEqual(response.status_code, 201)
+
+            # PATCH - other user
+            data = {'responded': 'true'}
+            response = self.patch(self.reverse('response-request-detail', qid=question.id,
+                                                rid=friend_user.id), data=data)
+            self.assertEqual(response.status_code, 403)
+
+        # PATCH
+        login_data = {"username": 'adoor', "password": 'adoor2020:)'}
+        response = self.client.post('/api/user/login/', json.dumps(login_data), content_type='application/json')
+        self.assertEqual(response.status_code, 204)
+
+        qid = adoor_received_response_request.question.id
+        rid = user_adoor.id
+        url = f'/api/feed/questions/{qid}/request-response/{rid}/'
+        response = self.client.patch(url, json.dumps({'responded': True}), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+        # PATCH - JSON Decode Error
+        response = self.client.patch(url, json.dumps({'test': True}), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+
+        # PATCH - non-exist question 404 error
+        question_last_id = Question.objects.last().id
+        non_exist_url = f'/api/feed/questions/{question_last_id+1}/request-response/{rid}/'
+        response = self.client.patch(non_exist_url, json.dumps({'responded': True}), content_type='application/json')
+        self.assertEqual(response.status_code, 404)
+
+        # DELETE - actor
+        with self.login(username=current_user.username, password='password'):
+            response = self.delete(self.reverse('response-request-detail',
+                                                qid=question.id, rid=friend_user.id))
+            self.assertEqual(response.status_code, 204)
+
+        # DELETE - other user
+        with self.login(username=friend_user.username, password='password'):
+            response = self.delete(self.reverse('response-request-detail', qid=qid, rid=rid))
+            self.assertEqual(response.status_code, 403)
+
+        # DELETE - non-exist question 404 error
+        with self.login(username=current_user.username, password='password'):
+            response = self.delete(self.reverse('response-request-detail',
+                                                qid=question_last_id+1, rid=friend_user.id+1))
+            self.assertEqual(response.status_code, 404)
+
+        # GET - not allowed request
+        with self.login(username=current_user.username, password='password'):
+            response = self.get(self.reverse('response-request-detail', qid=qid, rid=rid))
+            self.assertEqual(response.status_code, 405)
