@@ -145,7 +145,7 @@ export const createComment = (newComment) => async (dispatch) => {
   });
 };
 
-export const createReply = (newReply) => async (dispatch) => {
+export const createReply = (newReply, postKey) => async (dispatch) => {
   dispatch({
     type: CREATE_REPLY_REQUEST
   });
@@ -161,7 +161,8 @@ export const createReply = (newReply) => async (dispatch) => {
   }
   dispatch({
     type: CREATE_REPLY_SUCCESS,
-    result: result.data
+    result: result.data,
+    postKey
   });
 };
 

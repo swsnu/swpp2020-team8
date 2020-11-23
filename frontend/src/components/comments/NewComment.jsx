@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Button from '@material-ui/core/Button';
+import { Checkbox, Button } from '@material-ui/core';
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
 
 const NewCommentWrapper = styled.div`
@@ -18,12 +18,29 @@ const NewCommentInput = styled.input`
   border-radius: 4px;
 `;
 
-export default function NewComment({ isReply = false, onSubmit }) {
+const PrivateWrapper = styled.div`
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  margin-left: 3px;
+`;
+
+export default function NewComment({
+  isReply = false,
+  onSubmit,
+  forcePrivate = false
+}) {
   const [content, setContent] = useState('');
+  const [isPrivate, setIsPrivate] = useState(forcePrivate);
   const placeholder = isReply ? '답글을 입력하세요.' : '댓글을 입력하세요.';
 
   const handleContentChange = (e) => {
     setContent(e.target.value);
+  };
+
+  const togglePrivate = () => {
+    if (forcePrivate) return;
+    setIsPrivate((prev) => !prev);
   };
 
   const handleEnter = (e) => {
@@ -36,7 +53,7 @@ export default function NewComment({ isReply = false, onSubmit }) {
 
   const handleSubmit = () => {
     if (!content) return;
-    onSubmit(content);
+    onSubmit(content, isPrivate);
     setContent('');
   };
 
@@ -50,10 +67,20 @@ export default function NewComment({ isReply = false, onSubmit }) {
         onKeyDown={handleEnter}
         value={content}
       />
+      <PrivateWrapper>
+        <Checkbox
+          id="check-private"
+          checked={isPrivate}
+          onChange={togglePrivate}
+          size="small"
+          style={{ padding: 0 }}
+        />
+        비밀 댓글
+      </PrivateWrapper>
       <Button
         onClick={handleSubmit}
         id="submit-button"
-        style={{ padding: '4px' }}
+        style={{ padding: '4px', minWidth: '50px', marginLeft: '3px' }}
         color="secondary"
       >
         작성

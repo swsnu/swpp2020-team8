@@ -35,11 +35,12 @@ const ReplyIcon = styled(SubdirectoryArrowRightIcon)`
   color: #777;
 `;
 
-export default function CommentItem({ commentObj, isReply = false }) {
+export default function CommentItem({ postKey, commentObj, isReply = false }) {
   const [isReplyInputOpen, setIsReplyInputOpen] = useState(false);
   const dispatch = useDispatch();
   const replyItems = commentObj?.replies?.map((reply) => (
     <CommentItem
+      postKey={postKey}
       className="reply-item"
       key={reply.id}
       isReply
@@ -47,13 +48,14 @@ export default function CommentItem({ commentObj, isReply = false }) {
     />
   ));
 
-  const handleReplySubmit = (content) => {
+  const handleReplySubmit = (content, isPrivate) => {
     const newReplyObj = {
       target_type: 'Comment',
       target_id: commentObj.id,
+      is_private: isPrivate,
       content
     };
-    dispatch(createReply(newReplyObj));
+    dispatch(createReply(newReplyObj, postKey));
   };
 
   const toggleReplyInputOpen = () => setIsReplyInputOpen((prev) => !prev);
@@ -61,21 +63,25 @@ export default function CommentItem({ commentObj, isReply = false }) {
     <>
       <CommentItemWrapper>
         {isReply && <ReplyIcon />}
-        <AuthorProfile author={commentObj.author?.profile} isComment />
+        <AuthorProfile author={commentObj.author_detail} isComment />
         <CommentContent id="comment-content">
           {commentObj.content}
         </CommentContent>
-        {!isReply && (
-          <ReplyWrapper onClick={toggleReplyInputOpen}>답글</ReplyWrapper>
-        )}
         {commentObj.is_private && (
           <LockIcon style={{ fontSize: '15px', color: '#999' }} />
+        )}
+        {!isReply && (
+          <ReplyWrapper onClick={toggleReplyInputOpen}>답글</ReplyWrapper>
         )}
       </CommentItemWrapper>
       <div>{replyItems}</div>
       <div>
         {isReplyInputOpen && (
-          <NewComment isReply onSubmit={handleReplySubmit} />
+          <NewComment
+            isReply
+            onSubmit={handleReplySubmit}
+            forcePrivate={commentObj.is_private}
+          />
         )}
       </div>
     </>

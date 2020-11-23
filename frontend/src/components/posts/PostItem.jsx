@@ -31,11 +31,11 @@ const ContentWrapper = styled.div`
 
 const CommentWrapper = styled.div``;
 
-export default function PostItem({ postObj }) {
+export default function PostItem({ postObj, postKey }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.userReducer.user);
-  const isAuthor =
-    postObj?.author && user && user.id === postObj.author.profile.id;
+  const isAuthor = postObj?.author && user?.id === postObj.author_detail?.id;
+  const isAnon = postObj?.author && !postObj?.author_detail?.id;
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
 
@@ -48,14 +48,23 @@ export default function PostItem({ postObj }) {
   }, [postObj]);
 
   const commentList = postObj?.comments?.map((comment) => {
-    return <CommentItem key={comment.id} commentObj={comment} />;
+    if (
+      comment.is_private &&
+      !isAuthor &&
+      comment.author_detail?.id !== user.id
+    )
+      return null;
+    return (
+      <CommentItem postKey={postKey} key={comment.id} commentObj={comment} />
+    );
   });
 
-  const handleSubmit = (content) => {
+  const handleSubmit = (content, isPrivate) => {
     const newCommentObj = {
       target_type: postObj.type,
       target_id: postObj.id,
-      content
+      content,
+      is_private: isPrivate
     };
     dispatch(createComment(newCommentObj));
   };
@@ -74,7 +83,7 @@ export default function PostItem({ postObj }) {
   return (
     <PostItemWrapper>
       <PostItemHeaderWrapper>
-        <AuthorProfile author={postObj && postObj.author?.profile} />
+        <AuthorProfile author={postObj && postObj.author_detail} />
         {isAuthor && (
           <PostAuthorButtons
             onClickEdit={handleEdit}
@@ -101,8 +110,12 @@ export default function PostItem({ postObj }) {
           </div>
         )}
       </PostItemFooterWrapper>
-      <NewComment onSubmit={handleSubmit} />
-      <CommentWrapper>{commentList}</CommentWrapper>
+      {!isAnon && (
+        <>
+          <NewComment onSubmit={handleSubmit} />
+          <CommentWrapper>{commentList}</CommentWrapper>
+        </>
+      )}
     </PostItemWrapper>
   );
 }
