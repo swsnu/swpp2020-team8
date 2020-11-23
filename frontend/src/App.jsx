@@ -30,21 +30,18 @@ const theme = createMuiTheme({
 
 const App = () => {
   const user = useSelector((state) => state.userReducer.user);
+  const selectQuestion = useSelector(
+    (state) => state.userReducer.selectQuestion
+  );
   const signUpRedirectPath = user?.question_history
     ? '/friends'
     : 'select-questions';
-  // let signedIn = user !== null;
-
-  // useEffect(() => {
-  //   if (user == null) signedIn = false;
-  //   else signedIn = true;
-  // }, [user]);
 
   return (
     <MuiThemeProvider theme={theme}>
       <GlobalStyle />
       <Header />
-      {user == null ? (
+      {user === null || (!selectQuestion && user?.question_history === null) ? (
         <Switch>
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={SignUp} />

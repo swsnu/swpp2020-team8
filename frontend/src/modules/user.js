@@ -18,54 +18,50 @@ export const REMOVE_ERROR = 'user/REMOVE_ERROR';
 
 export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
 
+export const SKIP_SELECT_QUESTIONS = 'user/SKIP_SELECT_QUESTIONS';
+
 const initialState = {
   loginError: false,
   signUpError: {},
-  user: null
+  user: null,
+  selectQuestion: true
+};
+
+export const skipSelectQuestions = () => {
+  return (dispatch) => {
+    dispatch({ type: SKIP_SELECT_QUESTIONS });
+  };
 };
 
 export const requestSignUp = (signUpInfo) => {
+  let res;
   return async (dispatch) => {
     dispatch({ type: SIGN_UP_REQUEST });
     try {
-      const { data } = await axios.post('user/signup/', signUpInfo);
-      if (data.id) {
-        dispatch({
-          type: SIGN_UP_SUCCESS,
-          user: data
-        });
-        dispatch(requestLogin(signUpInfo));
-      } else {
-        dispatch({
-          type: SIGN_UP_FAILURE,
-          error: data
-        });
-      }
+      res = await axios.post('user/signup/', signUpInfo);
     } catch (error) {
       dispatch({
         type: SIGN_UP_FAILURE,
         error: error.response?.data
       });
     }
+    dispatch({
+      type: SIGN_UP_SUCCESS,
+      user: res.data
+    });
+    dispatch(requestLogin(signUpInfo));
   };
 };
 
 export const postSelectedQuestions = (selectedQuestions, userId) => {
   return async (dispatch) => {
-    await axios.patch(`user/${userId}/info/`, {
+    await axios.patch(`user/${userId}/`, {
       question_history: JSON.stringify(selectedQuestions)
     });
     return dispatch({
       type: UPDATE_QUESTION_SELECT,
       selectedQuestions
     });
-  };
-};
-
-export const signUp = (signUpInfo) => {
-  return {
-    type: SIGN_UP_SUCCESS,
-    signUpInfo
   };
 };
 
@@ -161,7 +157,8 @@ export default function userReducer(state = initialState, action) {
       return {
         ...state,
         user: null,
-        loginError: false
+        loginError: false,
+        selectQuestion: true
       };
     case REMOVE_ERROR:
       return {
@@ -172,21 +169,28 @@ export default function userReducer(state = initialState, action) {
     case SIGN_UP_SUCCESS:
       return {
         ...state,
-        signUpError: false
+        signUpError: false,
+        selectQuestion: false
       };
     case SIGN_UP_FAILURE:
       return {
         ...state,
         signUpError: action.error
       };
+    case SKIP_SELECT_QUESTIONS:
+      return {
+        ...state,
+        selectQuestion: true
+      };
     case UPDATE_QUESTION_SELECT: {
       const newUser = {
         ...state.user,
-        questionHistory: action.selectedQuestions
+        question_history: action.selectedQuestions
       };
       return {
         ...state,
-        user: newUser
+        user: newUser,
+        selectQuestion: true
       };
     }
     default:
