@@ -34,22 +34,28 @@ export const skipSelectQuestions = () => {
 };
 
 export const requestSignUp = (signUpInfo) => {
-  let res;
   return async (dispatch) => {
     dispatch({ type: SIGN_UP_REQUEST });
     try {
-      res = await axios.post('user/signup/', signUpInfo);
+      const { data } = await axios.post('user/signup/', signUpInfo);
+      if (data.id) {
+        dispatch({
+          type: SIGN_UP_SUCCESS,
+          user: data
+        });
+        dispatch(requestLogin(signUpInfo));
+      } else {
+        dispatch({
+          type: SIGN_UP_FAILURE,
+          error: data
+        });
+      }
     } catch (error) {
       dispatch({
         type: SIGN_UP_FAILURE,
         error: error.response?.data
       });
     }
-    dispatch({
-      type: SIGN_UP_SUCCESS,
-      user: res.data
-    });
-    dispatch(requestLogin(signUpInfo));
   };
 };
 
