@@ -7,10 +7,10 @@ from django.contrib.auth import get_user_model
 from faker import Faker
 
 from adoorback.utils.content_types import get_content_type
+from account.models import Friendship
 from feed.models import Article, Response, Question, Post
 from comment.models import Comment
 from like.models import Like
-
 
 DEBUG = False
 
@@ -120,12 +120,24 @@ def set_seed(n):
     logging.info(
         f"{Like.objects.count()} Like(s) created!") if DEBUG else None
 
+    # Seed Friendship
+    user_1 = User.objects.get(id=1)
+    user_2 = User.objects.get(id=2)
+    user_3 = User.objects.get(id=3)
+    Friendship.objects.create(user=user_1, friend=user_2)
+    Friendship.objects.create(user=user_2, friend=user_1)
+    Friendship.objects.create(user=user_2, friend=user_3)
+    Friendship.objects.create(user=user_3, friend=user_2)
+    Friendship.objects.create(user=user_3, friend=user_1)
+    Friendship.objects.create(user=user_1, friend=user_3)
+
 
 def fill_data():
     User = get_user_model()
     faker = Faker()
 
     # Fill Empty Seed Data
+    users = User.objects.all()
     questions = Question.objects.all()
     articles = Article.objects.all()
     comments = Comment.objects.all()
