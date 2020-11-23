@@ -5,7 +5,7 @@ import random
 
 from django.contrib.auth import get_user_model
 from account.models import Friendship
-from feed.models import Question, Article, Response, Post
+from feed.models import Question, Article, Response, Post, ResponseRequest
 from comment.models import Comment
 from like.models import Like
 from django.contrib.contenttypes.models import ContentType
