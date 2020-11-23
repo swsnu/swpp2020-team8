@@ -1,8 +1,5 @@
 python manage.py shell
 
-from faker import Faker
-import random
-
 from django.contrib.auth import get_user_model
 from feed.models import Question, Article, Response, Post
 from comment.models import Comment

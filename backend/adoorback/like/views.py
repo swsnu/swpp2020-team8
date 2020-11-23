@@ -12,7 +12,7 @@ class LikeList(generics.ListCreateAPIView):
     """
     List all likes, or create a new like.
     """
-    queryset = Like.objects.all().order_by('-id')
+    queryset = Like.objects.order_by('-id')
     serializer_class = LikeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
