@@ -1,6 +1,7 @@
 python manage.py shell
 
 from django.contrib.auth import get_user_model
+from account.models import Friendship
 from feed.models import Question, Article, Response, Post
 from comment.models import Comment
 from like.models import Like
@@ -13,12 +14,13 @@ set_seed(100)
 
 user = User.objects.last()
 
-article = Article.objects.last()
-response = Response.objects.last()
-question = Question.objects.last()
-comment = Comment.objects.last()
-like = Like.objects.last()
-post = Post.objects.last()
+article = Article.objects.all().last()
+response = Response.objects.all().last()
+question = Question.objects.all().last()
+comment = Comment.objects.all().last()
+like = Like.objects.all().last()
+post = Post.objects.all().last()
+friendship = Friendship.objects.last()
 
 admin_question = Question.objects.admin_questions_only().last()
 custom_question = Question.objects.custom_questions_only().last()
