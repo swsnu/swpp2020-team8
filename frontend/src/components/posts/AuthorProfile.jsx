@@ -25,7 +25,8 @@ export default function AuthorProfile({ author, isComment = false }) {
           style={{
             color: picHex,
             marginRight: '4px',
-            width: isComment && '20px'
+            width: isComment && '20px',
+            opacity: 0.8
           }}
         />
       ) : (

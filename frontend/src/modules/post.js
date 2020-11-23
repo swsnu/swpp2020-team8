@@ -42,6 +42,10 @@ export const CREATE_REPLY_REQUEST = 'post/CREATE_REPLY_REQUEST';
 export const CREATE_REPLY_SUCCESS = 'post/CREATE_REPLY_SUCCESS';
 export const CREATE_REPLY_FAILURE = 'post/CREATE_REPLY_FAILURE';
 
+export const DELETE_COMMENT_REQUEST = 'post/DELETE_COMMENT_REQUEST';
+export const DELETE_COMMENT_SUCCESS = 'post/DELETE_COMMENT_SUCCESS';
+export const DELETE_COMMENT_FAILURE = 'post/DELETE_COMMENT_FAILURE';
+
 const initialState = {
   anonymousPosts: [],
   friendPosts: [],
@@ -162,6 +166,29 @@ export const createReply = (newReply, postKey) => async (dispatch) => {
   dispatch({
     type: CREATE_REPLY_SUCCESS,
     result: result.data,
+    postKey
+  });
+};
+
+export const deleteComment = (commentId, postKey, isReply) => async (
+  dispatch
+) => {
+  dispatch({
+    type: DELETE_COMMENT_REQUEST
+  });
+
+  try {
+    await axios.delete(`comments/${commentId}`);
+  } catch (error) {
+    dispatch({
+      type: DELETE_COMMENT_FAILURE,
+      error
+    });
+  }
+  dispatch({
+    type: DELETE_COMMENT_SUCCESS,
+    commentId,
+    isReply,
     postKey
   });
 };
@@ -288,8 +315,6 @@ export default function postReducer(state = initialState, action) {
 
       let newComments = getNewCommentsWithReply(targetPost?.comments, reply);
 
-      console.log(newComments);
-
       const newFriendPosts = state.friendPosts.map((post) => {
         const key = `${post.type}-${post.id}`;
         if (key === action.postKey) {
@@ -304,7 +329,6 @@ export default function postReducer(state = initialState, action) {
         reply
       );
 
-      console.log(selectedPostKey, action.postKey);
       const newSelectedPost =
         selectedPostKey === action.postKey
           ? { ...state.selectedPost, comments: newComments }
@@ -314,6 +338,52 @@ export default function postReducer(state = initialState, action) {
         ...state,
         selectedPost: newSelectedPost,
         friendPosts: newFriendPosts
+      };
+    }
+
+    case DELETE_COMMENT_SUCCESS: {
+      const targetPost = state.friendPosts.find((post) => {
+        const key = `${post.type}-${post.id}`;
+        return key === action.postKey;
+      });
+
+      const getCommentsAfterDelete = (comments) => {
+        return comments
+          ?.filter((comment) => comment.id !== action.commentId)
+          .map((comment) => {
+            const newReplies = comment.replies?.filter(
+              (item) => item.id !== action.commentId
+            );
+            return {
+              ...comment,
+              replies: newReplies
+            };
+          });
+      };
+      const newComments = getCommentsAfterDelete(targetPost?.comments);
+
+      const newFriendPosts = state.friendPosts.map((post) => {
+        const key = `${post.type}-${post.id}`;
+        if (key === action.postKey) {
+          return { ...post, comments: newComments };
+        }
+        return post;
+      });
+
+      const selectedPostKey = `${state.selectedPost?.type}-${state.selectedPost?.id}`;
+
+      const newSelectedPost =
+        selectedPostKey === action.postKey
+          ? {
+              ...state.selectedPost,
+              comments: getCommentsAfterDelete(state.selectedPost?.comments)
+            }
+          : state.selectedPost;
+
+      return {
+        ...state,
+        friendPosts: newFriendPosts,
+        selectedPost: newSelectedPost
       };
     }
 

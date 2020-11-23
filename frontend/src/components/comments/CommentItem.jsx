@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import LockIcon from '@material-ui/icons/Lock';
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import AuthorProfile from '../posts/AuthorProfile';
 import NewComment from './NewComment';
-import { createReply } from '../../modules/post';
+import { createReply, deleteComment } from '../../modules/post';
 
 const CommentItemWrapper = styled.div`
   display: flex;
@@ -35,18 +36,31 @@ const ReplyIcon = styled(SubdirectoryArrowRightIcon)`
   color: #777;
 `;
 
-export default function CommentItem({ postKey, commentObj, isReply = false }) {
+export default function CommentItem({
+  postKey,
+  commentObj,
+  isReply = false,
+  isAuthor = false
+}) {
+  const user = useSelector((state) => state.userReducer.user);
+  const isCommentAuthor = user?.id === commentObj?.author_detail?.id;
   const [isReplyInputOpen, setIsReplyInputOpen] = useState(false);
   const dispatch = useDispatch();
-  const replyItems = commentObj?.replies?.map((reply) => (
-    <CommentItem
-      postKey={postKey}
-      className="reply-item"
-      key={reply.id}
-      isReply
-      commentObj={reply}
-    />
-  ));
+  const replyItems = commentObj?.replies?.map((reply) => {
+    const isReplyAuthor = user?.id === reply.author_detail?.id;
+    if (reply.is_private && !isAuthor && !isReplyAuthor && !isCommentAuthor) {
+      return null;
+    }
+    return (
+      <CommentItem
+        postKey={postKey}
+        className="reply-item"
+        key={reply.id}
+        isReply
+        commentObj={reply}
+      />
+    );
+  });
 
   const handleReplySubmit = (content, isPrivate) => {
     const newReplyObj = {
@@ -58,20 +72,31 @@ export default function CommentItem({ postKey, commentObj, isReply = false }) {
     dispatch(createReply(newReplyObj, postKey));
   };
 
+  const handleDeleteComment = () => {
+    dispatch(deleteComment(commentObj.id, postKey, isReply));
+  };
   const toggleReplyInputOpen = () => setIsReplyInputOpen((prev) => !prev);
   return (
     <>
-      <CommentItemWrapper>
+      <CommentItemWrapper id={commentObj.id}>
         {isReply && <ReplyIcon />}
         <AuthorProfile author={commentObj.author_detail} isComment />
         <CommentContent id="comment-content">
           {commentObj.content}
         </CommentContent>
-        {commentObj.is_private && (
-          <LockIcon style={{ fontSize: '15px', color: '#999' }} />
-        )}
         {!isReply && (
           <ReplyWrapper onClick={toggleReplyInputOpen}>답글</ReplyWrapper>
+        )}
+        {commentObj.is_private && (
+          <LockIcon style={{ fontSize: '14px', color: '#bbb' }} />
+        )}
+
+        {isCommentAuthor && (
+          <DeleteForeverIcon
+            onClick={handleDeleteComment}
+            id="delete-comment-icon"
+            style={{ margin: '3px', fontSize: '17px', color: '#999' }}
+          />
         )}
       </CommentItemWrapper>
       <div>{replyItems}</div>

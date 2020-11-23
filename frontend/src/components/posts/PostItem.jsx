@@ -48,14 +48,16 @@ export default function PostItem({ postObj, postKey }) {
   }, [postObj]);
 
   const commentList = postObj?.comments?.map((comment) => {
-    if (
-      comment.is_private &&
-      !isAuthor &&
-      comment.author_detail?.id !== user.id
-    )
-      return null;
+    if (!comment) return null;
+    const isCommentAuthor = comment.author_detail?.id === user.id;
+    if (comment.is_private && !isAuthor && !isCommentAuthor) return null;
     return (
-      <CommentItem postKey={postKey} key={comment.id} commentObj={comment} />
+      <CommentItem
+        postKey={postKey}
+        key={comment.id}
+        commentObj={comment}
+        isAuthor={isAuthor}
+      />
     );
   });
 

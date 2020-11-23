@@ -37,10 +37,11 @@ const mockComment = {
     {
       id: 123,
       content: 'reply2',
+      is_private: true,
       author: 1,
       author_detail: {
-        id: 123,
-        username: 'curious',
+        id: 444,
+        username: 'rt',
         profile_pic:
           'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
       }
@@ -112,5 +113,20 @@ describe('<CommentItem /> unit mount test', () => {
     newComment.find('#submit-button').last().simulate('click');
     submitButton.simulate('click');
     expect(jest.fn().mock.calls.length).toEqual(0);
+  });
+
+  it('should handle with delete comment when clicking delete icon', () => {
+    const component = getWrapper();
+    const commentLength = component.find('CommentItem').length;
+    expect(commentLength).toBeTruthy();
+    const deleteButton = component.find('#delete-comment-icon').first();
+    deleteButton.simulate('click');
+    component.update();
+  });
+
+  it('should not display private item', () => {
+    const component = getWrapper();
+    const commentLength = component.find('.reply-item').length;
+    expect(commentLength).toBeLessThanOrEqual(mockComment.replies.length * 2);
   });
 });
