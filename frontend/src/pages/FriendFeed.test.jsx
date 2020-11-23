@@ -17,7 +17,7 @@ jest.mock('../components/posts/PostList', () => {
   });
 });
 
-describe('<AuthorProfile /> unit mount test', () => {
+describe('<FriendFeed /> unit mount test', () => {
   const store = createStore(
     rootReducer,
     mockStore,

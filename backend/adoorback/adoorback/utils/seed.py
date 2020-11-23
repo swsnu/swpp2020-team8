@@ -17,7 +17,7 @@ DEBUG = False
 
 def set_seed(n):
     if DEBUG:
-        logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
+        logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
     User = get_user_model()
     faker = Faker()
@@ -64,17 +64,12 @@ def set_seed(n):
     questions = Question.objects.all()
     for _ in range(n):
         question = random.choice(questions)
-<<<<<<< HEAD
-        Response.objects.create(author=user, question=question)
-    logging.info(f"{Response.objects.all().count()} Response(s) created!") if DEBUG else None
-=======
         Response.objects.create(author=user, content=faker.text(max_nb_chars=50), question=question,
                                 share_with_friends=random.choice(
                                     [True, False]),
                                 share_anonymously=random.choice([True, False]))
     logging.info(
         f"{Response.objects.all().count()} Response(s) created!") if DEBUG else None
->>>>>>> 0ac7a44a49d53fa49d06b6941991a33dd435332a
 
     # Seed Comment (target=Feed)
     articles = Article.objects.all()
@@ -92,7 +87,7 @@ def set_seed(n):
         f"{Comment.objects.all().count()} Comment(s) created!") if DEBUG else None
 
     # Seed Reply Comment (target=Comment)
-    comment_model = get_content_type("comment")
+    comment_model = get_content_type("Comment")
     comments = Comment.objects.all()
     for _ in range(n):
         user = random.choice(users)
@@ -103,14 +98,13 @@ def set_seed(n):
         if DEBUG else None
 
     # Seed Like
-    replies = Comment.objects.replies_only()
-    for _ in range(n):
+    for i in range(n):
         user = random.choice(users)
-        article = random.choice(articles)
-        question = random.choice(questions)
-        response = random.choice(responses)
-        comment = random.choice(comments)
-        reply = random.choice(replies)
+        article = Article.objects.get(id=i+1)
+        question = Question.objects.get(id=i+1)
+        response = Response.objects.get(id=i+1)
+        comment = Comment.objects.comments_only()[i]
+        reply = Comment.objects.replies_only()[i]
         Like.objects.create(user=user, target=article)
         Like.objects.create(user=user, target=question)
         Like.objects.create(user=user, target=response)
@@ -134,11 +128,7 @@ def fill_data():
             if user.article_set.all().count() == 0 else None
         Question.objects.create(author=user, content=faker.catch_phrase(), is_admin_question=False) \
             if user.question_set.all().count() == 0 else None
-<<<<<<< HEAD
-        Response.objects.create(author=user, question=random.choice(questions)) \
-=======
         Response.objects.create(author=user, content=faker.catch_phrase(), question=random.choice(questions)) \
->>>>>>> 0ac7a44a49d53fa49d06b6941991a33dd435332a
             if user.response_set.all().count() == 0 else None
         Comment.objects.create(author=user, content=faker.catch_phrase(), target=random.choice(articles)) \
             if Comment.objects.comments_only().filter(author=user).count() == 0 else None

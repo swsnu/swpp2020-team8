@@ -2,22 +2,22 @@ from django.contrib.contenttypes.models import ContentType
 
 
 def get_content_type(model_name):
-    if model_name == 'comment':
+    if model_name == 'Comment':
         from comment.models import Comment
         model = Comment
-    elif model_name == 'like':
+    elif model_name == 'Like':
         from like.models import Like
         model = Like
-    elif model_name == 'article':
+    elif model_name == 'Article':
         from feed.models import Article
         model = Article
-    elif model_name == 'question':
+    elif model_name == 'Question':
         from feed.models import Question
         model = Question
-    elif model_name == 'response':
+    elif model_name == 'Response':
         from feed.models import Response
         model = Response
-    elif model_name == 'post':
+    elif model_name == 'Post':
         from feed.models import Post
         model = Post
     else:

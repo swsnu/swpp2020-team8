@@ -12,10 +12,10 @@ class LikeManager(models.Manager):
     use_for_related_fields = True
 
     def comment_likes_only(self, **kwargs):
-        return self.filter(content_type=get_content_type("comment"), **kwargs)
+        return self.filter(content_type=get_content_type("Comment"), **kwargs)
 
     def feed_likes_only(self, **kwargs):
-        return self.exclude(content_type=get_content_type("comment"), **kwargs)
+        return self.exclude(content_type=get_content_type("Comment"), **kwargs)
 
 
 class Like(models.Model):
@@ -26,6 +26,11 @@ class Like(models.Model):
     target = GenericForeignKey('content_type', 'object_id')
 
     objects = LikeManager()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'content_type', 'object_id'], name='unique_like'),
+        ]
 
     def __str__(self):
         return f'{self.user} likes {self.content_type} ({self.object_id})'

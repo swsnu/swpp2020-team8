@@ -5,12 +5,23 @@ import { Router } from 'react-router-dom';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
+import axios from '../apis';
 import rootReducer from '../modules';
 import history from '../history';
 import { mockStore } from '../mockStore';
 import SignUp from './SignUp';
 
-describe('<QuestionSelection /> unit test', () => {
+describe('Sign up page unit test', () => {
+  jest.mock('axios');
+
+  // axios.get.mockResolvedValue([]);
+  jest.spyOn(axios, 'post').mockImplementation(() => {
+    return new Promise((resolve) => {
+      const result = { data: {} };
+      resolve(result);
+    });
+  });
+
   const store = createStore(
     rootReducer,
     mockStore,
@@ -51,7 +62,7 @@ describe('<QuestionSelection /> unit test', () => {
       target: { name: 'password', value: 'hello' }
     };
     pwInput.simulate('change', pwEvent);
-    const submitButton = component.find('button');
+    const submitButton = component.find('button').at(1);
     submitButton.simulate('click');
     await new Promise((resolve) => setTimeout(resolve, 500));
     // expect(component.find('WarningMessage').length)
@@ -60,9 +71,9 @@ describe('<QuestionSelection /> unit test', () => {
   it('SignUp Page should mount', async () => {
     const wrapper = getWrapper();
     const submitButton = wrapper.find('button');
-    expect(submitButton.length).toBe(1);
-    expect(submitButton.props().disabled).toBe(true);
-    submitButton.simulate('click');
+    expect(submitButton.length).toBe(2);
+    submitButton.at(1).simulate('click');
+    expect(jest.fn()).toBeCalledTimes(0);
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 });
