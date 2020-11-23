@@ -236,4 +236,3 @@ class ResponseRequestSerializer(serializers.ModelSerializer):
     class Meta():
         model = ResponseRequest
         fields = ['id', 'actor_id', 'recipient_id', 'question_id', 'responded']
-
