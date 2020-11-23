@@ -87,6 +87,7 @@ class ResponseRequestTestCase(TestCase):
         user.delete()
         self.assertEqual(User.objects.all().filter(id=user.id).count(), 0)
         self.assertEqual(ResponseRequest.objects.all().filter(actor_id=user.id).count(), 0)
+        self.assertEqual(ResponseRequest.objects.all().filter(recipient_id=user.id).count(), 0)
 
     def test_on_delete_recipient_cascade(self):
         user = ResponseRequest.objects.all().first().recipient
@@ -96,6 +97,7 @@ class ResponseRequestTestCase(TestCase):
         user.delete()
         self.assertEqual(User.objects.all().filter(id=user.id).count(), 0)
         self.assertEqual(ResponseRequest.objects.all().filter(recipient_id=user.id).count(), 0)
+        self.assertEqual(ResponseRequest.objects.all().filter(actor_id=user.id).count(), 0)
 
     def test_on_delete_question_cascade(self):
         question = ResponseRequest.objects.all().first().question
