@@ -37,24 +37,24 @@ class CommentBaseSerializer(AdoorBaseSerializer):
 
 
 class CommentFriendSerializer(CommentBaseSerializer):
-    author = AuthorFriendSerializer(read_only=True)
+    author_detail = AuthorFriendSerializer(read_only=True)
     replies = RecursiveReplyField(many=True, read_only=True)
 
     class Meta(CommentBaseSerializer.Meta):
         model = Comment
-        fields = CommentBaseSerializer.Meta.fields + ['author', 'replies']
+        fields = CommentBaseSerializer.Meta.fields + ['author_detail', 'replies']
 
     def get_related_field(self, obj):
         return CommentFriendSerializer()
 
 
 class CommentAnonymousSerializer(CommentBaseSerializer):
-    author = AuthorAnonymousSerializer(read_only=True)
+    author_detail = AuthorAnonymousSerializer(read_only=True)
     replies = RecursiveReplyField(many=True, read_only=True)
 
     class Meta(CommentBaseSerializer.Meta):
         model = Comment
-        fields = CommentBaseSerializer.Meta.fields + ['author', 'replies']
+        fields = CommentBaseSerializer.Meta.fields + ['author_detail', 'replies']
 
     def get_related_field(self, obj):
         return CommentAnonymousSerializer()
