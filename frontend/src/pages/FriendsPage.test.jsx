@@ -7,11 +7,11 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 import { mockStore } from '../mockStore';
 import rootReducer from '../modules';
+import FriendsPage from './FriendsPage';
 import 'jest-styled-components';
 import history from '../history';
-import FriendListWidget from './FriendListWidget';
 
-describe('Friend List Widget unit mount test', () => {
+describe('Friends Page unit mount test', () => {
   const store = createStore(
     rootReducer,
     mockStore,
@@ -22,18 +22,18 @@ describe('Friend List Widget unit mount test', () => {
     mount(
       <Provider store={store}>
         <Router history={history}>
-          <FriendListWidget />
+          <FriendsPage />
         </Router>
       </Provider>
     );
 
-  it('Friend List Widget should mount', async () => {
+  it('Friends Page should mount', async () => {
     jest.mock('react-redux', () => ({
       useDispatch: () => jest.fn()
     }));
 
     const wrapper = getWrapper();
-    const widget = wrapper.find('#friend-list-widget');
-    expect(widget).toBeTruthy();
+    const friendList = wrapper.find('FriendListWrapper');
+    expect(friendList.length).toBe(1);
   });
 });
