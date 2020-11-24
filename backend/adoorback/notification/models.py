@@ -34,5 +34,5 @@ class Notification(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['actor', 'recipient', 'target_id', 'target_type',
-                'origin_id', 'origin_type'], name='unique_noti'),
+                'origin_id', 'origin_type', 'message'], name='unique_noti'),
         ]

@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 from comment.models import Comment
 from notification.models import Notification
 
-from adoorback.utils.seed import set_seed
+from adoorback.utils.seed import set_seed, fill_data
 from adoorback.utils.content_types import get_content_type
 
 User = get_user_model()
@@ -15,8 +15,15 @@ class NotificationTestCase(TestCase):
     def setUp(self):
         set_seed(N)
     def test_noti_count(self):
-        # should be changed after adding friend/response-request noti
         self.assertGreater(Notification.objects.all().count(), N * 2)
+        comment_noti_count = Notification.objects.filter(
+            target_type=get_content_type('Comment')).count()
+        self.assertGreater(comment_noti_count, N)
+        like_noti_count = Notification.objects.filter(target_type=get_content_type('Like')).count()
+        self.assertGreater(like_noti_count, N)
+        # should be created automatically
+
+
 
     def test_noti_str(self):
         noti = Notification.objects.all().last()
@@ -42,6 +49,7 @@ class NotificationTestCase(TestCase):
 
     # test on delete recipient user
     def test_on_delete_recipient_cascade(self):
+        fill_data()
         user = User.objects.all().first()
         user_id = user.id
         received_notis = user.received_noti_set.all()

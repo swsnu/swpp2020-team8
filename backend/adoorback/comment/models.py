@@ -1,5 +1,5 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.db import models, IntegrityError
+from django.db import models, IntegrityError, transaction
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth import get_user_model
@@ -59,8 +59,9 @@ def create_noti(sender, **kwargs):
     origin_name = get_korean_type_name(origin.type)
     message = f'{actor.username}님이 회원님의 {origin_name}에 댓글을 남겼습니다.'
     try:
-        Notification.objects.create(actor = actor, recipient = recipient, message = message,
-            origin = origin, target = target, is_read = False, is_visible = True)
+        with transaction.atomic():
+            Notification.objects.create(actor = actor, recipient = recipient, message = message,
+                origin = origin, target = target)
     except IntegrityError as error:
-           if 'unique constraint' in error.args:
-               pass
+        if 'unique constraint' in error.args:
+            pass
