@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { CommonInput, CommonButton } from '../styles';
 
-import { requestLogin, removeError } from '../modules/user';
+import { requestLogin } from '../modules/user';
 
 const LoginWrapper = styled.div`
   width: 500px;
@@ -43,13 +43,11 @@ export default function Login() {
   };
 
   const onClickSubmitButton = () => {
-    dispatch(removeError());
     dispatch(requestLogin(loginInfo));
   };
 
   const onKeySubmit = (e) => {
     if (e.keyCode === 13) {
-      dispatch(removeError());
       dispatch(requestLogin(loginInfo));
     }
   };
