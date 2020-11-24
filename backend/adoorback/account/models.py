@@ -33,7 +33,7 @@ class User(AbstractUser):
 
     @classmethod
     def are_friends(cls, user1, user2):
-        return (user2.id in user1.friends.values_list('friend_id', flat=True)) or (user1 == user2)
+        return Friendship.objects.filter(user_id=user1.id, friend_id=user2.id).exists()
 
     @property
     def type(self):
@@ -49,6 +49,8 @@ class Friendship(models.Model):
     friend = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
+
+    objects = models.Manager()
 
     class Meta:
         constraints = [

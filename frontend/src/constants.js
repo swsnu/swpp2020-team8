@@ -438,7 +438,7 @@ export const mockFriendFeed = [
 ];
 
 export const mockAnonCustomQuestion = {
-  id: 4758,
+  id: 23423423,
   'content-type': 'Question',
   is_admin_question: 'true',
   author_detail: {
@@ -454,7 +454,7 @@ export const mockAnonCustomQuestion = {
 };
 
 export const mockAnonCustomQuestion2 = {
-  id: 4758,
+  id: 23423423132,
   'content-type': 'Question',
   is_admin_question: 'true',
   author_detail: {
@@ -470,7 +470,7 @@ export const mockAnonCustomQuestion2 = {
 };
 
 export const mockAnonArticle = {
-  id: 4756,
+  id: 76767,
   'content-type': 'Article', // or const int e.g. (1: Article, 2: Response...)
   author_detail: {
     id: -1
@@ -483,7 +483,7 @@ export const mockAnonArticle = {
 };
 
 export const mockAnonResponse = {
-  id: 4757,
+  id: 87787,
   'content-type': 'Response',
   author_detail: {
     id: -1
