@@ -1,9 +1,10 @@
 import random
 import logging
 import sys
-import pandas as pd
+from datetime import timedelta, datetime
+import pytz
 
-from django.utils import timezone
+import pandas as pd
 from django.contrib.auth import get_user_model
 from faker import Faker
 
@@ -11,7 +12,6 @@ from adoorback.utils.content_types import get_content_type
 from feed.models import Article, Response, Question
 from comment.models import Comment
 from like.models import Like
-
 
 DEBUG = False
 
@@ -26,86 +26,134 @@ def set_question_seed():
         content = df.at[i, 'content']
         Question.objects.create(author=admin, is_admin_question=True, content=content)
 
+    def date_range(start_date, end_date):
+        for n in range(int((end_date - start_date).days)):
+            yield start_date + timedelta(n)
 
-def set_seed():
+    start_date = datetime(2020, 9, 1, 0, 0, 0, tzinfo=pytz.UTC)
+    end_date = datetime(2020, 11, 22, 0, 0, 0, tzinfo=pytz.UTC)
+    for single_date in date_range(start_date, end_date):
+        questions = Question.objects.filter(
+            selected_date__isnull=True).order_by('?')[:30]
+        # reset if we run out of questions to select from
+        if questions.count() < 30:
+            Question.objects.update(selected_date=None)
+        questions |= Question.objects.filter(
+            selected_date__isnull=True).order_by('?')[:(30 - questions.count())]
+        for question in questions:
+            question.selected_date = single_date
+            question.save()
+
+
+def set_mock_seed():
     if DEBUG:
-        logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
+        logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
     User = get_user_model()
-    faker = Faker()
-
-    # Seed User
-    for _ in range(2):
-        User.objects.create_user(username=faker.user_name(), email=faker.email(), password=faker.password(length=12))
-    logging.info(f"{User.objects.all().count()} User(s) created!") if DEBUG else None
+    faker = Faker(locale='ko_KR')
 
     # Seed Superuser
-    if User.objects.all().count() == 2:
-        User.objects.create_superuser(username='adoor', email='adoor.team@gmail.com', password='adoor2020:)')
-    User.objects.get(username='adoor')
+    if User.objects.count() == 0:
+        User.objects.create_superuser(
+            username='adoor', email='adoor.team@gmail.com', password='adoor2020:)',
+            question_history=",".join(map(str, faker.random_elements(
+                                                  elements=range(1, 1501),
+                                                  length=random.randint(3, 10),
+                                                  unique=True))))
     logging.info("Superuser created!") if DEBUG else None
+
+    # Seed User
+    for i in range(100):
+        User.objects.create_user(username=faker.user_name() + str(i),
+                                 email=faker.email(),
+                                 password=faker.password(),
+                                 question_history=",".join(map(str,
+                                                               faker.random_elements(
+                                                                   elements=range(1, 1501),
+                                                                   length=random.randint(3, 10),
+                                                                   unique=True))))
+    logging.info(
+        f"{User.objects.count()} User(s) created!") if DEBUG else None
 
     # Seed Article/AdminQuestion/CustomQuestionPost
     users = User.objects.all()
-    for _ in range(50):
+    for _ in range(1000):
         user = random.choice(users)
-        Article.objects.create(author=user,
-                               content=faker.catch_phrase(),
-                               share_with_friends=random.choice([True, False]),
-                               share_anonymously=random.choice([True, False]))
-        Question.objects.create(author=user, is_admin_question=False, content=faker.word())
-    logging.info(f"{Article.objects.all().count()} Article(s) created!") if DEBUG else None
-    logging.info(f"{Question.objects.all().count()} Question(s) created!") \
+        article = Article.objects.create(author=user,
+                                         content=faker.bs(),
+                                         share_with_friends=random.choice([True, False]),
+                                         share_anonymously=random.choice([True, False]))
+        if not article.share_anonymously and not article.share_with_friends:
+            article.share_with_friends = True
+            article.save()
+    for _ in range(500):
+        user = random.choice(users)
+        Question.objects.create(
+            author=user, is_admin_question=False, content=faker.bs())
+    logging.info(
+        f"{Article.objects.count()} Article(s) created!") if DEBUG else None
+    logging.info(f"{Question.objects.count()} Question(s) created!") \
         if DEBUG else None
-
-    # Select Daily Questions
-    daily_questions = Question.objects.all().filter(selected_date__isnull=True).order_by('?')[:30]
-    for question in daily_questions:
-        question.selected_date = timezone.now()
-        question.save()
+    set_question_seed()
 
     # Seed Response
-    for _ in range(150):
-        question = random.choice(daily_questions)
-        Response.objects.create(author=user, content=faker.text(max_nb_chars=50), question=question,
-                                share_with_friends=random.choice([True, False]),
-                                share_anonymously=random.choice([True, False]))
-    logging.info(f"{Response.objects.all().count()} Response(s) created!") if DEBUG else None
+    questions = Question.objects.all()
+    for _ in range(2000):
+        user = random.choice(users)
+        question = random.choice(questions)
+        response = Response.objects.create(author=user, content=faker.catch_phrase(), question=question,
+                                           share_with_friends=random.choice([True, False]),
+                                           share_anonymously=random.choice([True, False]))
+        if not response.share_anonymously and not response.share_with_friends:
+            response.share_with_friends = True
+            response.save()
+    logging.info(
+        f"{Response.objects.count()} Response(s) created!") if DEBUG else None
 
     # Seed Comment (target=Feed)
     articles = Article.objects.all()
     responses = Response.objects.all()
-    for _ in range(300):
+    for _ in range(5000):
         user = random.choice(users)
         article = random.choice(articles)
         response = random.choice(responses)
-        Comment.objects.create(author=user, target=article, content=faker.catch_phrase(), is_private=_ % 2)
-        Comment.objects.create(author=user, target=response, content=faker.catch_phrase(), is_private=_ % 2)
-    logging.info(f"{Comment.objects.all().count()} Comment(s) created!") if DEBUG else None
+        Comment.objects.create(author=user, target=article,
+                               content=faker.catch_phrase(), is_private=_ % 2)
+        Comment.objects.create(author=user, target=response,
+                               content=faker.catch_phrase(), is_private=_ % 2)
+    logging.info(
+        f"{Comment.objects.count()} Comment(s) created!") if DEBUG else None
 
     # Seed Reply Comment (target=Comment)
-    comment_model = get_content_type("comment")
+    comment_model = get_content_type("Comment")
     comments = Comment.objects.all()
-    for _ in range(600):
+    for _ in range(15000):
         user = random.choice(users)
         comment = random.choice(comments)
-        Comment.objects.create(author=user, target=comment,
-                               content=faker.catch_phrase(), is_private=comment.is_private)
-    logging.info(f"{Comment.objects.all().filter(content_type=comment_model).count()} Repl(ies) created!") \
+        reply = Comment.objects.create(author=user, target=comment,
+                                       content=faker.bs(), is_private=comment.is_private)
+        if reply.target.is_private:
+            reply.is_private = True
+            reply.save()
+    logging.info(f"{Comment.objects.filter(content_type=comment_model).count()} Repl(ies) created!") \
         if DEBUG else None
 
-    # Seed Like
-    replies = Comment.objects.replies_only()
-    for _ in range(1000):
+    # Seed Feed Like
+    for i in range(3000):
         user = random.choice(users)
-        article = random.choice(articles)
-        question = random.choice(daily_questions)
-        response = random.choice(responses)
-        comment = random.choice(comments)
-        reply = random.choice(replies)
-        Like.objects.create(user=user, target=article)
-        Like.objects.create(user=user, target=question)
-        Like.objects.create(user=user, target=response)
-        Like.objects.create(user=user, target=comment)
-        Like.objects.create(user=user, target=reply)
-    logging.info(f"{Like.objects.all().count()} Like(s) created!") if DEBUG else None
+        article = Article.objects.get(id=i % 1000 + 1)
+        question = Question.objects.get(id=i % 1500 + 1)
+        response = Response.objects.get(id=i % 2000 + 1)
+        Like.objects.get_or_create(user=user, content_type=get_content_type("Article"), object_id=article.id)
+        Like.objects.get_or_create(user=user, content_type=get_content_type("Question"), object_id=question.id)
+        Like.objects.get_or_create(user=user, content_type=get_content_type("Response"), object_id=response.id)
+
+    # Seed Comment Like
+    for i in range(10000):
+        user = random.choice(users)
+        comment = Comment.objects.comments_only()[i % 5000]
+        reply = Comment.objects.replies_only()[i % 15000]
+        Like.objects.get_or_create(user=user, content_type=get_content_type("Comment"), object_id=comment.id)
+        Like.objects.get_or_create(user=user, content_type=get_content_type("Comment"), object_id=reply.id)
+    logging.info(
+        f"{Like.objects.count()} Like(s) created!") if DEBUG else None

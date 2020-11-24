@@ -64,6 +64,30 @@ describe('user Actions', () => {
     expect(newState.userReducer.selectQuestion).toBeTruthy();
   });
 
+  it(`should turn on signup error when signup api error occurs`, (done) => {
+    jest.mock('axios');
+    const userInfo = {
+      id: 1,
+      password: 'password',
+      username: 'user',
+      email: 'user@user.com'
+    };
+
+    axios.post.mockReturnValue(Promise.reject({ error: 'error' }));
+    axios.get.mockReturnValue(Promise.reject({ error: 'error' }));
+
+    store
+      .dispatch(actionCreators.requestSignUp(userInfo))
+      .then(() => {
+        done();
+      })
+      .catch(() => {
+        const newState = store.getState();
+        expect(newState.userReducer.user).toBeFalsy();
+        expect(newState.userReducer.signUpError).toBeTruthy();
+      });
+  });
+
   it(`'logout' should log out correctly`, (done) => {
     jest.mock('axios');
     // axios.get.mockResolvedValue([]);

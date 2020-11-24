@@ -12,7 +12,7 @@ class CommentList(generics.ListCreateAPIView):
     """
     List all comments, or create a new comment.
     """
-    queryset = Comment.objects.all().order_by('-id')
+    queryset = Comment.objects.order_by('-id')
     serializer_class = CommentFriendSerializer
     permission_classes = [permissions.IsAuthenticated]
 

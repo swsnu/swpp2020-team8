@@ -14,8 +14,6 @@ export const LOGOUT_REQUEST = 'user/LOGOUT_REQUEST';
 export const LOGOUT_SUCCESS = 'user/LOGOUT_SUCCESS';
 export const LOGOUT_FAILURE = 'user/LOGOUT_FAILURE';
 
-export const REMOVE_ERROR = 'user/REMOVE_ERROR';
-
 export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
 
 export const SKIP_SELECT_QUESTIONS = 'user/SKIP_SELECT_QUESTIONS';
@@ -91,10 +89,11 @@ export const requestLogin = (loginInfo) => {
       await axios.post('user/login/', loginInfo);
       // set user info
       currentUser = await getUser();
+      dispatch(loginSuccess(currentUser));
     } catch (err) {
       dispatch(loginFailure(err));
+      return;
     }
-
     dispatch(loginSuccess(currentUser));
   };
 };
@@ -125,12 +124,6 @@ export const logout = () => async (dispatch) => {
   dispatch({
     type: 'user/LOGOUT_SUCCESS'
   });
-};
-
-export const removeError = () => {
-  return {
-    type: REMOVE_ERROR
-  };
 };
 
 export default function userReducer(state = initialState, action) {
@@ -165,12 +158,6 @@ export default function userReducer(state = initialState, action) {
         user: null,
         loginError: false,
         selectQuestion: true
-      };
-    case REMOVE_ERROR:
-      return {
-        ...state,
-        user: null,
-        loginError: false
       };
     case SIGN_UP_SUCCESS:
       return {
