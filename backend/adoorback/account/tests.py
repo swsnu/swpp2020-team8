@@ -260,7 +260,6 @@ class FriendRequestAPITestCase(APITestCase):
         current_user = self.make_user(username='current_user')
         friend_user_1 = self.make_user(username='friend_user_1')
         friend_user_2 = self.make_user(username='friend_user_2')
-        spy_user = self.make_user(username='spy_user')
 
         FriendRequest.objects.create(
             requester=current_user, responder=friend_user_1, responded=False)
@@ -288,3 +287,27 @@ class FriendRequestAPITestCase(APITestCase):
         current_user = self.make_user(username='current_user')
         friend_user_1 = self.make_user(username='friend_user_1')
         friend_user_2 = self.make_user(username='friend_user_2')
+
+        FriendRequest.objects.create(
+            requester=current_user, responder=friend_user_1, responded=False)
+        FriendRequest.objects.create(
+            requester=current_user, responder=friend_user_2, responded=False)
+        FriendRequest.objects.create(
+            requester=friend_user_1, responder=friend_user_2, responded=False)
+
+        with self.login(username=current_user.username, password='password'):
+            response = self.get(self.reverse(
+                'user-friend-request-detail', rid=friend_user_1.id))
+            self.assertEqual(response.status_code, 200)
+
+        with self.login(username=friend_user_2.username, password='password'):
+            data = {"requester_id": friend_user_2.id,
+                    "responder_id": friend_user_1.id}
+            response = self.post(
+                reverse('user-friend-request-detail', args=[friend_user_1.id]), data=data)
+            self.assertEqual(response.status_code, 201)
+
+        with self.login(username=friend_user_2.username, password='password'):
+            response = self.delete(self.reverse(
+                'user-friend-request-detail', rid=friend_user_1.id))
+            self.assertEqual(response.status_code, 204)
