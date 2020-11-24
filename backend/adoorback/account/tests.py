@@ -288,8 +288,3 @@ class FriendRequestAPITestCase(APITestCase):
         current_user = self.make_user(username='current_user')
         friend_user_1 = self.make_user(username='friend_user_1')
         friend_user_2 = self.make_user(username='friend_user_2')
-
-        with self.login(username=current_user.username, password='password'):
-            response = self.post(self.reverse(
-                'user-friend-request-detail', aid=friend_user_1.id, rid=friend_user_2.id))
-            self.assertEqual(response.status_code, 201)
