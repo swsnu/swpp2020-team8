@@ -211,6 +211,7 @@ class QuestionAPITestCase(APITestCase):
             response = self.get(self.reverse('question-detail', pk=question_id))
             self.assertEqual(response.status_code, 200)
             self.assertEqual(len(response.data['response_set']), 2)
+            print(response.data['author_detail'])
             self.assertEqual(len(response.data['author_detail']), 1)  # author anonymous
 
             # response type toggle

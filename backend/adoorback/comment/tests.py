@@ -4,7 +4,7 @@ from rest_framework.test import APIClient
 
 from comment.models import Comment
 
-from adoorback.utils.seed import set_seed
+from adoorback.utils.seed import set_seed, fill_data
 from adoorback.utils.content_types import get_content_type
 
 User = get_user_model()
@@ -25,6 +25,7 @@ class CommentTestCase(TestCase):
 
     # comments of user must be deleted accordingly
     def test_on_delete_user_cascade(self):
+        fill_data()
         user = User.objects.get(id=2)
         comments = user.comment_set.all()
         self.assertGreater(comments.count(), 0)

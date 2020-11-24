@@ -5,7 +5,6 @@ from django.contrib.auth import get_user_model
 from adoorback.models import AdoorTimestampedModel
 
 
-
 User = get_user_model()
 
 class Notification(AdoorTimestampedModel):

@@ -1,5 +1,5 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.db import models, IntegrityError, transaction
+from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth import get_user_model
