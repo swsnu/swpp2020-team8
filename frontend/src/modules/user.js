@@ -90,7 +90,9 @@ export const requestLogin = (loginInfo) => {
       dispatch(loginSuccess(currentUser));
     } catch (err) {
       dispatch(loginFailure(err));
+      return;
     }
+    dispatch(loginSuccess(currentUser));
   };
 };
 
