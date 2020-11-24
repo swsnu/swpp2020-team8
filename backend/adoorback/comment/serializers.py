@@ -37,7 +37,7 @@ class CommentBaseSerializer(AdoorBaseSerializer):
 
 
 class CommentFriendSerializer(CommentBaseSerializer):
-    author_detail = AuthorFriendSerializer(read_only=True)
+    author_detail = AuthorFriendSerializer(source='author', read_only=True)
     replies = RecursiveReplyField(many=True, read_only=True)
 
     class Meta(CommentBaseSerializer.Meta):
@@ -49,7 +49,7 @@ class CommentFriendSerializer(CommentBaseSerializer):
 
 
 class CommentAnonymousSerializer(CommentBaseSerializer):
-    author_detail = AuthorAnonymousSerializer(read_only=True)
+    author_detail = AuthorAnonymousSerializer(source='author', read_only=True)
     replies = RecursiveReplyField(many=True, read_only=True)
 
     class Meta(CommentBaseSerializer.Meta):
