@@ -260,6 +260,7 @@ class FriendRequestAPITestCase(APITestCase):
         current_user = self.make_user(username='current_user')
         friend_user_1 = self.make_user(username='friend_user_1')
         friend_user_2 = self.make_user(username='friend_user_2')
+        spy_user = self.make_user(username='spy_user')
 
         FriendRequest.objects.create(
             requester=current_user, responder=friend_user_1, responded=False)
@@ -269,48 +270,26 @@ class FriendRequestAPITestCase(APITestCase):
             requester=friend_user_1, responder=friend_user_2, responded=False)
 
         with self.login(username=current_user.username, password='password'):
-            response = self.get(self.reverse(
-                'user-friend-request', pk=friend_user_1.id))
+            response = self.get('user-friend-request-list')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['count'], 0)
+
+        with self.login(username=friend_user_1.username, password='password'):
+            response = self.get('user-friend-request-list')
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data['count'], 1)
 
-    def test_response_request_detail(self):
+        with self.login(username=friend_user_2.username, password='password'):
+            response = self.get('user-friend-request-list')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['count'], 2)
+
+    def test_friend_request_detail(self):
         current_user = self.make_user(username='current_user')
-        friend_user = self.make_user(username='friend_user')
-        user_adoor = User.objects.get(username='adoor')
+        friend_user_1 = self.make_user(username='friend_user_1')
+        friend_user_2 = self.make_user(username='friend_user_2')
 
-        # POST - send friend request to non-friends
         with self.login(username=current_user.username, password='password'):
             response = self.post(self.reverse(
-                'user-friend-request', pk=friend_user.id))
+                'user-friend-request-detail', aid=friend_user_1.id, rid=friend_user_2.id))
             self.assertEqual(response.status_code, 201)
-
-        # POST - send friend request to already requested friends
-        with self.login(username=current_user.username, password='password'):
-            response = self.post(self.reverse(
-                'user-friend-request', pk=user_adoor.id))
-            self.assertEqual(response.status_code, 403)
-
-        # DELETE - actor
-        with self.login(username=current_user.username, password='password'):
-            response = self.delete(self.reverse(
-                'user-friend-request', pk=friend_user.id))
-            self.assertEqual(response.status_code, 204)
-
-        # DELETE - other user
-        with self.login(username=friend_user.username, password='password'):
-            response = self.delete(self.reverse(
-                'user-friend-request', pk=user_adoor.id))
-            self.assertEqual(response.status_code, 403)
-
-        # DELETE - non-exist question 404 error
-        with self.login(username=current_user.username, password='password'):
-            response = self.delete(self.reverse(
-                'user-friend-request', pk=friend_user.id+1))
-            self.assertEqual(response.status_code, 404)
-
-        # GET - not allowed request
-        with self.login(username=current_user.username, password='password'):
-            response = self.delete(self.reverse(
-                'user-friend-request', pk=user_adoor.id))
-            self.assertEqual(response.status_code, 405)

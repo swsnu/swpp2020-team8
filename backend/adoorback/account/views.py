@@ -154,7 +154,17 @@ class UserFriendRequestDetail(generics.CreateAPIView, generics.RetrieveUpdateDes
 
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())
-        obj = queryset.get(requester_id=self.kwargs.get('aid'),
+        obj = queryset.get(requester_id=self.request.user.id,
                            responder_id=self.kwargs.get('rid'))
         self.check_object_permissions(self.request, obj)
         return obj
+
+    def perform_create(self, serializer):
+        serializer.save(requester_id=self.request.user.id,
+                        responder_id=self.kwargs.get('rid'),
+                        responded=False)
+
+    def perform_destroy(self, instance):
+        instance = self.get_object()
+        print(instance)
+        instance.delete()

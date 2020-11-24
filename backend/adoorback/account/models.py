@@ -6,7 +6,7 @@ import random
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
 from adoorback.models import AdoorTimestampedModel
@@ -93,6 +93,18 @@ class FriendRequest(AdoorTimestampedModel):
         return self.__class__.__name__
 
 
+@receiver(post_save, sender=FriendRequest)
+def create_friendship(sender, **kwargs):
+    instance = kwargs['instance']
+    requester_id = instance.requester_id
+    responder_id = instance.responder_id
+    responded = instance.responded
+    if responded:
+        Friendship.objects.create(user_id=requester_id, friend_id=responder_id)
+    else:
+        return
+
+
 @receiver(post_save, sender=Friendship)
 def create_reverse_friendship(sender, **kwargs):
     instance = kwargs['instance']
@@ -102,3 +114,14 @@ def create_reverse_friendship(sender, **kwargs):
         sender.objects.get(user_id=friend_id, friend_id=user_id)
     except sender.DoesNotExist:
         sender.objects.create(user_id=friend_id, friend_id=user_id)
+
+
+@receiver(post_delete, sender=Friendship)
+def delete_reverse_friendship(sender, **kwargs):
+    instance = kwargs['instance']
+    user_id = instance.user_id
+    friend_id = instance.friend_id
+    try:
+        sender.objects.get(user_id=friend_id, friend_id=user_id).delete()
+    except sender.DoesNotExist:
+        return
