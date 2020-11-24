@@ -98,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
       width: '20ch'
     },
     color: 'black',
-    fontSize: '14px'
+    fontSize: '15px'
   },
   sectionDesktop: {
     display: 'none',
@@ -166,6 +166,7 @@ const Header = () => {
               input: classes.inputInput
             }}
             inputProps={{ 'aria-label': 'search' }}
+            // onChange={}
           />
         </div>
         <IconButton
