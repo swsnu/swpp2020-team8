@@ -1,4 +1,4 @@
-python3 manage.py shell
+python manage.py shell
 
 from account.models import Friendship, FriendRequest
 from feed.models import Question, Article, Response, Post
