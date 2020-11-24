@@ -8,18 +8,12 @@ import { Button } from '@material-ui/core';
 import styled from 'styled-components';
 // import { useDispatch } from 'react-redux';
 import Checkbox from '@material-ui/core/Checkbox';
-// import ListItemIcon from '@material-ui/core/ListItemIcon';
-// import FormControlLabel from '@material-ui/core/FormControlLabel';
-// import FormControl from '@material-ui/core/FormControl';
-// import FormGroup from '@material-ui/core/FormGroup';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
-// import FriendItem from './friends/FriendItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import FaceIcon from '@material-ui/icons/Face';
-// import { Link } from 'react-router-dom';
 import { getFriendList } from '../modules/friend';
 
 const useStyles = makeStyles((theme) => ({
