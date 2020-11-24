@@ -40,3 +40,4 @@ def get_korean_type_name(model_name):
     else:
         result = ''
     return result
+    

@@ -167,7 +167,8 @@ def fill_data():
     questions = Question.objects.all()
     articles = Article.objects.all()
     comments = Comment.objects.all()
-    posts = Post.objects.all()
+    responses = Response.objects.all()
+    posts = random.choice([articles, questions, responses])
     for user in User.objects.all():
         Article.objects.create(author=user, content=faker.catch_phrase()) \
             if user.article_set.count() == 0 else None
