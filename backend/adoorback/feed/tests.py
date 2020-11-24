@@ -177,7 +177,6 @@ class QuestionAPITestCase(APITestCase):
             response = self.patch(self.reverse('question-detail', pk=question_id), data=data)
             self.assertEqual(response.status_code, 403)
 
-    # TODO: fix after friendship implementation
     def test_question_detail(self):
         current_user = self.make_user(username='current_user')
         spy_user = self.make_user(username='spy_user')

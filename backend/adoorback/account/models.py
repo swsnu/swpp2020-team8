@@ -6,6 +6,8 @@ import random
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 def random_profile_color():
@@ -28,6 +30,10 @@ class User(AbstractUser):
 
     class Meta:
         ordering = ['username']
+
+    @classmethod
+    def are_friends(cls, user1, user2):
+        return (user2.id in user1.friends.values_list('friend_id', flat=True)) or (user1 == user2)
 
     @property
     def type(self):
@@ -56,3 +62,14 @@ class Friendship(models.Model):
     @property
     def type(self):
         return self.__class__.__name__
+
+
+@receiver(post_save, sender=Friendship)
+def create_reverse_friendship(sender, **kwargs):
+    instance = kwargs['instance']
+    user_id = instance.user_id
+    friend_id = instance.friend_id
+    try:
+        sender.objects.get(user_id=friend_id, friend_id=user_id)
+    except sender.DoesNotExist:
+        sender.objects.create(user_id=friend_id, friend_id=user_id)

@@ -76,7 +76,6 @@ class Response(AdoorModel):
 class PostManager(models.Manager):
 
     def friend_posts_only(self, **kwargs):
-        # TODO: modify after friendship implementation
         return self.filter(share_with_friends=True, **kwargs)
 
     def anonymous_posts_only(self, **kwargs):
