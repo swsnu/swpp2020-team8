@@ -24,8 +24,10 @@ class Migration(migrations.Migration):
                 ('content', models.TextField()),
                 ('is_private', models.BooleanField(default=False)),
                 ('object_id', models.IntegerField(blank=True, null=True)),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comment_set', to=settings.AUTH_USER_MODEL)),
-                ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contenttypes.contenttype')),
+                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                             related_name='comment_set', to=settings.AUTH_USER_MODEL)),
+                ('content_type', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='contenttypes.contenttype')),
             ],
             options={
                 'base_manager_name': 'objects',
