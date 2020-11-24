@@ -125,15 +125,11 @@ def set_seed(n):
         f"{Like.objects.count()} Like(s) created!") if DEBUG else None
 
     # Seed Friendship
-    # user_1 = User.objects.get(id=1)
-    # user_2 = User.objects.get(id=2)
-    # user_3 = User.objects.get(id=3)
-    # Friendship.objects.create(user=user_1, friend=user_2)
-    # Friendship.objects.create(user=user_2, friend=user_1)
-    # Friendship.objects.create(user=user_2, friend=user_3)
-    # Friendship.objects.create(user=user_3, friend=user_2)
-    # Friendship.objects.create(user=user_3, friend=user_1)
-    # Friendship.objects.create(user=user_1, friend=user_3)
+    user_1 = User.objects.get(id=1)
+    user_2 = User.objects.get(id=2)
+    user_3 = User.objects.get(id=3)
+    Friendship.objects.create(user=user_1, friend=user_2)
+    Friendship.objects.create(user=user_2, friend=user_3)
 
 
 def fill_data():

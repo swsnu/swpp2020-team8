@@ -20,8 +20,10 @@ class FriendFeedPostList(generics.ListAPIView):
     def get_queryset(self):
         from django.contrib.auth import get_user_model
         User = get_user_model()
-        friend_ids = User.objects.get(id=self.request.user.id).friends.values_list('friend_id', flat=True)
-        queryset = Post.objects.friend_posts_only().filter(author_id__in=friend_ids)
+        current_user_id = self.request.user.id
+        friend_ids = User.objects.get(id=current_user_id).friends.values_list('friend_id', flat=True)
+        queryset = Post.objects.friend_posts_only().filter(author_id__in=friend_ids) | \
+                   Post.objects.filter(author_id=current_user_id)
         return queryset
 
 
@@ -49,15 +51,18 @@ class ArticleList(generics.CreateAPIView):
     """
     List all articles, or create a new article.
     """
+    queryset = Article.objects.all()
     serializer_class = fs.ArticleFriendSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        current_user = self.context.get('request', None).user
-        friend_ids = current_user.friends.values_list('friend_id', flat=True)
-        queryset = Article.objects.filter(author_id__in=friend_ids) | \
-                   Article.objects.response_set.filter(share_anonymously=True)
-        return queryset
+    # # for get list only
+    # def get_queryset(self):
+    #     current_user = self.request.user
+    #     friend_ids = current_user.friends.values_list('friend_id', flat=True)
+    #     queryset = Article.objects.filter(author_id__in=friend_ids) | \
+    #                Article.objects.filter(share_anonymously=True) | \
+    #                Article.objects.filter(author_id=current_user.id)
+    #     return queryset
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -80,19 +85,22 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
         return fs.ArticleAnonymousSerializer
 
 
-class ResponseList(generics.CreateAPIView):
+class ResponseList(generics.ListCreateAPIView):
     """
     List all responses, or create a new response.
     """
+    queryset = Response.objects.all()
     serializer_class = fs.ResponseFriendSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        current_user = self.context.get('request', None).user
-        friend_ids = current_user.friends.values_list('friend_id', flat=True)
-        queryset = Response.objects.filter(author_id__in=friend_ids) | \
-                   Response.objects.response_set.filter(share_anonymously=True)
-        return queryset
+    # # for get list only
+    # def get_queryset(self):
+    #     current_user = self.request.user
+    #     friend_ids = current_user.friends.values_list('friend_id', flat=True)
+    #     queryset = Response.objects.filter(author_id__in=friend_ids) | \
+    #                Response.objects.response_set.filter(share_anonymously=True) | \
+    #                Response.objects.filter(author_id=current_user.id)
+    #     return queryset
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
