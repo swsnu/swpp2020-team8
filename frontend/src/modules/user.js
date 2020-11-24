@@ -80,14 +80,13 @@ export const requestLogin = (loginInfo) => {
 
     let currentUser;
     try {
-      // try login
-      await axios.post('user/login/', loginInfo);
-
       // set jwt token set
       const res = await axios.post('user/token/', loginInfo);
       Cookie.set('jwt_token_refresh', res.data.refresh);
       Cookie.set('jwt_token_access', res.data.access);
 
+      // try login
+      await axios.post('user/login/', loginInfo);
       // set user info
       currentUser = await getUser();
     } catch (err) {

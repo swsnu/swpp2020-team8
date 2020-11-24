@@ -179,7 +179,7 @@ describe('Post Reducer', () => {
       friendPosts: [],
       selectedUserPosts: [],
       next: null,
-      selectedPost: {}
+      selectedPost: null
     });
   });
 

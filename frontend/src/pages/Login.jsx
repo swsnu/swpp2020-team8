@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -10,6 +12,14 @@ const LoginWrapper = styled.div`
   width: 500px;
   margin: 0 auto;
   margin-top: 120px;
+`;
+
+const SignUpButton = styled.button`
+  float: right;
+  border: none;
+  background: #fff;
+  color: #777;
+  font-size: 16px;
 `;
 
 const WarningMessage = styled.div`
@@ -37,6 +47,13 @@ export default function Login() {
     dispatch(requestLogin(loginInfo));
   };
 
+  const onKeySubmit = (e) => {
+    if (e.keyCode === 13) {
+      dispatch(removeError());
+      dispatch(requestLogin(loginInfo));
+    }
+  };
+
   const onClickSignupButton = () => {
     history.push('/signup');
   };
@@ -50,6 +67,7 @@ export default function Login() {
         value={loginInfo.username}
         placeholder="닉네임"
         onChange={handleChange}
+        onKeyDown={onKeySubmit}
       />
       <CommonInput
         id="password-input"
@@ -58,6 +76,7 @@ export default function Login() {
         placeholder="비밀번호"
         type="password"
         onChange={handleChange}
+        onKeyDown={onKeySubmit}
       />
       {loginError && loginError.length && (
         <WarningMessage id="login-error-message">
@@ -72,13 +91,14 @@ export default function Login() {
       >
         로그인
       </CommonButton>
-      <CommonButton
+      <SignUpButton
+        type="button"
         id="signup-button"
         margin="5px 0"
         onClick={onClickSignupButton}
       >
         회원가입
-      </CommonButton>
+      </SignUpButton>
     </LoginWrapper>
   );
 }

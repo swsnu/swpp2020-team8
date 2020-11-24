@@ -1,8 +1,34 @@
-coverage run --source='.' --omit='*/migrations/*','adoorback/*','manage.py','*/wsgi.py','*/asgi.py','*/utils/*' ./manage.py test
-coverage run --branch --source='.' --omit='*/migrations/*','adoorback/*','manage.py','*/wsgi.py','*/asgi.py','*/utils/*' ./manage.py test
+# pylint
 rm -f tmp.db db.sqlite3
 rm -r */migrations
 pylint **/*.py --load-plugins pylint_django
-coverage report -m
 python manage.py makemigrations account feed comment like
 python manage.py migrate
+
+# test - individual test case
+coverage run --source '.' ./manage.py test ```file_name```
+
+# model tests - all models
+coverage run --source='.' ./manage.py test account.tests.UserTestCase comment.tests.CommentTestCase like.tests.LikeTestCase feed.tests.FeedTestCase notification.tests.NotificationTestCase
+
+# coverage - all files
+coverage run --source='.' --omit='*/migrations/*','adoorback/*','manage.py','*/wsgi.py','*/asgi.py','*/utils/*' ./manage.py test
+coverage run --source='.' --branch --omit='*/migrations/*','adoorback/*','manage.py','*/wsgi.py','*/asgi.py','*/utils/*' ./manage.py test
+coverage report -m
+
+# model tests - individual models
+coverage run --source='.' ./manage.py test account.tests.AuthAPITestCase
+coverage run --source='.' ./manage.py test comment.tests.CommentTestCase
+coverage run --source='.' ./manage.py test like.tests.LikeTestCase
+coverage run --source='.' ./manage.py test feed.tests.FeedTestCase
+coverage run --source='.' ./manage.py test notification.tests.NotificationTestCase
+
+# coverage - account (including friendship, friend requests)
+coverage run --source='.' ./manage.py test feed.tests
+coverage run --source='.' --branch ./manage.py test account.tests
+coverage report -m
+
+# coverage - notification
+coverage run --source='.' ./manage.py test notification.tests
+coverage run --source='.' --branch ./manage.py test notification.tests
+coverage report -m

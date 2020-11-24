@@ -31,10 +31,16 @@ const NotificationDropdownList = () => {
         <List>
           <NotificationItem message="yuri.kim님이 친구 요청을 보냈습니다." />
           <NotificationItem
+            link="/questions/1"
             message={'jina.park님이 "나에게 소개원실이란?" 질문을 보냈습니다.'}
           />
           <NotificationItem
+            link="/articles/1"
             message={'jaewon.kim님이 당신의 댓글에 답글을 남겼습니다: "배고파"'}
+          />
+          <NotificationItem
+            link="/responses/1"
+            message="jinsun.goo님이 당신의 질문에 답변을 달았습니다."
           />
         </List>
       </CardContent>

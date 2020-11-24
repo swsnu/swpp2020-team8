@@ -19,7 +19,7 @@ class LikeTestCase(TestCase):
         self.assertEqual(Like.objects.all().count(), N*5)
 
     def test_like_str(self):
-        like = Like.objects.all().last()
+        like = Like.objects.last()
         self.assertEqual(like.__str__(), f'{like.user} likes {like.content_type} ({like.object_id})')
         self.assertEqual(like.type, 'Like')
 
@@ -95,7 +95,7 @@ class LikeAPITestCase(APITestCase):
             self.assertEqual(response.status_code, 201)
 
         with self.login(username=current_user.username, password='password'):
-            pk = Like.objects.all().last().id
+            pk = Like.objects.last().id
             response = self.delete(self.reverse('like-destroy', pk=pk))
             self.assertEqual(response.status_code, 204)
 
@@ -105,6 +105,6 @@ class LikeAPITestCase(APITestCase):
             self.assertEqual(response.status_code, 201)
 
         with self.login(username=spy_user.username, password='password'):
-            pk = Like.objects.all().last().id
+            pk = Like.objects.last().id
             response = self.delete(self.reverse('like-destroy', pk=pk))
             self.assertEqual(response.status_code, 403)

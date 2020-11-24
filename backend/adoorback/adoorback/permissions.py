@@ -16,3 +16,18 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         elif obj.type == 'User':
             return obj == request.user
         return obj.author == request.user
+
+
+class IsShared(permissions.BasePermission):
+    """
+    Custom permission to only allow friends of author to view author profile.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        if obj.type == 'Question' or obj.share_anonymously:
+            return True
+        # TODO: fix after friendship is implemented
+        elif obj.share_with_friends and obj.author == request.user:
+            return True
+        else:
+            return obj.author == request.user
