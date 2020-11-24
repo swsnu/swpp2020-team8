@@ -59,7 +59,7 @@ describe('user Actions', () => {
       })
       .catch(() => {
         const newState = store.getState();
-        expect(newState.userReducer.user).toBeFalsy();
+        expect(newState.userReducer.currentUser).toBeFalsy();
         expect(newState.userReducer.signUpError).toBeTruthy();
       });
   });
@@ -77,7 +77,7 @@ describe('user Actions', () => {
     store.dispatch(actionCreators.logout()).then(() => {
       const newState = store.getState();
       expect(spy).toHaveBeenCalled();
-      expect(newState.userReducer.user).toBeFalsy();
+      expect(newState.userReducer.currentUser).toBeFalsy();
       done();
     });
   });
@@ -101,7 +101,7 @@ describe('user Actions', () => {
       })
       .catch(() => {
         const newState = store.getState();
-        expect(newState.userReducer.user).toBeFalsy();
+        expect(newState.userReducer.currentUser).toBeFalsy();
         expect(newState.userReducer.loginError).toBeTruthy();
       });
   });
@@ -122,7 +122,7 @@ describe('user Actions', () => {
       .then(() => {
         const newState = store.getState();
         expect(spy).toHaveBeenCalled();
-        expect(newState.userReducer.user.questionHistory).toEqual(
+        expect(newState.userReducer.currentUser.questionHistory).toEqual(
           questionSelection
         );
         done();
@@ -156,7 +156,7 @@ describe('user Actions', () => {
       const newState = store.getState();
       expect(spy).toHaveBeenCalled();
       expect(getSpy).toHaveBeenCalled();
-      expect(newState.userReducer.user).toMatchObject(userInfo);
+      expect(newState.userReducer.currentUser).toMatchObject(userInfo);
       done();
     });
   });

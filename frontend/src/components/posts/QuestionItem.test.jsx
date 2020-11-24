@@ -31,7 +31,7 @@ describe('<QuestionItem/>', () => {
   );
 
   const userMockQuestions = mockStore.questionReducer.dailyQuestions.filter(
-    (item) => item.author_detail.id === mockStore.userReducer.user.id
+    (item) => item.author_detail.id === mockStore.userReducer.currentUser.id
   );
   const adminMockQuestions = mockStore.questionReducer.dailyQuestions.filter(
     (item) => item.is_admin_question

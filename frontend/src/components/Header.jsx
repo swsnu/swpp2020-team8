@@ -117,7 +117,7 @@ const Header = () => {
   const [isNotiOpen, setIsNotiOpen] = useState(false);
   const dispatch = useDispatch();
 
-  const user = useSelector((state) => state.userReducer.user);
+  const currentUser = useSelector((state) => state.userReducer.currentUser);
 
   const handleClickLogout = () => {
     dispatch(logout());
@@ -184,7 +184,7 @@ const Header = () => {
           aria-label="account of current user"
           className={classes.iconButton}
         >
-          <Link to={`/users/${user?.id}/friends`}>
+          <Link to={`/users/${currentUser?.id}/friends`}>
             <AccountCircle />
           </Link>
         </IconButton>
@@ -212,7 +212,7 @@ const Header = () => {
             <TitleLink to="/friends" className={classes.title}>
               adoor
             </TitleLink>
-            {user !== null ? (
+            {currentUser !== null ? (
               renderHeaderSignedInItems
             ) : (
               <>
