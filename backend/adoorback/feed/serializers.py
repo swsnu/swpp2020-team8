@@ -242,10 +242,9 @@ class QuestionDetailAnonymousResponsesSerializer(QuestionResponsiveSerializer):
 
 class ResponseRequestSerializer(serializers.ModelSerializer):
     actor_id = serializers.IntegerField(read_only=True)
-    recipient_id = serializers.IntegerField(read_only=True)
+    recipient_id = serializers.IntegerField()
     question_id = serializers.IntegerField(read_only=True)
-    responded = serializers.BooleanField()
 
     class Meta():
         model = ResponseRequest
-        fields = ['id', 'actor_id', 'recipient_id', 'question_id', 'responded']
+        fields = ['id', 'actor_id', 'recipient_id', 'question_id']

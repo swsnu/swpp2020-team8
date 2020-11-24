@@ -1,10 +1,9 @@
-import json
-
 from test_plus.test import TestCase
 from rest_framework.test import APIClient
 
 from django.contrib.auth import get_user_model
 
+from account.models import Friendship
 from feed.models import Article, Response, Question, Post, ResponseRequest
 
 from adoorback.utils.seed import set_seed, fill_data
@@ -347,6 +346,7 @@ class ResponseRequestAPITestCase(APITestCase):
 
         question = Question.objects.create(author_id=current_user.id, content="test_question", is_admin_question=False)
         ResponseRequest.objects.create(actor=friend_user, recipient=current_user, question=question)
+        Friendship.objects.create(user=current_user, friend=friend_user)
         adoor_received_response_request = ResponseRequest.objects.create(actor=current_user,
                                                                          recipient=user_adoor, question=question)
 
@@ -359,37 +359,20 @@ class ResponseRequestAPITestCase(APITestCase):
             response = self.post(self.reverse('response-request-detail', qid=question.id+1, rid=friend_user.id+1))
             self.assertEqual(response.status_code, 404)
 
-        # POST
+        # POST - send response request to non-friends
         with self.login(username=current_user.username, password='password'):
             response = self.post(self.reverse('response-request-detail', qid=question.id, rid=friend_user.id))
             self.assertEqual(response.status_code, 201)
 
-            # PATCH - other user
-            data = {'responded': 'true'}
-            response = self.patch(self.reverse('response-request-detail', qid=question.id,
-                                                rid=friend_user.id), data=data)
+        # POST - send response request to non-friends
+        with self.login(username=current_user.username, password='password'):
+            response = self.post(self.reverse('response-request-detail', qid=question.id, rid=user_adoor.id))
             self.assertEqual(response.status_code, 403)
 
-        # PATCH
-        login_data = {"username": 'adoor', "password": 'adoor2020:)'}
-        response = self.client.post('/api/user/login/', json.dumps(login_data), content_type='application/json')
-        self.assertEqual(response.status_code, 204)
 
         qid = adoor_received_response_request.question.id
         rid = user_adoor.id
-        url = f'/api/feed/questions/{qid}/request-response/{rid}/'
-        response = self.client.patch(url, json.dumps({'responded': True}), content_type='application/json')
-        self.assertEqual(response.status_code, 200)
-
-        # PATCH - JSON Decode Error
-        response = self.client.patch(url, json.dumps({'test': True}), content_type='application/json')
-        self.assertEqual(response.status_code, 400)
-
-        # PATCH - non-exist question 404 error
         question_last_id = Question.objects.last().id
-        non_exist_url = f'/api/feed/questions/{question_last_id+1}/request-response/{rid}/'
-        response = self.client.patch(non_exist_url, json.dumps({'responded': True}), content_type='application/json')
-        self.assertEqual(response.status_code, 404)
 
         # DELETE - actor
         with self.login(username=current_user.username, password='password'):

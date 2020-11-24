@@ -29,6 +29,10 @@ class User(AbstractUser):
     class Meta:
         ordering = ['username']
 
+    @classmethod
+    def are_friends(cls, user1, user2):
+        return Friendship.objects.filter(user_id=user1.id, friend_id=user2.id).exists()
+
     @property
     def type(self):
         return self.__class__.__name__

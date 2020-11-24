@@ -1,7 +1,6 @@
-import json
-
 from django.contrib.auth import get_user_model
-from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseNotAllowed
+
 from django.utils import timezone
 from rest_framework import generics
 from rest_framework import permissions
@@ -105,7 +104,6 @@ class QuestionAnonymousResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
 class ResponseRequestList(generics.ListAPIView):
     """
     Get response requests of the selected question.
-    Create ResponseRequest of the selected question.
     """
     serializer_class = fs.ResponseRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -116,7 +114,7 @@ class ResponseRequestList(generics.ListAPIView):
         responseRequests = current_user_sent_response_request_set.filter(question_id=question_id)
         return responseRequests
 
-@api_view(["POST", "PATCH", "DELETE"])
+@api_view(["POST", "DELETE"])
 def response_request_detail(request, qid, rid):
     if not request.user.is_authenticated:
         return HttpResponse(status=401)
@@ -127,30 +125,17 @@ def response_request_detail(request, qid, rid):
     except (User.DoesNotExist, Question.DoesNotExist):
         return HttpResponse(status=404)
 
-    #TODO: 친구에게만 질문 보내기 가능
     if request.method == 'POST':
-        new_response_request = ResponseRequest(actor=request.user, recipient=recipient, question=question)
-        new_response_request.save()
-        serializer = fs.ResponseRequestSerializer(new_response_request)
-        return DRF_Response(serializer.data, status=status.HTTP_201_CREATED)
+        recipient = User.objects.get(id=rid)
 
-    elif request.method == 'PATCH':
-        try:
-            response_request = ResponseRequest.objects.get(question_id=qid, recipient_id=rid)
-        except ResponseRequest.DoesNotExist:
-            return HttpResponse(status=404)
-
-        if request.user.id == response_request.recipient.id:
-            try:
-                new_responded = json.loads(request.body)['responded']
-                response_request.responded = new_responded
-                response_request.save()
-                serializer = fs.ResponseRequestSerializer(response_request)
-                return DRF_Response(serializer.data, status=status.HTTP_200_OK)
-            except (KeyError, json.JSONDecodeError):
-                return HttpResponseBadRequest()
-        else:
+        if not User.are_friends(request.user, recipient):
             return HttpResponse(status=403)
+        else:
+            new_response_request = ResponseRequest.objects.create(actor=request.user,
+                                                                  recipient=recipient, question=question)
+
+            serializer = fs.ResponseRequestSerializer(new_response_request)
+            return DRF_Response(serializer.data, status=status.HTTP_201_CREATED)
 
     elif request.method == 'DELETE':
         try:
