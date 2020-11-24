@@ -58,10 +58,5 @@ def create_noti(sender, **kwargs):
     recipient = instance.target.author
     origin_name = get_korean_type_name(origin.type)
     message = f'{actor.username}님이 회원님의 {origin_name}에 댓글을 남겼습니다.'
-    try:
-        with transaction.atomic():
-            Notification.objects.create(actor = actor, recipient = recipient, message = message,
-                origin = origin, target = target)
-    except IntegrityError as error:
-        if 'unique constraint' in error.args:
-            pass
+    Notification.objects.create(actor = actor, recipient = recipient, message = message,
+        origin = origin, target = target)

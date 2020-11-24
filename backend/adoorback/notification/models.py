@@ -28,10 +28,3 @@ class Notification(AdoorTimestampedModel):
 
     def __str__(self):
         return self.message
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['actor', 'recipient', 'target_id', 'target_type',
-                'origin_id', 'origin_type', 'message'], name='unique_noti'),
-        ]

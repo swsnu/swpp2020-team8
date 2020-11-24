@@ -55,15 +55,9 @@ def create_noti(sender, **kwargs):
     origin_name = get_korean_type_name(origin.type)
     actor = instance.user
     actor_name = '익명의 사용자가'
-    # TODO 이(가) 바꾸기
     recipient = instance.target.author
     if User.are_friends(actor, recipient):
         actor_name = f'{actor.username}님이'
     message = f'{actor_name} 회원님의 {origin_name}을 좋아합니다.'
-    try:
-        with transaction.atomic():
-            Notification.objects.create(actor = actor, recipient = recipient, message = message,
-                origin = origin, target = target)
-    except IntegrityError as error:
-        if 'unique constraint' in error.args:
-            pass
+    Notification.objects.create(actor = actor, recipient = recipient, message = message,
+        origin = origin, target = target)
