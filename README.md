@@ -30,8 +30,8 @@ python manage.py makemigrations account feed comment like notification
 python manage.py migrate
 # for seed data
 python manage.py shell
-from adoorback.utils.mock_seed import set_seed
-set_seed()
+from adoorback.utils.seed import set_seed
+set_seed(20)
 python manage.py runserver
 ```
 
