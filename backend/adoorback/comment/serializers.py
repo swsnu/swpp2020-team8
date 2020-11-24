@@ -2,7 +2,9 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
 from comment.models import Comment
+
 from adoorback.serializers import AdoorBaseSerializer
+from account.serializers import AuthorFriendSerializer, AuthorAnonymousSerializer
 
 
 User = get_user_model()
@@ -14,11 +16,10 @@ class RecursiveReplyField(serializers.Serializer):
         return serializer.data
 
 
-class CommentSerializer(AdoorBaseSerializer):
+class CommentBaseSerializer(AdoorBaseSerializer):
     target_type = serializers.SerializerMethodField()
     target_id = serializers.SerializerMethodField()
     is_reply = serializers.SerializerMethodField(read_only=True)
-    replies = RecursiveReplyField(many=True, read_only=True)
 
     def get_target_type(self, obj):
         return obj.target.type
@@ -31,10 +32,29 @@ class CommentSerializer(AdoorBaseSerializer):
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Comment
-        fields = ['id', 'type', 'is_reply', 'target_id', 'target_type',
-                  'content', 'author', 'author_detail', 'is_private',
-                  'like_count', 'current_user_liked',
-                  'replies', 'created_at', 'updated_at']
+        fields = AdoorBaseSerializer.Meta.fields + ['is_reply', 'is_private',
+                                                    'target_type', 'target_id']
 
-        def get_related_field(self, obj):
-            return CommentSerializer()
+
+class CommentFriendSerializer(CommentBaseSerializer):
+    author_detail = AuthorFriendSerializer(source='author', read_only=True)
+    replies = RecursiveReplyField(many=True, read_only=True)
+
+    class Meta(CommentBaseSerializer.Meta):
+        model = Comment
+        fields = CommentBaseSerializer.Meta.fields + ['author_detail', 'replies']
+
+    def get_related_field(self, obj):
+        return CommentFriendSerializer()
+
+
+class CommentAnonymousSerializer(CommentBaseSerializer):
+    author_detail = AuthorAnonymousSerializer(source='author', read_only=True)
+    replies = RecursiveReplyField(many=True, read_only=True)
+
+    class Meta(CommentBaseSerializer.Meta):
+        model = Comment
+        fields = CommentBaseSerializer.Meta.fields + ['author_detail', 'replies']
+
+    def get_related_field(self, obj):
+        return CommentAnonymousSerializer()

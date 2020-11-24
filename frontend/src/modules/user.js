@@ -14,8 +14,6 @@ export const LOGOUT_REQUEST = 'user/LOGOUT_REQUEST';
 export const LOGOUT_SUCCESS = 'user/LOGOUT_SUCCESS';
 export const LOGOUT_FAILURE = 'user/LOGOUT_FAILURE';
 
-export const REMOVE_ERROR = 'user/REMOVE_ERROR';
-
 export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
 
 const initialState = {
@@ -80,20 +78,20 @@ export const requestLogin = (loginInfo) => {
 
     let currentUser;
     try {
-      // try login
-      await axios.post('user/login/', loginInfo);
-
       // set jwt token set
       const res = await axios.post('user/token/', loginInfo);
       Cookie.set('jwt_token_refresh', res.data.refresh);
       Cookie.set('jwt_token_access', res.data.access);
 
+      // try login
+      await axios.post('user/login/', loginInfo);
       // set user info
       currentUser = await getUser();
+      dispatch(loginSuccess(currentUser));
     } catch (err) {
       dispatch(loginFailure(err));
+      return;
     }
-
     dispatch(loginSuccess(currentUser));
   };
 };
@@ -126,12 +124,6 @@ export const logout = () => async (dispatch) => {
   });
 };
 
-export const removeError = () => {
-  return {
-    type: REMOVE_ERROR
-  };
-};
-
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
     case SIGN_UP_REQUEST:
@@ -159,12 +151,6 @@ export default function userReducer(state = initialState, action) {
         loginError: action.error
       };
     case LOGOUT_SUCCESS:
-      return {
-        ...state,
-        user: null,
-        loginError: false
-      };
-    case REMOVE_ERROR:
       return {
         ...state,
         user: null,

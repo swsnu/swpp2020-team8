@@ -1,32 +1,23 @@
-rm -f tmp.db db.sqlite3
-rm -r */migrations
-python manage.py makemigrations account feed comment like
-python manage.py migrate
-
 python manage.py shell
-
-from faker import Faker
-import random
 
 from django.contrib.auth import get_user_model
 from feed.models import Question, Article, Response, Post
 from comment.models import Comment
 from like.models import Like
 from django.contrib.contenttypes.models import ContentType
-from adoorback.utils.mock_seed import set_seed
-from adoorback.utils.content_types import get_content_type
+from adoorback.utils.mock_seed import set_mock_seed
 User = get_user_model()
 
-set_seed()
+set_mock_seed()
 
-user = User.objects.all().last()
+user = User.objects.last()
 
-article = Article.objects.all().last()
-response = Response.objects.all().last()
-question = Question.objects.all().last()
-comment = Comment.objects.all().last()
-like = Like.objects.all().last()
-post = Post.objects.all().last()
+article = Article.objects.last()
+response = Response.objects.last()
+question = Question.objects.last()
+comment = Comment.objects.last()
+like = Like.objects.last()
+post = Post.objects.last()
 
 admin_question = Question.objects.admin_questions_only().last()
 custom_question = Question.objects.custom_questions_only().last()
