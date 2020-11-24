@@ -9,6 +9,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from adoorback.models import AdoorTimestampedModel
+
 
 def random_profile_color():
     # use random int so that initial users get different colors
@@ -33,7 +35,7 @@ class User(AbstractUser):
 
     @classmethod
     def are_friends(cls, user1, user2):
-        return Friendship.objects.filter(user_id=user1.id, friend_id=user2.id).exists()
+        return Friendship.objects.filter(user_id=user1.id, friend_id=user2.id).exists() | (user1 == user2)
 
     @property
     def type(self):
@@ -60,6 +62,31 @@ class Friendship(models.Model):
 
     def __str__(self):
         return f'{self.user} & {self.friend}'
+
+    @property
+    def type(self):
+        return self.__class__.__name__
+
+
+class FriendRequest(AdoorTimestampedModel):
+    """FriendRequest Model
+    This model describes FriendRequest between users
+    """
+    requester = models.ForeignKey(
+        get_user_model(), related_name='sent_friend_requests', on_delete=models.CASCADE)
+    responder = models.ForeignKey(
+        get_user_model(), related_name='received_friend_requests', on_delete=models.CASCADE)
+    responded = models.BooleanField(default=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['requester', 'responder', ], name='unique_friend_request'),
+        ]
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.requester} sent to {self.responder} ({self.responded})'
 
     @property
     def type(self):

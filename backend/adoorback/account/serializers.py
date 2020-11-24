@@ -3,7 +3,7 @@ import random
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-from account.models import Friendship
+from account.models import Friendship, FriendRequest
 from adoorback.settings import BASE_URL
 
 User = get_user_model()
@@ -61,3 +61,13 @@ class UserFriendshipDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Friendship
         fields = ['user_id', 'friend_id']
+
+
+class UserFriendshipRequestSerializer(serializers.ModelSerializer):
+    requester_id = serializers.IntegerField()
+    responder_id = serializers.IntegerField()
+    responded = serializers.BooleanField(default=False)
+
+    class Meta:
+        model = FriendRequest
+        fields = ['id', 'requester_id', 'responder_id', 'responded']

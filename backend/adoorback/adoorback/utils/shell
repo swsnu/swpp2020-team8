@@ -1,6 +1,6 @@
-python manage.py shell
+python3 manage.py shell
 
-from account.models import Friendship
+from account.models import Friendship, FriendRequest
 from feed.models import Question, Article, Response, Post
 from comment.models import Comment
 from like.models import Like

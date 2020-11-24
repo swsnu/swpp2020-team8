@@ -29,4 +29,8 @@ urlpatterns = [
          name='user-friend-list'),
     path('friendship/<int:fid>/', views.UserFriendshipDetail.as_view(),
          name='user-friend-detail'),
+
+    # FriendRequest related
+    path('friend-requests/<int:pk>/', views.UserFriendRequestList.as_view(),
+         name='user-friend-request'),
 ]

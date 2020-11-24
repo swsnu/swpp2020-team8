@@ -8,8 +8,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 
 from adoorback.permissions import IsOwnerOrReadOnly
-from account.models import Friendship
-from account.serializers import UserProfileSerializer, AuthorFriendSerializer, UserFriendshipDetailSerializer
+from account.models import Friendship, FriendRequest
+from account.serializers import UserProfileSerializer, AuthorFriendSerializer, \
+    UserFriendshipDetailSerializer, UserFriendshipRequestSerializer
 from feed.serializers import QuestionAnonymousSerializer
 from feed.models import Question
 
@@ -130,3 +131,21 @@ class UserFriendshipDetail(generics.CreateAPIView, generics.RetrieveDestroyAPIVi
                            friend_id=self.kwargs.get('fid'))
         self.check_object_permissions(self.request, obj)
         return obj
+
+
+class UserFriendRequestList(generics.ListCreateAPIView, generics.DestroyAPIView):
+    queryset = FriendRequest.objects.all()
+    serializer_class = UserFriendshipRequestSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # should exclude 'current_user' to 'current_user' friend request
+        queryset = FriendRequest.objects.filter(
+            responder_id=self.kwargs.get('pk'), requester_id=self.request.user.id) \
+            .exclude(requester_id=self.kwargs.get('rid'))
+        return queryset
+
+    def perform_create(self, serializer):
+        serializer.save(requester_id=self.request.user.id,
+                        responder_id=self.kwargs.get('pk'),
+                        responded=False)

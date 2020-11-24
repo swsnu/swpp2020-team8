@@ -8,7 +8,7 @@ from test_plus.test import TestCase
 from adoorback.utils.seed import set_seed
 
 
-from account.models import Friendship
+from account.models import Friendship, FriendRequest
 
 User = get_user_model()
 N = 10
@@ -46,6 +46,38 @@ class UserFriendshipCase(TestCase):
         self.assertEqual(Friendship.objects.all().filter(user_id=1).count(), 0)
         self.assertEqual(Friendship.objects.all().filter(
             friend_id=1).count(), 0)
+
+
+class FriendRequestTestCase(TestCase):
+    def setUp(self):
+        set_seed(N)
+
+    def test_friend_request_count(self):
+        self.assertEqual(FriendRequest.objects.all().count(), 3)
+
+    def test_on_delete_requester_cascade(self):
+        user = FriendRequest.objects.all().first().requester
+        sent_friend_requests = user.sent_friend_requests.all()
+        self.assertGreater(sent_friend_requests.count(), 0)
+
+        user.delete()
+        self.assertEqual(User.objects.all().filter(id=user.id).count(), 0)
+        self.assertEqual(FriendRequest.objects.all().filter(
+            requester_id=user.id).count(), 0)
+        self.assertEqual(FriendRequest.objects.all().filter(
+            responder_id=user.id).count(), 0)
+
+    def test_on_delete_responder_cascade(self):
+        user = FriendRequest.objects.all().first().responder
+        received_friend_requests = user.received_friend_requests.all()
+        self.assertGreater(received_friend_requests.count(), 0)
+
+        user.delete()
+        self.assertEqual(User.objects.all().filter(id=user.id).count(), 0)
+        self.assertEqual(FriendRequest.objects.all().filter(
+            responder_id=user.id).count(), 0)
+        self.assertEqual(FriendRequest.objects.all().filter(
+            requester_id=user.id).count(), 0)
 
 
 class APITestCase(TestCase):
@@ -217,3 +249,68 @@ class AuthAPITestCase(APITestCase):
             response = self.get('current-user')
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()['username'], "test_user")
+
+
+class FriendRequestAPITestCase(APITestCase):
+
+    def setUp(self):
+        set_seed(N)
+
+    def test_friend_request_list(self):
+        current_user = self.make_user(username='current_user')
+        friend_user_1 = self.make_user(username='friend_user_1')
+        friend_user_2 = self.make_user(username='friend_user_2')
+
+        FriendRequest.objects.create(
+            requester=current_user, responder=friend_user_1, responded=False)
+        FriendRequest.objects.create(
+            requester=current_user, responder=friend_user_2, responded=False)
+        FriendRequest.objects.create(
+            requester=friend_user_1, responder=friend_user_2, responded=False)
+
+        with self.login(username=current_user.username, password='password'):
+            response = self.get(self.reverse(
+                'user-friend-request', pk=friend_user_1.id))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['count'], 1)
+
+    def test_response_request_detail(self):
+        current_user = self.make_user(username='current_user')
+        friend_user = self.make_user(username='friend_user')
+        user_adoor = User.objects.get(username='adoor')
+
+        # POST - send friend request to non-friends
+        with self.login(username=current_user.username, password='password'):
+            response = self.post(self.reverse(
+                'user-friend-request', pk=friend_user.id))
+            self.assertEqual(response.status_code, 201)
+
+        # POST - send friend request to already requested friends
+        with self.login(username=current_user.username, password='password'):
+            response = self.post(self.reverse(
+                'user-friend-request', pk=user_adoor.id))
+            self.assertEqual(response.status_code, 403)
+
+        # DELETE - actor
+        with self.login(username=current_user.username, password='password'):
+            response = self.delete(self.reverse(
+                'user-friend-request', pk=friend_user.id))
+            self.assertEqual(response.status_code, 204)
+
+        # DELETE - other user
+        with self.login(username=friend_user.username, password='password'):
+            response = self.delete(self.reverse(
+                'user-friend-request', pk=user_adoor.id))
+            self.assertEqual(response.status_code, 403)
+
+        # DELETE - non-exist question 404 error
+        with self.login(username=current_user.username, password='password'):
+            response = self.delete(self.reverse(
+                'user-friend-request', pk=friend_user.id+1))
+            self.assertEqual(response.status_code, 404)
+
+        # GET - not allowed request
+        with self.login(username=current_user.username, password='password'):
+            response = self.delete(self.reverse(
+                'user-friend-request', pk=user_adoor.id))
+            self.assertEqual(response.status_code, 405)
