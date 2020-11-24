@@ -39,6 +39,18 @@ describe('<ShareSettings />', () => {
       </Provider>
     );
 
+  const getEmptyWrapper = () =>
+    mount(
+      <Provider store={store}>
+        <Router history={history}>
+          <ShareSettings
+            newPost={{ content: '', type: 'Article' }}
+            resetContent={resetContent}
+          />
+        </Router>
+      </Provider>
+    );
+
   jest.mock('react-redux', () => ({
     useDisPatch: () => jest.fn()
   }));
@@ -75,16 +87,7 @@ describe('<ShareSettings />', () => {
   });
 
   it('should not submitted when no content', () => {
-    const wrapper = mount(
-      <Provider store={store}>
-        <Router history={history}>
-          <ShareSettings
-            newPost={{ content: 'test', type: 'Article' }}
-            resetContent={resetContent}
-          />
-        </Router>
-      </Provider>
-    );
+    const wrapper = getEmptyWrapper();
     const submitButton = wrapper.find('button');
     expect(submitButton.length).toBe(1);
     submitButton.simulate('click');

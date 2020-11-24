@@ -140,6 +140,22 @@ export const mockQuestionFeed = [
     is_admin_question: true
   },
   {
+    id: 134,
+    type: 'Question',
+    author: 'http://localhost:8000/api/user/1/',
+    author_detail: {
+      id: 123,
+      username: 'curious'
+    },
+    content: 'Republican',
+    like_count: 33,
+    current_user_liked: true,
+    created_at: '2020-11-15T14:52:51.786164+09:00',
+    updated_at: '2020-11-15T14:52:52.380141+09:00',
+    selected_date: '2020-11-15T14:52:52.380046+09:00',
+    is_admin_question: true
+  },
+  {
     id: 3,
     type: 'Question',
     author: 'http://localhost:8000/api/user/3/',

@@ -75,4 +75,15 @@ describe('<NewComment />', () => {
     });
     expect(onSubmit.mock.calls.length).toEqual(1);
   });
+
+  it('should toggle private', () => {
+    const component = shallow(<NewComment onSubmit={onSubmit} isReply />);
+    const checkPrivate = component.find('#check-private');
+    checkPrivate.simulate('click');
+    const event = {
+      preventDefault() {},
+      target: { checked: true }
+    };
+    checkPrivate.simulate('change', event);
+  });
 });

@@ -220,4 +220,35 @@ describe('<PostItem /> unit mount test', () => {
     const component = getPostWrapper();
     expect(component.find('CommentItem').length).toEqual(0);
   });
+
+  it('should deal with delete', async () => {
+    const component = getPostWrapper();
+    expect(component.find('#post-delete-button')).toBeTruthy();
+    const deleteButton = component.find('#post-delete-button').at(0);
+    deleteButton.simulate('click');
+    component.update();
+    component.find('#confirm-button').at(0).simulate('click');
+    expect(component.find('AlertDialog').props().isOpen).toBeFalsy();
+  });
+
+  it('should deal with comment submit function', () => {
+    const component = getPostWrapper();
+    let input = component.find('.comment-input').at(0);
+    expect(input).toBeTruthy();
+    let submitButton = component.find('#submit-button').at(0);
+    expect(submitButton).toBeTruthy();
+    submitButton.simulate('click');
+    const inputEvent = {
+      preventDefault() {},
+      target: { value: 'hello' }
+    };
+    input.simulate('change', inputEvent);
+    component.update();
+    input = component.find('.comment-input').at(0);
+    expect(input.props().value).toEqual('hello');
+    submitButton = component.find('#submit-button').at(0);
+    submitButton.simulate('click');
+    const handleSubmit = jest.fn();
+    expect(handleSubmit.mock.calls).toBeTruthy();
+  });
 });

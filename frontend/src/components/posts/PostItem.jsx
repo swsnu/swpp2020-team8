@@ -88,10 +88,10 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
     setLiked((prev) => !prev);
   };
   const handleEdit = () => {
-    // todo: redirect to delete page
+    // todo: redirect to edit page
   };
-  const handleDelete = async () => {
-    await dispatch(deletePost(postObj.id, postObj.type));
+  const handleDelete = () => {
+    dispatch(deletePost(postObj.id, postObj.type));
     setIsDeleteDialogOpen(false);
     if (isDetailPage) history.replace('/');
   };

@@ -41,10 +41,18 @@ export default function PostAuthorButtons({ onClickEdit, onClickDelete }) {
         <Card className={classes.card}>
           <List style={{ padding: '0' }}>
             <ListItem button>
-              <ListItemText primary="수정하기" onClick={onClickEdit} />
+              <ListItemText
+                id="post-edit-button"
+                primary="수정하기"
+                onClick={onClickEdit}
+              />
             </ListItem>
             <ListItem button>
-              <ListItemText primary="삭제하기" onClick={onClickDelete} />
+              <ListItemText
+                id="post-delete-button"
+                primary="삭제하기"
+                onClick={onClickDelete}
+              />
             </ListItem>
           </List>
         </Card>
