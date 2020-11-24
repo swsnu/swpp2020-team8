@@ -27,9 +27,7 @@ class NotificationSerializer(serializers.ModelSerializer):
         return AuthorAnonymousSerializer(obj.actor).data
 
     def get_recipient_detail(self, obj):
-        if User.are_friends(self.context.get('request', None).user, obj.actor):
-            return AuthorFriendSerializer(obj.actor).data
-        return AuthorAnonymousSerializer(obj.actor).data
+        return AuthorFriendSerializer(obj.recipient).data
 
     def get_target_type(self, obj):
         return obj.target.type
