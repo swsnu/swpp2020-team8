@@ -31,10 +31,12 @@ class IsShared(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
         if obj.type == 'Question' or obj.share_anonymously:
             return True
-        # TODO: fix after friendship is implemented
-        elif obj.share_with_friends and obj.author == request.user:
+        elif obj.share_with_friends and User.are_friends(request.user, obj.author):
             return True
         else:
             return obj.author == request.user

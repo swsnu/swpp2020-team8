@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='question_set', to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'abstract': False,
+                'base_manager_name': 'objects',
             },
         ),
         migrations.CreateModel(
@@ -61,6 +61,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'ordering': ['-created_at'],
+                'base_manager_name': 'objects',
             },
         ),
         migrations.CreateModel(

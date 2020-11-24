@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contenttypes.contenttype')),
             ],
             options={
-                'abstract': False,
+                'base_manager_name': 'objects',
             },
         ),
     ]

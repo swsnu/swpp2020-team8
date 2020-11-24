@@ -62,6 +62,10 @@ confidence=
 # --disable=W".
 disable=print-statement,
         fixme,
+        too-many-branches,
+        unused-variable,
+        undefined-loop-variable,
+        too-many-arguments,
         duplicate-code,
         no-self-use,
         no-else-return,
