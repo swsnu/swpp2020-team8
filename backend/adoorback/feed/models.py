@@ -29,7 +29,6 @@ class Article(AdoorModel):
 
 
 class QuestionManager(models.Manager):
-    use_for_related_fields = True
 
     def admin_questions_only(self, **kwargs):
         return self.filter(is_admin_question=True, **kwargs)
@@ -56,6 +55,9 @@ class Question(AdoorModel):
     def type(self):
         return self.__class__.__name__
 
+    class Meta:
+        base_manager_name = 'objects'
+
 
 class Response(AdoorModel):
     author = models.ForeignKey(User, related_name='response_set', on_delete=models.CASCADE)
@@ -72,10 +74,8 @@ class Response(AdoorModel):
 
 
 class PostManager(models.Manager):
-    use_for_related_fields = True
 
     def friend_posts_only(self, **kwargs):
-        # TODO: modify after friendship implementation
         return self.filter(share_with_friends=True, **kwargs)
 
     def anonymous_posts_only(self, **kwargs):
@@ -94,6 +94,7 @@ class Post(AdoorModel):
 
     class Meta:
         ordering = ['-created_at']
+        base_manager_name = 'objects'
 
 
 @receiver(post_save, sender=Question)

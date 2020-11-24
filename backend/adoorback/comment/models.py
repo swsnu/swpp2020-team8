@@ -12,7 +12,6 @@ User = get_user_model()
 
 
 class CommentManager(models.Manager):
-    use_for_related_fields = True
 
     def comments_only(self, **kwargs):
         return self.exclude(content_type=get_content_type("Comment"), **kwargs)
@@ -37,3 +36,6 @@ class Comment(AdoorModel):
     @property
     def type(self):
         return self.__class__.__name__
+
+    class Meta:
+        base_manager_name = 'objects'
