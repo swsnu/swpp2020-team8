@@ -16,7 +16,8 @@ class Notification(models.Model):
     target_id = models.IntegerField(blank=True, null=True)
     target = GenericForeignKey('target_type', 'target_id')
 
-    origin_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name='origin_noti_set')
+    origin_type = models.ForeignKey(ContentType,
+        on_delete=models.CASCADE, related_name='origin_noti_set')
     origin_id = models.IntegerField(blank=True, null=True)
     origin = GenericForeignKey('origin_type', 'origin_id')
 
@@ -28,3 +29,10 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.message
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['actor', 'recipient', 'target_id', 'target_type',
+                'origin_id', 'origin_type'], name='unique_noti'),
+        ]

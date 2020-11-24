@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
 from notification.models import Notification
+from account.serializers import AuthorFriendSerializer, AuthorAnonymousSerializer
 
 
 User = get_user_model()
@@ -21,18 +22,14 @@ class NotificationSerializer(serializers.ModelSerializer):
     origin_id = serializers.SerializerMethodField()
 
     def get_actor_detail(self, obj):
-        user = obj.actor
-        return {
-            "id": user.id,
-            "username": user.username,
-        }
+        if User.are_friends(self.context.get('request', None).user, obj.actor):
+            return AuthorFriendSerializer(obj.actor).data
+        return AuthorAnonymousSerializer(obj.actor).data
 
     def get_recipient_detail(self, obj):
-        user = obj.recipient
-        return {
-            "id": user.id,
-            "username": user.username,
-        }
+        if User.are_friends(self.context.get('request', None).user, obj.actor):
+            return AuthorFriendSerializer(obj.actor).data
+        return AuthorAnonymousSerializer(obj.actor).data
 
     def get_target_type(self, obj):
         return obj.target.type

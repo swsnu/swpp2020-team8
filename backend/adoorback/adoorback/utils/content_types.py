@@ -23,3 +23,20 @@ def get_content_type(model_name):
     else:
         model = None
     return ContentType.objects.get_for_model(model)
+
+def get_korean_type_name(model_name):
+    if model_name == 'Comment':
+        result = '댓글'
+    elif model_name == 'Like':
+        result = '좋아요'
+    elif model_name == 'Article':
+        result = '게시물'
+    elif model_name == 'Question':
+        result = '질문'
+    elif model_name == 'Response':
+        result = '답변'
+    elif model_name == 'Post':
+        result = '게시물'
+    else:
+        result = ''
+    return result

@@ -1,11 +1,11 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.db import models
+from django.db import models, IntegrityError
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
-from adoorback.utils.content_types import get_content_type
+from adoorback.utils.content_types import get_content_type, get_korean_type_name
 from notification.models import Notification
 
 User = get_user_model()
@@ -52,8 +52,17 @@ def create_noti(sender, **kwargs):
     instance = kwargs['instance']
     target = instance
     origin = instance.target
+    origin_name = get_korean_type_name(origin.type)
     actor = instance.user
+    actor_name = '익명의 사용자가'
+    # TODO 이(가) 바꾸기
     recipient = instance.target.author
-    message = f'{actor.username} likes your {origin.type}'
-    Notification.objects.create(actor = actor, recipient = recipient, message = message,
+    if User.are_friends(actor, recipient):
+        actor_name = f'{actor.username}님이'
+    message = f'{actor_name} 회원님의 {origin_name}을 좋아합니다.'
+    try:
+        Notification.objects.create(actor = actor, recipient = recipient, message = message,
             origin = origin, target = target, is_read = False, is_visible = True)
+    except IntegrityError as error:
+        if 'unique constraint' in error.args:
+            pass
