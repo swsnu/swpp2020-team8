@@ -18,7 +18,7 @@ urlpatterns = [
          name='token-obtain-pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token-verify'),
-    path('<int:pk>/friends/', views.UserFriendList.as_view(),
+    path('friends/', views.UserFriendList.as_view(),
          name='user-friend-list'),
     path('friendship/<int:fid>/', views.UserFriendshipDetail.as_view(),
          name='user-friend-detail'),
