@@ -2,11 +2,13 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
+from adoorback.models import AdoorTimeStampedModel
+
 
 
 User = get_user_model()
 
-class Notification(models.Model):
+class Notification(AdoorTimeStampedModel):
     message = models.CharField(max_length=100)
 
     actor = models.ForeignKey(User, related_name='sent_noti_set', on_delete=models.CASCADE)
@@ -23,9 +25,6 @@ class Notification(models.Model):
 
     is_visible = models.BooleanField(default=True)
     is_read = models.BooleanField(default=False)
-
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.message

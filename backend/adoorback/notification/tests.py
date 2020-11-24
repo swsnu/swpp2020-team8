@@ -37,6 +37,7 @@ class NotificationTestCase(TestCase):
 
     # test on delete actor user
     def test_on_delete_actor_cascade(self):
+        fill_data()
         user = User.objects.all().last()
         user_id = user.id
         sent_notis = user.sent_noti_set.all()
@@ -64,6 +65,7 @@ class NotificationTestCase(TestCase):
     # test on delete target
     def test_on_delete_target_cascade(self):
         # target = comment
+        fill_data()
         noti = Notification.objects.all().filter(target_type=get_content_type("Comment")).last()
         target = noti.target
         target_id = target.id
@@ -82,6 +84,7 @@ class NotificationTestCase(TestCase):
     # test on delete origin
     def test_on_delete_origin_cascade(self):
         # origin = article
+        fill_data()
         noti = Notification.objects.all().filter(origin_type=get_content_type("Article")).last()
         origin = noti.origin
         origin_id = origin.id
