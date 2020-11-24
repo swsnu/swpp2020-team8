@@ -54,6 +54,6 @@ describe('<QuestionSendModal /> unit test', () => {
     expect(component.find('QuestionSendModal').length).toBe(1);
     const submitButton = component.find('button').at(1);
     submitButton.simulate('click');
-    expect(mockfn).toHaveBeenCalledTimes(1);
+    expect(mockfn).toHaveBeenCalledTimes(2);
   });
 });
