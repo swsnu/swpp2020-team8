@@ -36,6 +36,7 @@ export const mockQuestions = [
 export const mockPost = {
   id: 1,
   'content-type': 'Article',
+  type: 'Article',
   is_admin_question: 'true',
   author_detail: {
     id: 1,
@@ -303,6 +304,7 @@ export const mockQuestionFeed = [
 
 export const mockArticle = {
   id: 4756,
+  type: 'Article',
   'content-type': 'Article', // or const int e.g. (1: Article, 2: Response...)
   author_detail: {
     id: 123,
@@ -374,6 +376,7 @@ export const mockArticle = {
 export const mockResponse = {
   id: 5999,
   'content-type': 'Response',
+  type: 'Response',
   author_detail: {
     id: 123,
     username: 'curious',
@@ -456,6 +459,7 @@ export const mockFriendFeed = [
 export const mockAnonCustomQuestion = {
   id: 4758,
   'content-type': 'Question',
+  type: 'Question',
   is_admin_question: 'true',
   author_detail: {
     id: -1
@@ -472,6 +476,7 @@ export const mockAnonCustomQuestion = {
 export const mockAnonCustomQuestion2 = {
   id: 4758,
   'content-type': 'Question',
+  type: 'Question',
   is_admin_question: 'true',
   author_detail: {
     id: -1
@@ -487,6 +492,7 @@ export const mockAnonCustomQuestion2 = {
 
 export const mockAnonArticle = {
   id: 4756,
+  type: 'Article',
   'content-type': 'Article', // or const int e.g. (1: Article, 2: Response...)
   author_detail: {
     id: -1
@@ -500,7 +506,7 @@ export const mockAnonArticle = {
 
 export const mockAnonResponse = {
   id: 4757,
-  'content-type': 'Response',
+  type: 'Response',
   author_detail: {
     id: -1
     // username: '익명',

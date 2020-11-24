@@ -339,8 +339,15 @@ export default function postReducer(state = initialState, action) {
       });
 
       let newComments = getNewCommentsWithReply(targetPost?.comments, reply);
-
       const newFriendPosts = state.friendPosts.map((post) => {
+        const key = `${post.type}-${post.id}`;
+        if (key === action.postKey) {
+          return { ...post, comments: newComments };
+        }
+        return post;
+      });
+
+      const newUserPosts = state.selectedUserPosts.map((post) => {
         const key = `${post.type}-${post.id}`;
         if (key === action.postKey) {
           return { ...post, comments: newComments };
@@ -361,6 +368,7 @@ export default function postReducer(state = initialState, action) {
 
       return {
         ...state,
+        selectedUserPosts: newUserPosts,
         selectedPost: newSelectedPost,
         friendPosts: newFriendPosts
       };
@@ -395,6 +403,14 @@ export default function postReducer(state = initialState, action) {
         return post;
       });
 
+      const newUserPosts = state.selectedUserPosts.map((post) => {
+        const key = `${post.type}-${post.id}`;
+        if (key === action.postKey) {
+          return { ...post, comments: newComments };
+        }
+        return post;
+      });
+
       const selectedPostKey = `${state.selectedPost?.type}-${state.selectedPost?.id}`;
 
       const newSelectedPost =
@@ -408,7 +424,8 @@ export default function postReducer(state = initialState, action) {
       return {
         ...state,
         friendPosts: newFriendPosts,
-        selectedPost: newSelectedPost
+        selectedPost: newSelectedPost,
+        selectedUserPosts: newUserPosts
       };
     }
 
