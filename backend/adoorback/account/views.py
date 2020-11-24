@@ -59,7 +59,7 @@ def user_login(request):
 
 
 class SignupQuestions(generics.ListAPIView):
-    queryset = Question.objects.all().order_by('?')[:5]
+    queryset = Question.objects.order_by('?')[:5]
     serializer_class = QuestionAnonymousSerializer
     model = serializer_class.Meta.model
 

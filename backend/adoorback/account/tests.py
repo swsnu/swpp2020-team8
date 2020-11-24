@@ -19,7 +19,7 @@ class UserTestCase(TestCase):
         set_seed(N)
 
     def test_user_count(self):
-        self.assertEqual(User.objects.all().count(), 3)
+        self.assertEqual(User.objects.count(), 3)
 
     def test_str(self):
         user = User.objects.last()
@@ -207,7 +207,8 @@ class AuthAPITestCase(APITestCase):
 
         with self.login(username=admin_user.username, password='password'):
             response = self.get('user-list')
-            n = User.objects.all().count()
+
+            n = User.objects.count()
             self.assertEqual(response.data['count'], n)
 
     def test_current_user(self):
