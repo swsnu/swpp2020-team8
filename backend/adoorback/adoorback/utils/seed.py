@@ -129,11 +129,7 @@ def set_seed(n):
     user_2 = User.objects.get(id=2)
     user_3 = User.objects.get(id=3)
     Friendship.objects.create(user=user_1, friend=user_2)
-    Friendship.objects.create(user=user_2, friend=user_1)
     Friendship.objects.create(user=user_2, friend=user_3)
-    Friendship.objects.create(user=user_3, friend=user_2)
-    Friendship.objects.create(user=user_3, friend=user_1)
-    Friendship.objects.create(user=user_1, friend=user_3)
 
 
 def fill_data():

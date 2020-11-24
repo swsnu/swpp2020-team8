@@ -28,8 +28,8 @@ const theme = createMuiTheme({
 });
 
 const App = () => {
-  const user = useSelector((state) => state.userReducer.user);
-  const signUpRedirectPath = user?.question_history
+  const currentUser = useSelector((state) => state.userReducer.currentUser);
+  const signUpRedirectPath = currentUser?.question_history
     ? '/friends'
     : 'select-questions';
   // let signedIn = user !== null;
@@ -43,7 +43,7 @@ const App = () => {
     <MuiThemeProvider theme={theme}>
       <GlobalStyle />
       <Header />
-      {user == null ? (
+      {currentUser == null ? (
         <Switch>
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={SignUp} />
@@ -70,6 +70,7 @@ const App = () => {
                 path="/:postType/:id"
                 component={PostDetail}
               />
+              <PrivateRoute exact path="/users/:id" component={FriendFeed} />
               <PrivateRoute
                 exact
                 path="/users/:id/friends"

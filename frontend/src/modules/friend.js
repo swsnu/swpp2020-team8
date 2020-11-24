@@ -18,7 +18,7 @@ export const DELETE_FRIEND_FAILURE = 'friend/DELETE_FRIEND_FAILURE';
 export const ADD_TO_FRIEND_LIST = 'friend/ADD_TO_FRIEND_LIST';
 
 export const getFriendList = () => async (dispatch, getState) => {
-  const userId = getState().userReducer.user?.id;
+  const userId = getState().userReducer.currentUser?.id;
   console.log(userId);
   dispatch({ type: GET_FRIEND_LIST_REQUEST });
   let result;
@@ -41,7 +41,7 @@ export const getFriendList = () => async (dispatch, getState) => {
 };
 
 export const deleteFriend = (friendId) => async (dispatch, getState) => {
-  const userId = getState().userReducer.user?.id;
+  const userId = getState().userReducer.currentUser?.id;
   dispatch({ type: DELETE_FRIEND_REQUEST, userId });
   try {
     // await axios.delete(`/user/friendship/${friendId}/`);

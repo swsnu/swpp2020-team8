@@ -40,6 +40,30 @@ describe('user Actions', () => {
     });
   });
 
+  it(`should turn on signup error when signup api error occurs`, (done) => {
+    jest.mock('axios');
+    const userInfo = {
+      id: 1,
+      password: 'password',
+      username: 'user',
+      email: 'user@user.com'
+    };
+
+    axios.post.mockReturnValue(Promise.reject({ error: 'error' }));
+    axios.get.mockReturnValue(Promise.reject({ error: 'error' }));
+
+    store
+      .dispatch(actionCreators.requestSignUp(userInfo))
+      .then(() => {
+        done();
+      })
+      .catch(() => {
+        const newState = store.getState();
+        expect(newState.userReducer.currentUser).toBeFalsy();
+        expect(newState.userReducer.signUpError).toBeTruthy();
+      });
+  });
+
   it(`'logout' should log out correctly`, (done) => {
     jest.mock('axios');
     // axios.get.mockResolvedValue([]);
@@ -53,7 +77,7 @@ describe('user Actions', () => {
     store.dispatch(actionCreators.logout()).then(() => {
       const newState = store.getState();
       expect(spy).toHaveBeenCalled();
-      expect(newState.userReducer.user).toBeFalsy();
+      expect(newState.userReducer.currentUser).toBeFalsy();
       done();
     });
   });
@@ -77,7 +101,7 @@ describe('user Actions', () => {
       })
       .catch(() => {
         const newState = store.getState();
-        expect(newState.userReducer.user).toBeFalsy();
+        expect(newState.userReducer.currentUser).toBeFalsy();
         expect(newState.userReducer.loginError).toBeTruthy();
       });
   });
@@ -98,7 +122,7 @@ describe('user Actions', () => {
       .then(() => {
         const newState = store.getState();
         expect(spy).toHaveBeenCalled();
-        expect(newState.userReducer.user.questionHistory).toEqual(
+        expect(newState.userReducer.currentUser.questionHistory).toEqual(
           questionSelection
         );
         done();
@@ -132,7 +156,7 @@ describe('user Actions', () => {
       const newState = store.getState();
       expect(spy).toHaveBeenCalled();
       expect(getSpy).toHaveBeenCalled();
-      expect(newState.userReducer.user).toMatchObject(userInfo);
+      expect(newState.userReducer.currentUser).toMatchObject(userInfo);
       done();
     });
   });

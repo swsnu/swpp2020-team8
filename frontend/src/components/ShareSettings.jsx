@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FormGroup,
   FormControlLabel,
@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { createPost } from '../modules/post';
 
 const ShareSettingsWrapper = styled.div`
@@ -26,11 +27,18 @@ const useStyles = makeStyles(() => ({
 export default function ShareSettings({ newPost, resetContent }) {
   const dispatch = useDispatch();
   const classes = useStyles();
-
+  const location = useLocation();
   const [shareState, setShareState] = useState({
     shareWithFriends: true,
     shareAnonymously: false
   });
+
+  useEffect(() => {
+    if (location.pathname === '/anonymous') {
+      setShareState({ shareWithFriends: false, shareAnonymously: true });
+    }
+    // setShareState({ shareWithFriends: false, shareAnonymously: true });
+  }, [location]);
 
   const handleChange = (e) => {
     const { name, checked } = e.target;
@@ -38,14 +46,18 @@ export default function ShareSettings({ newPost, resetContent }) {
   };
 
   const onClickSubmitButton = () => {
-    if (!newPost.content) return;
+    // if (!newPost.content) return;
     const postObj = {
       ...shareState,
       ...newPost
     };
     dispatch(createPost(postObj));
-    setShareState({ shareWithFriends: true, shareAnonymously: false });
     resetContent();
+    if (location.pathname === '/anonymous') {
+      setShareState({ shareWithFriends: false, shareAnonymously: true });
+    } else {
+      setShareState({ shareWithFriends: true, shareAnonymously: false });
+    }
   };
 
   const controlShareWithFriends = (
@@ -91,6 +103,10 @@ export default function ShareSettings({ newPost, resetContent }) {
           variant="outlined"
           color="secondary"
           onClick={onClickSubmitButton}
+          disabled={
+            (!shareState.shareAnonymously && !shareState.shareWithFriends) ||
+            !newPost?.content
+          }
         >
           게시
         </Button>

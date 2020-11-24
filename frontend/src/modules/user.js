@@ -19,11 +19,14 @@ export const LOGOUT_SUCCESS = 'user/LOGOUT_SUCCESS';
 
 export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
 
+export const GET_SEARCH_RESULTS = 'user/GET_SEARCH_RESULTS';
+
 const initialState = {
   loginError: false,
   signUpError: {},
   currentUser: null,
-  selectedUser: null
+  selectedUser: null,
+  searchResults: []
 };
 
 export const requestSignUp = (signUpInfo) => {
@@ -61,13 +64,6 @@ export const postSelectedQuestions = (selectedQuestions, userId) => {
       type: UPDATE_QUESTION_SELECT,
       selectedQuestions
     });
-  };
-};
-
-export const signUp = (signUpInfo) => {
-  return {
-    type: SIGN_UP_SUCCESS,
-    signUpInfo
   };
 };
 
