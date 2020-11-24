@@ -10,7 +10,7 @@ from rest_framework.renderers import JSONRenderer
 from adoorback.permissions import IsOwnerOrReadOnly
 from account.models import Friendship, FriendRequest
 from account.serializers import UserProfileSerializer, AuthorFriendSerializer, \
-    UserFriendshipDetailSerializer, UserFriendshipRequestSerializer
+    UserFriendshipDetailSerializer, UserFriendRequestSerializer
 from feed.serializers import QuestionAnonymousSerializer
 from feed.models import Question
 
@@ -133,19 +133,28 @@ class UserFriendshipDetail(generics.CreateAPIView, generics.RetrieveDestroyAPIVi
         return obj
 
 
-class UserFriendRequestList(generics.ListCreateAPIView, generics.DestroyAPIView):
+class UserFriendRequestList(generics.ListAPIView):
     queryset = FriendRequest.objects.all()
-    serializer_class = UserFriendshipRequestSerializer
+    serializer_class = UserFriendRequestSerializer
     permission_classes = [IsAuthenticated]
 
+    # Getting Received Friend Requests for current_user
     def get_queryset(self):
         # should exclude 'current_user' to 'current_user' friend request
         queryset = FriendRequest.objects.filter(
-            responder_id=self.kwargs.get('pk'), requester_id=self.request.user.id) \
-            .exclude(requester_id=self.kwargs.get('rid'))
+            responder_id=self.request.user.id)
         return queryset
 
-    def perform_create(self, serializer):
-        serializer.save(requester_id=self.request.user.id,
-                        responder_id=self.kwargs.get('pk'),
-                        responded=False)
+
+# Handling Friend Request the current_user received
+class UserFriendRequestDetail(generics.CreateAPIView, generics.RetrieveUpdateDestroyAPIView):
+    queryset = FriendRequest.objects.all()
+    serializer_class = UserFriendRequestSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = queryset.get(requester_id=self.kwargs.get('aid'),
+                           responder_id=self.kwargs.get('rid'))
+        self.check_object_permissions(self.request, obj)
+        return obj

@@ -63,7 +63,7 @@ class UserFriendshipDetailSerializer(serializers.ModelSerializer):
         fields = ['user_id', 'friend_id']
 
 
-class UserFriendshipRequestSerializer(serializers.ModelSerializer):
+class UserFriendRequestSerializer(serializers.ModelSerializer):
     requester_id = serializers.IntegerField()
     responder_id = serializers.IntegerField()
     responded = serializers.BooleanField(default=False)
