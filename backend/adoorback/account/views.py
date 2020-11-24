@@ -8,7 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 
 from adoorback.permissions import IsOwnerOrReadOnly
-from account.serializers import UserProfileSerializer
+from account.models import Friendship
+from account.serializers import UserProfileSerializer, AuthorFriendSerializer, UserFriendshipDetailSerializer
 from feed.serializers import QuestionAnonymousSerializer
 from feed.models import Question
 
@@ -19,6 +20,7 @@ class JSONResponse(HttpResponse):
     """
     An HttpResponse that renders its content into JSON.
     """
+
     def __init__(self, data, **kwargs):
         content = JSONRenderer().render(data)
         kwargs['content_type'] = 'application/json'
@@ -78,7 +80,8 @@ def current_user(request):
     if request.method == 'GET':
         if not request.user.is_authenticated:
             return HttpResponse(status=401)
-        serializer = UserProfileSerializer(request.user, context={'request': request})
+        serializer = UserProfileSerializer(
+            request.user, context={'request': request})
         return JsonResponse(serializer.data, safe=False, status=200)
     return HttpResponseNotAllowed(['GET'])
 
@@ -95,5 +98,35 @@ class UserSearch(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        queryset = User.objects.filter(username__icontains=self.request.GET.get('query'))
+        queryset = User.objects.filter(
+            username__icontains=self.request.GET.get('query'))
         return queryset
+
+
+class UserFriendList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = AuthorFriendSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = []
+        friendship_set = self.request.user.friends.all()
+        for friendship in friendship_set:
+            queryset.append(friendship.friend)
+        return queryset
+
+
+class UserFriendshipDetail(generics.CreateAPIView, generics.RetrieveDestroyAPIView):
+    """
+    Retrieve or destroy a friendship.
+    """
+    queryset = Friendship.objects.all()
+    serializer_class = UserFriendshipDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = queryset.get(user_id=self.request.user.id,
+                           friend_id=self.kwargs.get('fid'))
+        self.check_object_permissions(self.request, obj)
+        return obj
