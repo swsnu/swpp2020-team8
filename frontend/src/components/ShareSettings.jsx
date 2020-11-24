@@ -46,7 +46,7 @@ export default function ShareSettings({ newPost, resetContent }) {
   };
 
   const onClickSubmitButton = () => {
-    if (!newPost.content) return;
+    // if (!newPost.content) return;
     const postObj = {
       ...shareState,
       ...newPost
@@ -105,7 +105,7 @@ export default function ShareSettings({ newPost, resetContent }) {
           onClick={onClickSubmitButton}
           disabled={
             (!shareState.shareAnonymously && !shareState.shareWithFriends) ||
-            !newPost.content
+            !newPost?.content
           }
         >
           게시
