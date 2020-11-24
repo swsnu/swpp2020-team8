@@ -1,8 +1,5 @@
 python manage.py shell
 
-from faker import Faker
-import random
-
 from django.contrib.auth import get_user_model
 from account.models import Friendship
 from feed.models import Question, Article, Response, Post, ResponseRequest
@@ -13,7 +10,7 @@ from adoorback.utils.seed import set_seed
 from adoorback.utils.content_types import get_content_type
 User = get_user_model()
 
-set_seed(10)
+set_seed(100)
 
 user = User.objects.last()
 

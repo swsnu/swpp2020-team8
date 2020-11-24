@@ -1,3 +1,5 @@
+import datetime
+
 from test_plus.test import TestCase
 from rest_framework.test import APIClient
 
@@ -316,6 +318,24 @@ class DailyQuestionTestCase(APITestCase):
             self.assertGreater(response.data['results'][1]['id'],
                                response.data['results'][2]['id'])  # check order_by
 
+    def test_recommended_questions_call(self):
+        current_user = self.make_user(username='current_user')
+
+        for _ in range(50):
+            Question.objects.create(author_id=1, content="test_question", is_admin_question=False)
+
+        with self.login(username=current_user.username, password='password'):
+            response = self.get('daily-question-list')
+            self.assertEqual(response.status_code, 200)
+            response = self.get('recommended-question-list')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['count'], 5)
+            self.assertIn(datetime.date.today().strftime("%Y-%m-%d"),
+                          response.data['results'][1]['selected_date'])
+            self.assertIn(datetime.date.today().strftime("%Y-%m-%d"),
+                          response.data['results'][1]['selected_date'])
+
+
 class ResponseRequestAPITestCase(APITestCase):
 
     def setUp(self):
@@ -395,3 +415,4 @@ class ResponseRequestAPITestCase(APITestCase):
         with self.login(username=current_user.username, password='password'):
             response = self.get(self.reverse('response-request-detail', qid=qid, rid=rid))
             self.assertEqual(response.status_code, 405)
+
