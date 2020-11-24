@@ -15,6 +15,7 @@ import List from '@material-ui/core/List';
 import ListItemText from '@material-ui/core/ListItemText';
 import FaceIcon from '@material-ui/icons/Face';
 import { getFriendList } from '../modules/friend';
+import { FriendItemWrapper } from './friends/FriendItem';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -80,17 +81,6 @@ const Question = styled.div`
   text-align: center;
   font-weight: 500;
   font-size: 15px;
-`;
-
-const FriendItemWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-  margin: ${(props) => (props.isWidget ? '8px 16px' : '8px 0')};
-  padding: 6px;
-  border: 1px solid #e7e7e7;
-  border-radius: 4px;
 `;
 
 FriendItemWrapper.displayName = 'FriendItemWrapper';
