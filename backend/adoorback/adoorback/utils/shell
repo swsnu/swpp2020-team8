@@ -1,5 +1,6 @@
 python manage.py shell
 
+from django.contrib.auth import get_user_model
 from account.models import Friendship, FriendRequest
 from feed.models import Question, Article, Response, Post, ResponseRequest
 from comment.models import Comment

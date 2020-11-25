@@ -13,6 +13,7 @@ import FriendFeed from './pages/FriendFeed';
 import AnonymousFeed from './pages/AnonymousFeed';
 import QuestionFeed from './pages/QuestionFeed';
 import PrivateRoute from './components/PrivateRoute';
+import QuestionDetail from './pages/QuestionDetail';
 import PostDetail from './pages/PostDetail';
 import FriendsPage from './pages/FriendsPage';
 
@@ -28,21 +29,23 @@ const theme = createMuiTheme({
 
 const App = () => {
   const user = useSelector((state) => state.userReducer.user);
+  const selectQuestion = useSelector(
+    (state) => state.userReducer.selectQuestion
+  );
   const signUpRedirectPath = user?.question_history
     ? '/friends'
     : 'select-questions';
-  // let signedIn = user !== null;
 
   return (
     <MuiThemeProvider theme={theme}>
       <GlobalStyle />
       <Header />
-      {user == null ? (
+      {user === null || (!selectQuestion && user?.question_history === null) ? (
         <Switch>
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={SignUp} />
           <Route exact path="/select-questions" component={QuestionSelection} />
-          <Redirect path="/" to="/login" />
+          <Redirect from="/" to="/login" />
         </Switch>
       ) : (
         <MainWrapper>
@@ -61,9 +64,10 @@ const App = () => {
               <PrivateRoute exact path="/questions" component={QuestionFeed} />
               <PrivateRoute
                 exact
-                path="/:postType/:id"
-                component={PostDetail}
+                path="/questions/:id"
+                component={QuestionDetail}
               />
+              <PrivateRoute path="/:postType/:id" component={PostDetail} />
               <PrivateRoute
                 exact
                 path="/users/:id/friends"
