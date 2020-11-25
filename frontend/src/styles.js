@@ -92,8 +92,14 @@ export const PostItemHeaderWrapper = styled.div`
 
 export const PostItemFooterWrapper = styled.div`
   display: flex;
-  flex-direction: row-reverse;
+  justify-content: space-between;
   align-items: center;
+`;
+
+export const PostItemButtonsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
 `;
 
 export const PostItemWrapper = styled.div`

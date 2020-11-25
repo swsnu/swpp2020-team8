@@ -29,7 +29,8 @@ const useStyles = makeStyles({
     background: '#fff',
     cursor: 'auto',
     resize: 'none',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    fontFamily: 'Noto Sans KR, sans-serif'
   }
 });
 

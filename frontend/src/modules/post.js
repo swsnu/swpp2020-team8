@@ -119,7 +119,7 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
     } else {
       result =
         type === 'anon'
-          ? await axios.get('feed/anonymous')
+          ? await axios.get('feed/anonymous/')
           : await axios.get(`feed/${type}/`);
     }
   } catch (err) {

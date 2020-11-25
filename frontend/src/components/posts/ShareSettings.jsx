@@ -44,8 +44,8 @@ export default function ShareSettings({
     if (location.pathname === '/anonymous') {
       setShareState({ shareWithFriends: false, shareAnonymously: true });
     } else if (
-      location.pathname.includes('/articles') ||
-      location.pathname.includes('/responses')
+      location.pathname?.includes('/articles') ||
+      location.pathname?.includes('/responses')
     ) {
       const { share_with_friends, share_anonymously } = postObj;
       setShareState({

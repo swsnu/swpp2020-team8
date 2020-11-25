@@ -12,7 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import AuthorProfile from './AuthorProfile';
 import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
-import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
+import { PostItemHeaderWrapper, PostItemButtonsWrapper } from '../../styles';
 import ShareSettings from './ShareSettings';
 
 const QuestionItemWrapper = styled.div`
@@ -103,7 +103,7 @@ export default function QuestionItem({ questionObj }) {
         <Link to={`/questions/${questionObj.id}`}>{questionObj.content}</Link>
       </Question>
       <CreateTime createTime={questionObj.created_at} />
-      <PostItemFooterWrapper>
+      <PostItemButtonsWrapper>
         <IconButton color="secondary" size="small" onClick={handleSendButton}>
           <SendIcon color="secondary" />
         </IconButton>
@@ -124,7 +124,7 @@ export default function QuestionItem({ questionObj }) {
             {likeCount}
           </div>
         )}
-      </PostItemFooterWrapper>
+      </PostItemButtonsWrapper>
       {isWriting && (
         <>
           <TextareaAutosize
