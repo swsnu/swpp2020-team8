@@ -8,8 +8,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 
 from adoorback.permissions import IsOwnerOrReadOnly
-from account.models import Friendship
-from account.serializers import UserProfileSerializer, AuthorFriendSerializer, UserFriendshipDetailSerializer
+from account.models import Friendship, FriendRequest
+from account.serializers import UserProfileSerializer, AuthorFriendSerializer, \
+    UserFriendshipDetailSerializer, UserFriendRequestSerializer
 from feed.serializers import QuestionAnonymousSerializer
 from feed.models import Question
 
@@ -130,3 +131,39 @@ class UserFriendshipDetail(generics.CreateAPIView, generics.RetrieveDestroyAPIVi
                            friend_id=self.kwargs.get('fid'))
         self.check_object_permissions(self.request, obj)
         return obj
+
+
+class UserFriendRequestList(generics.ListAPIView):
+    queryset = FriendRequest.objects.all()
+    serializer_class = UserFriendRequestSerializer
+    permission_classes = [IsAuthenticated]
+
+    # Getting Received Friend Requests for current_user
+    def get_queryset(self):
+        # should exclude 'current_user' to 'current_user' friend request
+        queryset = FriendRequest.objects.filter(
+            responder_id=self.request.user.id)
+        return queryset
+
+
+# Handling Friend Request the current_user received
+class UserFriendRequestDetail(generics.CreateAPIView, generics.RetrieveUpdateDestroyAPIView):
+    queryset = FriendRequest.objects.all()
+    serializer_class = UserFriendRequestSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = queryset.get(requester_id=self.request.user.id,
+                           responder_id=self.kwargs.get('rid'))
+        self.check_object_permissions(self.request, obj)
+        return obj if obj else None
+
+    def perform_create(self, serializer):
+        serializer.save(requester_id=self.request.user.id,
+                        responder_id=self.kwargs.get('rid'),
+                        responded=False)
+
+    def perform_destroy(self, instance):
+        instance = self.get_object()
+        instance.delete()
