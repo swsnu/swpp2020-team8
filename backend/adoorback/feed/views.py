@@ -1,22 +1,34 @@
 import os
 import pandas as pd
 
+from django.contrib.auth import get_user_model
+from django.http import HttpResponse, HttpResponseNotAllowed
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework import status
+from rest_framework.response import Response as DRF_Response
+from rest_framework.decorators import api_view
 
 import feed.serializers as fs
-from feed.models import Article, Response, Question, Post
+from feed.models import Article, Response, Question, Post, ResponseRequest
 from feed.algorithms.data_crawler import select_daily_questions
 from adoorback.permissions import IsOwnerOrReadOnly, IsShared
 
+User = get_user_model()
 
 class FriendFeedPostList(generics.ListAPIView):
     """
     List friend feed posts
     """
-    queryset = Post.objects.friend_posts_only()
     serializer_class = fs.PostFriendSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        current_user_id = self.request.user.id
+        friend_ids = User.objects.get(id=current_user_id).friends.values_list('friend_id', flat=True)
+        queryset = Post.objects.friend_posts_only().filter(author_id__in=friend_ids) | \
+                   Post.objects.filter(author_id=current_user_id)
+        return queryset
 
 
 class AnonymousFeedPostList(generics.ListAPIView):
@@ -47,6 +59,15 @@ class ArticleList(generics.CreateAPIView):
     serializer_class = fs.ArticleFriendSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    # # for get list only
+    # def get_queryset(self):
+    #     current_user = self.request.user
+    #     friend_ids = current_user.friends.values_list('friend_id', flat=True)
+    #     queryset = Article.objects.filter(author_id__in=friend_ids) | \
+    #                Article.objects.filter(share_anonymously=True) | \
+    #                Article.objects.filter(author_id=current_user.id)
+    #     return queryset
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
@@ -60,18 +81,27 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         article = Article.objects.get(id=self.kwargs.get('pk'))
-        if article.author == self.request.user:  # TODO: modify after implementing friendship
+        if User.are_friends(self.request.user, article.author):
             return fs.ArticleFriendSerializer
         return fs.ArticleAnonymousSerializer
 
 
-class ResponseList(generics.CreateAPIView):
+class ResponseList(generics.ListCreateAPIView):
     """
     List all responses, or create a new response.
     """
     queryset = Response.objects.all()
     serializer_class = fs.ResponseFriendSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    # # for get list only
+    # def get_queryset(self):
+    #     current_user = self.request.user
+    #     friend_ids = current_user.friends.values_list('friend_id', flat=True)
+    #     queryset = Response.objects.filter(author_id__in=friend_ids) | \
+    #                Response.objects.response_set.filter(share_anonymously=True) | \
+    #                Response.objects.filter(author_id=current_user.id)
+    #     return queryset
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -86,7 +116,7 @@ class ResponseDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         response = Response.objects.get(id=self.kwargs.get('pk'))
-        if response.author == self.request.user:  # TODO: modify after implementing friendship
+        if User.are_friends(self.request.user, response.author):
             return fs.ResponseFriendSerializer
         return fs.ResponseAnonymousSerializer
 
@@ -128,6 +158,57 @@ class QuestionAnonymousResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Question.objects.all()
     serializer_class = fs.QuestionDetailAnonymousResponsesSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly, IsShared]
+
+
+class ResponseRequestList(generics.ListAPIView):
+    """
+    Get response requests of the selected question.
+    """
+    serializer_class = fs.ResponseRequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        question_id = self.kwargs['pk']
+        current_user_sent_response_request_set = self.request.user.sent_response_request_set.all()
+        responseRequests = current_user_sent_response_request_set.filter(question_id=question_id)
+        return responseRequests
+
+@api_view(["POST", "DELETE"])
+def response_request_detail(request, qid, rid):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=401)
+
+    try:
+        recipient = User.objects.get(id=rid)
+        question = Question.objects.get(id=qid)
+    except (User.DoesNotExist, Question.DoesNotExist):
+        return HttpResponse(status=404)
+
+    if request.method == 'POST':
+        recipient = User.objects.get(id=rid)
+
+        if not User.are_friends(request.user, recipient):
+            return HttpResponse(status=403)
+        else:
+            new_response_request = ResponseRequest.objects.create(actor=request.user,
+                                                                  recipient=recipient, question=question)
+
+            serializer = fs.ResponseRequestSerializer(new_response_request)
+            return DRF_Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    elif request.method == 'DELETE':
+        try:
+            response_request = ResponseRequest.objects.get(question_id=qid, recipient_id=rid)
+        except ResponseRequest.DoesNotExist:
+            return HttpResponse(status=404)
+
+        if request.user.id == response_request.actor.id:
+            response_request.delete()
+            return HttpResponse(status=204)
+        else:
+            return HttpResponse(status=403)
+
+    return HttpResponseNotAllowed(['GET'])
 
 
 class DailyQuestionList(generics.ListAPIView):

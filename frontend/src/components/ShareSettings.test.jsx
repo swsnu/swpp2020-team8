@@ -39,6 +39,18 @@ describe('<ShareSettings />', () => {
       </Provider>
     );
 
+  // const getEmptyWrapper = () =>
+  //   mount(
+  //     <Provider store={store}>
+  //       <Router history={history}>
+  //         <ShareSettings
+  //           newPost={{ content: '', type: 'Article' }}
+  //           resetContent={resetContent}
+  //         />
+  //       </Router>
+  //     </Provider>
+  //   );
+
   jest.mock('react-redux', () => ({
     useDisPatch: () => jest.fn()
   }));

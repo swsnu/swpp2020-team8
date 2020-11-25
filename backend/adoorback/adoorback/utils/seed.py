@@ -7,10 +7,11 @@ from django.contrib.auth import get_user_model
 from faker import Faker
 
 from adoorback.utils.content_types import get_content_type
+from account.models import Friendship, FriendRequest
 from feed.models import Article, Response, Question, Post, ResponseRequest
-from account.models import Friendship
 from comment.models import Comment
 from like.models import Like
+from notification.models import Notification
 
 DEBUG = False
 
@@ -46,7 +47,8 @@ def set_seed(n):
         user = random.choice(users)
         article = Article.objects.create(author=user,
                                          content=faker.catch_phrase(),
-                                         share_with_friends=random.choice([True, False]),
+                                         share_with_friends=random.choice(
+                                             [True, False]),
                                          share_anonymously=random.choice([True, False]))
         if not article.share_anonymously and not article.share_with_friends:
             article.share_with_friends = True
@@ -72,7 +74,8 @@ def set_seed(n):
     for _ in range(n):
         question = random.choice(questions)
         response = Response.objects.create(author=user, content=faker.text(max_nb_chars=50), question=question,
-                                           share_with_friends=random.choice([True, False]),
+                                           share_with_friends=random.choice(
+                                               [True, False]),
                                            share_anonymously=random.choice([True, False]))
         if not response.share_anonymously and not response.share_with_friends:
             response.share_with_friends = True
@@ -133,16 +136,48 @@ def set_seed(n):
     logging.info(
         f"{Like.objects.count()} Like(s) created!") if DEBUG else None
 
+    # Seed Notification for likes
+    # likes = Like.objects.all()
+    # for like in likes[:n]:
+    #     actor = like.user
+    #     origin = like.target
+    #     recipient = origin.author
+    #     target = like
+    #     message = f'{actor} likes your {origin.type}'
+    #     Notification.objects.create(actor = actor, recipient = recipient, message = message,
+    #         origin = origin, target = target, is_read = False, is_visible = True)
+
+    # # Seed Notification for comments
+    # for comment in comments[:n]:
+    #     actor = comment.author
+    #     origin = comment.target
+    #     recipient = origin.author
+    #     target = comment
+    #     message = f'{actor} commented on your {origin.type}'
+    #     Notification.objects.create(actor = actor, recipient = recipient, message = message,
+    #         origin = origin, target = target, is_read = False, is_visible = True)
+    # # TODO: noti for friendship & response requests 
+    # logging.info(
+    #     f"{Notification.objects.all().count()} Notification(s) created!") if DEBUG else None
+
+
     # Seed Friendship
     user_1 = User.objects.get(id=1)
     user_2 = User.objects.get(id=2)
     user_3 = User.objects.get(id=3)
     Friendship.objects.create(user=user_1, friend=user_2)
-    Friendship.objects.create(user=user_2, friend=user_1)
     Friendship.objects.create(user=user_2, friend=user_3)
-    Friendship.objects.create(user=user_3, friend=user_2)
-    Friendship.objects.create(user=user_3, friend=user_1)
-    Friendship.objects.create(user=user_1, friend=user_3)
+
+    # Seed Friend Request
+    user_1 = User.objects.get(id=1)
+    user_2 = User.objects.get(id=2)
+    user_3 = User.objects.get(id=3)
+    FriendRequest.objects.create(
+        requester=user_1, responder=user_2, responded=False)
+    FriendRequest.objects.create(
+        requester=user_1, responder=user_3, responded=False)
+    FriendRequest.objects.create(
+        requester=user_2, responder=user_3, responded=False)
 
 
 def fill_data():
@@ -154,7 +189,8 @@ def fill_data():
     questions = Question.objects.all()
     articles = Article.objects.all()
     comments = Comment.objects.all()
-    posts = Post.objects.all()
+    responses = Response.objects.all()
+    posts = random.choice([articles, questions, responses])
     for user in User.objects.all():
         Article.objects.create(author=user, content=faker.catch_phrase()) \
             if user.article_set.count() == 0 else None
