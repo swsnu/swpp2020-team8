@@ -27,12 +27,26 @@ export const GET_DAILY_QUESTIONS_FAILURE =
 
 export const GET_RANDOM_QUESTIONS = 'question/GET_RANDOM_QUESTIONS';
 
+export const GET_SELECTED_QUESTION_FRIEND_RESPONSES_REQUEST =
+  'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_REQUEST';
+export const GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS =
+  'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS';
+export const GET_SELECTED_QUESTION_FRIEND_RESPONSES_FAILURE =
+  'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_FAILURE';
+
+export const GET_SELECTED_QUESTION_RESPONSES_REQUEST =
+  'question/GET_SELECTED_QUESTION_RESPONSES_REQUEST';
+export const GET_SELECTED_QUESTION_RESPONSES_SUCCESS =
+  'question/GET_SELECTED_QUESTION_RESPONSES_SUCCESS';
+export const GET_SELECTED_QUESTION_RESPONSES_FAILURE =
+  'question/GET_SELECTED_QUESTION_RESPONSES_FAILURE';
+
 const initialState = {
   dailyQuestions: [],
   sampleQuestions: [],
   randomQuestions: [],
   recommendedQuestions: [],
-  selectedQuestion: {},
+  selectedQuestion: null,
   selectedQuestionResponses: []
 };
 
@@ -96,6 +110,42 @@ export const getRandomQuestions = () => {
   };
 };
 
+export const getResponsesByQuestion = (id) => async (dispatch) => {
+  let res;
+  dispatch({ type: 'question/GET_SELECTED_QUESTION_RESPONSES_REQUEST' });
+  try {
+    res = await axios.get(`/feed/questions/${id}/`);
+  } catch (err) {
+    dispatch({
+      type: 'question/GET_SELECTED_QUESTION_RESPONSES_FAILURE',
+      error: err
+    });
+  }
+  dispatch({
+    type: 'question/GET_SELECTED_QUESTION_RESPONSES_SUCCESS',
+    res: res.data.response_set,
+    question: res.data
+  });
+};
+
+export const getFriendResponsesByQuestion = (id) => async (dispatch) => {
+  let res;
+  dispatch({ type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_REQUEST' });
+  try {
+    res = await axios.get(`/feed/questions/${id}/friend/`);
+  } catch (err) {
+    dispatch({
+      type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_FAILURE',
+      error: err
+    });
+  }
+  dispatch({
+    type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS',
+    res: res.data.response_set,
+    question: res.data
+  });
+};
+
 export default function questionReducer(state = initialState, action) {
   switch (action.type) {
     case GET_SAMPLE_QUESTIONS_SUCCESS: {
@@ -127,6 +177,18 @@ export default function questionReducer(state = initialState, action) {
       return {
         ...state,
         randomQuestions
+      };
+    case GET_SELECTED_QUESTION_RESPONSES_SUCCESS:
+      return {
+        ...state,
+        selectedQuestionResponses: action.res,
+        selectedQuestion: action.question
+      };
+    case GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS:
+      return {
+        ...state,
+        selectedQuestionResponses: action.res,
+        selectedQuestion: action.question
       };
     default:
       return state;
