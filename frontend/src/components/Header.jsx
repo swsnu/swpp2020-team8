@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { fade, makeStyles } from '@material-ui/core/styles';
@@ -7,12 +7,14 @@ import Button from '@material-ui/core/Button';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import SearchIcon from '@material-ui/icons/Search';
+import TextField from '@material-ui/core/TextField';
 import { NavLink, Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
+import SearchDropdownList from './SearchDropdownList';
 import { logout } from '../modules/user';
+import { fetchSearchResults } from '../modules/search';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -75,16 +77,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center'
   },
-  searchIcon: {
-    padding: theme.spacing(0, 2),
-    height: '80%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: borderColor
-  },
   inputRoot: {
     color: 'inherit'
   },
@@ -115,6 +107,8 @@ const useStyles = makeStyles((theme) => ({
 const Header = () => {
   const classes = useStyles();
   const [isNotiOpen, setIsNotiOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [query, setQuery] = useState('');
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -128,8 +122,26 @@ const Header = () => {
     setIsNotiOpen(!isNotiOpen);
   };
 
-  const handleClick = () => {
-    history.push('/search');
+  useEffect(() => {
+    // if ()
+    if (query !== '' && window.location.pathname !== '/search') {
+      setIsSearchOpen(true);
+    } else {
+      setIsSearchOpen(false);
+    }
+    dispatch(fetchSearchResults(1, query));
+  }, [dispatch, query, isSearchOpen]);
+
+  const handleChange = (e) => {
+    const { value } = e.target;
+    setQuery(value);
+  };
+
+  const onKeySubmit = (e) => {
+    if (e.keyCode === 13 && query !== '') {
+      setIsSearchOpen(false);
+      history.push(`/search`);
+    }
   };
 
   const renderHeaderSignedInItems = (
@@ -160,16 +172,17 @@ const Header = () => {
       </NavLink>
       <div className={classes.grow} />
       <div className={classes.sectionDesktop}>
-        <IconButton
-          aria-label="input search results"
-          className={`${classes.iconButton} search-button`}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleClick();
-          }}
-        >
-          <SearchIcon />
-        </IconButton>
+        <TextField
+          required
+          id="outlined-search"
+          value={query}
+          label="사용자 검색"
+          type="search"
+          variant="outlined"
+          placeholder={query}
+          onChange={handleChange}
+          onKeyDown={onKeySubmit}
+        />
         <IconButton
           aria-label="show new notifications"
           className={`${classes.iconButton} noti-button`}
@@ -232,6 +245,7 @@ const Header = () => {
         </AppBar>
       </div>
       {isNotiOpen && <NotificationDropdownList />}
+      {isSearchOpen && <SearchDropdownList />}
     </>
   );
 };

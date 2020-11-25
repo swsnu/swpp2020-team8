@@ -6,6 +6,7 @@ export const GET_SEARCH_RESULTS_FAILURE = 'search/GET_SEARCH_RESULTS_FAILURE';
 export const GET_SEARCH_RESULTS_LOAD = 'search/GET_SEARCH_RESULTS_LOAD';
 
 const initialState = {
+  searchError: false,
   results: [],
   loading: true,
   message: '',
@@ -28,23 +29,22 @@ export const fetchSearchResults = (updatedPageNo = '', query) => async (
 
   let result;
 
-  console.log('=================');
-  console.log(query);
-
   if (!query) {
     dispatch({
       type: 'search/GET_SEARCH_RESULTS_REQUEST',
       results: [],
       message: '',
       totalPages: 0,
-      loading: false
+      loading: false,
+      searchError: false
     });
   } else {
-    console.log('why>');
     dispatch({
+      query,
       type: 'search/GET_SEARCH_RESULTS_LOAD',
       loading: true,
-      message: ''
+      message: '',
+      searchError: false
     });
   }
 
@@ -63,16 +63,15 @@ export const fetchSearchResults = (updatedPageNo = '', query) => async (
       totalPages: totalPagesCount,
       currentPageNo: updatedPageNo,
       numResults: total,
-      loading: false
+      loading: false,
+      searchError: false
     });
-    console.log(totalPagesCount);
-    console.log(updatedPageNo);
   } catch (err) {
-    console.log(err.message);
     dispatch({
       type: 'search/GET_SEARCH_RESULTS_FAILURE',
       loading: false,
-      message: '검색 결과를 가져오지 못했습니다. 인터넷 연결 상태를 확인하세요?'
+      searchError: true,
+      message: '검색 결과를 찾을 수 없습니다.'
     });
   }
 };
@@ -85,7 +84,8 @@ export default function searchReducer(state = initialState, action) {
         loading: action.loading,
         message: action.message,
         results: action.results,
-        totalPages: action.totalPages
+        totalPages: action.totalPages,
+        searchError: action.searchError
       };
     case GET_SEARCH_RESULTS_SUCCESS:
       return {
@@ -95,19 +95,23 @@ export default function searchReducer(state = initialState, action) {
         totalPages: action.totalPages,
         currentPageNo: action.currentPageNo,
         loading: action.loading,
-        numResults: action.numResults
+        numResults: action.numResults,
+        searchError: action.searchError
       };
     case GET_SEARCH_RESULTS_FAILURE:
       return {
         ...state,
         loading: action.loading,
-        message: action.message
+        message: action.message,
+        searchError: action.searchError
       };
     case GET_SEARCH_RESULTS_LOAD:
       return {
         ...state,
+        query: action.query,
         loading: action.loading,
-        message: action.message
+        message: action.message,
+        searchError: action.searchError
       };
     default:
       return state;

@@ -16,7 +16,7 @@ import PrivateRoute from './components/PrivateRoute';
 import QuestionDetail from './pages/QuestionDetail';
 import PostDetail from './pages/PostDetail';
 import FriendsPage from './pages/FriendsPage';
-import SearchPage from './components/SearchResults';
+import SearchResults from './pages/SearchResults';
 
 const theme = createMuiTheme({
   palette: {
@@ -75,7 +75,7 @@ const App = () => {
                 path="/users/:id/friends"
                 component={FriendsPage}
               />
-              <Route exact path="/search" component={SearchPage} />
+              <Route exact path="/search" component={SearchResults} />
 
               <Redirect exact path="/" to="/friends" />
             </Switch>

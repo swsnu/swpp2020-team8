@@ -1,13 +1,11 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import TextField from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useDispatch, useSelector } from 'react-redux';
-
-import FriendItem from './friends/FriendItem';
-import PageNavigation from './PageNavigation';
+import FriendItem from '../components/friends/FriendItem';
+import PageNavigation from '../components/PageNavigation';
 import { fetchSearchResults } from '../modules/search';
 
 const FriendListWrapper = styled.div`
@@ -24,8 +22,8 @@ FriendListWrapper.displayName = 'FriendListWrapper';
 
 export default function SearchResults() {
   const dispatch = useDispatch();
-  const [query, setQuery] = useState('');
 
+  const query = useSelector((state) => state.searchReducer.query);
   const results = useSelector((state) => state.searchReducer.results);
   const loading = useSelector((state) => state.searchReducer.loading);
   const message = useSelector((state) => state.searchReducer.message);
@@ -34,6 +32,7 @@ export default function SearchResults() {
     (state) => state.searchReducer.currentPageNo
   );
   const numResults = useSelector((state) => state.searchReducer.numResults);
+  const searchError = useSelector((state) => state.searchReducer.searchError);
 
   const showPrevLink = currentPageNo > 1;
   const showNextLink = totalPages > currentPageNo;
@@ -48,14 +47,6 @@ export default function SearchResults() {
     }
   };
 
-  const handleChange = (e) => {
-    const { value } = e.target;
-
-    setQuery(value);
-
-    dispatch(fetchSearchResults(1, value));
-  };
-
   const renderSearchResults = () => {
     const userItemList = results?.map((user) => {
       return <FriendItem key={user.id} friendObj={user} />;
@@ -63,31 +54,30 @@ export default function SearchResults() {
 
     if (Object.keys(results).length && results.length) {
       return (
-        <FriendListWrapper>
-          <h3>
-            친구 목록
-            {`(${numResults})`}
-          </h3>
-          {userItemList}
-        </FriendListWrapper>
+        <span>
+          {searchError ? (
+            message && <p className="message">{message}</p>
+          ) : (
+            <FriendListWrapper>
+              <h3>
+                친구 목록
+                {`(${numResults})`}
+              </h3>
+              <h5>
+                페이지
+                {` ${currentPageNo}`}
+              </h5>
+              {userItemList}
+            </FriendListWrapper>
+          )}
+        </span>
       );
     }
-    return <span />;
+    return <h2>검색 결과 없음</h2>;
   };
 
   return (
-    <div className="container">
-      <TextField
-        id="outlined-search"
-        value={query}
-        label="사용자 검색"
-        type="search"
-        variant="outlined"
-        onChange={handleChange}
-      />
-
-      {message && <p className="message">{message}</p>}
-
+    <span>
       <PageNavigation
         numResults={numResults}
         showPrevLink={showPrevLink}
@@ -107,6 +97,6 @@ export default function SearchResults() {
         handlePrevClick={(event) => handlePageClick('prev', event)}
         handleNextClick={(event) => handlePageClick('next', event)}
       />
-    </div>
+    </span>
   );
 }
