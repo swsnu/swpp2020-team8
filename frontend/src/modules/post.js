@@ -298,9 +298,7 @@ export default function postReducer(state = initialState, action) {
       return { ...state };
     case CREATE_POST_SUCCESS: {
       const { newPost } = action;
-      const newFriendPosts = newPost.share_with_friends
-        ? [newPost, ...state.friendPosts]
-        : state.friendPosts;
+      const newFriendPosts = [newPost, ...state.friendPosts];
       const newAnonPosts = newPost.share_anonymously
         ? [newPost, ...state.anonymousPosts]
         : state.anonymousPosts;
