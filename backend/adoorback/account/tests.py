@@ -35,21 +35,21 @@ class UserFriendshipCase(TestCase):
         set_seed(N)
 
     def test_friendship_count(self):
-        self.assertEqual(Friendship.objects.all().count(), 6)
+        self.assertEqual(Friendship.objects.all().count(), 4)
 
     def test_friendship_str(self):
         friendship = Friendship.objects.first()
         self.assertEqual(friendship.type, 'Friendship')
 
     def test_on_delete_user_cascade(self):
-        user = User.objects.get(id=2)
-        self.assertGreater(user.friends.all().count(), 0)
+        user = User.objects.get(id=1)
+        self.assertEqual(user.friends.all().count(), 1)
 
         user.delete()
-        self.assertEqual(User.objects.all().filter(id=2).count(), 0)
-        self.assertEqual(Friendship.objects.all().filter(user_id=2).count(), 0)
+        self.assertEqual(User.objects.all().filter(id=1).count(), 0)
+        self.assertEqual(Friendship.objects.all().filter(user_id=1).count(), 0)
         self.assertEqual(Friendship.objects.all().filter(
-            friend_id=2).count(), 0)
+            friend_id=1).count(), 0)
 
 
 class APITestCase(TestCase):
@@ -71,19 +71,10 @@ class UserAPITestCase(APITestCase):
 
     def test_friend_list(self):
         current_user = self.make_user(username='current_user')
-        spy_user = self.make_user(username='spy_user')
 
         with self.login(username=current_user.username, password='password'):
-            response = self.get(
-                reverse('user-friend-list', args=[current_user.id]))
+            response = self.get('user-friend-list')
             self.assertEqual(response.status_code, 200)
-
-        # other user (non-current_user) will get friend list of current_user with empty data
-        with self.login(username=spy_user.username, password='password'):
-            response = self.get(
-                reverse('user-friend-list', args=[current_user.id]))
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.data['count'], 0)
 
     def test_user_friend_detail(self):
         current_user = self.make_user(username='current_user')

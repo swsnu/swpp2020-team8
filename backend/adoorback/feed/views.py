@@ -14,9 +14,17 @@ class FriendFeedPostList(generics.ListAPIView):
     """
     List friend feed posts
     """
-    queryset = Post.objects.friend_posts_only()
     serializer_class = fs.PostFriendSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        current_user_id = self.request.user.id
+        friend_ids = User.objects.get(id=current_user_id).friends.values_list('friend_id', flat=True)
+        queryset = Post.objects.friend_posts_only().filter(author_id__in=friend_ids) | \
+                   Post.objects.filter(author_id=current_user_id)
+        return queryset
 
 
 class AnonymousFeedPostList(generics.ListAPIView):
@@ -47,6 +55,15 @@ class ArticleList(generics.CreateAPIView):
     serializer_class = fs.ArticleFriendSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    # # for get list only
+    # def get_queryset(self):
+    #     current_user = self.request.user
+    #     friend_ids = current_user.friends.values_list('friend_id', flat=True)
+    #     queryset = Article.objects.filter(author_id__in=friend_ids) | \
+    #                Article.objects.filter(share_anonymously=True) | \
+    #                Article.objects.filter(author_id=current_user.id)
+    #     return queryset
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
@@ -59,19 +76,31 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly, IsShared]
 
     def get_serializer_class(self):
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
         article = Article.objects.get(id=self.kwargs.get('pk'))
-        if article.author == self.request.user:  # TODO: modify after implementing friendship
+        if User.are_friends(self.request.user, article.author):
             return fs.ArticleFriendSerializer
         return fs.ArticleAnonymousSerializer
 
 
-class ResponseList(generics.CreateAPIView):
+class ResponseList(generics.ListCreateAPIView):
     """
     List all responses, or create a new response.
     """
     queryset = Response.objects.all()
     serializer_class = fs.ResponseFriendSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    # # for get list only
+    # def get_queryset(self):
+    #     current_user = self.request.user
+    #     friend_ids = current_user.friends.values_list('friend_id', flat=True)
+    #     queryset = Response.objects.filter(author_id__in=friend_ids) | \
+    #                Response.objects.response_set.filter(share_anonymously=True) | \
+    #                Response.objects.filter(author_id=current_user.id)
+    #     return queryset
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -85,8 +114,11 @@ class ResponseDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly, IsShared]
 
     def get_serializer_class(self):
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
         response = Response.objects.get(id=self.kwargs.get('pk'))
-        if response.author == self.request.user:  # TODO: modify after implementing friendship
+        if User.are_friends(self.request.user, response.author):
             return fs.ResponseFriendSerializer
         return fs.ResponseAnonymousSerializer
 
