@@ -17,6 +17,13 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return obj == request.user
         return obj.author == request.user
 
+class IsRecipient(permissions.BasePermission):
+    """
+    Custom permission to only allow recipients of noti to update.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return obj.recipient == request.user
 
 class IsShared(permissions.BasePermission):
     """
