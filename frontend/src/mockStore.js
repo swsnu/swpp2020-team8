@@ -3,7 +3,9 @@ import {
   mockCustomQuestion,
   mockQuestions,
   mockQuestionFeed,
-  mockRecommendQuestions
+  mockRecommendQuestions,
+  mockResponse,
+  mockResponse2
 } from './constants';
 
 export const mockStore = {
@@ -16,7 +18,9 @@ export const mockStore = {
     dailyQuestions: mockQuestionFeed,
     randomQuestions: mockRecommendQuestions,
     sampleQuestions: mockQuestions,
-    recommendedQuestions: mockRecommendQuestions
+    recommendedQuestions: mockRecommendQuestions,
+    selectedQuestion: mockQuestionFeed[0],
+    selectedQuestionResponses: [mockResponse, mockResponse2]
   },
   userReducer: {
     error: false,
