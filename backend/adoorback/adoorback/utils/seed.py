@@ -11,6 +11,7 @@ from account.models import Friendship, FriendRequest
 from feed.models import Article, Response, Question, Post
 from comment.models import Comment
 from like.models import Like
+from notification.models import Notification
 
 DEBUG = False
 
@@ -126,6 +127,31 @@ def set_seed(n):
     logging.info(
         f"{Like.objects.count()} Like(s) created!") if DEBUG else None
 
+    # Seed Notification for likes
+    # likes = Like.objects.all()
+    # for like in likes[:n]:
+    #     actor = like.user
+    #     origin = like.target
+    #     recipient = origin.author
+    #     target = like
+    #     message = f'{actor} likes your {origin.type}'
+    #     Notification.objects.create(actor = actor, recipient = recipient, message = message,
+    #         origin = origin, target = target, is_read = False, is_visible = True)
+
+    # # Seed Notification for comments
+    # for comment in comments[:n]:
+    #     actor = comment.author
+    #     origin = comment.target
+    #     recipient = origin.author
+    #     target = comment
+    #     message = f'{actor} commented on your {origin.type}'
+    #     Notification.objects.create(actor = actor, recipient = recipient, message = message,
+    #         origin = origin, target = target, is_read = False, is_visible = True)
+    # # TODO: noti for friendship & response requests 
+    # logging.info(
+    #     f"{Notification.objects.all().count()} Notification(s) created!") if DEBUG else None
+
+
     # Seed Friendship
     user_1 = User.objects.get(id=1)
     user_2 = User.objects.get(id=2)
@@ -154,7 +180,8 @@ def fill_data():
     questions = Question.objects.all()
     articles = Article.objects.all()
     comments = Comment.objects.all()
-    posts = Post.objects.all()
+    responses = Response.objects.all()
+    posts = random.choice([articles, questions, responses])
     for user in User.objects.all():
         Article.objects.create(author=user, content=faker.catch_phrase()) \
             if user.article_set.count() == 0 else None

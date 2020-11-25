@@ -21,9 +21,9 @@ export const mockStore = {
   userReducer: {
     error: false,
     user: {
-      id: 0,
-      username: 'mock',
-      isLoggedIn: false
+      id: 123,
+      username: 'curious',
+      isLoggedIn: true
     }
   }
 };
