@@ -25,7 +25,13 @@ export default function PostDetail() {
     );
   return (
     <div id="post-detail-not-question">
-      {selectedPost && <PostItem postObj={selectedPost} />}
+      {selectedPost && (
+        <PostItem
+          postObj={selectedPost}
+          postKey={`${selectedPost.type}-${selectedPost.id}`}
+          isDetailPage
+        />
+      )}
     </div>
   );
 }

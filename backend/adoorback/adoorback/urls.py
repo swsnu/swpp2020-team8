@@ -22,7 +22,7 @@ from django.urls import include, path
 urlpatterns = [
     path('api/likes/', include('like.urls')),
     path('api/comments/', include('comment.urls')),
-    # path('notifications/', include('notification.urls')),
+    path('api/notifications/', include('notification.urls')),
     path('api/feed/', include('feed.urls')),
     path('api/user/', include('account.urls')),
     path('api/admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
