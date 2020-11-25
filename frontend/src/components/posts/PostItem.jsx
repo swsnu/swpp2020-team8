@@ -31,8 +31,8 @@ export default function PostItem({ postObj }) {
   const user = useSelector((state) => state.userReducer.user);
   const isAuthor = user.id === postObj.author_detail.id;
 
-  const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
+  const [liked, setLiked] = useState(postObj.current_user_liked);
+  const [likeCount, setLikeCount] = useState(postObj.like_count);
 
   const commentList = mockArticle.comments?.map((comment) => {
     return <CommentItem key={comment.id} commentObj={comment} />;

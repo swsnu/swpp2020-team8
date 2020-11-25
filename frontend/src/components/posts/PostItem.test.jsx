@@ -1,23 +1,34 @@
-import { shallow } from 'enzyme/build';
+import { mount } from 'enzyme/build';
 import React from 'react';
+import { Provider } from 'react-redux';
+import { Router } from 'react-router-dom';
+import { createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import thunk from 'redux-thunk';
+import { act } from 'react-dom/test-utils';
 import PostItem from './PostItem';
+import history from '../../history';
+import rootReducer from '../../modules';
+import { mockStore } from '../../mockStore';
 
-const samplepostObj = {
-  id: 4756,
+const samplePostObj = {
+  id: 0,
   author_detail: {
-    id: 123,
+    id: 0,
     username: 'curious',
     profile_pic:
       'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
   },
   content: `ㅋㅋ은 대한민국의 인터넷 신조어로, 한글의 자음 중 하나인 'ㅋ'를 이용해 웃음소리를 표현한 것이다. ㅋㅋ는 의성어인 '큭큭', '킥킥', '캭캭' 등을 초성체로 줄여 쓴 것으로 해석하는 것이 일반적이며, ㅋ자의 빈도와 상황에 따라 여러 가지 의미와 느낌을 줄 수 있다. `,
-  created_at: '2020-11-05T14:16:13.801119+08:00'
+  created_at: '2020-11-05T14:16:13.801119+08:00',
+  like_count: 1,
+  current_user_liked: true
 };
 
 const sampleResponseObj = {
   id: 4757,
   author_detail: {
-    id: 123,
+    id: 0,
     username: 'curious',
     profile_pic:
       'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
@@ -42,7 +53,9 @@ const sampleResponseObj = {
           'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
       }
     }
-  ]
+  ],
+  current_user_liked: true,
+  like_count: 1
 };
 
 const mockArticle = {
@@ -57,6 +70,8 @@ const mockArticle = {
   created_at: '2020-09-23T10:38:47.975019+08:00',
   content:
     '안녕하세요 반가워요 잘있어요 다시만나요 이거는 질문없이 쓰는 그냥 뻘글이에요 이쁘죠?????',
+  current_user_liked: true,
+  like_count: 1,
   comments: [
     {
       id: 1272,
@@ -95,7 +110,6 @@ const mockArticle = {
       create_dt: '2020-09-23T10:38:47.975019+08:00',
       update_dt: '2020-09-23T10:39:35.849029+08:00'
     },
-
     {
       id: 1274,
       post_id: 383,
@@ -117,10 +131,29 @@ const mockArticle = {
 };
 
 describe('<PostItem />', () => {
+  const store = createStore(
+    rootReducer,
+    mockStore,
+    composeWithDevTools(applyMiddleware(thunk))
+  );
+
+  let wrapper;
+
+  beforeEach(() => {
+    wrapper = mount(
+      <Provider store={store}>
+        <Router history={history}>
+          <PostItem id="post" postObj={samplePostObj} />
+          <PostItem id="response" postObj={sampleResponseObj} />
+          <PostItem id="article-with-comments" postObj={mockArticle} />
+        </Router>
+      </Provider>
+    );
+  });
+
   it('should render article without errors', () => {
-    const component = shallow(<PostItem postObj={samplepostObj} />);
-    const wrapper = component.find('PostItemWrapper');
-    expect(wrapper.length).toBe(1);
+    const component = wrapper.find('#post');
+    expect(component.length).toBe(1);
     const question = component.find('QuestionBox');
     expect(question.length).toBe(0);
     const postAuthorButtons = component.find('PostAuthorButtons');
@@ -128,34 +161,56 @@ describe('<PostItem />', () => {
   });
 
   it('should render response and question without errors', () => {
-    const component = shallow(<PostItem postObj={sampleResponseObj} />);
-    const wrapper = component.find('PostItemWrapper');
-    expect(wrapper.length).toBe(1);
+    const component = wrapper.find('#response');
+    expect(component.length).toBe(1);
     const question = component.find('QuestionBox');
     expect(question.length).toBe(1);
   });
 
   it('should toggle like', async () => {
-    const component = shallow(<PostItem postObj={sampleResponseObj} />);
-    const likeButton = component.find('FavoriteBorderIcon').parent();
-    let unlikeButton = component.find('FavoriteIcon').parent();
-    const likeCount = component.find('#like-count').at(0).text();
-    expect(+likeCount).toEqual(0);
-    expect(likeButton.length).toBe(1);
-    expect(unlikeButton.length).toBe(0);
-    likeButton.simulate('click');
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    unlikeButton = component.find('FavoriteIcon').parent();
+    let component = wrapper.find('#response');
+    const likeIcon = component.find('FavoriteBorderIcon');
+    const unlikeButton = component.find('FavoriteIcon').closest('button').at(0);
+    let likeCount = component.find('#like-count').at(0).text();
+
+    expect(likeIcon.length).toBe(0);
     expect(unlikeButton.length).toBe(1);
-    unlikeButton.simulate('click');
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    expect(+likeCount).toEqual(0);
+    expect(+likeCount).toEqual(sampleResponseObj.like_count);
+
+    // unlike
+    await act(async () => {
+      unlikeButton.simulate('click');
+    });
+
+    wrapper.update();
+
+    component = wrapper.find('#response');
+    const unlikeIcon = component.find('FavoriteIcon');
+    const likeButton = component
+      .find('FavoriteBorderIcon')
+      .closest('button')
+      .at(0);
+    likeCount = component.find('#like-count').at(0).text();
+
+    expect(unlikeIcon.length).toBe(0);
+    expect(likeButton.length).toBe(1);
+    expect(+likeCount).toEqual(sampleResponseObj.like_count - 1);
+
+    // like
+    await act(async () => {
+      likeButton.simulate('click');
+    });
+
+    wrapper.update();
+
+    component = wrapper.find('#response');
+    likeCount = component.find('#like-count').at(0).text();
+
+    expect(+likeCount).toEqual(sampleResponseObj.like_count);
   });
 
   it('should toggle like', async () => {
-    const component = shallow(<PostItem postObj={mockArticle} />);
-    expect(component.find('CommentItem').length).toEqual(
-      mockArticle.comments.length
-    );
+    const component = wrapper.find('#article-with-comments');
+    expect(component.find('CommentItem').length).toEqual(4);
   });
 });
