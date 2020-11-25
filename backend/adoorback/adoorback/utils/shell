@@ -1,20 +1,19 @@
 python manage.py shell
 
-from faker import Faker
-import random
-
 from django.contrib.auth import get_user_model
-from feed.models import Question, Article, Response, Post
+from account.models import Friendship, FriendRequest
+from feed.models import Question, Article, Response, Post, ResponseRequest
 from comment.models import Comment
 from like.models import Like
 from django.contrib.contenttypes.models import ContentType
 from adoorback.utils.seed import set_seed
 from adoorback.utils.content_types import get_content_type
+from django.contrib.auth import get_user_model
 User = get_user_model()
 
 set_seed(10)
 
-user = User.objects.all().last()
+user = User.objects.last()
 
 article = Article.objects.all().last()
 response = Response.objects.all().last()
@@ -22,6 +21,7 @@ question = Question.objects.all().last()
 comment = Comment.objects.all().last()
 like = Like.objects.all().last()
 post = Post.objects.all().last()
+friendship = Friendship.objects.last()
 
 admin_question = Question.objects.admin_questions_only().last()
 custom_question = Question.objects.custom_questions_only().last()
@@ -29,3 +29,6 @@ feed_comment = Comment.objects.comments_only().last()
 reply = Comment.objects.replies_only().last()
 feed_like = Like.objects.feed_likes_only().last()
 comment_like = Like.objects.comment_likes_only().last()
+user1 = User.objects.get(id=1)
+user2 = User.objects.get(id=2)
+user3 = User.objects.get(id=3)

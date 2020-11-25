@@ -2,7 +2,7 @@
 import axios from '../apis';
 import {
   mockQuestions,
-  mockQuestionFeed,
+  // mockQuestionFeed,
   mockRecommendQuestions
 } from '../constants';
 
@@ -27,12 +27,26 @@ export const GET_DAILY_QUESTIONS_FAILURE =
 
 export const GET_RANDOM_QUESTIONS = 'question/GET_RANDOM_QUESTIONS';
 
+export const GET_SELECTED_QUESTION_FRIEND_RESPONSES_REQUEST =
+  'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_REQUEST';
+export const GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS =
+  'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS';
+export const GET_SELECTED_QUESTION_FRIEND_RESPONSES_FAILURE =
+  'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_FAILURE';
+
+export const GET_SELECTED_QUESTION_RESPONSES_REQUEST =
+  'question/GET_SELECTED_QUESTION_RESPONSES_REQUEST';
+export const GET_SELECTED_QUESTION_RESPONSES_SUCCESS =
+  'question/GET_SELECTED_QUESTION_RESPONSES_SUCCESS';
+export const GET_SELECTED_QUESTION_RESPONSES_FAILURE =
+  'question/GET_SELECTED_QUESTION_RESPONSES_FAILURE';
+
 const initialState = {
   dailyQuestions: [],
   sampleQuestions: [],
   randomQuestions: [],
   recommendedQuestions: [],
-  selectedQuestion: {},
+  selectedQuestion: null,
   selectedQuestionResponses: []
 };
 
@@ -49,24 +63,26 @@ export const getSampleQuestionsSuccess = (sampleQuestions) => {
   };
 };
 
-export const resetQuestions = () => {
-  return {
-    type: RESET_QUESTIONS
-  };
-};
+// TODO
+// export const resetQuestions = () => {
+//   return {
+//     type: RESET_QUESTIONS
+//   };
+// };
 
+// TODO: recommendation api 개발 후 주석 제거 및 테스팅 코드 작성 필요
 // eslint-disable-next-line no-unused-vars
 export const getRecommendedQuestions = (userId) => async (dispatch) => {
   // let res;
   dispatch({ type: 'question/GET_RECOMMENDED_QUESTIONS_REQUEST' });
-  try {
-    // res = await axios.get(`questions/${userId}`)
-  } catch (err) {
-    dispatch({
-      type: 'question/GET_RECOMMENDED_QUESTIONS_FAILURE',
-      error: err
-    });
-  }
+  // try {
+  //   // res = await axios.get(`questions/${userId}`)
+  // } catch (err) {
+  //   dispatch({
+  //     type: 'question/GET_RECOMMENDED_QUESTIONS_FAILURE',
+  //     error: err
+  //   });
+  // }
   dispatch({
     type: 'question/GET_RECOMMENDED_QUESTIONS_SUCCESS',
     // recommendedQuestions: res
@@ -75,17 +91,16 @@ export const getRecommendedQuestions = (userId) => async (dispatch) => {
 };
 
 export const getDailyQuestions = () => async (dispatch) => {
-  // let res;
+  let res;
   dispatch({ type: 'question/GET_DAILY_QUESTIONS_REQUEST' });
   try {
-    // res = await axios.get('questions/daily/');
+    res = await axios.get('/feed/questions/daily/');
   } catch (err) {
     dispatch({ type: 'question/GET_DAILY_QUESTIONS_FAILURE', error: err });
   }
   dispatch({
     type: 'question/GET_DAILY_QUESTIONS_SUCCESS',
-    // dailyQuestions: res
-    res: [...mockQuestionFeed]
+    res: res.data.results
   });
 };
 
@@ -93,6 +108,42 @@ export const getRandomQuestions = () => {
   return {
     type: GET_RANDOM_QUESTIONS
   };
+};
+
+export const getResponsesByQuestion = (id) => async (dispatch) => {
+  let res;
+  dispatch({ type: 'question/GET_SELECTED_QUESTION_RESPONSES_REQUEST' });
+  try {
+    res = await axios.get(`/feed/questions/${id}/`);
+  } catch (err) {
+    dispatch({
+      type: 'question/GET_SELECTED_QUESTION_RESPONSES_FAILURE',
+      error: err
+    });
+  }
+  dispatch({
+    type: 'question/GET_SELECTED_QUESTION_RESPONSES_SUCCESS',
+    res: res.data.response_set,
+    question: res.data
+  });
+};
+
+export const getFriendResponsesByQuestion = (id) => async (dispatch) => {
+  let res;
+  dispatch({ type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_REQUEST' });
+  try {
+    res = await axios.get(`/feed/questions/${id}/friend/`);
+  } catch (err) {
+    dispatch({
+      type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_FAILURE',
+      error: err
+    });
+  }
+  dispatch({
+    type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS',
+    res: res.data.response_set,
+    question: res.data
+  });
 };
 
 export default function questionReducer(state = initialState, action) {
@@ -103,9 +154,10 @@ export default function questionReducer(state = initialState, action) {
         sampleQuestions: action.sampleQuestions
       };
     }
-    case RESET_QUESTIONS: {
-      return { ...initialState };
-    }
+    // TODO
+    // case RESET_QUESTIONS: {
+    //   return { ...initialState };
+    // }
     case GET_RECOMMENDED_QUESTIONS_SUCCESS: {
       return {
         ...state,
@@ -125,6 +177,18 @@ export default function questionReducer(state = initialState, action) {
       return {
         ...state,
         randomQuestions
+      };
+    case GET_SELECTED_QUESTION_RESPONSES_SUCCESS:
+      return {
+        ...state,
+        selectedQuestionResponses: action.res,
+        selectedQuestion: action.question
+      };
+    case GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS:
+      return {
+        ...state,
+        selectedQuestionResponses: action.res,
+        selectedQuestion: action.question
       };
     default:
       return state;

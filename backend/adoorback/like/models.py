@@ -1,9 +1,12 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.contrib.auth import get_user_model
-from adoorback.utils.content_types import get_content_type
-
+from adoorback.utils.content_types import get_content_type, get_korean_type_name
+from notification.models import Notification
 
 User = get_user_model()
 
@@ -25,7 +28,16 @@ class Like(models.Model):
     object_id = models.IntegerField(blank=True, null=True)
     target = GenericForeignKey('content_type', 'object_id')
 
+    like_targetted_notis = GenericRelation(Notification,
+        content_type_field='target_type', object_id_field='target_id')
+    like_originated_notis = GenericRelation(Notification,
+        content_type_field='origin_type', object_id_field='origin_id')
     objects = LikeManager()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'content_type', 'object_id'], name='unique_like'),
+        ]
 
     def __str__(self):
         return f'{self.user} likes {self.content_type} ({self.object_id})'
@@ -33,3 +45,19 @@ class Like(models.Model):
     @property
     def type(self):
         return self.__class__.__name__
+
+
+@receiver(post_save, sender=Like)
+def create_noti(sender, **kwargs):
+    instance = kwargs['instance']
+    target = instance
+    origin = instance.target
+    origin_name = get_korean_type_name(origin.type)
+    actor = instance.user
+    actor_name = '익명의 사용자가'
+    recipient = instance.target.author
+    if User.are_friends(actor, recipient):
+        actor_name = f'{actor.username}님이'
+    message = f'{actor_name} 회원님의 {origin_name}을 좋아합니다.'
+    Notification.objects.create(actor = actor, recipient = recipient, message = message,
+        origin = origin, target = target)

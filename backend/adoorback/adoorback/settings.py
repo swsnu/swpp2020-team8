@@ -29,7 +29,7 @@ DEBUG = True
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
+    'PAGE_SIZE': 15,
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -38,11 +38,13 @@ REST_FRAMEWORK = {
 
 JWT_AUTH = {
     'JWT_VERIFY': True,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=30000),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+BASE_URL = 'http://localhost:8000'
 
 
 # Application definition
@@ -63,6 +65,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'polymorphic',
     'admin_honeypot',
+    'django_celery_results',
+    'django_cron',
 ]
 
 SITE_ID = 1
@@ -70,6 +74,15 @@ SITE_ID = 1
 AUTH_USER_MODEL = 'account.User'
 
 LOGIN_REDIRECT_URL = '/api/user/'
+
+CRON_CLASSES = [
+    "feed.cron.DailyQuestionCronJob",
+    "feed.cron.RankQuestionsCronJob",
+]
+
+CELERY_RESULT_BACKEND = 'django-db'
+
+CELERY_CACHE_BACKEND = 'django-cache'
 
 # reference: https://github.com/jazzband/django-redis
 CACHES = {
@@ -146,7 +159,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-US'
+LANGUAGE_CODE = 'ko-KR'
 
 TIME_ZONE = 'Asia/Seoul'
 

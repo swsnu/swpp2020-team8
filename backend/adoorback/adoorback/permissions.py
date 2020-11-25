@@ -16,3 +16,27 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         elif obj.type == 'User':
             return obj == request.user
         return obj.author == request.user
+
+class IsRecipient(permissions.BasePermission):
+    """
+    Custom permission to only allow recipients of noti to update.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return obj.recipient == request.user
+
+class IsShared(permissions.BasePermission):
+    """
+    Custom permission to only allow friends of author to view author profile.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
+        if obj.type == 'Question' or obj.share_anonymously:
+            return True
+        elif obj.share_with_friends and User.are_friends(request.user, obj.author):
+            return True
+        else:
+            return obj.author == request.user

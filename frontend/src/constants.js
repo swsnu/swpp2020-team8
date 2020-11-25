@@ -36,6 +36,7 @@ export const mockQuestions = [
 export const mockPost = {
   id: 1,
   'content-type': 'Article',
+  type: 'Article',
   is_admin_question: 'true',
   author_detail: {
     id: 1,
@@ -125,133 +126,185 @@ export const mockRecommendQuestions = [
 export const mockQuestionFeed = [
   {
     id: 1,
-    'content-type': 'Question',
-    is_admin_question: 'true',
+    type: 'Question',
+    author: 'http://localhost:8000/api/user/1/',
     author_detail: {
       id: 1,
-      username: 'admin',
-      profile_pic:
-        'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+      username: 'admin'
     },
-    content: '어디서 마시는 커피를 가장 좋아하는가?',
-    created_at: '2020-11-05T14:16:13.801119+08:00',
-    updated_at: null
+    content: 'Republican',
+    like_count: 33,
+    current_user_liked: true,
+    created_at: '2020-11-15T14:52:51.786164+09:00',
+    updated_at: '2020-11-15T14:52:52.380141+09:00',
+    selected_date: '2020-11-15T14:52:52.380046+09:00',
+    is_admin_question: true
   },
   {
-    id: 2,
-    'content-type': 'Question',
-    is_admin_question: 'true',
+    id: 134,
+    type: 'Question',
+    author: 'http://localhost:8000/api/user/1/',
     author_detail: {
-      id: 1,
-      username: 'admin',
-      profile_pic:
-        'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+      id: 123,
+      username: 'curious'
     },
-    content: '가장 오래 통화해본 기억은?',
-    created_at: '2020-11-05T14:16:13.801119+08:00',
-    updated_at: null
+    content: 'Republican',
+    like_count: 33,
+    current_user_liked: true,
+    created_at: '2020-11-15T14:52:51.786164+09:00',
+    updated_at: '2020-11-15T14:52:52.380141+09:00',
+    selected_date: '2020-11-15T14:52:52.380046+09:00',
+    is_admin_question: true
   },
   {
     id: 3,
-    'content-type': 'Question',
-    is_admin_question: 'false',
+    type: 'Question',
+    author: 'http://localhost:8000/api/user/3/',
     author_detail: {
-      id: 123,
-      username: 'curious',
-      profile_pic:
-        'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+      id: 2,
+      username: 'catherine28'
     },
-    content: '올해가 가기 전에 꼭 이루고 싶은 목표가 있다면~?',
-    created_at: '2020-11-05T14:16:13.801119+08:00',
-    updated_at: null
+    content: 'myself',
+    like_count: 1,
+    current_user_liked: true,
+    created_at: '2020-11-15T14:52:51.805998+09:00',
+    updated_at: '2020-11-15T14:52:52.321095+09:00',
+    selected_date: '2020-11-15T14:52:52.321007+09:00',
+    is_admin_question: false
   },
   {
     id: 4,
-    'content-type': 'Question',
-    is_admin_question: 'true',
+    type: 'Question',
+    author: 'http://localhost:8000/api/user/4/',
     author_detail: {
-      id: 1,
-      username: 'admin',
-      profile_pic:
-        'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+      id: 3,
+      username: 'adoor'
     },
-    content: '나는 운이 좋은 편이라고 생각하는가?',
-    created_at: '2020-11-05T14:16:13.801119+08:00',
-    updated_at: null
+    content: 'under',
+    like_count: 26,
+    current_user_liked: true,
+    created_at: '2020-11-15T14:52:51.813969+09:00',
+    updated_at: '2020-11-15T14:52:52.316095+09:00',
+    selected_date: '2020-11-15T14:52:52.315995+09:00',
+    is_admin_question: false
   },
   {
     id: 5,
-    'content-type': 'Question',
-    is_admin_question: 'true',
+    type: 'Question',
+    author: 'http://localhost:8000/api/user/5/',
     author_detail: {
       id: 1,
-      username: 'admin',
-      profile_pic:
-        'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+      username: 'stephanie16'
     },
-    content: '사람들의 무리한 부탁을 잘 거절하는 편인가?',
-    created_at: '2020-11-05T14:16:13.801119+08:00',
-    updated_at: null
+    content: 'bar',
+    like_count: 45,
+    current_user_liked: true,
+    created_at: '2020-11-15T14:52:51.821841+09:00',
+    updated_at: '2020-11-15T14:52:52.325322+09:00',
+    selected_date: '2020-11-15T14:52:52.325223+09:00',
+    is_admin_question: false
   },
   {
     id: 6,
-    'content-type': 'Question',
-    is_admin_question: 'true',
+    type: 'Question',
+    author: 'http://localhost:8000/api/user/6/',
     author_detail: {
-      id: 1,
-      username: 'admin',
-      profile_pic:
-        'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+      id: 2,
+      username: 'catherine28'
     },
-    content: '내일이 생의 마지막 날이라면 오늘 무엇을 하겠는가?',
-    created_at: '2020-11-05T14:16:13.801119+08:00',
-    updated_at: null
-  },
-  {
-    id: 7,
-    'content-type': 'Question',
-    is_admin_question: 'true',
-    author_detail: {
-      id: 1,
-      username: 'admin',
-      profile_pic:
-        'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
-    },
-    content: '단 음식을 좋아하는가?',
-    created_at: '2020-11-05T14:16:13.801119+08:00',
-    updated_at: null
+    content: 'contain',
+    like_count: 33,
+    current_user_liked: true,
+    created_at: '2020-11-15T14:52:51.829792+09:00',
+    updated_at: '2020-11-15T14:52:52.269344+09:00',
+    selected_date: '2020-11-15T14:52:52.269255+09:00',
+    is_admin_question: false
   },
   {
     id: 8,
-    'content-type': 'Question',
-    is_admin_question: 'true',
+    type: 'Question',
+    author: 'http://localhost:8000/api/user/8/',
     author_detail: {
-      id: 1,
-      username: 'admin',
-      profile_pic:
-        'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+      id: 2,
+      username: 'catherine28'
     },
-    content: '오늘 있었던 가장 행복한 일은 무엇이었는가?',
-    created_at: '2020-11-05T14:16:13.801119+08:00',
-    updated_at: null
+    content: 'mention',
+    like_count: 25,
+    current_user_liked: true,
+    created_at: '2020-11-15T14:52:51.846281+09:00',
+    updated_at: '2020-11-15T14:52:52.369598+09:00',
+    selected_date: '2020-11-15T14:52:52.369499+09:00',
+    is_admin_question: false
   },
   {
     id: 9,
-    'content-type': 'Question',
-    is_admin_question: 'true',
+    type: 'Question',
+    author: 'http://localhost:8000/api/user/9/',
     author_detail: {
       id: 1,
-      username: 'admin',
-      profile_pic:
-        'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+      username: 'stephanie16'
     },
-    content: '운동하는 것을 좋아하는가?',
-    created_at: '2020-11-05T14:16:13.801119+08:00',
-    updated_at: null
+    content: 'research',
+    like_count: 33,
+    current_user_liked: true,
+    created_at: '2020-11-15T14:52:51.853724+09:00',
+    updated_at: '2020-11-15T14:52:52.344145+09:00',
+    selected_date: '2020-11-15T14:52:52.344050+09:00',
+    is_admin_question: false
+  },
+  {
+    id: 10,
+    type: 'Question',
+    author: 'http://localhost:8000/api/user/10/',
+    author_detail: {
+      id: 0,
+      username: 'adoor'
+    },
+    content: 'social',
+    like_count: 37,
+    current_user_liked: true,
+    created_at: '2020-11-15T14:52:51.862356+09:00',
+    updated_at: '2020-11-15T14:52:52.348892+09:00',
+    selected_date: '2020-11-15T14:52:52.348812+09:00',
+    is_admin_question: false
+  },
+  {
+    id: 12,
+    type: 'Question',
+    author: 'http://localhost:8000/api/user/12/',
+    author_detail: {
+      id: 1,
+      username: 'stephanie16'
+    },
+    content: 'fish',
+    like_count: 22,
+    current_user_liked: true,
+    created_at: '2020-11-15T14:52:51.878559+09:00',
+    updated_at: '2020-11-15T14:52:52.390150+09:00',
+    selected_date: '2020-11-15T14:52:52.390054+09:00',
+    is_admin_question: false
+  },
+  {
+    id: 13,
+    type: 'Question',
+    author: 'http://localhost:8000/api/user/13/',
+    author_detail: {
+      id: 1,
+      username: 'stephanie16'
+    },
+    content: 'event',
+    like_count: 26,
+    current_user_liked: true,
+    created_at: '2020-11-15T14:52:51.887629+09:00',
+    updated_at: '2020-11-15T14:52:52.394600+09:00',
+    selected_date: '2020-11-15T14:52:52.394508+09:00',
+    is_admin_question: false
   }
 ];
+
 export const mockArticle = {
   id: 4756,
+  type: 'Article',
   'content-type': 'Article', // or const int e.g. (1: Article, 2: Response...)
   author_detail: {
     id: 123,
@@ -323,6 +376,7 @@ export const mockArticle = {
 export const mockResponse = {
   id: 5999,
   'content-type': 'Response',
+  type: 'Response',
   author_detail: {
     id: 123,
     username: 'curious',
@@ -403,8 +457,9 @@ export const mockFriendFeed = [
 ];
 
 export const mockAnonCustomQuestion = {
-  id: 4758,
+  id: 23423423,
   'content-type': 'Question',
+  type: 'Question',
   is_admin_question: 'true',
   author_detail: {
     id: -1
@@ -419,8 +474,9 @@ export const mockAnonCustomQuestion = {
 };
 
 export const mockAnonCustomQuestion2 = {
-  id: 4758,
+  id: 23423423132,
   'content-type': 'Question',
+  type: 'Question',
   is_admin_question: 'true',
   author_detail: {
     id: -1
@@ -436,6 +492,7 @@ export const mockAnonCustomQuestion2 = {
 
 export const mockAnonArticle = {
   id: 4756,
+  type: 'Article',
   'content-type': 'Article', // or const int e.g. (1: Article, 2: Response...)
   author_detail: {
     id: -1
@@ -449,7 +506,7 @@ export const mockAnonArticle = {
 
 export const mockAnonResponse = {
   id: 4757,
-  'content-type': 'Response',
+  type: 'Response',
   author_detail: {
     id: -1
     // username: '익명',
@@ -475,6 +532,57 @@ export const mockAnonymousFeed = [
   mockAnonResponse
 ];
 
+export const questionDetailPosts = {
+  id: 5,
+  type: 'Question',
+  author: 'http://localhost:8000/api/user/5/',
+  author_detail: {
+    id: 3,
+    username: 'adoor'
+  },
+  content: 'add',
+  like_count: 1,
+  current_user_liked: true,
+  created_at: '2020-11-21T14:59:33.371909+09:00',
+  updated_at: '2020-11-21T14:59:33.519895+09:00',
+  selected_date: '2020-11-21T14:59:33.519774+09:00',
+  is_admin_question: true,
+  response_set: [
+    {
+      id: 10,
+      type: 'Response',
+      author: 'http://localhost:8000/api/user/10/',
+      author_detail: {
+        id: 1,
+        username: 'hawkinscameron'
+      },
+      content: 'Something article true have.',
+      like_count: 1,
+      current_user_liked: true,
+      created_at: '2020-11-21T14:59:33.628261+09:00',
+      updated_at: '2020-11-21T14:59:33.628297+09:00',
+      question_id: 5,
+      share_with_friends: true,
+      share_anonymously: true,
+      question: {
+        id: 5,
+        type: 'Question',
+        author: 'http://localhost:8000/api/user/5/',
+        author_detail: {
+          id: 3,
+          username: 'adoor'
+        },
+        content: 'add',
+        like_count: 1,
+        current_user_liked: true,
+        created_at: '2020-11-21T14:59:33.371909+09:00',
+        updated_at: '2020-11-21T14:59:33.519895+09:00',
+        selected_date: '2020-11-21T14:59:33.519774+09:00',
+        is_admin_question: true
+      }
+    }
+  ]
+};
 export const mockFriendList = [
   {
     id: 1,

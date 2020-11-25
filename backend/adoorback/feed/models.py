@@ -9,7 +9,8 @@ from django.contrib.auth import get_user_model
 
 from comment.models import Comment
 from like.models import Like
-from adoorback.models import AdoorModel
+from adoorback.models import AdoorModel, AdoorTimestampedModel
+from notification.models import Notification
 
 
 User = get_user_model()
@@ -22,6 +23,10 @@ class Article(AdoorModel):
 
     article_comments = GenericRelation(Comment)
     article_likes = GenericRelation(Like)
+    article_targetted_notis = GenericRelation(Notification,
+        content_type_field='target_type', object_id_field='target_id')
+    article_originated_notis = GenericRelation(Notification,
+        content_type_field='origin_type', object_id_field='origin_id')
 
     @property
     def type(self):
@@ -29,7 +34,6 @@ class Article(AdoorModel):
 
 
 class QuestionManager(models.Manager):
-    use_for_related_fields = True
 
     def admin_questions_only(self, **kwargs):
         return self.filter(is_admin_question=True, **kwargs)
@@ -49,12 +53,19 @@ class Question(AdoorModel):
 
     question_comments = GenericRelation(Comment)
     question_likes = GenericRelation(Like)
+    question_targetted_notis = GenericRelation(Notification,
+        content_type_field='target_type', object_id_field='target_id')
+    question_originated_notis = GenericRelation(Notification,
+        content_type_field='origin_type', object_id_field='origin_id')
 
     objects = QuestionManager()
 
     @property
     def type(self):
         return self.__class__.__name__
+
+    class Meta:
+        base_manager_name = 'objects'
 
 
 class Response(AdoorModel):
@@ -65,14 +76,24 @@ class Response(AdoorModel):
 
     response_comments = GenericRelation(Comment)
     response_likes = GenericRelation(Like)
+    response_targetted_notis = GenericRelation(Notification,
+        content_type_field='target_type', object_id_field='target_id')
+    response_originated_notis = GenericRelation(Notification,
+        content_type_field='origin_type', object_id_field='origin_id')
 
     @property
     def type(self):
         return self.__class__.__name__
 
+class ResponseRequest(AdoorTimestampedModel):
+    actor = models.ForeignKey(User, related_name='sent_response_request_set', on_delete=models.CASCADE)
+    recipient = models.ForeignKey(User, related_name='received_response_request_set', on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.question.content
 
 class PostManager(models.Manager):
-    use_for_related_fields = True
 
     def friend_posts_only(self, **kwargs):
         return self.filter(share_with_friends=True, **kwargs)
@@ -82,6 +103,7 @@ class PostManager(models.Manager):
 
 
 class Post(AdoorModel):
+    author_id = models.IntegerField()
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.IntegerField()
     target = GenericForeignKey('content_type', 'object_id')
@@ -92,6 +114,7 @@ class Post(AdoorModel):
 
     class Meta:
         ordering = ['-created_at']
+        base_manager_name = 'objects'
 
 
 @receiver(post_save, sender=Question)
@@ -107,16 +130,20 @@ def create_post(sender, **kwargs):
     if instance.type != 'Question':
         post.share_with_friends = instance.share_with_friends
         post.share_anonymously = instance.share_anonymously
+    post.author_id = instance.author.id
     post.content = instance.content
     post.created_at = instance.created_at
     post.updated_at = instance.updated_at
     post.save()
 
 
+@receiver(post_delete, sender=User)
 @receiver(post_delete, sender=Question)
 @receiver(post_delete, sender=Response)
 @receiver(post_delete, sender=Article)
 def delete_post(sender, **kwargs):
     instance = kwargs['instance']
-    post = Post.objects.get(content_type=ContentType.objects.get_for_model(sender), object_id=instance.id)
-    post.delete()
+    if sender == User:
+        Post.objects.filter(author_id=instance.id).delete()
+    else:
+        Post.objects.get(content_type=ContentType.objects.get_for_model(sender), object_id=instance.id).delete()

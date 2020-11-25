@@ -43,4 +43,4 @@ node_modules
 
 # db
 /backend/adoorback/db.sqlite3
-
+/backend/adoorback/feed/algorithms/*.csv

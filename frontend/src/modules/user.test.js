@@ -40,6 +40,54 @@ describe('user Actions', () => {
     });
   });
 
+  it('should dispatch user/SIGNUP_FAILURE when api returns error', async () => {
+    jest.mock('axios');
+    const spy = jest.spyOn(axios, 'post').mockImplementation(() => {
+      return Promise.reject(new Error('error'));
+    });
+
+    store.dispatch(actionCreators.requestSignUp()).then(() => {
+      const newState = store.getState();
+      expect(spy).toHaveBeenCalled();
+      expect(newState.userReducer.user).toMatchObject({
+        loginError: false,
+        signUpError: 'error',
+        user: null,
+        selectQuestion: true
+      });
+    });
+  });
+
+  it('`skipSelectQuestions` should skip select question properly', async () => {
+    await store.dispatch(actionCreators.skipSelectQuestions());
+    const newState = store.getState();
+    expect(newState.userReducer.selectQuestion).toBeTruthy();
+  });
+
+  it(`should turn on signup error when signup api error occurs`, (done) => {
+    jest.mock('axios');
+    const userInfo = {
+      id: 1,
+      password: 'password',
+      username: 'user',
+      email: 'user@user.com'
+    };
+
+    axios.post.mockReturnValue(Promise.reject({ error: 'error' }));
+    axios.get.mockReturnValue(Promise.reject({ error: 'error' }));
+
+    store
+      .dispatch(actionCreators.requestSignUp(userInfo))
+      .then(() => {
+        done();
+      })
+      .catch(() => {
+        const newState = store.getState();
+        expect(newState.userReducer.user).toBeFalsy();
+        expect(newState.userReducer.signUpError).toBeTruthy();
+      });
+  });
+
   it(`'logout' should log out correctly`, (done) => {
     jest.mock('axios');
     // axios.get.mockResolvedValue([]);
@@ -55,6 +103,19 @@ describe('user Actions', () => {
       expect(spy).toHaveBeenCalled();
       expect(newState.userReducer.user).toBeFalsy();
       done();
+    });
+  });
+
+  it('should dispatch user/LOGOUT_FAILURE when api returns error', async () => {
+    jest.mock('axios');
+    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return Promise.reject(new Error('error'));
+    });
+
+    store.dispatch(actionCreators.logout()).then(() => {
+      const newState = store.getState();
+      expect(spy).toHaveBeenCalled();
+      expect(newState.userReducer.user).toMatchObject(null);
     });
   });
 
@@ -98,12 +159,13 @@ describe('user Actions', () => {
       .then(() => {
         const newState = store.getState();
         expect(spy).toHaveBeenCalled();
-        expect(newState.userReducer.user.questionHistory).toEqual(
+        expect(newState.userReducer.user.question_history).toEqual(
           questionSelection
         );
         done();
       });
   });
+
   it(`'login' should log in & update user info @ store`, (done) => {
     jest.mock('axios');
 
@@ -143,6 +205,7 @@ describe('User Reducer', () => {
     const newState = userReducer(undefined, {}); // initialize
     expect(newState).toEqual({
       loginError: false,
+      selectQuestion: true,
       signUpError: {},
       user: null
     });
@@ -190,14 +253,15 @@ describe('User Reducer', () => {
       {
         loginError: false,
         signUpError: {},
-        user: { id: 1 }
+        user: { id: 1 },
+        selectQuestion: true
       },
       {
         type: actionCreators.UPDATE_QUESTION_SELECT,
         selectedQuestions: '[1, 2, 3]'
       }
     );
-    expect(newState.user.questionHistory).toEqual('[1, 2, 3]');
+    expect(newState.user.question_history).toEqual('[1, 2, 3]');
   });
 
   it('should not update user info while waiting on login api response', () => {

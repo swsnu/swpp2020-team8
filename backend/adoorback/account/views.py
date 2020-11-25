@@ -1,42 +1,67 @@
+import json
+
 from django.contrib.auth import get_user_model, authenticate, login
-from django.http import JsonResponse, HttpResponse, HttpResponseNotAllowed
+from django.http import JsonResponse, HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from rest_framework import generics
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.response import Response
-from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_200_OK
+from rest_framework.parsers import JSONParser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import JSONRenderer
 
 from adoorback.permissions import IsOwnerOrReadOnly
-from account.serializers import UserProfileSerializer, UserDetailedSerializer
-from feed.serializers import QuestionSerializer
+from account.models import Friendship, FriendRequest
+from account.serializers import UserProfileSerializer, AuthorFriendSerializer, \
+    UserFriendshipDetailSerializer, UserFriendRequestSerializer
+from feed.serializers import QuestionAnonymousSerializer
 from feed.models import Question
 
 User = get_user_model()
 
 
-class UserSignup(generics.CreateAPIView):
-    serializer_class = UserProfileSerializer
+class JSONResponse(HttpResponse):
+    """
+    An HttpResponse that renders its content into JSON.
+    """
+
+    def __init__(self, data, **kwargs):
+        content = JSONRenderer().render(data)
+        kwargs['content_type'] = 'application/json'
+        super().__init__(content, **kwargs)
 
 
-@api_view(["POST"])
-@permission_classes([AllowAny])
+def user_signup(request):
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = UserProfileSerializer(data=data,
+                                           context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return JSONResponse(serializer.data, status=201)
+        return JSONResponse(serializer.errors, status=400)
+
+    return HttpResponseNotAllowed(['POST'])
+
+
 def user_login(request):
-    username = request.data.get("username")
-    password = request.data.get("password")
-    if username is None or password is None:
-        return Response({'error': 'Please provide both username and password'},
-                        status=HTTP_400_BAD_REQUEST)
-    user = authenticate(username=username, password=password)
-    if not user:
-        return Response({'error': 'Invalid Credentials'},
-                        status=HTTP_404_NOT_FOUND)
-    login(request, user)
-    return Response(status=HTTP_200_OK)
+    if request.method == "POST":
+        try:
+            req_data = json.loads(request.body)
+            username = str(req_data['username'])
+            password = str(req_data['password'])
+        except (KeyError, TypeError, json.JSONDecodeError):
+            return HttpResponseBadRequest()
+
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return HttpResponse(status=204)
+        return HttpResponse(status=401)
+
+    return HttpResponseNotAllowed(['POST'])
 
 
 class SignupQuestions(generics.ListAPIView):
-    queryset = Question.objects.all().order_by('?')[:5]
-    serializer_class = QuestionSerializer
+    queryset = Question.objects.order_by('?')[:5]
+    serializer_class = QuestionAnonymousSerializer
     model = serializer_class.Meta.model
 
 
@@ -56,18 +81,89 @@ def current_user(request):
     if request.method == 'GET':
         if not request.user.is_authenticated:
             return HttpResponse(status=401)
-        serializer = UserProfileSerializer(request.user)
+        serializer = UserProfileSerializer(
+            request.user, context={'request': request})
         return JsonResponse(serializer.data, safe=False, status=200)
     return HttpResponseNotAllowed(['GET'])
 
 
-class UserDetail(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserDetailedSerializer
-    permission_classes = [IsAuthenticated]
-
-
-class UserInfo(generics.RetrieveUpdateAPIView):
+class UserDetail(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+
+class UserSearch(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = User.objects.filter(
+            username__icontains=self.request.GET.get('query'))
+        return queryset
+
+
+class UserFriendList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = AuthorFriendSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = []
+        friendship_set = self.request.user.friends.all()
+        for friendship in friendship_set:
+            queryset.append(friendship.friend)
+        return queryset
+
+
+class UserFriendshipDetail(generics.CreateAPIView, generics.RetrieveDestroyAPIView):
+    """
+    Retrieve or destroy a friendship.
+    """
+    queryset = Friendship.objects.all()
+    serializer_class = UserFriendshipDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = queryset.get(user_id=self.request.user.id,
+                           friend_id=self.kwargs.get('fid'))
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+
+class UserFriendRequestList(generics.ListAPIView):
+    queryset = FriendRequest.objects.all()
+    serializer_class = UserFriendRequestSerializer
+    permission_classes = [IsAuthenticated]
+
+    # Getting Received Friend Requests for current_user
+    def get_queryset(self):
+        # should exclude 'current_user' to 'current_user' friend request
+        queryset = FriendRequest.objects.filter(
+            responder_id=self.request.user.id)
+        return queryset
+
+
+# Handling Friend Request the current_user received
+class UserFriendRequestDetail(generics.CreateAPIView, generics.RetrieveUpdateDestroyAPIView):
+    queryset = FriendRequest.objects.all()
+    serializer_class = UserFriendRequestSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = queryset.get(requester_id=self.request.user.id,
+                           responder_id=self.kwargs.get('rid'))
+        self.check_object_permissions(self.request, obj)
+        return obj if obj else None
+
+    def perform_create(self, serializer):
+        serializer.save(requester_id=self.request.user.id,
+                        responder_id=self.kwargs.get('rid'),
+                        responded=False)
+
+    def perform_destroy(self, instance):
+        instance = self.get_object()
+        instance.delete()

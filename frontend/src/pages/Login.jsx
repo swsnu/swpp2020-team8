@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { CommonInput, CommonButton } from '../styles';
 
-import { requestLogin, removeError } from '../modules/user';
+import { requestLogin } from '../modules/user';
 
 const LoginWrapper = styled.div`
   width: 500px;
@@ -43,8 +43,13 @@ export default function Login() {
   };
 
   const onClickSubmitButton = () => {
-    dispatch(removeError());
     dispatch(requestLogin(loginInfo));
+  };
+
+  const onKeySubmit = (e) => {
+    if (e.keyCode === 13) {
+      dispatch(requestLogin(loginInfo));
+    }
   };
 
   const onClickSignupButton = () => {
@@ -60,6 +65,7 @@ export default function Login() {
         value={loginInfo.username}
         placeholder="닉네임"
         onChange={handleChange}
+        onKeyDown={onKeySubmit}
       />
       <CommonInput
         id="password-input"
@@ -68,6 +74,7 @@ export default function Login() {
         placeholder="비밀번호"
         type="password"
         onChange={handleChange}
+        onKeyDown={onKeySubmit}
       />
       {loginError && loginError.length && (
         <WarningMessage id="login-error-message">
