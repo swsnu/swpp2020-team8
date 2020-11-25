@@ -1,5 +1,4 @@
-// import axios from '../apis';
-import { mockFriendList } from '../constants';
+import axios from '../apis';
 
 const initialState = {
   friendList: [],
@@ -22,30 +21,26 @@ export const getFriendList = () => async (dispatch, getState) => {
   dispatch({ type: GET_FRIEND_LIST_REQUEST, userId });
   let result;
   try {
-    // result = await axios.get(`user/${userId}/friends/`);
-    result = {
-      data: {
-        count: 4,
-        results: mockFriendList
-      }
-    };
+    result = await axios.get(`user/friends/`);
   } catch (err) {
     dispatch({ type: GET_FRIEND_LIST_FAILURE, error: err });
   }
   const { data } = result;
-  dispatch({
-    type: GET_FRIEND_LIST_SUCCESS,
-    result: data.results
-  });
+  if (data)
+    dispatch({
+      type: GET_FRIEND_LIST_SUCCESS,
+      result: data.results
+    });
 };
 
 export const deleteFriend = (friendId) => async (dispatch, getState) => {
   const userId = getState().userReducer.user?.id;
   dispatch({ type: DELETE_FRIEND_REQUEST, userId });
   try {
-    // await axios.delete(`/user/friendship/${friendId}/`);
+    await axios.delete(`user/friendship/${friendId}/`);
   } catch (err) {
     dispatch({ type: DELETE_FRIEND_FAILURE, error: err });
+    return;
   }
   dispatch({
     type: DELETE_FRIEND_SUCCESS,

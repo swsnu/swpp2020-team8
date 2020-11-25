@@ -68,11 +68,9 @@ const App = () => {
                 component={QuestionDetail}
               />
               <PrivateRoute path="/:postType/:id" component={PostDetail} />
-              <PrivateRoute
-                exact
-                path="/users/:id/friends"
-                component={FriendsPage}
-              />
+              <PrivateRoute exact path="/my-friends" component={FriendsPage} />
+
+              <PrivateRoute exact path="/friend" component={FriendsPage} />
 
               <Redirect exact path="/" to="/friends" />
             </Switch>
