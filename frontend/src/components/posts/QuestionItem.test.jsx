@@ -39,8 +39,8 @@ describe('<QuestionItem/>', () => {
 
   let wrapper;
 
-  beforeEach(() => {
-    wrapper = mount(
+  const getWrapper = () =>
+    mount(
       <Provider store={store}>
         <Router history={history}>
           <QuestionItem id="user-question" questionObj={userMockQuestions[0]} />
@@ -51,14 +51,16 @@ describe('<QuestionItem/>', () => {
         </Router>
       </Provider>
     );
-  });
 
   it('should render without errors', () => {
+    wrapper = getWrapper();
     const questionItem = wrapper.find('QuestionItemWrapper');
     expect(questionItem.length).toBe(2);
   });
 
   it('should not render <AuthorProfile/>, <PostAuthorButtons/> for admin questions', () => {
+    wrapper = getWrapper();
+
     const component = wrapper.find('#admin-question');
     expect(component.length).toBe(1);
     const authorProfile = component.find('AuthorProfile');
@@ -67,16 +69,9 @@ describe('<QuestionItem/>', () => {
     expect(postAuthorButtons.length).toBe(0);
   });
 
-  it('should render <AuthorProfile/>, <PostAuthorButtons/> for author questions', () => {
-    const component = wrapper.find('#user-question');
-    expect(component.length).toBe(1);
-    const authorProfile = component.find('AuthorProfile');
-    expect(authorProfile.length).toBe(1);
-    const postAuthorButtons = component.find('PostAuthorButtons');
-    expect(postAuthorButtons.length).toBe(1);
-  });
-
   it('should proper like icon according to the user likes', () => {
+    wrapper = getWrapper();
+
     const component = wrapper.find('#user-question');
     const likeIcon = component.find('FavoriteBorderIcon');
     const unlikeIcon = component.find('FavoriteIcon');
@@ -91,6 +86,8 @@ describe('<QuestionItem/>', () => {
   });
 
   it('should toggle like', async () => {
+    wrapper = getWrapper();
+
     let component = wrapper.find('#user-question');
     const likeIcon = component.find('FavoriteBorderIcon');
     const unlikeButton = component.find('FavoriteIcon').closest('button').at(0);
@@ -133,6 +130,8 @@ describe('<QuestionItem/>', () => {
   });
 
   it('should toggle textarea when click write button', async () => {
+    wrapper = getWrapper();
+
     let component = wrapper.find('#admin-question');
     let writeButton = component.find('CreateIcon').closest('button');
 
@@ -155,6 +154,8 @@ describe('<QuestionItem/>', () => {
   });
 
   it('should handle textarea change', async () => {
+    wrapper = getWrapper();
+
     let component = wrapper.find('#admin-question');
     const writeButton = component.find('CreateIcon').closest('button');
 
@@ -175,6 +176,8 @@ describe('<QuestionItem/>', () => {
   });
 
   it('should pass reset function', async () => {
+    wrapper = getWrapper();
+
     let component = wrapper.find('#admin-question');
     const writeButton = component.find('CreateIcon').closest('button');
 

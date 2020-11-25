@@ -53,7 +53,7 @@ export default function ShareSettings({
         shareAnonymously: share_anonymously
       });
     }
-  }, [location]);
+  }, [location, postObj]);
 
   const handleChange = (e) => {
     const { name, checked } = e.target;

@@ -50,7 +50,11 @@ export default function PostAuthorButtons({
               </ListItem>
             )}
             <ListItem button>
-              <ListItemText primary="삭제하기" onClick={onClickDelete} />
+              <ListItemText
+                id="post-delete-button"
+                primary="삭제하기"
+                onClick={onClickDelete}
+              />
             </ListItem>
           </List>
         </Card>

@@ -33,7 +33,7 @@ class User(AbstractUser):
 
     @classmethod
     def are_friends(cls, user1, user2):
-        return Friendship.objects.filter(user_id=user1.id, friend_id=user2.id).exists()
+        return Friendship.objects.filter(user_id=user1.id, friend_id=user2.id).exists() | (user1 == user2)
 
     @property
     def type(self):
