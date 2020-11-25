@@ -68,12 +68,12 @@ const App = () => {
                 path="/questions/:id"
                 component={QuestionDetail}
               />
-              <PrivateRoute path="/:postType/:id" component={PostDetail} />
               <PrivateRoute
                 exact
                 path="/:postType/:id/edit"
                 component={PostEdit}
               />
+              <PrivateRoute path="/:postType/:id" component={PostDetail} />
               <PrivateRoute
                 exact
                 path="/users/:id/friends"
