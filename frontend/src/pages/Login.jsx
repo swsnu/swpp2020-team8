@@ -39,7 +39,7 @@ export default function Login() {
 
   useEffect(() => {
     if (loginError) setLoginWarning(true);
-  }, [loginError, loginInfo]);
+  }, [loginError]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
