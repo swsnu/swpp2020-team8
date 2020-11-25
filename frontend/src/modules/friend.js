@@ -1,4 +1,3 @@
-// import axios from '../apis';
 import { mockFriendList } from '../constants';
 
 const initialState = {

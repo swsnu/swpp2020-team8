@@ -98,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
       width: '20ch'
     },
     color: 'black',
-    fontSize: '15px'
+    fontSize: '14px'
   },
   sectionDesktop: {
     display: 'none',
@@ -117,7 +117,7 @@ const Header = () => {
   const [isNotiOpen, setIsNotiOpen] = useState(false);
   const dispatch = useDispatch();
 
-  const currentUser = useSelector((state) => state.userReducer.currentUser);
+  const user = useSelector((state) => state.userReducer.user);
 
   const handleClickLogout = () => {
     dispatch(logout());
@@ -157,7 +157,9 @@ const Header = () => {
       <div className={classes.sectionDesktop}>
         <div className={classes.search}>
           <div className={classes.searchIcon}>
-            <SearchIcon />
+            <Link to="/search">
+              <SearchIcon />
+            </Link>
           </div>
           <InputBase
             placeholder="사용자 검색"
@@ -166,7 +168,6 @@ const Header = () => {
               input: classes.inputInput
             }}
             inputProps={{ 'aria-label': 'search' }}
-            // onChange={}
           />
         </div>
         <IconButton
@@ -185,7 +186,7 @@ const Header = () => {
           aria-label="account of current user"
           className={classes.iconButton}
         >
-          <Link to={`/users/${currentUser?.id}/friends`}>
+          <Link to={`/users/${user?.id}/friends`}>
             <AccountCircle />
           </Link>
         </IconButton>
@@ -204,7 +205,6 @@ const Header = () => {
       </div>
     </>
   );
-
   return (
     <>
       <div className={classes.grow}>
@@ -213,7 +213,7 @@ const Header = () => {
             <TitleLink to="/friends" className={classes.title}>
               adoor
             </TitleLink>
-            {currentUser !== null ? (
+            {user !== null ? (
               renderHeaderSignedInItems
             ) : (
               <>
@@ -237,5 +237,4 @@ const Header = () => {
     </>
   );
 };
-
 export default Header;

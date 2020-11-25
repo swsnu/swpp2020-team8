@@ -1,10 +1,10 @@
 import Cookie from 'js.cookie';
 import axios from '../apis';
 
-export const GET_SELECTED_USER_REQUEST = 'user/GET_SELECTED_USER';
+export const GET_SELECTED_USER_REQUEST = 'user/GET_SELECTED_USER_REQUEST';
 export const GET_SELECTED_USER_SUCCESS = 'user/GET_SELECTED_USER_SUCCESS';
 
-export const GET_CURRENT_USER_REQUEST = 'user/GET_CURRENT_USER';
+export const GET_CURRENT_USER_REQUEST = 'user/GET_CURRENT_USER_REQUEST';
 export const GET_CURRENT_USER_SUCCESS = 'user/GET_CURRENT_USER_SUCCESS';
 
 export const SIGN_UP_REQUEST = 'user/SIGN_UP_REQUEST';
@@ -19,14 +19,11 @@ export const LOGOUT_SUCCESS = 'user/LOGOUT_SUCCESS';
 
 export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
 
-export const GET_SEARCH_RESULTS = 'user/GET_SEARCH_RESULTS';
-
 const initialState = {
   loginError: false,
   signUpError: {},
   currentUser: null,
-  selectedUser: null,
-  searchResults: []
+  selectedUser: null
 };
 
 export const requestSignUp = (signUpInfo) => {
@@ -192,7 +189,6 @@ export default function userReducer(state = initialState, action) {
     }
     case GET_SELECTED_USER_REQUEST:
     case GET_CURRENT_USER_REQUEST:
-      return { ...initialState };
     case GET_CURRENT_USER_SUCCESS: {
       return {
         ...state,

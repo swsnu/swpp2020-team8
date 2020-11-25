@@ -16,6 +16,7 @@ import QuestionFeed from './pages/QuestionFeed';
 import PrivateRoute from './components/PrivateRoute';
 import PostDetail from './pages/PostDetail';
 import FriendsPage from './pages/FriendsPage';
+import SearchPage from './pages/SearchResultPage';
 
 const theme = createMuiTheme({
   palette: {
@@ -70,12 +71,12 @@ const App = () => {
                 path="/:postType/:id"
                 component={PostDetail}
               />
-              <PrivateRoute exact path="/users/:id" component={FriendFeed} />
               <PrivateRoute
                 exact
                 path="/users/:id/friends"
                 component={FriendsPage}
               />
+              <Route exact path="/search" component={SearchPage} />
 
               <Redirect exact path="/" to="/friends" />
             </Switch>
