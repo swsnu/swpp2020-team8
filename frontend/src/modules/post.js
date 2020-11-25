@@ -66,6 +66,7 @@ export const getSelectedPost = (postType, id) => async (dispatch) => {
     result = await axios.get(`feed/${postType}/${id}/`);
   } catch (err) {
     dispatch({ type: `post/GET_SELECTED_${type}_FAILURE`, error: err });
+    return;
   }
   dispatch({
     type: `post/GET_SELECTED_${type}_SUCCESS`,
