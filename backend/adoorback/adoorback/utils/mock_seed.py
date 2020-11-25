@@ -12,6 +12,7 @@ from adoorback.utils.content_types import get_content_type
 from feed.models import Article, Response, Question
 from comment.models import Comment
 from like.models import Like
+from notification.models import Notification
 
 DEBUG = False
 
@@ -157,3 +158,4 @@ def set_mock_seed():
         Like.objects.get_or_create(user=user, content_type=get_content_type("Comment"), object_id=reply.id)
     logging.info(
         f"{Like.objects.count()} Like(s) created!") if DEBUG else None
+

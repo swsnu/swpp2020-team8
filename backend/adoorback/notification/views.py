@@ -1,3 +1,25 @@
-# from django.shortcuts import render
+from rest_framework import generics
+from rest_framework import permissions
 
-# Create your views here.
+from notification.models import Notification
+from notification.serializers import NotificationSerializer
+
+from adoorback.permissions import IsRecipient
+
+
+class NotificationList(generics.ListAPIView):
+    """
+    List all comments, or create a new notification.
+    """
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Notification.objects.filter(recipient_id = self.request.user.id).order_by('-created_at')
+        return queryset
+
+
+class NotificationDetail(generics.UpdateAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated, IsRecipient]

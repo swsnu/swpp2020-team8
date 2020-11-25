@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.exceptions import NotAcceptable
 
-from feed.models import Article, Response, Question, Post
+from feed.models import Article, Response, Question, Post, ResponseRequest
 from adoorback.serializers import AdoorBaseSerializer
 from adoorback.settings import BASE_URL
 from comment.serializers import CommentFriendSerializer
@@ -241,3 +241,13 @@ class QuestionDetailAnonymousResponsesSerializer(QuestionResponsiveSerializer):
     class Meta(QuestionResponsiveSerializer.Meta):
         model = Question
         fields = QuestionResponsiveSerializer.Meta.fields + ['response_set']
+
+
+class ResponseRequestSerializer(serializers.ModelSerializer):
+    actor_id = serializers.IntegerField(read_only=True)
+    recipient_id = serializers.IntegerField()
+    question_id = serializers.IntegerField(read_only=True)
+
+    class Meta():
+        model = ResponseRequest
+        fields = ['id', 'actor_id', 'recipient_id', 'question_id']

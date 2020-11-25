@@ -40,6 +40,30 @@ describe('user Actions', () => {
     });
   });
 
+  it('should dispatch user/SIGNUP_FAILURE when api returns error', async () => {
+    jest.mock('axios');
+    const spy = jest.spyOn(axios, 'post').mockImplementation(() => {
+      return Promise.reject(new Error('error'));
+    });
+
+    store.dispatch(actionCreators.requestSignUp()).then(() => {
+      const newState = store.getState();
+      expect(spy).toHaveBeenCalled();
+      expect(newState.userReducer.currentUser).toMatchObject({
+        loginError: false,
+        signUpError: 'error',
+        currentUser: null,
+        selectQuestion: true
+      });
+    });
+  });
+
+  it('`skipSelectQuestions` should skip select question properly', async () => {
+    await store.dispatch(actionCreators.skipSelectQuestions());
+    const newState = store.getState();
+    expect(newState.userReducer.selectQuestion).toBeTruthy();
+  });
+
   it(`should turn on signup error when signup api error occurs`, (done) => {
     jest.mock('axios');
     const userInfo = {
@@ -79,6 +103,19 @@ describe('user Actions', () => {
       expect(spy).toHaveBeenCalled();
       expect(newState.userReducer.currentUser).toBeFalsy();
       done();
+    });
+  });
+
+  it('should dispatch user/LOGOUT_FAILURE when api returns error', async () => {
+    jest.mock('axios');
+    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return Promise.reject(new Error('error'));
+    });
+
+    store.dispatch(actionCreators.logout()).then(() => {
+      const newState = store.getState();
+      expect(spy).toHaveBeenCalled();
+      expect(newState.userReducer.currentUser).toMatchObject(null);
     });
   });
 
@@ -122,12 +159,13 @@ describe('user Actions', () => {
       .then(() => {
         const newState = store.getState();
         expect(spy).toHaveBeenCalled();
-        expect(newState.userReducer.currentUser.questionHistory).toEqual(
+        expect(newState.userReducer.currentUser.question_history).toEqual(
           questionSelection
         );
         done();
       });
   });
+
   it(`'login' should log in & update user info @ store`, (done) => {
     jest.mock('axios');
 
@@ -167,8 +205,10 @@ describe('User Reducer', () => {
     const newState = userReducer(undefined, {}); // initialize
     expect(newState).toEqual({
       loginError: false,
+      selectQuestion: true,
       signUpError: {},
-      user: null
+      currentUser: null,
+      selectedUser: null
     });
   });
 
@@ -200,13 +240,13 @@ describe('User Reducer', () => {
       {
         loginError: false,
         signUpError: {},
-        user: { id: 1 }
+        currentUser: { id: 1 }
       },
       {
         type: actionCreators.LOGOUT_SUCCESS
       }
     );
-    expect(newState.user).toEqual(null);
+    expect(newState.currentUser).toEqual(null);
   });
 
   it('should update user info question after selecting question', () => {
@@ -214,14 +254,15 @@ describe('User Reducer', () => {
       {
         loginError: false,
         signUpError: {},
-        user: { id: 1 }
+        currentUser: { id: 1 },
+        selectQuestion: true
       },
       {
         type: actionCreators.UPDATE_QUESTION_SELECT,
         selectedQuestions: '[1, 2, 3]'
       }
     );
-    expect(newState.user.questionHistory).toEqual('[1, 2, 3]');
+    expect(newState.currentUser.question_history).toEqual('[1, 2, 3]');
   });
 
   it('should not update user info while waiting on login api response', () => {
@@ -229,13 +270,13 @@ describe('User Reducer', () => {
       {
         loginError: false,
         signUpError: {},
-        user: { id: 1 }
+        currentUser: { id: 1 }
       },
       {
         type: actionCreators.LOGIN_REQUEST
       }
     );
-    expect(newState.user).toBeFalsy();
+    expect(newState.currentUser).toBeFalsy();
     expect(newState.loginError).toBeFalsy();
   });
 
@@ -244,13 +285,13 @@ describe('User Reducer', () => {
       {
         loginError: false,
         signUpError: {},
-        user: { id: 1 }
+        currentUser: { id: 1 }
       },
       {
         type: actionCreators.SIGN_UP_REQUEST
       }
     );
-    expect(newState.user).toBeFalsy();
+    expect(newState.currentUser).toBeFalsy();
     expect(newState.signUpError).toBeFalsy();
   });
 

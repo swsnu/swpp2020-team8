@@ -3,7 +3,9 @@ import {
   mockCustomQuestion,
   mockQuestions,
   mockQuestionFeed,
-  mockRecommendQuestions
+  mockRecommendQuestions,
+  mockResponse,
+  mockResponse2
 } from './constants';
 
 export const mockStore = {
@@ -16,14 +18,16 @@ export const mockStore = {
     dailyQuestions: mockQuestionFeed,
     randomQuestions: mockRecommendQuestions,
     sampleQuestions: mockQuestions,
-    recommendedQuestions: mockRecommendQuestions
+    recommendedQuestions: mockRecommendQuestions,
+    selectedQuestion: mockQuestionFeed[0],
+    selectedQuestionResponses: [mockResponse, mockResponse2]
   },
   userReducer: {
     error: false,
-    user: {
-      id: 0,
-      username: 'mock',
-      isLoggedIn: false
+    currentUser: {
+      id: 123,
+      username: 'curious',
+      isLoggedIn: true
     }
   }
 };
@@ -42,7 +46,7 @@ export const mockStoreBeforeLogin = {
   },
   userReducer: {
     error: false,
-    user: null
+    currentUser: null
   }
 };
 
@@ -60,7 +64,7 @@ export const mockStoreWithArticle = {
   },
   userReducer: {
     error: false,
-    user: {
+    currentUser: {
       id: 0,
       username: 'mock',
       isLoggedIn: false

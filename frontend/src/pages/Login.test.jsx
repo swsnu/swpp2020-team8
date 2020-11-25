@@ -13,14 +13,14 @@ import Login from './Login';
 
 // const stubStateLoginError = {
 //   error: true,
-//   user: { id: 1, username: 'jina', isLoggedIn: false }
+//   currentUser: { id: 1, username: 'jina', isLoggedIn: false }
 // };
 const mockErrorStore = {
   ...mockStore,
   userReducer: {
     loginError: '401',
     error: false,
-    user: {
+    currentUser: {
       id: 0,
       username: 'mock',
       isLoggedIn: false
