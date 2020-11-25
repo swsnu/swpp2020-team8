@@ -1,7 +1,6 @@
 import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-
 import { useSelector } from 'react-redux';
 import Login from './pages/Login';
 import { GlobalStyle, MainWrapper, FeedWrapper } from './styles';
@@ -33,11 +32,6 @@ const App = () => {
     ? '/friends'
     : 'select-questions';
   // let signedIn = user !== null;
-
-  // useEffect(() => {
-  //   if (user == null) signedIn = false;
-  //   else signedIn = true;
-  // }, [user]);
 
   return (
     <MuiThemeProvider theme={theme}>
