@@ -38,17 +38,17 @@ const PostEditItem = ({ postObj }) => {
 
   return (
     <PostItemWrapper>
-      {postObj.question && <QuestionBox questionObj={postObj.question} />}
+      {postObj?.question && <QuestionBox questionObj={postObj.question} />}
       <TextareaAutosize
         autoFocus
-        id="new-post-input"
+        id="edit-post-input"
         name="content"
         placeholder={
-          postObj.type === 'Article'
+          postObj?.type === 'Article'
             ? '떠오르는 생각을 공유해주세요.'
             : '답변을 작성해주세요'
         }
-        value={editPost.content}
+        value={editPost?.content}
         onChange={onInputChange}
         className={classes.textarea}
       />
