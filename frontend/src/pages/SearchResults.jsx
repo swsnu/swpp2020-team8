@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React from 'react';
 import styled from 'styled-components';
-import CircularProgress from '@material-ui/core/CircularProgress';
+// import CircularProgress from '@material-ui/core/CircularProgress';
 import { useDispatch, useSelector } from 'react-redux';
 import FriendItem from '../components/friends/FriendItem';
 import PageNavigation from '../components/PageNavigation';
@@ -67,6 +67,7 @@ export default function SearchResults() {
                 페이지
                 {` ${currentPageNo}`}
               </h5>
+              {/* {loading && numResults > 0 ? <CircularProgress /> : <span />} */}
               {userItemList}
             </FriendListWrapper>
           )}
@@ -85,8 +86,6 @@ export default function SearchResults() {
         handlePrevClick={(event) => handlePageClick('prev', event)}
         handleNextClick={(event) => handlePageClick('next', event)}
       />
-
-      {loading && numResults > 0 ? <CircularProgress /> : <span />}
 
       {renderSearchResults()}
 
