@@ -415,4 +415,3 @@ class ResponseRequestAPITestCase(APITestCase):
         with self.login(username=current_user.username, password='password'):
             response = self.get(self.reverse('response-request-detail', qid=qid, rid=rid))
             self.assertEqual(response.status_code, 405)
-
