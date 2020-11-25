@@ -5,6 +5,7 @@ import postReducer from './post';
 import questionReducer from './question';
 import userReducer from './user';
 import loadingReducer from './loading';
+import searchReducer from './search';
 
 const rootReducer = combineReducers({
   friendReducer,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
   postReducer,
   questionReducer,
   userReducer,
-  loadingReducer
+  loadingReducer,
+  searchReducer
 });
 
 export default rootReducer;

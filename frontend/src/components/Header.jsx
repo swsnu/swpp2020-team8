@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import InputBase from '@material-ui/core/InputBase';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
@@ -9,7 +8,7 @@ import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import SearchIcon from '@material-ui/icons/Search';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
@@ -117,8 +116,9 @@ const Header = () => {
   const classes = useStyles();
   const [isNotiOpen, setIsNotiOpen] = useState(false);
   const dispatch = useDispatch();
+  const history = useHistory();
 
-  const user = useSelector((state) => state.userReducer.user);
+  const currentUser = useSelector((state) => state.userReducer.currentUser);
 
   const handleClickLogout = () => {
     dispatch(logout());
@@ -126,6 +126,10 @@ const Header = () => {
 
   const toggleNotiOpen = () => {
     setIsNotiOpen(!isNotiOpen);
+  };
+
+  const handleClick = () => {
+    history.push('/search');
   };
 
   const renderHeaderSignedInItems = (
@@ -156,21 +160,16 @@ const Header = () => {
       </NavLink>
       <div className={classes.grow} />
       <div className={classes.sectionDesktop}>
-        <div className={classes.search}>
-          <div className={classes.searchIcon}>
-            <Link to="/search">
-              <SearchIcon />
-            </Link>
-          </div>
-          <InputBase
-            placeholder="사용자 검색"
-            classes={{
-              root: classes.inputRoot,
-              input: classes.inputInput
-            }}
-            inputProps={{ 'aria-label': 'search' }}
-          />
-        </div>
+        <IconButton
+          aria-label="input search results"
+          className={`${classes.iconButton} search-button`}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleClick();
+          }}
+        >
+          <SearchIcon />
+        </IconButton>
         <IconButton
           aria-label="show new notifications"
           className={`${classes.iconButton} noti-button`}
@@ -187,7 +186,7 @@ const Header = () => {
           aria-label="account of current user"
           className={classes.iconButton}
         >
-          <Link to={`/users/${user?.id}/friends`}>
+          <Link to={`/users/${currentUser?.id}/friends`}>
             <AccountCircle />
           </Link>
         </IconButton>
@@ -212,7 +211,7 @@ const Header = () => {
         <AppBar position="static" className={classes.header}>
           <Toolbar>
             <Link to="/friends" className={classes.logo} />
-            {user !== null ? (
+            {currentUser !== null ? (
               renderHeaderSignedInItems
             ) : (
               <>

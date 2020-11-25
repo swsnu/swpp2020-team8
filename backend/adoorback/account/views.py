@@ -94,13 +94,15 @@ class UserDetail(generics.RetrieveUpdateAPIView):
 
 
 class UserSearch(generics.ListAPIView):
-    queryset = User.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        queryset = User.objects.filter(
-            username__icontains=self.request.GET.get('query'))
+        query = self.request.GET.get('query')
+        queryset = User.objects.none()
+        if query:
+            queryset = User.objects.filter(
+                username__icontains=self.request.GET.get('query'))
         return queryset
 
 

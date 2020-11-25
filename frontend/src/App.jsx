@@ -16,7 +16,7 @@ import PrivateRoute from './components/PrivateRoute';
 import QuestionDetail from './pages/QuestionDetail';
 import PostDetail from './pages/PostDetail';
 import FriendsPage from './pages/FriendsPage';
-import SearchPage from './pages/SearchResultPage';
+import SearchPage from './components/SearchResults';
 
 const theme = createMuiTheme({
   palette: {

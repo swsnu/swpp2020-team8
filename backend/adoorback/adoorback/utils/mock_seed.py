@@ -9,10 +9,10 @@ from django.contrib.auth import get_user_model
 from faker import Faker
 
 from adoorback.utils.content_types import get_content_type
+from account.models import Friendship, FriendRequest
 from feed.models import Article, Response, Question
 from comment.models import Comment
 from like.models import Like
-from notification.models import Notification
 
 DEBUG = False
 
@@ -159,3 +159,15 @@ def set_mock_seed():
     logging.info(
         f"{Like.objects.count()} Like(s) created!") if DEBUG else None
 
+    # Seed Friend Request
+    for i in range(1000):
+        user_1 = random.choice(users)
+        user_2 = random.choice(users.exclude(id=user_1.id))
+
+        FriendRequest.objects.get_or_create(user=user_1, friend=user_2)
+
+    for i in range(500):
+        user_1 = random.choice(users)
+        user_2 = random.choice(users.exclude(id=user_1.id))
+
+        Friendship.objects.get_or_create(user=user_1, friend=user_2)
