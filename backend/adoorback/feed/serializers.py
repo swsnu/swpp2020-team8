@@ -118,10 +118,9 @@ class ResponseResponsiveSerializer(ResponseBaseSerializer):
         source='author', read_only=True)
 
     def get_author_detail(self, obj):
-        # TODO: need to modify after friendship implementation; are friends
-        if obj.author != self.context.get('request', None).user:
-            return AuthorAnonymousSerializer(obj.author).data
-        return AuthorFriendSerializer(obj.author).data
+        if User.are_friends(self.context.get('request', None).user, obj.author):
+            return AuthorFriendSerializer(obj.author).data
+        return AuthorAnonymousSerializer(obj.author).data
 
     def get_author(self, obj):
         if obj.author == self.context.get('request', None).user:
@@ -143,10 +142,9 @@ class QuestionResponsiveSerializer(QuestionBaseSerializer):
         source='author', read_only=True)
 
     def get_author_detail(self, obj):
-        # TODO: need to modify after friendship implementation; are friends
-        if obj.author != self.context.get('request', None).user:
-            return AuthorAnonymousSerializer(obj.author).data
-        return AuthorFriendSerializer(obj.author).data
+        if User.are_friends(self.context.get('request', None).user, obj.author):
+            return AuthorFriendSerializer(obj.author).data
+        return AuthorAnonymousSerializer(obj.author).data
 
     def get_author(self, obj):
         if obj.author == self.context.get('request', None).user:
@@ -197,8 +195,11 @@ class QuestionDetailAllResponsesSerializer(QuestionResponsiveSerializer):
     response_set = serializers.SerializerMethodField()
 
     def get_response_set(self, obj):
-        responses = obj.response_set.all().filter(author_id=self.context.get('request', None).user.id) | \
-            obj.response_set.all().filter(share_anonymously=True)
+        current_user = self.context.get('request', None).user
+        friend_ids = current_user.friends.values_list('friend_id', flat=True)
+        responses = obj.response_set.filter(author_id__in=friend_ids) | \
+                    obj.response_set.filter(share_anonymously=True) | \
+                    obj.response_set.filter(author_id=current_user.id)
         return ResponseResponsiveSerializer(responses, many=True, read_only=True,
                                             context={'request': self.context.get('request', None)}).data
 
@@ -214,8 +215,10 @@ class QuestionDetailFriendResponsesSerializer(QuestionResponsiveSerializer):
     response_set = serializers.SerializerMethodField()
 
     def get_response_set(self, obj):
-        responses = obj.response_set.all().filter(
-            author_id=self.context.get('request', None).user.id)
+        current_user = self.context.get('request', None).user
+        friend_ids = current_user.friends.values_list('friend_id', flat=True)
+        responses = obj.response_set.filter(author_id__in=friend_ids) | \
+                    obj.response_set.filter(author_id=current_user.id)
         return ResponseFriendSerializer(responses, many=True, read_only=True,
                                         context={'request': self.context.get('request', None)}).data
 

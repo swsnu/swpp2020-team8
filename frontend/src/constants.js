@@ -36,6 +36,7 @@ export const mockQuestions = [
 export const mockPost = {
   id: 1,
   'content-type': 'Article',
+  type: 'Article',
   is_admin_question: 'true',
   author_detail: {
     id: 1,
@@ -130,6 +131,22 @@ export const mockQuestionFeed = [
     author_detail: {
       id: 1,
       username: 'admin'
+    },
+    content: 'Republican',
+    like_count: 33,
+    current_user_liked: true,
+    created_at: '2020-11-15T14:52:51.786164+09:00',
+    updated_at: '2020-11-15T14:52:52.380141+09:00',
+    selected_date: '2020-11-15T14:52:52.380046+09:00',
+    is_admin_question: true
+  },
+  {
+    id: 134,
+    type: 'Question',
+    author: 'http://localhost:8000/api/user/1/',
+    author_detail: {
+      id: 123,
+      username: 'curious'
     },
     content: 'Republican',
     like_count: 33,
@@ -287,6 +304,7 @@ export const mockQuestionFeed = [
 
 export const mockArticle = {
   id: 4756,
+  type: 'Article',
   'content-type': 'Article', // or const int e.g. (1: Article, 2: Response...)
   author_detail: {
     id: 123,
@@ -358,6 +376,7 @@ export const mockArticle = {
 export const mockResponse = {
   id: 5999,
   'content-type': 'Response',
+  type: 'Response',
   author_detail: {
     id: 123,
     username: 'curious',
@@ -440,6 +459,7 @@ export const mockFriendFeed = [
 export const mockAnonCustomQuestion = {
   id: 23423423,
   'content-type': 'Question',
+  type: 'Question',
   is_admin_question: 'true',
   author_detail: {
     id: -1
@@ -456,6 +476,7 @@ export const mockAnonCustomQuestion = {
 export const mockAnonCustomQuestion2 = {
   id: 23423423132,
   'content-type': 'Question',
+  type: 'Question',
   is_admin_question: 'true',
   author_detail: {
     id: -1
@@ -470,7 +491,8 @@ export const mockAnonCustomQuestion2 = {
 };
 
 export const mockAnonArticle = {
-  id: 76767,
+  id: 4756,
+  type: 'Article',
   'content-type': 'Article', // or const int e.g. (1: Article, 2: Response...)
   author_detail: {
     id: -1
@@ -483,8 +505,8 @@ export const mockAnonArticle = {
 };
 
 export const mockAnonResponse = {
-  id: 87787,
-  'content-type': 'Response',
+  id: 4757,
+  type: 'Response',
   author_detail: {
     id: -1
     // username: '익명',

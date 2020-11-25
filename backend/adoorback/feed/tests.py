@@ -116,11 +116,15 @@ class PostAPITestCase(APITestCase):
 
     def test_friend_feed(self):
         current_user = self.make_user(username='current_user')
+        friend_user = self.make_user(username='friend_user')
 
-        question = Question.objects.create(author_id=1, content="test_question", is_admin_question=False)
-        Response.objects.create(author_id=1, content="test_response", question_id=question.id)
-        Article.objects.create(author_id=1, content="test_article")
-        Article.objects.create(author_id=1, content="test_article", share_with_friends=False)
+        question = Question.objects.create(author_id=current_user.id, content="test_question",
+                                           is_admin_question=False)
+        Response.objects.create(author_id=current_user.id, content="test_response",
+                                question_id=question.id)
+        Article.objects.create(author_id=current_user.id, content="test_article")
+        Article.objects.create(author_id=friend_user.id, content="test_article",
+                               share_with_friends=False)
 
         with self.login(username=current_user.username, password='password'):
             response = self.get('friend-feed-post-list')
@@ -212,7 +216,6 @@ class QuestionAPITestCase(APITestCase):
             response = self.patch(self.reverse('question-detail', pk=question_id), data=data)
             self.assertEqual(response.status_code, 403)
 
-    # TODO: fix after friendship implementation
     def test_question_detail(self):
         current_user = self.make_user(username='current_user')
         spy_user = self.make_user(username='spy_user')
