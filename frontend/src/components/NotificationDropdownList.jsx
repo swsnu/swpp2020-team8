@@ -12,7 +12,7 @@ const useStyles = makeStyles({
     position: 'fixed',
     top: 68,
     right: 50,
-    zIndex: 1
+    zIndex: 2
   },
   notificationDropdownContent: {
     padding: 0,

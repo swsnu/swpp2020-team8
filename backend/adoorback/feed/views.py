@@ -169,9 +169,10 @@ class ResponseRequestList(generics.ListAPIView):
 
     def get_queryset(self):
         question_id = self.kwargs['pk']
-        current_user_sent_response_request_set = self.request.user.sent_response_request_set.all()
-        responseRequests = current_user_sent_response_request_set.filter(question_id=question_id)
+        sent_response_request_set = self.request.user.sent_response_request_set.all()
+        responseRequests = sent_response_request_set.filter(question_id=question_id).order_by('-created_at')
         return responseRequests
+
 
 @api_view(["POST", "DELETE"])
 def response_request_detail(request, qid, rid):

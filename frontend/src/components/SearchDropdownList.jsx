@@ -11,7 +11,8 @@ const useStyles = makeStyles({
     maxHeight: '85%',
     position: 'fixed',
     top: 68,
-    right: 230
+    right: 230,
+    zIndex: 1
   },
   searchDropdownContent: {
     padding: 0,

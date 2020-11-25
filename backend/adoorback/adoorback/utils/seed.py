@@ -8,10 +8,9 @@ from faker import Faker
 
 from adoorback.utils.content_types import get_content_type
 from account.models import Friendship, FriendRequest
-from feed.models import Article, Response, Question, Post, ResponseRequest
+from feed.models import Article, Response, Question, ResponseRequest
 from comment.models import Comment
 from like.models import Like
-from notification.models import Notification
 
 DEBUG = False
 
@@ -85,10 +84,10 @@ def set_seed(n):
 
     # Seed Response Request
     for _ in range(n):
-      question = random.choice(questions)
-      actor = User.objects.get(id=random.choice([1, 2, 3]))
-      recipient = User.objects.get(id=random.choice([1, 2, 3]))
-      ResponseRequest.objects.create(actor=actor, recipient=recipient, question=question)
+        question = random.choice(questions)
+        actor = User.objects.get(id=random.choice([1, 2, 3]))
+        recipient = User.objects.get(id=random.choice([1, 2, 3]))
+        ResponseRequest.objects.create(actor=actor, recipient=recipient, question=question)
     logging.info(
         f"{ResponseRequest.objects.all().count()} ResponseRequest(s) created!") if DEBUG else None
 
@@ -123,9 +122,9 @@ def set_seed(n):
     # Seed Like
     for i in range(n):
         user = random.choice(users)
-        article = Article.objects.get(id=i+1)
-        question = Question.objects.get(id=i+1)
-        response = Response.objects.get(id=i+1)
+        article = Article.objects.get(id=i + 1)
+        question = Question.objects.get(id=i + 1)
+        response = Response.objects.get(id=i + 1)
         comment = Comment.objects.comments_only()[i]
         reply = Comment.objects.replies_only()[i]
         Like.objects.create(user=user, target=article)
