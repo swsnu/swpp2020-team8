@@ -3,9 +3,14 @@ from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth import get_user_model
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+
 from like.models import Like
+from notification.models import Notification
 from adoorback.models import AdoorModel
-from adoorback.utils.content_types import get_content_type
+from adoorback.utils.content_types import get_content_type, get_korean_type_name
+
 
 
 User = get_user_model()
@@ -30,6 +35,10 @@ class Comment(AdoorModel):
 
     replies = GenericRelation('self')
     comment_likes = GenericRelation(Like)
+    comment_targetted_notis = GenericRelation(Notification,
+        content_type_field='target_type', object_id_field='target_id')
+    comment_originated_notis = GenericRelation(Notification,
+        content_type_field='origin_type', object_id_field='origin_id')
 
     objects = CommentManager()
 
@@ -39,3 +48,15 @@ class Comment(AdoorModel):
 
     class Meta:
         base_manager_name = 'objects'
+
+@receiver(post_save, sender=Comment)
+def create_noti(sender, **kwargs):
+    instance = kwargs['instance']
+    target = instance
+    origin = instance.target
+    actor = instance.author
+    recipient = instance.target.author
+    origin_name = get_korean_type_name(origin.type)
+    message = f'{actor.username}님이 회원님의 {origin_name}에 댓글을 남겼습니다.'
+    Notification.objects.create(actor = actor, recipient = recipient, message = message,
+        origin = origin, target = target)
