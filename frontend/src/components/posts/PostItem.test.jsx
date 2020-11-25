@@ -13,7 +13,7 @@ import { mockStore } from '../../mockStore';
 const samplePostObj = {
   id: 0,
   author_detail: {
-    id: 0,
+    id: 123,
     username: 'curious',
     profile_pic:
       'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
@@ -129,21 +129,6 @@ describe('<PostItem /> unit mount test', () => {
     unlikeButton.simulate('click');
     await new Promise((resolve) => setTimeout(resolve, 500));
     expect(likeCount).toMatchObject({});
-  });
-
-  it('should not display comments if none exists', async () => {
-    const component = getPostWrapper();
-    expect(component.find('CommentItem').length).toEqual(0);
-  });
-
-  it('should deal with delete', async () => {
-    const component = getPostWrapper();
-    expect(component.find('#post-delete-button')).toBeTruthy();
-    const deleteButton = component.find('#post-delete-button').at(0);
-    deleteButton.simulate('click');
-    component.update();
-    component.find('#confirm-button').at(0).simulate('click');
-    expect(component.find('AlertDialog').props().isOpen).toBeFalsy();
   });
 
   it('should deal with comment submit function', () => {
