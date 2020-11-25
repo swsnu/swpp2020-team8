@@ -46,6 +46,10 @@ export const DELETE_COMMENT_REQUEST = 'post/DELETE_COMMENT_REQUEST';
 export const DELETE_COMMENT_SUCCESS = 'post/DELETE_COMMENT_SUCCESS';
 export const DELETE_COMMENT_FAILURE = 'post/DELETE_COMMENT_FAILURE';
 
+export const DELETE_POST_REQUEST = 'post/DELETE_POST_REQUEST';
+export const DELETE_POST_SUCCESS = 'post/DELETE_POST_SUCCESS';
+export const DELETE_POST_FAILURE = 'post/DELETE_POST_FAILURE';
+
 const initialState = {
   anonymousPosts: [],
   friendPosts: [],
@@ -63,7 +67,6 @@ export const getSelectedPost = (postType, id) => async (dispatch) => {
   } catch (err) {
     dispatch({ type: `post/GET_SELECTED_${type}_FAILURE`, error: err });
   }
-  console.log(result);
   dispatch({
     type: `post/GET_SELECTED_${type}_SUCCESS`,
     selectedPost: result?.data
@@ -193,6 +196,17 @@ export const deleteComment = (commentId, postKey, isReply) => async (
   });
 };
 
+export const deletePost = (postId, type) => async (dispatch) => {
+  const postType = type.toLowerCase();
+  try {
+    await axios.delete(`feed/${postType}s/${postId}`);
+  } catch (error) {
+    dispatch({ type: DELETE_POST_FAILURE });
+    return;
+  }
+  dispatch({ type: DELETE_POST_SUCCESS, postId, postType: type });
+};
+
 const getNewCommentsWithReply = (comments, reply) => {
   const newComments = comments?.map((comment) => {
     if (comment.id === reply.target_id) {
@@ -260,6 +274,17 @@ export default function postReducer(state = initialState, action) {
         friendPosts: newFriendPosts
       };
     }
+    case DELETE_POST_SUCCESS: {
+      const postKey = `${action.postType}-${action.postId}`;
+      const newFriendPosts = state.friendPosts.filter((post) => {
+        const key = `${post.type}-${post.id}`;
+        return key !== postKey;
+      });
+      return {
+        ...state,
+        friendPosts: newFriendPosts
+      };
+    }
     case CREATE_COMMENT_SUCCESS: {
       const { target_type, target_id } = action.result;
       const newFriendPosts = state.friendPosts?.map((post) => {
@@ -314,8 +339,15 @@ export default function postReducer(state = initialState, action) {
       });
 
       let newComments = getNewCommentsWithReply(targetPost?.comments, reply);
-
       const newFriendPosts = state.friendPosts.map((post) => {
+        const key = `${post.type}-${post.id}`;
+        if (key === action.postKey) {
+          return { ...post, comments: newComments };
+        }
+        return post;
+      });
+
+      const newUserPosts = state.selectedUserPosts.map((post) => {
         const key = `${post.type}-${post.id}`;
         if (key === action.postKey) {
           return { ...post, comments: newComments };
@@ -336,6 +368,7 @@ export default function postReducer(state = initialState, action) {
 
       return {
         ...state,
+        selectedUserPosts: newUserPosts,
         selectedPost: newSelectedPost,
         friendPosts: newFriendPosts
       };
@@ -370,6 +403,14 @@ export default function postReducer(state = initialState, action) {
         return post;
       });
 
+      const newUserPosts = state.selectedUserPosts.map((post) => {
+        const key = `${post.type}-${post.id}`;
+        if (key === action.postKey) {
+          return { ...post, comments: newComments };
+        }
+        return post;
+      });
+
       const selectedPostKey = `${state.selectedPost?.type}-${state.selectedPost?.id}`;
 
       const newSelectedPost =
@@ -383,7 +424,8 @@ export default function postReducer(state = initialState, action) {
       return {
         ...state,
         friendPosts: newFriendPosts,
-        selectedPost: newSelectedPost
+        selectedPost: newSelectedPost,
+        selectedUserPosts: newUserPosts
       };
     }
 

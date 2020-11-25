@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Login from './pages/Login';
 import { GlobalStyle, MainWrapper, FeedWrapper } from './styles';
 import Header from './components/Header';
@@ -15,7 +15,6 @@ import QuestionFeed from './pages/QuestionFeed';
 import PrivateRoute from './components/PrivateRoute';
 import PostDetail from './pages/PostDetail';
 import FriendsPage from './pages/FriendsPage';
-import { requestLogin } from './modules/user';
 
 const theme = createMuiTheme({
   palette: {
@@ -33,16 +32,6 @@ const App = () => {
     ? '/friends'
     : 'select-questions';
   // let signedIn = user !== null;
-
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(
-      requestLogin({
-        username: 'adoor',
-        password: 'adoor2020:)'
-      })
-    );
-  }, []);
 
   return (
     <MuiThemeProvider theme={theme}>

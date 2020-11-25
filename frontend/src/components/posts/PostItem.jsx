@@ -4,6 +4,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import IconButton from '@material-ui/core/IconButton';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router';
 import AuthorProfile from './AuthorProfile';
 import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
@@ -11,7 +12,8 @@ import QuestionBox from './QuestionBox';
 import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
 import CommentItem from '../comments/CommentItem';
 import NewComment from '../comments/NewComment';
-import { createComment } from '../../modules/post';
+import { createComment, deletePost } from '../../modules/post';
+import AlertDialog from '../common/AlertDialog';
 
 const PostItemWrapper = styled.div`
   background: #fff;
@@ -31,13 +33,15 @@ const ContentWrapper = styled.div`
 
 const CommentWrapper = styled.div``;
 
-export default function PostItem({ postObj, postKey }) {
+export default function PostItem({ postObj, postKey, isDetailPage }) {
+  const history = useHistory();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.userReducer.user);
   const isAuthor = postObj?.author && user?.id === postObj.author_detail?.id;
   const isAnon = postObj?.author && !postObj?.author_detail?.id;
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     if (postObj) {
@@ -61,6 +65,10 @@ export default function PostItem({ postObj, postKey }) {
     );
   });
 
+  const onCancelDelete = () => {
+    setIsDeleteDialogOpen(false);
+  };
+
   const handleSubmit = (content, isPrivate) => {
     const newCommentObj = {
       target_type: postObj.type,
@@ -79,8 +87,14 @@ export default function PostItem({ postObj, postKey }) {
     }
     setLiked((prev) => !prev);
   };
-  const handleEdit = () => {};
-  const handleDelete = () => {};
+  const handleEdit = () => {
+    // todo: redirect to edit page
+  };
+  const handleDelete = () => {
+    dispatch(deletePost(postObj.id, postObj.type));
+    setIsDeleteDialogOpen(false);
+    if (isDetailPage) history.replace('/');
+  };
 
   return (
     <PostItemWrapper>
@@ -89,7 +103,7 @@ export default function PostItem({ postObj, postKey }) {
         {isAuthor && (
           <PostAuthorButtons
             onClickEdit={handleEdit}
-            onClickDelete={handleDelete}
+            onClickDelete={() => setIsDeleteDialogOpen(true)}
           />
         )}
       </PostItemHeaderWrapper>
@@ -118,6 +132,12 @@ export default function PostItem({ postObj, postKey }) {
           <CommentWrapper>{commentList}</CommentWrapper>
         </>
       )}
+      <AlertDialog
+        message="정말 삭제하시겠습니까?"
+        onConfirm={handleDelete}
+        onClose={onCancelDelete}
+        isOpen={isDeleteDialogOpen}
+      />
     </PostItemWrapper>
   );
 }
