@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { TextareaAutosize } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import ShareSettings from '../ShareSettings';
+import ShareSettings from './ShareSettings';
 
 const NewPostWrapper = styled.div`
   width: 650px;
@@ -12,30 +12,6 @@ const NewPostWrapper = styled.div`
   border-radius: 4px;
   box-sizing: border-box;
   background: #fff;
-`;
-
-export const NewPostInput = styled.textarea`
-  padding: 5px;
-  border-radius: 2px;
-  color: rgb(50, 50, 50);
-  font-size: 14px;
-  outline: none;
-  width: 100%;
-  box-sizing: border-box;
-  border: none;
-  margin: 4px 0;
-  box-sizing: border-box;
-  background: #fff;
-  ::placeholder,
-  ::-webkit-input-placeholder {
-    color: #aaa;
-  }
-  :focus {
-    outline: 'none !important';
-  }
-  cursor: auto;
-  resize: none;
-  overflow: hidden;
 `;
 
 const useStyles = makeStyles({

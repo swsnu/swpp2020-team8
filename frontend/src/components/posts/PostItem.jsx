@@ -3,23 +3,19 @@ import styled from 'styled-components';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import IconButton from '@material-ui/core/IconButton';
+import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import AuthorProfile from './AuthorProfile';
 import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
 import QuestionBox from './QuestionBox';
-import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
+import {
+  PostItemHeaderWrapper,
+  PostItemFooterWrapper,
+  PostItemWrapper
+} from '../../styles';
 import CommentItem from '../comments/CommentItem';
 import { mockArticle } from '../../constants';
-
-const PostItemWrapper = styled.div`
-  background: #fff;
-  padding: 16px;
-  font-size: 14px;
-  border: 1px solid #eee;
-  margin: 16px 0;
-  position: relative;
-  border-radius: 4px;
-`;
 
 PostItemWrapper.displayName = 'PostItemWrapper';
 
@@ -30,8 +26,11 @@ const ContentWrapper = styled.div`
 const CommentWrapper = styled.div``;
 
 export default function PostItem({ postObj }) {
-  // TODO: fix
-  const isAuthor = true;
+  const history = useHistory();
+
+  const user = useSelector((state) => state.userReducer.user);
+  const isAuthor = user.id === postObj.author_detail.id;
+
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
 
@@ -47,7 +46,9 @@ export default function PostItem({ postObj }) {
     }
     setLiked((prev) => !prev);
   };
-  const handleEdit = () => {};
+  const handleEdit = () => {
+    history.push(`/${postObj.type.toLowerCase()}s/${postObj.id}/edit`);
+  };
   const handleDelete = () => {};
 
   return (
@@ -56,6 +57,7 @@ export default function PostItem({ postObj }) {
         <AuthorProfile author={postObj.author_detail} />
         {isAuthor && (
           <PostAuthorButtons
+            isQuestion={false}
             onClickEdit={handleEdit}
             onClickDelete={handleDelete}
           />

@@ -16,6 +16,7 @@ import QuestionFeed from './pages/QuestionFeed';
 import PrivateRoute from './components/PrivateRoute';
 import PostDetail from './pages/PostDetail';
 import FriendsPage from './pages/FriendsPage';
+import PostEdit from './pages/PostEdit';
 
 const theme = createMuiTheme({
   palette: {
@@ -32,12 +33,6 @@ const App = () => {
   const signUpRedirectPath = user?.question_history
     ? '/friends'
     : 'select-questions';
-  // let signedIn = user !== null;
-
-  // useEffect(() => {
-  //   if (user == null) signedIn = false;
-  //   else signedIn = true;
-  // }, [user]);
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -69,6 +64,11 @@ const App = () => {
                 exact
                 path="/:postType/:id"
                 component={PostDetail}
+              />
+              <PrivateRoute
+                exact
+                path="/:postType/:id/edit"
+                component={PostEdit}
               />
               <PrivateRoute
                 exact

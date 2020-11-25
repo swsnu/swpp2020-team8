@@ -13,7 +13,7 @@ import AuthorProfile from './AuthorProfile';
 import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
 import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
-import ShareSettings from '../ShareSettings';
+import ShareSettings from './ShareSettings';
 
 const QuestionItemWrapper = styled.div`
   background: #f4f4f4;
@@ -47,7 +47,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-// TODO: share settings
 export default function QuestionItem({ questionObj }) {
   const user = useSelector((state) => state.userReducer.user);
   const isAuthor = user.id === questionObj.author_detail.id;
@@ -84,7 +83,6 @@ export default function QuestionItem({ questionObj }) {
   };
 
   const handleSendButton = () => {};
-  const handleEdit = () => {};
   const handleDelete = () => {};
 
   const resetContent = () => {
@@ -98,10 +96,7 @@ export default function QuestionItem({ questionObj }) {
           <AuthorProfile author={questionObj.author_detail} />
         )}
         {!questionObj.is_admin_question && isAuthor && (
-          <PostAuthorButtons
-            onClickEdit={handleEdit}
-            onClickDelete={handleDelete}
-          />
+          <PostAuthorButtons isQuestion onClickDelete={handleDelete} />
         )}
       </PostItemHeaderWrapper>
       <Question>
