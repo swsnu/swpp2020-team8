@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from test_plus.test import TestCase
 from rest_framework.test import APIClient
-import json
+
 from comment.models import Comment
 from like.models import Like
 from notification.models import Notification
@@ -129,7 +129,7 @@ class NotificationAPITestCase(APITestCase):
             response = self.get('notification-list')
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data['count'], received_notis_count)
-    
+
     def test_noti_author_permission(self):
         current_user = self.make_user(username='current_user')
         spy_user = self.make_user(username='spy_user')
@@ -148,7 +148,7 @@ class NotificationAPITestCase(APITestCase):
             noti = response.data['results'][0]
             self.assertGreater(len(noti['recipient_detail']), 1)
             self.assertGreater(len(noti['actor_detail']), 1)
-        
+
         with self.login(username=spy_user.username, password='password'):
             response = self.get('notification-list')
             self.assertEqual(response.status_code, 200)

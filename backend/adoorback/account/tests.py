@@ -19,11 +19,7 @@ class UserTestCase(TestCase):
         set_seed(N)
 
     def test_user_count(self):
-<<<<<<< HEAD
-        self.assertEqual(User.objects.all().count(), 3)
-=======
         self.assertEqual(User.objects.count(), 3)
->>>>>>> 7881f87c1121d0ecd606487c97ba9f0b74f3e8a3
 
     def test_str(self):
         user = User.objects.last()

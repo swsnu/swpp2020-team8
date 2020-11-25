@@ -10,16 +10,11 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import SearchIcon from '@material-ui/icons/Search';
 import { NavLink, Link } from 'react-router-dom';
-import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
 import { logout } from '../modules/user';
 
-const TitleLink = styled(NavLink)`
-  ${'' /* font-family: 'Quicksand', sans-serif; */}
-  font-family: 'Pacifico', cursive;
-`;
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1
@@ -32,6 +27,12 @@ const useStyles = makeStyles((theme) => ({
     position: 'fixed',
     top: 0,
     left: 0
+  },
+  logo: {
+    width: '130px',
+    height: '60px',
+    background: 'url("/full-logo.svg") no-repeat',
+    backgroundSize: '130px 60px'
   },
   title: {
     display: 'none',
@@ -209,9 +210,7 @@ const Header = () => {
       <div className={classes.grow}>
         <AppBar position="static" className={classes.header}>
           <Toolbar>
-            <TitleLink to="/friends" className={classes.title}>
-              adoor
-            </TitleLink>
+            <Link to="/friends" className={classes.logo} />
             {user !== null ? (
               renderHeaderSignedInItems
             ) : (
