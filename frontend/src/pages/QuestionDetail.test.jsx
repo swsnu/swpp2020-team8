@@ -37,7 +37,7 @@ describe('<QuestionDetail/>', () => {
 
   it('should toggle view anonymous switch', async () => {
     let questionDetail = wrapper.find('QuestionDetail');
-    let switchComponent = questionDetail.find('input');
+    let switchComponent = questionDetail.find('input').at(0);
 
     await act(async () => {
       switchComponent.simulate('change', { target: { checked: true } });
@@ -45,7 +45,7 @@ describe('<QuestionDetail/>', () => {
 
     wrapper.update();
     questionDetail = wrapper.find('QuestionDetail');
-    switchComponent = questionDetail.find('input');
+    switchComponent = questionDetail.find('input').at(0);
     expect(switchComponent.props().checked).toBe(true);
   });
 });
