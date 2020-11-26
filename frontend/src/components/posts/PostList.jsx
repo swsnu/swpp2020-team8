@@ -23,13 +23,13 @@ export default function PostList({ posts, isAppending, isLoading }) {
         variant="circle"
         width={40}
         height={40}
-        style={{ margin: '4px 0' }}
+        style={{ opacity: '0.8', margin: '4px 0' }}
       />
       <Skeleton
         animation="wave"
         variant="rect"
         height={88}
-        style={{ margin: '8px 0' }}
+        style={{ opacity: '0.8', margin: '8px 0' }}
       />
     </PostItemWrapper>
   ));
