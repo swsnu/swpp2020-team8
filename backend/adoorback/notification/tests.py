@@ -142,6 +142,10 @@ class NotificationAPITestCase(APITestCase):
         Notification.objects.create(actor = current_user, recipient = spy_user, message = message,
             origin = target, target= target)
 
+        # not authenticated
+        response = self.get('notification-list')
+        self.assertEqual(response.status_code, 401)
+
         with self.login(username=current_user.username, password='password'):
             response = self.get('notification-list')
             self.assertEqual(response.status_code, 200)
@@ -155,6 +159,10 @@ class NotificationAPITestCase(APITestCase):
             noti = response.data['results'][0]
             self.assertGreater(len(noti['recipient_detail']), 1)
             self.assertEqual(len(noti['actor_detail']), 1)
+
+        with self.login(username=current_user.username, password='password'):
+            response = self.put('notification-list')
+            self.assertEqual(response.status_code, 200)
 
 
     def test_noti_update(self):
