@@ -8,6 +8,7 @@ import { CommonButton } from '../styles';
 
 const QuestionsWrapper = styled.div`
   margin: 80px auto;
+  margin-top: 120px;
   width: 500px;
   @media (max-width: 650px) {
     width: 90%;
@@ -74,11 +75,12 @@ export default function QuestionSelection() {
 
   return (
     <QuestionsWrapper>
-      <h1 id="question-selection-title">마음에 드는 질문을 골라주세요.</h1>
-
+      <h1 id="question-selection-title">
+        마음에 드는 질문을 골라주세요. (3개 이상)
+      </h1>
       <div>{sampleQuestionList}</div>
       <CommonButton
-        disabled={!selectedQuestions.length}
+        disabled={selectedQuestions.length < 3}
         margin="40px 0"
         onClick={onClickSubmitButton}
         id="complete-button"
