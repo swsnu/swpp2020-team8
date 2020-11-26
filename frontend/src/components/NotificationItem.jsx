@@ -16,11 +16,13 @@ const useStyles = makeStyles((theme) => ({
     background: '#fff',
     margin: '8px 0',
     padding: '10px 6px',
-    border: '1px solid #e7e7e7',
     borderRadius: '4px'
   },
   unread: {
-    backgroundColor: 'rgba(0, 0, 0, 0.07)'
+    backgroundColor: 'rgb(255, 57, 91, 0.08)',
+    '&:hover': {
+      backgroundColor: 'rgb(255, 57, 91, 0.15) !important'
+    }
   }
 }));
 
@@ -33,7 +35,7 @@ const NotificationItem = ({ notiObj, isNotificationPage }) => {
       to={notiObj.link}
       className={`${isNotificationPage && classes.notificationPageWrapper} ${
         !notiObj.is_read && classes.unread
-      }`}
+      } ${classes.notiLink}`}
     >
       <FaceIcon />
       <ListItemText
