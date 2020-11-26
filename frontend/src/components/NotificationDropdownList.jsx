@@ -6,8 +6,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import styled from 'styled-components';
 import { useHistory } from 'react-router';
+import { useDispatch } from 'react-redux';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import { readAllNotification } from '../modules/notification';
 import NotificationItem from './NotificationItem';
 
 const useStyles = makeStyles({
@@ -48,10 +50,15 @@ const ButtonWrapper = styled.div`
 const NotificationDropdownList = ({ notifications, setIsNotiOpen }) => {
   const classes = useStyles();
   const history = useHistory();
+  const dispatch = useDispatch();
+
   const notificationList = notifications?.map((noti) => (
     <NotificationItem key={noti.id} notiObj={noti} />
   ));
 
+  const handleReadAllNotification = () => {
+    dispatch(readAllNotification());
+  };
   return (
     <Card variant="outlined" className={classes.notificationDropdown}>
       {notifications.length === 0 ? (
@@ -74,7 +81,12 @@ const NotificationDropdownList = ({ notifications, setIsNotiOpen }) => {
             >
               알림 전체 보기
             </button>
-            <button className={classes.notiButtons}>모두 읽음</button>
+            <button
+              className={classes.notiButtons}
+              onClick={handleReadAllNotification}
+            >
+              모두 읽음
+            </button>
           </ButtonWrapper>
           <CardContent className={classes.notificationDropdownContent}>
             <List>{notificationList}</List>

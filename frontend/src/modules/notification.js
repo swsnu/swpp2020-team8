@@ -1,7 +1,8 @@
 import axios from '../apis';
 
 const initialState = {
-  receivedNotifications: []
+  receivedNotifications: [],
+  next: null
 };
 
 export const GET_NOTIFICATIONS_REQUEST =
@@ -17,7 +18,14 @@ export const READ_NOTIFICATION_SUCCESS =
   'notification/READ_NOTIFICATION_SUCCESS';
 export const READ_NOTIFICATION_FAILURE =
   'notification/READ_NOTIFICATION_FAILURE';
-export const READ_ALL_NOTIFICATIONS_REQUEST = '';
+
+export const READ_ALL_NOTIFICATIONS_REQUEST =
+  'notification/READ_ALL_NOTIFICATIONS_REQUEST';
+export const READ_ALL_NOTIFICATIONS_SUCCESS =
+  'notification/READ_ALL_NOTIFICATIONS_SUCCESS';
+export const READ_ALL_NOTIFICATIONS_FAILURE =
+  'notification/READ_ALL_NOTIFICATIONS_FAILURE';
+
 export const DELETE_NOTIFICATION_REQUEST = '';
 
 export const getNotifications = () => async (dispatch) => {
@@ -35,7 +43,8 @@ export const getNotifications = () => async (dispatch) => {
   if (res?.data) {
     dispatch({
       type: 'notification/GET_NOTIFICATION_SUCCESS',
-      res: res.data.results
+      res: res.data.results,
+      next: res.data.next
     });
   }
 };
@@ -54,12 +63,31 @@ export const readNotification = (id) => async (dispatch) => {
   });
 };
 
+export const readAllNotification = () => async (dispatch) => {
+  let res;
+  dispatch({ type: 'notification/READ_ALL_NOTIFICATIONS_REQUEST' });
+  try {
+    res = await axios.put(`/notifications/`);
+  } catch (err) {
+    dispatch({
+      type: 'notification/READ_ALL_NOTIFICATIONS_FAILURE',
+      error: err
+    });
+  }
+  dispatch({
+    type: 'notification/READ_ALL_NOTIFICATIONS_SUCCESS',
+    res: res.data.results,
+    next: res.data.next
+  });
+};
+
 export default function notiReducer(state = initialState, action) {
   switch (action.type) {
     case GET_NOTIFICATIONS_SUCCESS:
       return {
         ...state,
-        receivedNotifications: action.res
+        receivedNotifications: action.res,
+        next: action.next
       };
     case READ_NOTIFICATION_SUCCESS:
       const updatedNotification = action.res;
@@ -73,6 +101,12 @@ export default function notiReducer(state = initialState, action) {
           updatedNotification,
           ...state.receivedNotifications.slice(updatedNotificationIndex + 1)
         ]
+      };
+    case READ_ALL_NOTIFICATIONS_SUCCESS:
+      return {
+        ...state,
+        receivedNotifications: action.res,
+        next: action.next
       };
     default:
       return state;
