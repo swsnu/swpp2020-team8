@@ -14,7 +14,7 @@ import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
 import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
 import ShareSettings from '../ShareSettings';
-import { likePost } from '../../modules/like';
+import { likePost, unlikePost } from '../../modules/like';
 
 const QuestionItemWrapper = styled.div`
   background: #f4f4f4;
@@ -73,16 +73,16 @@ export default function QuestionItem({ questionObj }) {
   };
 
   const toggleLike = () => {
-    const newLike = {
+    const questionInfo = {
       target_type: questionObj.type,
       target_id: questionObj.id
     };
     if (liked) {
       setLikeCount((prev) => prev - 1);
-      // unlikePost(questionObj.type, questionObj.id);
+      dispatch(unlikePost(questionInfo));
     } else {
       setLikeCount((prev) => prev + 1);
-      dispatch(likePost(newLike));
+      dispatch(likePost(questionInfo));
     }
     setLiked((prev) => !prev);
   };

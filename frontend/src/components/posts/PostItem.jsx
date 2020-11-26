@@ -81,21 +81,16 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
   };
 
   const toggleLike = () => {
+    const postInfo = {
+      target_type: postObj.type,
+      target_id: postObj.id
+    };
     if (liked) {
       setLikeCount((prev) => prev - 1);
-      dispatch(
-        unlikePost({
-          target_id: postObj.id
-        })
-      );
+      dispatch(unlikePost(postInfo));
     } else {
       setLikeCount((prev) => prev + 1);
-      dispatch(
-        likePost({
-          target_type: postObj.type,
-          target_id: postObj.id
-        })
-      );
+      dispatch(likePost(postInfo));
     }
     setLiked((prev) => !prev);
   };
