@@ -115,7 +115,7 @@ export default function FriendStatusButtons({
         <FriendButton
           variant="outlined"
           color="secondary"
-          id="request-delete-button"
+          id="sent-request-delete-button"
           onClick={onClickDeleteRequestButton}
         >
           취소

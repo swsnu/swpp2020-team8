@@ -3,7 +3,8 @@ import axios from '../apis';
 const initialState = {
   friendList: [],
   selectedUser: {},
-  selectedUserPosts: []
+  selectedUserPosts: [],
+  friendRequestError: false
 };
 
 export const GET_FRIEND_LIST_REQUEST = 'friend/GET_FRIEND_LIST_REQUEST';
@@ -29,8 +30,6 @@ export const ACCEPT_FRIEND_REQUEST_SUCCESS =
 export const ACCEPT_FRIEND_REQUEST_FAILURE =
   'friend/ACCEPT_FRIEND_REQUEST_FAILURE';
 
-export const ADD_TO_FRIEND_LIST = 'friend/ADD_TO_FRIEND_LIST';
-
 export const getFriendList = () => async (dispatch, getState) => {
   const userId = getState().userReducer.user?.id;
   dispatch({ type: GET_FRIEND_LIST_REQUEST, userId });
@@ -39,6 +38,7 @@ export const getFriendList = () => async (dispatch, getState) => {
     result = await axios.get(`user/friends/`);
   } catch (err) {
     dispatch({ type: GET_FRIEND_LIST_FAILURE, error: err });
+    return;
   }
   const { data } = result;
   if (data)
@@ -82,18 +82,11 @@ export const requestFriend = (responderId) => async (dispatch, getState) => {
   dispatch({
     type: REQUEST_FRIEND_REQUEST
   });
-  try {
-    await axios.post('user/friend-requests/', {
-      responder_id: responderId,
-      requester_id: userId
-    });
-  } catch (err) {
-    dispatch({
-      type: REQUEST_FRIEND_FAILURE,
-      error: err
-    });
-    return;
-  }
+  await axios.post('user/friend-requests/', {
+    responder_id: responderId,
+    requester_id: userId
+  });
+
   dispatch({
     type: REQUEST_FRIEND_SUCCESS,
     responderId
@@ -104,25 +97,10 @@ export const acceptFriendRequest = (requestId) => async (dispatch) => {
   dispatch({
     type: ACCEPT_FRIEND_REQUEST_REQUEST
   });
-  try {
-    await axios.patch(`user/friend-requests/${requestId}/`, {
-      responded: true
-    });
-  } catch (err) {
-    dispatch({
-      type: ACCEPT_FRIEND_REQUEST_FAILURE,
-      error: err
-    });
-    return;
-  }
+  await axios.patch(`user/friend-requests/${requestId}/`, {
+    responded: true
+  });
   dispatch(getFriendList());
-};
-
-export const addFriend = (friendObj) => {
-  return {
-    type: ADD_TO_FRIEND_LIST,
-    friend: friendObj
-  };
 };
 
 export default function friendReducer(state = initialState, action) {
@@ -146,12 +124,10 @@ export default function friendReducer(state = initialState, action) {
         ...state,
         friendList: newFriendList
       };
-    case ACCEPT_FRIEND_REQUEST_SUCCESS:
+    case REQUEST_FRIEND_FAILURE:
       return {
         ...state,
-        friendList: state.friendList
-          ? [...state.friendList, action.friendId]
-          : [action.friend]
+        friendRequestError: action.error
       };
     default:
       return state;
