@@ -1,10 +1,8 @@
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.decorators import api_view
-from rest_framework import status
-from rest_framework.response import Response as DRF_Response
-from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 from rest_framework.pagination import PageNumberPagination
+from django.http import HttpResponse
 
 from notification.models import Notification
 from notification.serializers import NotificationSerializer
@@ -23,13 +21,13 @@ def notification_list(request):
 
     if request.method == 'GET':
         paginated_result = paginator.paginate_queryset(notifications, request)
-        serializer = NotificationSerializer(paginated_result, many=True, context={'request': request});
+        serializer = NotificationSerializer(paginated_result, many=True, context={'request': request})
         return paginator.get_paginated_response(serializer.data)
 
     elif request.method == 'PUT':
-        notifications.update(is_read=True);
+        notifications.update(is_read=True)
         paginated_result = paginator.paginate_queryset(notifications, request)
-        serializer = NotificationSerializer(paginated_result, many=True, context={'request': request});
+        serializer = NotificationSerializer(paginated_result, many=True, context={'request': request})
         return paginator.get_paginated_response(serializer.data)
 
 class NotificationDetail(generics.UpdateAPIView):
