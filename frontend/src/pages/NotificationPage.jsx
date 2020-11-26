@@ -63,7 +63,7 @@ export default function NotificationPage() {
   ));
 
   const friendRequestList = notifications
-    .filter((noti) => noti.origin_type === 'FriendRequest')
+    .filter((noti) => noti.target_type === 'FriendRequest')
     .map((friendRequest) => (
       <FriendItem
         key={friendRequest.actor_detail.id}
@@ -73,7 +73,7 @@ export default function NotificationPage() {
     ));
 
   const responseRequestList = notifications
-    .filter((noti) => noti.origin_type === 'ResponseRequest')
+    .filter((noti) => noti.target_type === 'ResponseRequest')
     .map((responseRequest) => (
       <NotificationItem
         key={responseRequest.actor_detail.id}

@@ -20,6 +20,8 @@ class NotificationSerializer(serializers.ModelSerializer):
     target_id = serializers.SerializerMethodField()
     origin_type = serializers.SerializerMethodField()
     origin_id = serializers.SerializerMethodField()
+    feed_type = serializers.SerializerMethodField()
+    feed_id = serializers.SerializerMethodField()
 
     def get_actor_detail(self, obj):
         if User.are_friends(self.context.get('request', None).user, obj.actor):
@@ -41,8 +43,24 @@ class NotificationSerializer(serializers.ModelSerializer):
     def get_origin_id(self, obj):
         return obj.origin_id
 
+    def get_feed_type(self, obj):
+        if obj.origin.type == 'Comment':
+            if obj.origin.target.type == 'Comment':
+                return obj.target.target.type
+            return obj.origin.target.type
+        else:
+            return obj.origin.type
+
+    def get_feed_id(self, obj):
+        if obj.origin.type == 'Comment':
+            if obj.origin.target.type == 'Comment':
+                return obj.target.target.id
+            return obj.origin.target.id
+        else:
+            return obj.origin.id
+
     class Meta:
         model = Notification
         fields = ['id', 'message', 'actor', 'actor_detail', 'recipient', 'recipient_detail',
-            'target_type', 'target_id', 'origin_type', 'origin_id',
+            'target_type', 'target_id', 'origin_type', 'origin_id', 'feed_type', 'feed_id',
             'is_visible', 'is_read', 'created_at', 'updated_at']

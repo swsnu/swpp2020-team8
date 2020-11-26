@@ -124,9 +124,12 @@ const Header = () => {
     (state) => state.notiReducer.receivedNotifications
   );
 
+  const unreadNotifications = notifications.filter((noti) => !noti.is_read);
+  const notiBadgeInvisible = unreadNotifications.length === 0;
+
   useEffect(() => {
     dispatch(getNotifications());
-  }, [isNotiOpen, dispatch]);
+  }, [dispatch, user]);
 
   const handleClickLogout = () => {
     dispatch(logout());
@@ -185,10 +188,11 @@ const Header = () => {
             toggleNotiOpen();
           }}
         >
-          <Badge badgeContent={notifications.length} color="primary">
+          <Badge variant="dot" invisible={notiBadgeInvisible} color="primary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
+
         <IconButton
           aria-label="account of current user"
           className={classes.iconButton}
