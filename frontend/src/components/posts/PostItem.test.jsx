@@ -5,6 +5,7 @@ import { Router } from 'react-router-dom';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
+import { act } from 'react-dom/test-utils';
 import PostItem from './PostItem';
 import history from '../../history';
 import rootReducer from '../../modules';
@@ -26,8 +27,8 @@ const samplePostObj = {
 
 const sampleResponseObj = {
   id: 4757,
-  like_count: 0,
-  current_user_liked: false,
+  like_count: 33,
+  current_user_liked: true,
   author: {
     profile: {
       id: 123,
@@ -37,7 +38,7 @@ const sampleResponseObj = {
     }
   },
   author_detail: {
-    id: 0,
+    id: 123,
     username: 'curious',
     profile_pic:
       'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
@@ -92,7 +93,7 @@ describe('<PostItem /> unit mount test', () => {
     mount(
       <Provider store={store}>
         <Router history={history}>
-          <PostItem postObj={sampleResponseObj} />
+          <PostItem id="response" postObj={sampleResponseObj} />
         </Router>
       </Provider>
     );
@@ -116,19 +117,47 @@ describe('<PostItem /> unit mount test', () => {
   });
 
   it('should toggle like', async () => {
-    const component = getResponseWrapper();
-    const likeButton = component.find('.like').at(0);
-    let unlikeButton = component.find('.unlike').at(0);
-    const likeCount = component.find('#like-count');
-    expect(likeButton).toBeTruthy();
-    expect(unlikeButton.length).toBe(0);
-    likeButton.simulate('click');
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    unlikeButton = component.find('.unlike').at(0);
-    expect(unlikeButton).toBeTruthy();
-    unlikeButton.simulate('click');
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    expect(likeCount).toMatchObject({});
+    const wrapper = getResponseWrapper();
+
+    let component = wrapper.find('#response');
+    const likeIcon = component.find('FavoriteBorderIcon');
+    const unlikeButton = component.find('FavoriteIcon').closest('button').at(0);
+    let likeCount = component.find('#like-count').at(0).text();
+
+    expect(likeIcon.length).toBe(0);
+    expect(unlikeButton.length).toBe(1);
+    expect(+likeCount).toEqual(sampleResponseObj.like_count);
+
+    // unlike
+    await act(async () => {
+      unlikeButton.prop('onClick')();
+    });
+
+    wrapper.update();
+
+    component = wrapper.find('#response');
+    const unlikeIcon = component.find('FavoriteIcon');
+    const likeButton = component
+      .find('FavoriteBorderIcon')
+      .closest('button')
+      .at(0);
+    likeCount = component.find('#like-count').at(0).text();
+
+    expect(unlikeIcon.length).toBe(0);
+    expect(likeButton.length).toBe(1);
+    expect(+likeCount).toEqual(sampleResponseObj.like_count - 1);
+
+    // like
+    await act(async () => {
+      likeButton.simulate('click');
+    });
+
+    wrapper.update();
+
+    component = wrapper.find('#response');
+    likeCount = component.find('#like-count').at(0).text();
+
+    expect(+likeCount).toEqual(sampleResponseObj.like_count);
   });
 
   it('should deal with comment submit function', () => {
