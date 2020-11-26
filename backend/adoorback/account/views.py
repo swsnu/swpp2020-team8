@@ -1,5 +1,6 @@
 import json
 
+from django.db.models import Q
 from django.contrib.auth import get_user_model, authenticate, login
 from django.http import JsonResponse, HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from rest_framework import generics
@@ -133,36 +134,30 @@ class UserFriendshipDetail(generics.CreateAPIView, generics.RetrieveDestroyAPIVi
         return obj
 
 
-class UserFriendRequestList(generics.ListAPIView):
+class UserFriendRequestList(generics.ListCreateAPIView):
     queryset = FriendRequest.objects.all()
     serializer_class = UserFriendRequestSerializer
     permission_classes = [IsAuthenticated]
 
-    # Getting Received Friend Requests for current_user
     def get_queryset(self):
-        # should exclude 'current_user' to 'current_user' friend request
         queryset = FriendRequest.objects.filter(
-            responder_id=self.request.user.id)
+            Q(responder_id=self.request.user.id) | Q(requester_id=self.request.user.id))
         return queryset
 
 
-# Handling Friend Request the current_user received
-class UserFriendRequestDetail(generics.CreateAPIView, generics.RetrieveUpdateDestroyAPIView):
+class UserFriendRequestDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = FriendRequest.objects.all()
     serializer_class = UserFriendRequestSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        queryset = self.filter_queryset(self.get_queryset())
-        obj = queryset.get(requester_id=self.request.user.id,
-                           responder_id=self.kwargs.get('rid'))
-        self.check_object_permissions(self.request, obj)
-        return obj if obj else None
-
-    def perform_create(self, serializer):
-        serializer.save(requester_id=self.request.user.id,
-                        responder_id=self.kwargs.get('rid'),
-                        responded=False)
+        try:
+            queryset = self.filter_queryset(self.get_queryset())
+            obj = queryset.get(id=self.kwargs.get('pk'))
+            self.check_object_permissions(self.request, obj)
+            return obj
+        except FriendRequest.DoesNotExist:
+            return None
 
     def perform_destroy(self, instance):
         instance = self.get_object()
