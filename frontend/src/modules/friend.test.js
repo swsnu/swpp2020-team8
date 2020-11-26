@@ -1,14 +1,14 @@
-// import axios from '../apis';
+import axios from '../apis';
 import { mockFriendList } from '../constants';
 import store from '../store';
 import friendReducer, * as actionCreators from './friend';
 
-// const result = {
-//   data: {
-//     count: 4,
-//     results: mockFriendList
-//   }
-// };
+const result = {
+  data: {
+    count: 4,
+    results: mockFriendList
+  }
+};
 
 describe('friendActions', () => {
   afterEach(() => {
@@ -18,26 +18,31 @@ describe('friendActions', () => {
   it(`'getFriendList' should fetch friends`, (done) => {
     jest.mock('axios');
 
-    // axios.get.mockResolvedValue([]);
-    // const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
-    //   return new Promise((resolve) => {
-    //     resolve(result);
-    //   });
-    // });
+    // axios.get.mockResolvedValue(result);
+    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return new Promise((resolve) => {
+        resolve(result);
+      });
+    });
 
     store.dispatch(actionCreators.getFriendList()).then(() => {
       const newState = store.getState();
-      //   expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
       expect(newState.friendReducer.friendList).toMatchObject(mockFriendList);
       done();
     });
   });
 
   it(`'deleteFriend' should delete friend correctly`, (done) => {
+    const spy = jest.spyOn(axios, 'delete').mockImplementation(() => {
+      return new Promise((resolve) => {
+        resolve();
+      });
+    });
     store.dispatch(actionCreators.deleteFriend(1)).then(() => {
       const newState = store.getState();
       const { friendList } = newState.friendReducer;
-      //   expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
       const newFriendList = friendList.filter((friend) => friend.id !== 1);
       expect(newState.friendReducer.friendList).toMatchObject(newFriendList);
       done();
