@@ -1,18 +1,9 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import { TextareaAutosize } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { PostItemWrapper } from '../../styles';
+import QuestionBox from './QuestionBox';
 import ShareSettings from './ShareSettings';
-
-const NewPostWrapper = styled.div`
-  width: 650px;
-  margin: 0 auto;
-  border: 1px solid #eee;
-  padding: 10px;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background: #fff;
-`;
 
 const useStyles = makeStyles({
   textarea: {
@@ -34,33 +25,36 @@ const useStyles = makeStyles({
   }
 });
 
-export default function NewPost() {
+const PostEditItem = ({ postObj }) => {
   const classes = useStyles();
-  const [postInfo, setPostInfo] = useState({
-    content: '',
-    type: 'Article'
-  });
+  const [editPost, setEditPost] = useState(postObj);
 
   const onInputChange = (e) => {
-    const { name, value } = e.target;
-    setPostInfo((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const resetContent = () => {
-    setPostInfo((prev) => ({ ...prev, content: '' }));
+    setEditPost({
+      ...postObj,
+      content: e.target.value
+    });
   };
 
   return (
-    <NewPostWrapper>
+    <PostItemWrapper>
+      {postObj?.question && <QuestionBox questionObj={postObj.question} />}
       <TextareaAutosize
-        id="new-post-input"
+        autoFocus
+        id="edit-post-input"
         name="content"
-        placeholder="떠오르는 생각을 공유해주세요."
-        value={postInfo.content}
+        placeholder={
+          postObj?.type === 'Article'
+            ? '떠오르는 생각을 공유해주세요.'
+            : '답변을 작성해주세요'
+        }
+        value={editPost?.content}
         onChange={onInputChange}
         className={classes.textarea}
       />
-      <ShareSettings newPost={postInfo} resetContent={resetContent} />
-    </NewPostWrapper>
+      <ShareSettings postObj={editPost} edit />
+    </PostItemWrapper>
   );
-}
+};
+
+export default PostEditItem;

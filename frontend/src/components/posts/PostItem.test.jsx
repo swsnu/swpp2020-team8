@@ -6,21 +6,12 @@ import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 import PostItem from './PostItem';
-import { mockStore } from '../../mockStore';
-import rootReducer from '../../modules';
 import history from '../../history';
-import 'jest-styled-components';
+import rootReducer from '../../modules';
+import { mockStore } from '../../mockStore';
 
-const samplepostObj = {
-  id: 4756,
-  author: {
-    profile: {
-      id: 123,
-      username: 'curious',
-      profile:
-        'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
-    }
-  },
+const samplePostObj = {
+  id: 0,
   author_detail: {
     id: 123,
     username: 'curious',
@@ -46,7 +37,7 @@ const sampleResponseObj = {
     }
   },
   author_detail: {
-    id: 123,
+    id: 0,
     username: 'curious',
     profile_pic:
       'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
@@ -81,82 +72,6 @@ const sampleResponseObj = {
   ]
 };
 
-// const mockArticle = {
-//   id: 4756,
-//   'content-type': 'Article', // or const int e.g. (1: Article, 2: Response...)
-//   author: {
-//     profile: {
-//       id: 123,
-//       username: 'curious',
-//       profile_pic:
-//         'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
-//     }
-//   },
-//   created_at: '2020-09-23T10:38:47.975019+08:00',
-//   content:
-//     '안녕하세요 반가워요 잘있어요 다시만나요 이거는 질문없이 쓰는 그냥 뻘글이에요 이쁘죠?????',
-//   comments: [
-//     {
-//       id: 1272,
-//       post_id: 383,
-//       content: '재밌네요',
-//       author: {
-//         profile: {
-//           id: 123,
-//           username: 'curious',
-//           profile_pic:
-//             'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
-//         }
-//       },
-//       referenced_comments: 1272,
-//       is_reply: false,
-//       replies: [
-//         {
-//           id: 1273,
-//           post_id: 383,
-//           content: '같이하고싶어요',
-//           author: {
-//             profile: {
-//               id: 123,
-//               username: 'curious',
-//               profile_pic:
-//                 'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
-//             }
-//           },
-//           is_poster_owner: false,
-//           referenced_comments: 1272,
-//           is_reply: true,
-//           is_private: false,
-//           create_dt: '2020-09-23T10:40:24.421000+08:00',
-//           update_dt: '2020-09-23T10:40:24.428734+08:00'
-//         }
-//       ],
-//       is_private: false,
-//       create_dt: '2020-09-23T10:38:47.975019+08:00',
-//       update_dt: '2020-09-23T10:39:35.849029+08:00'
-//     },
-
-//     {
-//       id: 1274,
-//       post_id: 383,
-//       content: '퍼가요!!!!',
-//       author: {
-//         profile: {
-//           id: 123,
-//           username: 'curious',
-//           profile_pic:
-//             'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
-//         }
-//       },
-//       referenced_comments: 1274,
-//       is_reply: false,
-//       is_private: true,
-//       create_dt: '2020-09-23T10:40:42.268355+08:00',
-//       update_dt: '2020-09-23T10:40:42.268384+08:00'
-//     }
-//   ]
-// };
-
 describe('<PostItem /> unit mount test', () => {
   const store = createStore(
     rootReducer,
@@ -168,7 +83,7 @@ describe('<PostItem /> unit mount test', () => {
     mount(
       <Provider store={store}>
         <Router history={history}>
-          <PostItem postObj={samplepostObj} />
+          <PostItem postObj={samplePostObj} />
         </Router>
       </Provider>
     );
@@ -214,21 +129,6 @@ describe('<PostItem /> unit mount test', () => {
     unlikeButton.simulate('click');
     await new Promise((resolve) => setTimeout(resolve, 500));
     expect(likeCount).toMatchObject({});
-  });
-
-  it('should not display comments if none exists', async () => {
-    const component = getPostWrapper();
-    expect(component.find('CommentItem').length).toEqual(0);
-  });
-
-  it('should deal with delete', async () => {
-    const component = getPostWrapper();
-    expect(component.find('#post-delete-button')).toBeTruthy();
-    const deleteButton = component.find('#post-delete-button').at(0);
-    deleteButton.simulate('click');
-    component.update();
-    component.find('#confirm-button').at(0).simulate('click');
-    expect(component.find('AlertDialog').props().isOpen).toBeFalsy();
   });
 
   it('should deal with comment submit function', () => {
