@@ -8,6 +8,12 @@ const FriendFeed = () => {
   const [target, setTarget] = useState(false);
   const dispatch = useDispatch();
   const friendPosts = useSelector((state) => state.postReducer.friendPosts);
+  const isAppending = useSelector(
+    (state) => state.loadingReducer['post/APPEND_POSTS']
+  );
+  const isLoading = useSelector(
+    (state) => state.loadingReducer['post/GET_FRIEND_POSTS']
+  );
 
   useEffect(() => {
     let observer;
@@ -30,7 +36,11 @@ const FriendFeed = () => {
 
   return (
     <>
-      <PostList posts={friendPosts} />
+      <PostList
+        posts={friendPosts}
+        isAppending={isAppending}
+        isLoading={isLoading}
+      />
       <div ref={setTarget} />
     </>
   );

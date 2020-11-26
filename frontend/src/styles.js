@@ -95,3 +95,13 @@ export const PostItemFooterWrapper = styled.div`
   flex-direction: row-reverse;
   align-items: center;
 `;
+
+export const PostItemWrapper = styled.div`
+  background: #fff;
+  padding: 16px;
+  font-size: 14px;
+  border: 1px solid #eee;
+  margin: 16px 0;
+  position: relative;
+  border-radius: 4px;
+`;
