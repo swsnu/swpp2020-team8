@@ -12,9 +12,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import AuthorProfile from './AuthorProfile';
 import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
-import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
 import ShareSettings from '../ShareSettings';
 import { likePost, unlikePost } from '../../modules/like';
+import { PostItemHeaderWrapper, PostItemButtonsWrapper } from '../../styles';
 import QuestionSendModal from '../QuestionSendModal';
 import { mockFriendList } from '../../constants';
 
@@ -50,7 +50,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-// TODO: share settings
 export default function QuestionItem({ questionObj }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.userReducer.user);
@@ -102,7 +101,6 @@ export default function QuestionItem({ questionObj }) {
     setQuestionSendModalOpen(false);
   };
 
-  const handleEdit = () => {};
   const handleDelete = () => {};
 
   const resetContent = () => {
@@ -116,17 +114,14 @@ export default function QuestionItem({ questionObj }) {
           <AuthorProfile author={questionObj.author_detail} />
         )}
         {!questionObj.is_admin_question && isAuthor && (
-          <PostAuthorButtons
-            onClickEdit={handleEdit}
-            onClickDelete={handleDelete}
-          />
+          <PostAuthorButtons isQuestion onClickDelete={handleDelete} />
         )}
       </PostItemHeaderWrapper>
       <Question>
         <Link to={`/questions/${questionObj.id}`}>{questionObj.content}</Link>
       </Question>
       <CreateTime createTime={questionObj.created_at} />
-      <PostItemFooterWrapper>
+      <PostItemButtonsWrapper>
         <IconButton color="secondary" size="small" onClick={handleSendButton}>
           <SendIcon color="secondary" />
         </IconButton>
@@ -147,7 +142,7 @@ export default function QuestionItem({ questionObj }) {
             {likeCount}
           </div>
         )}
-      </PostItemFooterWrapper>
+      </PostItemButtonsWrapper>
       {isWriting && (
         <>
           <TextareaAutosize
