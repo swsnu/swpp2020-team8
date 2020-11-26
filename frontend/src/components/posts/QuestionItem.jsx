@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -14,6 +14,7 @@ import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
 import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
 import ShareSettings from '../ShareSettings';
+import { likePost } from '../../modules/like';
 
 const QuestionItemWrapper = styled.div`
   background: #f4f4f4;
@@ -49,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
 
 // TODO: share settings
 export default function QuestionItem({ questionObj }) {
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.userReducer.user);
   const isAuthor = user.id === questionObj.author_detail.id;
 
@@ -71,10 +73,16 @@ export default function QuestionItem({ questionObj }) {
   };
 
   const toggleLike = () => {
+    const newLike = {
+      target_type: questionObj.type,
+      target_id: questionObj.id
+    };
     if (liked) {
       setLikeCount((prev) => prev - 1);
+      // unlikePost(questionObj.type, questionObj.id);
     } else {
       setLikeCount((prev) => prev + 1);
+      dispatch(likePost(newLike));
     }
     setLiked((prev) => !prev);
   };

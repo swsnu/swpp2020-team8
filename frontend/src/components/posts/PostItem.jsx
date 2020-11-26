@@ -13,6 +13,7 @@ import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
 import CommentItem from '../comments/CommentItem';
 import NewComment from '../comments/NewComment';
 import { createComment, deletePost } from '../../modules/post';
+import { likePost, unlikePost } from '../../modules/like';
 import AlertDialog from '../common/AlertDialog';
 
 const PostItemWrapper = styled.div`
@@ -82,14 +83,27 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
   const toggleLike = () => {
     if (liked) {
       setLikeCount((prev) => prev - 1);
+      dispatch(
+        unlikePost({
+          target_id: postObj.id
+        })
+      );
     } else {
       setLikeCount((prev) => prev + 1);
+      dispatch(
+        likePost({
+          target_type: postObj.type,
+          target_id: postObj.id
+        })
+      );
     }
     setLiked((prev) => !prev);
   };
+
   const handleEdit = () => {
     // todo: redirect to edit page
   };
+
   const handleDelete = () => {
     dispatch(deletePost(postObj.id, postObj.type));
     setIsDeleteDialogOpen(false);
