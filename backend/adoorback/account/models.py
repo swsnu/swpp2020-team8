@@ -100,12 +100,7 @@ def create_friendship(sender, **kwargs):
     responder_id = instance.responder_id
     responded = instance.responded
     if responded:
-        try:
-            Friendship.objects.get(user_id=requester_id,
-                                   friend_id=responder_id)
-        except sender.DoesNotExist:
-            Friendship.objects.get(user_id=requester_id,
-                                   friend_id=responder_id)
+        Friendship.objects.create(user_id=requester_id, friend_id=responder_id)
     else:
         return
 
