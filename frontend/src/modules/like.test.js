@@ -1,6 +1,6 @@
 import axios from '../apis';
 import store from '../store';
-import { mockQuestionFeed, questionDetailPosts } from '../constants';
+import { mockLike } from '../constants';
 import * as actionCreators from './like';
 
 describe('likeActions', () => {
@@ -8,122 +8,60 @@ describe('likeActions', () => {
     jest.clearAllMocks();
   });
 
-  it(`'getDailyQuestions' should get daily questions correctly`, (done) => {
+  it(`likePost should like correctly`, (done) => {
     jest.mock('axios');
 
-    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+    const postInfo = {
+      target_type: 'Article',
+      target_id: 13
+    };
+
+    const spy = jest.spyOn(axios, 'post').mockImplementation(() => {
       return new Promise((resolve) => {
-        const res = {
+        const result = {
+          data: mockLike
+        };
+        resolve(result);
+      });
+    });
+
+    store.dispatch(actionCreators.likePost(postInfo)).then(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+      done();
+    });
+  });
+
+  it(`unlikePost should unlike correctly`, (done) => {
+    const postInfo = {
+      target_type: 'Article',
+      target_id: 13
+    };
+
+    const spyGet = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const result = {
           data: {
-            results: mockQuestionFeed
+            status: 200,
+            results: mockLike
           }
         };
-        resolve(res);
+        resolve(result);
       });
     });
 
-    store.dispatch(actionCreators.getDailyQuestions()).then(() => {
-      const newState = store.getState();
-      expect(spy).toHaveBeenCalled();
-      expect(newState.questionReducer.dailyQuestions).toMatchObject(
-        mockQuestionFeed
-      );
-      done();
-    });
-  });
-
-  it('should dispatch question/GET_DAILY_QUESTIONS_FAILURE when api returns error', async () => {
-    jest.mock('axios');
-    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
-      return Promise.reject(new Error('error'));
-    });
-
-    store.dispatch(actionCreators.getDailyQuestions()).then(() => {
-      const newState = store.getState();
-      expect(spy).toHaveBeenCalled();
-      expect(newState.questionReducer.dailyQuestions).toMatchObject(
-        mockQuestionFeed
-      );
-    });
-  });
-
-  it(`'getResponsesByQuestion' should get responses of selected question correctly`, (done) => {
-    jest.mock('axios');
-
-    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+    const spyDelete = jest.spyOn(axios, 'delete').mockImplementation(() => {
       return new Promise((resolve) => {
-        const res = {
-          data: questionDetailPosts
+        const result = {
+          status: 301
         };
-        resolve(res);
+        resolve(result);
       });
     });
 
-    store.dispatch(actionCreators.getResponsesByQuestion()).then(() => {
-      const newState = store.getState();
-      expect(spy).toHaveBeenCalled();
-      expect(newState.questionReducer.selectedQuestion).toMatchObject(
-        questionDetailPosts
-      );
-      expect(newState.questionReducer.selectedQuestionResponses).toMatchObject(
-        questionDetailPosts.response_set
-      );
+    store.dispatch(actionCreators.unlikePost(postInfo)).then(() => {
+      expect(spyGet).toHaveBeenCalledTimes(1);
+      expect(spyDelete).toHaveBeenCalledTimes(1);
       done();
-    });
-  });
-
-  it('should dispatch question/GET_SELECTED_QUESTION_RESPONSES_FAILURE when api returns error', async () => {
-    jest.mock('axios');
-    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
-      return Promise.reject(new Error('error'));
-    });
-
-    store.dispatch(actionCreators.getResponsesByQuestion()).then(() => {
-      const newState = store.getState();
-      expect(spy).toHaveBeenCalled();
-      expect(newState.questionReducer.questionDetailPosts).toMatchObject(
-        questionDetailPosts
-      );
-    });
-  });
-
-  it(`'getFriendResponsesByQuestion' should get responses of selected question correctly`, (done) => {
-    jest.mock('axios');
-
-    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
-      return new Promise((resolve) => {
-        const res = {
-          data: questionDetailPosts
-        };
-        resolve(res);
-      });
-    });
-
-    store.dispatch(actionCreators.getFriendResponsesByQuestion()).then(() => {
-      const newState = store.getState();
-      expect(spy).toHaveBeenCalled();
-      expect(newState.questionReducer.selectedQuestion).toMatchObject(
-        questionDetailPosts
-      );
-      expect(newState.questionReducer.selectedQuestionResponses).toMatchObject(
-        questionDetailPosts.response_set
-      );
-      done();
-    });
-  });
-
-  it('should dispatch question/GET_SELECTED_QUESTION_RESPONSES_FAILURE when api returns error', async () => {
-    jest.mock('axios');
-    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
-      return Promise.reject(new Error('error'));
-    });
-
-    store.dispatch(actionCreators.getFriendResponsesByQuestion()).then(() => {
-      const newState = store.getState();
-      expect(spy).toHaveBeenCalled();
-      expect(newState.questionReducer.questionDetailPosts).toMatchObject(
-        questionDetailPosts
-      );
     });
   });
 });
