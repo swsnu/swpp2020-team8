@@ -53,7 +53,7 @@ const NotificationDropdownList = ({ notifications, setIsNotiOpen }) => {
   const dispatch = useDispatch();
 
   const notificationList = notifications?.map((noti) => (
-    <NotificationItem key={noti.id} notiObj={noti} />
+    <NotificationItem key={`noti-${noti.id}`} notiObj={noti} />
   ));
 
   const handleReadAllNotification = () => {
@@ -61,7 +61,7 @@ const NotificationDropdownList = ({ notifications, setIsNotiOpen }) => {
   };
   return (
     <Card variant="outlined" className={classes.notificationDropdown}>
-      {notifications.length === 0 ? (
+      {notifications?.length === 0 ? (
         <ListItem>
           <ListItemText
             classes={{ primary: classes.message }}
@@ -82,7 +82,7 @@ const NotificationDropdownList = ({ notifications, setIsNotiOpen }) => {
               알림 전체 보기
             </button>
             <button
-              className={classes.notiButtons}
+              className={`read-all-notifications ${classes.notiButtons}`}
               onClick={handleReadAllNotification}
             >
               모두 읽음

@@ -42,12 +42,13 @@ const NotificationItem = ({ notiObj, isNotificationPage }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const link = `/${notiObj.feed_type.toLowerCase()}s/${notiObj.feed_id}`;
+  const link = `/${notiObj?.feed_type?.toLowerCase()}s/${notiObj.feed_id}`;
 
   const handleClickNotiItem = () => {
     dispatch(readNotification(notiObj.id));
     history.push(link);
   };
+
   return (
     <ListItem
       className={`${isNotificationPage && classes.notificationPageWrapper} ${

@@ -49,24 +49,28 @@ const useStyles = makeStyles((theme) => ({
 
 export default function NotificationPage() {
   const classes = useStyles();
-  const [value, setValue] = React.useState(0);
+  const [tab, setTab] = React.useState(0);
   const notifications = useSelector(
     (state) => state.notiReducer.receivedNotifications
   );
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  const handleTabChange = (event, newValue) => {
+    setTab(newValue);
   };
 
   const notificationList = notifications.map((noti) => (
-    <NotificationItem key={noti.id} notiObj={noti} isNotificationPage />
+    <NotificationItem
+      key={`noti-${noti?.id}`}
+      notiObj={noti}
+      isNotificationPage
+    />
   ));
 
   const friendRequestList = notifications
     .filter((noti) => noti.target_type === 'FriendRequest')
     .map((friendRequest) => (
       <FriendItem
-        key={friendRequest.actor_detail.id}
+        key={`friend-request-${friendRequest?.id}`}
         friendObj={friendRequest.actor_detail}
         isFriend={false}
       />
@@ -76,7 +80,7 @@ export default function NotificationPage() {
     .filter((noti) => noti.target_type === 'ResponseRequest')
     .map((responseRequest) => (
       <NotificationItem
-        key={responseRequest.actor_detail.id}
+        key={`response-request-${responseRequest?.id}`}
         notiObj={responseRequest}
         isNotificationPage
       />
@@ -86,8 +90,8 @@ export default function NotificationPage() {
     <div className={classes.root}>
       <AppBar position="static" className={classes.header}>
         <Tabs
-          value={value}
-          onChange={handleChange}
+          value={tab}
+          onChange={handleTabChange}
           aria-label="notification-tabs"
           indicatorColor="primary"
           textColor="primary"
@@ -97,13 +101,13 @@ export default function NotificationPage() {
           <Tab label="받은 질문" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
-      <TabPanel value={value} index={0} className={classes.tabPanel}>
+      <TabPanel value={tab} index={0} className={classes.tabPanel}>
         {notificationList}
       </TabPanel>
-      <TabPanel value={value} index={1} className={classes.tabPanel}>
+      <TabPanel value={tab} index={1} className={classes.tabPanel}>
         {friendRequestList}
       </TabPanel>
-      <TabPanel value={value} index={2} className={classes.tabPanel}>
+      <TabPanel value={tab} index={2} className={classes.tabPanel}>
         {responseRequestList}
       </TabPanel>
     </div>

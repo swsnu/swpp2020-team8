@@ -953,9 +953,9 @@ export const mockNotifications = [
           profile_pic: '#D088DF',
           url: 'http://localhost:8000/api/user/3/'
         },
-        target_type: 'Like',
+        target_type: 'ResponseRequest',
         target_id: 16,
-        origin_type: 'Article',
+        origin_type: 'Question',
         origin_id: 4,
         is_visible: true,
         is_read: false,
@@ -976,9 +976,9 @@ export const mockNotifications = [
           profile_pic: '#D088DF',
           url: 'http://localhost:8000/api/user/3/'
         },
-        target_type: 'Like',
+        target_type: 'FriendRequest',
         target_id: 12,
-        origin_type: 'Question',
+        origin_type: 'User',
         origin_id: 3,
         is_visible: true,
         is_read: false,
