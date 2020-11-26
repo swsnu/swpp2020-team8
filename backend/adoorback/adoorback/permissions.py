@@ -13,9 +13,14 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         # Write permissions are only allowed to the owner of the object.
         if obj.type == 'Like':
             return obj.user == request.user
+        elif obj.type == 'FriendRequest':
+            return obj.user == request.user
+        elif obj.type == 'ResponseRequest':
+            return obj.user == request.user
         elif obj.type == 'User':
             return obj == request.user
         return obj.author == request.user
+
 
 class IsRecipient(permissions.BasePermission):
     """
@@ -24,6 +29,7 @@ class IsRecipient(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return obj.recipient == request.user
+
 
 class IsShared(permissions.BasePermission):
     """

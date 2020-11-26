@@ -3,6 +3,17 @@ import { shallow } from 'enzyme';
 import AuthorProfile from './AuthorProfile';
 import 'jest-styled-components';
 
+jest.mock('react-router-dom', () => ({
+  __esModule: true,
+  useLocation: jest.fn().mockReturnValue({
+    pathname: '/another-route',
+    search: '',
+    hash: '',
+    state: null,
+    key: '5nvxpbdafa'
+  })
+}));
+
 const mockAuthor = {
   id: 123,
   username: 'curious',
