@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { getSampleQuestions } from '../modules/question';
-import { postSelectedQuestions } from '../modules/user';
+import { postSelectedQuestions, skipSelectQuestions } from '../modules/user';
 import { CommonButton } from '../styles';
 
 const QuestionsWrapper = styled.div`
@@ -27,10 +27,17 @@ const QuestionItem = styled.div`
   cursor: pointer !important;
 `;
 
-const CustomLink = styled.div`
+const CustomLink = styled.button`
+  float: right;
+  border: none;
+  background: #fff;
   color: #777;
-  margin-top: -20px;
+  font-size: 16px;
 `;
+
+CommonButton.displayName = 'CommonButton';
+CustomLink.displayName = 'CustomLink';
+QuestionItem.displayName = 'QuestionItem';
 
 export default function QuestionSelection() {
   const [selectedQuestions, setSelectedQuestions] = useState([]);
@@ -68,8 +75,13 @@ export default function QuestionSelection() {
     </QuestionItem>
   ));
 
-  const onClickSubmitButton = () => {
-    dispatch(postSelectedQuestions(selectedQuestions, userId));
+  const onClickSubmitButton = async () => {
+    await dispatch(postSelectedQuestions(selectedQuestions, userId));
+    history.push('/');
+  };
+
+  const onClickSkipButton = async () => {
+    await dispatch(skipSelectQuestions());
     history.push('/');
   };
 
@@ -87,7 +99,7 @@ export default function QuestionSelection() {
       >
         완료!
       </CommonButton>
-      <CustomLink onClick={onClickSubmitButton}>건너뛰기</CustomLink>
+      <CustomLink onClick={onClickSkipButton}>건너뛰기</CustomLink>
     </QuestionsWrapper>
   );
 }

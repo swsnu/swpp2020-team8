@@ -9,7 +9,8 @@ from django.contrib.auth import get_user_model
 
 from comment.models import Comment
 from like.models import Like
-from adoorback.models import AdoorModel
+from adoorback.models import AdoorModel, AdoorTimestampedModel
+from notification.models import Notification
 
 
 User = get_user_model()
@@ -22,6 +23,10 @@ class Article(AdoorModel):
 
     article_comments = GenericRelation(Comment)
     article_likes = GenericRelation(Like)
+    article_targetted_notis = GenericRelation(Notification,
+        content_type_field='target_type', object_id_field='target_id')
+    article_originated_notis = GenericRelation(Notification,
+        content_type_field='origin_type', object_id_field='origin_id')
 
     @property
     def type(self):
@@ -48,6 +53,10 @@ class Question(AdoorModel):
 
     question_comments = GenericRelation(Comment)
     question_likes = GenericRelation(Like)
+    question_targetted_notis = GenericRelation(Notification,
+        content_type_field='target_type', object_id_field='target_id')
+    question_originated_notis = GenericRelation(Notification,
+        content_type_field='origin_type', object_id_field='origin_id')
 
     objects = QuestionManager()
 
@@ -67,11 +76,22 @@ class Response(AdoorModel):
 
     response_comments = GenericRelation(Comment)
     response_likes = GenericRelation(Like)
+    response_targetted_notis = GenericRelation(Notification,
+        content_type_field='target_type', object_id_field='target_id')
+    response_originated_notis = GenericRelation(Notification,
+        content_type_field='origin_type', object_id_field='origin_id')
 
     @property
     def type(self):
         return self.__class__.__name__
 
+class ResponseRequest(AdoorTimestampedModel):
+    actor = models.ForeignKey(User, related_name='sent_response_request_set', on_delete=models.CASCADE)
+    recipient = models.ForeignKey(User, related_name='received_response_request_set', on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.question.content
 
 class PostManager(models.Manager):
 
