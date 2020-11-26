@@ -76,7 +76,7 @@ async function getUser() {
 
 export const requestLogin = (loginInfo) => {
   return async (dispatch) => {
-    dispatch({ type: 'question/LOGIN_REQUEST' });
+    dispatch({ type: 'user/LOGIN_REQUEST' });
 
     let currentUser;
     try {

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import FriendStatusButtons from './FriendStatusButtons';
 
-const FriendItemWrapper = styled.div`
+export const FriendItemWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;

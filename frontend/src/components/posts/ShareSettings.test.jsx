@@ -6,8 +6,8 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 import { Router } from 'react-router-dom';
 import { act } from 'react-dom/test-utils';
-import history from '../history';
-import rootReducer from '../modules';
+import history from '../../history';
+import rootReducer from '../../modules';
 import ShareSettings from './ShareSettings';
 
 describe('<ShareSettings />', () => {

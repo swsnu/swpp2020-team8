@@ -85,10 +85,11 @@ def set_seed(n):
 
     # Seed Response Request
     for _ in range(n):
-      question = random.choice(questions)
-      actor = User.objects.get(id=random.choice([1, 2, 3]))
-      recipient = User.objects.get(id=random.choice([1, 2, 3]))
-      ResponseRequest.objects.create(actor=actor, recipient=recipient, question=question)
+        question = random.choice(questions)
+        actor = User.objects.get(id=random.choice([1, 2, 3]))
+        recipient = User.objects.get(id=random.choice([1, 2, 3]))
+        ResponseRequest.objects.create(
+            actor=actor, recipient=recipient, question=question)
     logging.info(
         f"{ResponseRequest.objects.all().count()} ResponseRequest(s) created!") if DEBUG else None
 
@@ -136,7 +137,7 @@ def set_seed(n):
     logging.info(
         f"{Like.objects.count()} Like(s) created!") if DEBUG else None
 
-    # Seed Notification for likes
+    # # Seed Notification for likes
     # likes = Like.objects.all()
     # for like in likes[:n]:
     #     actor = like.user
@@ -144,8 +145,8 @@ def set_seed(n):
     #     recipient = origin.author
     #     target = like
     #     message = f'{actor} likes your {origin.type}'
-    #     Notification.objects.create(actor = actor, recipient = recipient, message = message,
-    #         origin = origin, target = target, is_read = False, is_visible = True)
+    #     Notification.objects.create(actor=actor, recipient=recipient, message=message,
+    #                                 origin=origin, target=target, is_read=False, is_visible=True)
 
     # # Seed Notification for comments
     # for comment in comments[:n]:
@@ -154,12 +155,11 @@ def set_seed(n):
     #     recipient = origin.author
     #     target = comment
     #     message = f'{actor} commented on your {origin.type}'
-    #     Notification.objects.create(actor = actor, recipient = recipient, message = message,
-    #         origin = origin, target = target, is_read = False, is_visible = True)
-    # # TODO: noti for friendship & response requests 
+    #     Notification.objects.create(actor=actor, recipient=recipient, message=message,
+    #                                 origin=origin, target=target, is_read=False, is_visible=True)
+    # # TODO: noti for friendship & response requests
     # logging.info(
     #     f"{Notification.objects.all().count()} Notification(s) created!") if DEBUG else None
-
 
     # Seed Friendship
     user_1 = User.objects.get(id=1)
@@ -169,15 +169,12 @@ def set_seed(n):
     Friendship.objects.create(user=user_2, friend=user_3)
 
     # Seed Friend Request
-    user_1 = User.objects.get(id=1)
-    user_2 = User.objects.get(id=2)
-    user_3 = User.objects.get(id=3)
-    FriendRequest.objects.create(
-        requester=user_1, responder=user_2, responded=False)
     FriendRequest.objects.create(
         requester=user_1, responder=user_3, responded=False)
-    FriendRequest.objects.create(
-        requester=user_2, responder=user_3, responded=False)
+    # FriendRequest.objects.create(
+    #     requester=user_1, responder=user_3, responded=False)
+    # FriendRequest.objects.create(
+    #     requester=user_2, responder=user_3, responded=False)
 
 
 def fill_data():

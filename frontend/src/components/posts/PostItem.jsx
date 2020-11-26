@@ -9,21 +9,16 @@ import AuthorProfile from './AuthorProfile';
 import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
 import QuestionBox from './QuestionBox';
-import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
+import {
+  PostItemHeaderWrapper,
+  PostItemFooterWrapper,
+  PostItemWrapper,
+  PostItemButtonsWrapper
+} from '../../styles';
 import CommentItem from '../comments/CommentItem';
 import NewComment from '../comments/NewComment';
 import { createComment, deletePost } from '../../modules/post';
 import AlertDialog from '../common/AlertDialog';
-
-const PostItemWrapper = styled.div`
-  background: #fff;
-  padding: 16px;
-  font-size: 14px;
-  border: 1px solid #eee;
-  margin: 16px 0;
-  position: relative;
-  border-radius: 4px;
-`;
 
 PostItemWrapper.displayName = 'PostItemWrapper';
 
@@ -32,13 +27,18 @@ const ContentWrapper = styled.div`
 `;
 
 const CommentWrapper = styled.div``;
+const ShareSettingsWrapper = styled.div``;
+const ShareSettingInfo = styled.span`
+  margin-right: 8px;
+  color: #777;
+`;
 
 export default function PostItem({ postObj, postKey, isDetailPage }) {
   const history = useHistory();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.userReducer.user);
   const isAuthor = postObj?.author && user?.id === postObj.author_detail?.id;
-  const isAnon = postObj?.author && !postObj?.author_detail?.id;
+  const isAnon = !postObj?.author_detail?.id;
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -87,9 +87,11 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
     }
     setLiked((prev) => !prev);
   };
+
   const handleEdit = () => {
-    // todo: redirect to edit page
+    history.push(`/${postObj.type.toLowerCase()}s/${postObj.id}/edit`);
   };
+
   const handleDelete = () => {
     dispatch(deletePost(postObj.id, postObj.type));
     setIsDeleteDialogOpen(false);
@@ -102,6 +104,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
         <AuthorProfile author={postObj && postObj.author_detail} />
         {isAuthor && (
           <PostAuthorButtons
+            isQuestion={false}
             onClickEdit={handleEdit}
             onClickDelete={() => setIsDeleteDialogOpen(true)}
           />
@@ -111,20 +114,30 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       <ContentWrapper>{postObj.content}</ContentWrapper>
       <CreateTime createdTime={postObj.created_at} />
       <PostItemFooterWrapper>
-        {liked ? (
-          <IconButton color="primary" size="small" onClick={toggleLike}>
-            <FavoriteIcon className="unlike" color="primary" />
-          </IconButton>
-        ) : (
-          <IconButton color="primary" size="small" onClick={toggleLike}>
-            <FavoriteBorderIcon className="like" color="primary" />
-          </IconButton>
-        )}
-        {isAuthor && (
-          <div id="like-count" style={{ margin: '4px' }}>
-            {likeCount}
-          </div>
-        )}
+        <ShareSettingsWrapper>
+          {isAuthor && postObj.share_with_friends && (
+            <ShareSettingInfo>친구공개</ShareSettingInfo>
+          )}
+          {isAuthor && postObj.share_anonymously && (
+            <ShareSettingInfo>익명공개</ShareSettingInfo>
+          )}
+        </ShareSettingsWrapper>
+        <PostItemButtonsWrapper>
+          {liked ? (
+            <IconButton color="primary" size="small" onClick={toggleLike}>
+              <FavoriteIcon className="unlike" color="primary" />
+            </IconButton>
+          ) : (
+            <IconButton color="primary" size="small" onClick={toggleLike}>
+              <FavoriteBorderIcon className="like" color="primary" />
+            </IconButton>
+          )}
+          {isAuthor && (
+            <div id="like-count" style={{ margin: '4px' }}>
+              {likeCount}
+            </div>
+          )}
+        </PostItemButtonsWrapper>
       </PostItemFooterWrapper>
       {!isAnon && (
         <>
