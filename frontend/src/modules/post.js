@@ -64,10 +64,7 @@ const initialState = {
 export const appendPosts = (origin) => async (dispatch, getState) => {
   const { next } = getState().postReducer;
   if (!next) return;
-  const nextUrl = getState().postReducer.next.replace(
-    'localhost:8000',
-    'localhost:3000'
-  );
+  const nextUrl = next.replace('localhost:8000', 'localhost:3000');
   let result;
   dispatch({ type: APPEND_POSTS_REQUEST });
   try {

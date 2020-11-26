@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PostList from '../components/posts/PostList';
 import { appendPosts, getPostsByType } from '../modules/post';
-// import Article from './temp/Article';
 
 const FriendFeed = () => {
   const [target, setTarget] = useState(false);
