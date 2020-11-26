@@ -17,6 +17,14 @@ jest.mock('../components/posts/QuestionList', () => {
   });
 });
 
+const observe = jest.fn();
+const unobserve = jest.fn();
+
+window.IntersectionObserver = jest.fn(() => ({
+  observe,
+  unobserve
+}));
+
 describe('<QuestionFeed/>', () => {
   const store = createStore(
     rootReducer,

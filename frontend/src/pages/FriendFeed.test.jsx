@@ -16,6 +16,13 @@ jest.mock('../components/posts/PostList', () => {
     return <div className="post-list" />;
   });
 });
+const observe = jest.fn();
+const unobserve = jest.fn();
+
+window.IntersectionObserver = jest.fn(() => ({
+  observe,
+  unobserve
+}));
 
 describe('<FriendFeed /> unit mount test', () => {
   const store = createStore(
