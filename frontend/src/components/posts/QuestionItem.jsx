@@ -12,7 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import AuthorProfile from './AuthorProfile';
 import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
-import ShareSettings from '../ShareSettings';
+import ShareSettings from './ShareSettings';
 import { likePost, unlikePost } from '../../modules/like';
 import { PostItemHeaderWrapper, PostItemButtonsWrapper } from '../../styles';
 import QuestionSendModal from '../QuestionSendModal';

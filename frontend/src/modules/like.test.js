@@ -8,13 +8,13 @@ describe('likeActions', () => {
     jest.clearAllMocks();
   });
 
+  const postInfo = {
+    target_type: 'Article',
+    target_id: 13
+  };
+
   it(`likePost should like correctly`, (done) => {
     jest.mock('axios');
-
-    const postInfo = {
-      target_type: 'Article',
-      target_id: 13
-    };
 
     const spy = jest.spyOn(axios, 'post').mockImplementation(() => {
       return new Promise((resolve) => {
@@ -32,17 +32,12 @@ describe('likeActions', () => {
   });
 
   it(`unlikePost should unlike correctly`, (done) => {
-    const postInfo = {
-      target_type: 'Article',
-      target_id: 13
-    };
-
     const spyGet = jest.spyOn(axios, 'get').mockImplementation(() => {
       return new Promise((resolve) => {
         const result = {
           data: {
             status: 200,
-            results: mockLike
+            results: [mockLike]
           }
         };
         resolve(result);
@@ -62,6 +57,17 @@ describe('likeActions', () => {
       expect(spyGet).toHaveBeenCalledTimes(1);
       expect(spyDelete).toHaveBeenCalledTimes(1);
       done();
+    });
+  });
+
+  it('should dispatch UNLIKE_POST_FAILURE when api returns error', async () => {
+    jest.mock('axios');
+    const spy = jest.spyOn(axios, 'delete').mockImplementation(() => {
+      return Promise.reject(new Error('error'));
+    });
+
+    store.dispatch(actionCreators.unlikePost(postInfo)).then(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 });
