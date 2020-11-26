@@ -47,7 +47,7 @@ export default function Login() {
   };
 
   const onKeySubmit = (e) => {
-    if (e.keyCode === 13) {
+    if (e.key === 'Enter') {
       dispatch(requestLogin(loginInfo));
     }
   };
