@@ -134,6 +134,23 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
   });
 };
 
+export const getSelectedUserPosts = (userId) => async (dispatch) => {
+  let result;
+  dispatch({ type: `post/GET_USER_POSTS_REQUEST` });
+  try {
+    result = await axios.get(`feed/user/${userId}/`);
+  } catch (err) {
+    dispatch({ type: `post/GET_USER_POSTS_FAILURE`, error: err });
+    return;
+  }
+  const { data } = result;
+  dispatch({
+    type: `post/GET_USER_POSTS_SUCCESS`,
+    result: data.results,
+    next: data.next ?? null
+  });
+};
+
 export const createPost = (newPost) => async (dispatch) => {
   dispatch({
     type: CREATE_POST_REQUEST,
