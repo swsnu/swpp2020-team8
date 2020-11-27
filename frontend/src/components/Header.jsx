@@ -162,7 +162,7 @@ const Header = () => {
       <div className={classes.sectionDesktop}>
         <TextField
           required
-          id="standard-size-small"
+          id="input-search-field"
           className={classes.textField}
           size="small"
           value={query}
@@ -190,6 +190,9 @@ const Header = () => {
           className={classes.iconButton}
         >
           <Link to={`/users/${currentUser?.id}/friends`}>
+            <AccountCircle />
+          </Link>
+          <Link to="/my-friends">
             <AccountCircle />
           </Link>
         </IconButton>

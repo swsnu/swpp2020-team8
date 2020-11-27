@@ -36,7 +36,7 @@ describe('<QuestionListWidget/>', () => {
 
   it('should mount Question List Widget', async () => {
     jest.mock('react-redux', () => ({
-      useDisPatch: () => jest.fn()
+      useDispatch: () => jest.fn()
     }));
     const wrapper = getWrapper();
     const header = wrapper.find('Header');
@@ -52,6 +52,19 @@ describe('<QuestionListWidget/>', () => {
     const notiButton = component.find('.noti-button');
     notiButton.at(0).simulate('click', { stopPropagation: () => undefined });
     expect(component.find(NotificationDropdownList)).toHaveLength(1);
+  });
+
+  it(`should set state properly on query input`, () => {
+    const query = 'TEST_QUERY';
+    const component = getWrapper();
+    const textField = component.find('#input-search-field').at(0);
+    expect(textField.length).toBe(1);
+    expect(textField.prop('value')).toEqual('');
+    const event = {
+      preventDefault() {},
+      target: { value: query }
+    };
+    textField.simulate('change', event);
   });
 
   it('should render and call logout when clicked', () => {

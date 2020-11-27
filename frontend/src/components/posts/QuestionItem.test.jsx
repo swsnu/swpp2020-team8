@@ -13,7 +13,7 @@ import rootReducer from '../../modules';
 import QuestionItem from './QuestionItem';
 import { mockStore } from '../../mockStore';
 
-jest.mock('../ShareSettings', () => {
+jest.mock('./ShareSettings', () => {
   return jest.fn((props) => {
     return (
       <div className="share-settings">

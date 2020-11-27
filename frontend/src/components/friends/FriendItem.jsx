@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import FriendStatusButtons from './FriendStatusButtons';
 
-const FriendItemWrapper = styled.div`
+export const FriendItemWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -30,7 +30,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // eslint-disable-next-line react/prop-types
-const FriendItem = ({ friendObj, isWidget = false }) => {
+const FriendItem = ({
+  friendObj,
+  isWidget = false,
+  requestId,
+  isFriend,
+  hasSentRequest,
+  isPending
+}) => {
   const classes = useStyles();
   const { username } = friendObj;
   return (
@@ -42,7 +49,15 @@ const FriendItem = ({ friendObj, isWidget = false }) => {
           primary={username}
         />
       </FriendLink>
-      {!isWidget && <FriendStatusButtons friendObj={friendObj} isFriend />}
+      {!isWidget && (
+        <FriendStatusButtons
+          friendObj={friendObj}
+          isFriend={isFriend}
+          isPending={isPending}
+          hasSentRequest={hasSentRequest}
+          requestId={requestId}
+        />
+      )}
     </FriendItemWrapper>
   );
 };
