@@ -55,7 +55,9 @@ const UserPageWrapper = styled.div`
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    backgroundColor: theme.palette.background.paper
+    backgroundColor: theme.palette.background.paper,
+    border: '1px solid #e7e7e7',
+    borderRadius: '4px'
   },
   header: {
     backgroundColor: 'white',
