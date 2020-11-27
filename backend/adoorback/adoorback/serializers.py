@@ -16,24 +16,24 @@ class AdoorBaseSerializer(serializers.ModelSerializer):
         if obj.author != current_user:
             return None
         if isinstance(obj, Article):
-            return obj.article_likes.all().count()
+            return obj.article_likes.count()
         elif isinstance(obj, Question):
-            return obj.question_likes.all().count()
+            return obj.question_likes.count()
         elif isinstance(obj, Response):
-            return obj.response_likes.all().count()
+            return obj.response_likes.count()
         elif isinstance(obj, Comment):
-            return obj.comment_likes.all().count()
+            return obj.comment_likes.count()
 
     def get_current_user_liked(self, obj):
         current_user = self.context['request'].user
         if isinstance(obj, Article):
-            return obj.article_likes.all().filter(user=current_user).count() > 0
+            return obj.article_likes.filter(user=current_user).count() > 0
         elif isinstance(obj, Question):
-            return obj.question_likes.all().filter(user=current_user).count() > 0
+            return obj.question_likes.filter(user=current_user).count() > 0
         elif isinstance(obj, Response):
-            return obj.response_likes.all().filter(user=current_user).count() > 0
+            return obj.response_likes.filter(user=current_user).count() > 0
         elif isinstance(obj, Comment):
-            return obj.comment_likes.all().filter(user=current_user).count() > 0
+            return obj.comment_likes.filter(user=current_user).count() > 0
 
     class Meta:
         model = None

@@ -1,5 +1,6 @@
 import json
 
+from django.db.models import Q
 from django.contrib.auth import get_user_model, authenticate, login
 from django.http import JsonResponse, HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from rest_framework import generics
@@ -8,8 +9,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 
 from adoorback.permissions import IsOwnerOrReadOnly
-from account.models import Friendship
-from account.serializers import UserProfileSerializer, AuthorFriendSerializer, UserFriendshipDetailSerializer
+from account.models import Friendship, FriendRequest
+from account.serializers import UserProfileSerializer, AuthorFriendSerializer, \
+    UserFriendshipDetailSerializer, UserFriendRequestSerializer
 from feed.serializers import QuestionAnonymousSerializer
 from feed.models import Question
 
@@ -59,7 +61,7 @@ def user_login(request):
 
 
 class SignupQuestions(generics.ListAPIView):
-    queryset = Question.objects.all().order_by('?')[:5]
+    queryset = Question.objects.order_by('?')[:5]
     serializer_class = QuestionAnonymousSerializer
     model = serializer_class.Meta.model
 
@@ -130,3 +132,33 @@ class UserFriendshipDetail(generics.CreateAPIView, generics.RetrieveDestroyAPIVi
                            friend_id=self.kwargs.get('fid'))
         self.check_object_permissions(self.request, obj)
         return obj
+
+
+class UserFriendRequestList(generics.ListCreateAPIView):
+    queryset = FriendRequest.objects.all()
+    serializer_class = UserFriendRequestSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = FriendRequest.objects.filter(
+            Q(responder_id=self.request.user.id) | Q(requester_id=self.request.user.id))
+        return queryset
+
+
+class UserFriendRequestDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = FriendRequest.objects.all()
+    serializer_class = UserFriendRequestSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        try:
+            queryset = self.filter_queryset(self.get_queryset())
+            obj = queryset.get(id=self.kwargs.get('pk'))
+            self.check_object_permissions(self.request, obj)
+            return obj
+        except FriendRequest.DoesNotExist:
+            return None
+
+    def perform_destroy(self, instance):
+        instance = self.get_object()
+        instance.delete()

@@ -13,9 +13,22 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         # Write permissions are only allowed to the owner of the object.
         if obj.type == 'Like':
             return obj.user == request.user
+        elif obj.type == 'FriendRequest':
+            return obj.user == request.user
+        elif obj.type == 'ResponseRequest':
+            return obj.user == request.user
         elif obj.type == 'User':
             return obj == request.user
         return obj.author == request.user
+
+
+class IsRecipient(permissions.BasePermission):
+    """
+    Custom permission to only allow recipients of noti to update.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return obj.recipient == request.user
 
 
 class IsShared(permissions.BasePermission):
@@ -24,10 +37,12 @@ class IsShared(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
         if obj.type == 'Question' or obj.share_anonymously:
             return True
-        # TODO: fix after friendship is implemented
-        elif obj.share_with_friends and obj.author == request.user:
+        elif obj.share_with_friends and User.are_friends(request.user, obj.author):
             return True
         else:
             return obj.author == request.user

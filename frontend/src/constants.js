@@ -36,6 +36,7 @@ export const mockQuestions = [
 export const mockPost = {
   id: 1,
   'content-type': 'Article',
+  type: 'Article',
   is_admin_question: 'true',
   author_detail: {
     id: 1,
@@ -130,6 +131,22 @@ export const mockQuestionFeed = [
     author_detail: {
       id: 1,
       username: 'admin'
+    },
+    content: 'Republican',
+    like_count: 33,
+    current_user_liked: true,
+    created_at: '2020-11-15T14:52:51.786164+09:00',
+    updated_at: '2020-11-15T14:52:52.380141+09:00',
+    selected_date: '2020-11-15T14:52:52.380046+09:00',
+    is_admin_question: true
+  },
+  {
+    id: 134,
+    type: 'Question',
+    author: 'http://localhost:8000/api/user/1/',
+    author_detail: {
+      id: 123,
+      username: 'curious'
     },
     content: 'Republican',
     like_count: 33,
@@ -287,6 +304,7 @@ export const mockQuestionFeed = [
 
 export const mockArticle = {
   id: 4756,
+  type: 'Article',
   'content-type': 'Article', // or const int e.g. (1: Article, 2: Response...)
   author_detail: {
     id: 123,
@@ -358,6 +376,7 @@ export const mockArticle = {
 export const mockResponse = {
   id: 5999,
   'content-type': 'Response',
+  type: 'Response',
   author_detail: {
     id: 123,
     username: 'curious',
@@ -438,8 +457,9 @@ export const mockFriendFeed = [
 ];
 
 export const mockAnonCustomQuestion = {
-  id: 4758,
+  id: 23423423,
   'content-type': 'Question',
+  type: 'Question',
   is_admin_question: 'true',
   author_detail: {
     id: -1
@@ -454,8 +474,9 @@ export const mockAnonCustomQuestion = {
 };
 
 export const mockAnonCustomQuestion2 = {
-  id: 4758,
+  id: 23423423132,
   'content-type': 'Question',
+  type: 'Question',
   is_admin_question: 'true',
   author_detail: {
     id: -1
@@ -471,6 +492,7 @@ export const mockAnonCustomQuestion2 = {
 
 export const mockAnonArticle = {
   id: 4756,
+  type: 'Article',
   'content-type': 'Article', // or const int e.g. (1: Article, 2: Response...)
   author_detail: {
     id: -1
@@ -484,7 +506,7 @@ export const mockAnonArticle = {
 
 export const mockAnonResponse = {
   id: 4757,
-  'content-type': 'Response',
+  type: 'Response',
   author_detail: {
     id: -1
     // username: '익명',
@@ -510,6 +532,57 @@ export const mockAnonymousFeed = [
   mockAnonResponse
 ];
 
+export const questionDetailPosts = {
+  id: 5,
+  type: 'Question',
+  author: 'http://localhost:8000/api/user/5/',
+  author_detail: {
+    id: 3,
+    username: 'adoor'
+  },
+  content: 'add',
+  like_count: 1,
+  current_user_liked: true,
+  created_at: '2020-11-21T14:59:33.371909+09:00',
+  updated_at: '2020-11-21T14:59:33.519895+09:00',
+  selected_date: '2020-11-21T14:59:33.519774+09:00',
+  is_admin_question: true,
+  response_set: [
+    {
+      id: 10,
+      type: 'Response',
+      author: 'http://localhost:8000/api/user/10/',
+      author_detail: {
+        id: 1,
+        username: 'hawkinscameron'
+      },
+      content: 'Something article true have.',
+      like_count: 1,
+      current_user_liked: true,
+      created_at: '2020-11-21T14:59:33.628261+09:00',
+      updated_at: '2020-11-21T14:59:33.628297+09:00',
+      question_id: 5,
+      share_with_friends: true,
+      share_anonymously: true,
+      question: {
+        id: 5,
+        type: 'Question',
+        author: 'http://localhost:8000/api/user/5/',
+        author_detail: {
+          id: 3,
+          username: 'adoor'
+        },
+        content: 'add',
+        like_count: 1,
+        current_user_liked: true,
+        created_at: '2020-11-21T14:59:33.371909+09:00',
+        updated_at: '2020-11-21T14:59:33.519895+09:00',
+        selected_date: '2020-11-21T14:59:33.519774+09:00',
+        is_admin_question: true
+      }
+    }
+  ]
+};
 export const mockFriendList = [
   {
     id: 1,

@@ -1,5 +1,5 @@
+/* eslint-disable camelcase */
 import axios from '../apis';
-// import { mockResponse, mockArticle, mockCustomQuestion } from '../constants';
 
 export const GET_SELECTED_ARTICLE_REQUEST = 'post/GET_SELECTED_ARTICLE';
 export const GET_SELECTED_ARTICLE_SUCCESS = 'post/GET_SELECTED_ARTICLE_SUCCESS';
@@ -10,6 +10,20 @@ export const GET_SELECTED_RESPONSE_SUCCESS =
   'post/GET_SELECTED_RESPONSE_SUCCESS';
 export const GET_SELECTED_RESPONSE_FAILURE =
   'post/GET_SELECTED_RESPONSE_FAILURE';
+
+export const EDIT_SELECTED_RESPONSE_REQUEST =
+  'post/EDIT_SELECTED_RESPONSE_REQUEST';
+export const EDIT_SELECTED_RESPONSE_SUCCESS =
+  'post/EDIT_SELECTED_RESPONSE_SUCCESS';
+export const EDIT_SELECTED_RESPONSE_FAILURE =
+  'post/EDIT_SELECTED_RESPONSE_FAILURE';
+
+export const EDIT_SELECTED_ARTICLE_REQUEST =
+  'post/EDIT_SELECTED_ARTICLE_REQUEST';
+export const EDIT_SELECTED_ARTICLE_SUCCESS =
+  'post/EDIT_SELECTED_ARTICLE_SUCCESS';
+export const EDIT_SELECTED_ARTICLE_FAILURE =
+  'post/EDIT_SELECTED_ARTICLE_FAILURE';
 
 export const GET_SELECTED_QUESTION_REQUEST = 'post/GET_SELECTED_QUESTION';
 export const GET_SELECTED_QUESTION_SUCCESS =
@@ -33,6 +47,22 @@ export const CREATE_POST_REQUEST = 'post/CREATE_POST_REQUEST';
 export const CREATE_POST_SUCCESS = 'post/CREATE_POST_SUCCESS';
 export const CREATE_POST_FAILURE = 'post/CREATE_POST_FAILURE';
 
+export const CREATE_COMMENT_REQUEST = 'post/CREATE_COMMENT_REQUEST';
+export const CREATE_COMMENT_SUCCESS = 'post/CREATE_COMMENT_SUCCESS';
+export const CREATE_COMMENT_FAILURE = 'post/CREATE_COMMENT_FAILURE';
+
+export const CREATE_REPLY_REQUEST = 'post/CREATE_REPLY_REQUEST';
+export const CREATE_REPLY_SUCCESS = 'post/CREATE_REPLY_SUCCESS';
+export const CREATE_REPLY_FAILURE = 'post/CREATE_REPLY_FAILURE';
+
+export const DELETE_COMMENT_REQUEST = 'post/DELETE_COMMENT_REQUEST';
+export const DELETE_COMMENT_SUCCESS = 'post/DELETE_COMMENT_SUCCESS';
+export const DELETE_COMMENT_FAILURE = 'post/DELETE_COMMENT_FAILURE';
+
+export const DELETE_POST_REQUEST = 'post/DELETE_POST_REQUEST';
+export const DELETE_POST_SUCCESS = 'post/DELETE_POST_SUCCESS';
+export const DELETE_POST_FAILURE = 'post/DELETE_POST_FAILURE';
+
 const initialState = {
   anonymousPosts: [],
   friendPosts: [],
@@ -43,25 +73,45 @@ const initialState = {
 
 export const getSelectedPost = (postType, id) => async (dispatch) => {
   const type = postType.toUpperCase().slice(0, -1);
+  const apiType = postType.toLowerCase();
   let result;
   dispatch({ type: `post/GET_SELECTED_${type}_REQUEST` });
   try {
-    result = await axios.get(`feed/${postType}/${id}/`);
+    result = await axios.get(`feed/${apiType}/${id}/`);
   } catch (err) {
     dispatch({ type: `post/GET_SELECTED_${type}_FAILURE`, error: err });
+    return;
   }
-  console.log(result);
   dispatch({
     type: `post/GET_SELECTED_${type}_SUCCESS`,
     selectedPost: result?.data
   });
 };
 
+export const editSelectedPost = (postObj) => async (dispatch) => {
+  // eslint-disable-next-line camelcase
+  const { type, content, share_with_friends, share_anonymously } = postObj;
+  const actionType = type.toUpperCase();
+  const apiType = `${type.toLowerCase()}s`;
+  let result;
+  dispatch({ type: `post/EDIT_SELECTED_${actionType}_REQUEST` });
+  try {
+    result = await axios.patch(`feed/${apiType}/${postObj.id}/`, {
+      content,
+      share_with_friends,
+      share_anonymously
+    });
+  } catch (err) {
+    dispatch({ type: `post/EDIT_SELECTED_${actionType}_FAILURE`, error: err });
+  }
+  dispatch({
+    type: `post/EDIT_SELECTED_${actionType}_SUCCESS`,
+    selectedPost: result?.data
+  });
+};
+
 export const getPostsByType = (type, userId = null) => async (dispatch) => {
   const postType = type.toUpperCase();
-  // let resultFeed;
-  // if (postType === 'ANON') resultFeed = mockAnonymousFeed;
-  // else resultFeed = mockFriendFeed;
   dispatch({ type: `post/GET_${postType}_POSTS_REQUEST` });
   let result;
   try {
@@ -70,7 +120,7 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
     } else {
       result =
         type === 'anon'
-          ? await axios.get('feed/anonymous')
+          ? await axios.get('feed/anonymous/')
           : await axios.get(`feed/${type}/`);
     }
   } catch (err) {
@@ -90,27 +140,122 @@ export const createPost = (newPost) => async (dispatch) => {
     newPost
   });
 
-  // const postType = `${newPost.type.toLowerCase()}s`;
-  const mockAuthor = {
-    id: 13,
-    username: 'curious',
-    profile_pic:
-      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
+  const postType = `${newPost.type.toLowerCase()}s`;
+  const payload = {
+    ...newPost,
+    share_anonymously: newPost.shareAnonymously,
+    share_with_friends: newPost.shareWithFriends
   };
-  // let result;
+  let result;
   try {
-    // await axios.post(`api/feed/${postType}/`, newPost);
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    result = await axios.post(`feed/${postType}/`, payload);
   } catch (error) {
     dispatch({
       type: CREATE_POST_FAILURE,
       error
     });
   }
+  let resultPost = result.data;
+  if (resultPost.type === 'Question') {
+    resultPost = {
+      ...resultPost,
+      share_anonymously: true,
+      share_with_friends: true
+    };
+  }
   dispatch({
     type: CREATE_POST_SUCCESS,
-    newPost: { ...newPost, author_detail: mockAuthor }
+    newPost: resultPost
   });
+};
+
+export const createComment = (newComment) => async (dispatch) => {
+  dispatch({
+    type: CREATE_COMMENT_REQUEST
+  });
+
+  let result;
+  try {
+    result = await axios.post(`comments/`, newComment);
+  } catch (error) {
+    dispatch({
+      type: CREATE_COMMENT_FAILURE,
+      error
+    });
+  }
+  dispatch({
+    type: CREATE_COMMENT_SUCCESS,
+    result: result.data
+  });
+};
+
+export const createReply = (newReply, postKey) => async (dispatch) => {
+  dispatch({
+    type: CREATE_REPLY_REQUEST
+  });
+
+  let result;
+  try {
+    result = await axios.post(`comments/`, newReply);
+  } catch (error) {
+    dispatch({
+      type: CREATE_REPLY_FAILURE,
+      error
+    });
+  }
+  dispatch({
+    type: CREATE_REPLY_SUCCESS,
+    result: result.data,
+    postKey
+  });
+};
+
+export const deleteComment = (commentId, postKey, isReply) => async (
+  dispatch
+) => {
+  dispatch({
+    type: DELETE_COMMENT_REQUEST
+  });
+
+  try {
+    await axios.delete(`comments/${commentId}`);
+  } catch (error) {
+    dispatch({
+      type: DELETE_COMMENT_FAILURE,
+      error
+    });
+  }
+  dispatch({
+    type: DELETE_COMMENT_SUCCESS,
+    commentId,
+    isReply,
+    postKey
+  });
+};
+
+export const deletePost = (postId, type) => async (dispatch) => {
+  const postType = type.toLowerCase();
+  try {
+    await axios.delete(`feed/${postType}s/${postId}`);
+  } catch (error) {
+    dispatch({ type: DELETE_POST_FAILURE });
+    return;
+  }
+  dispatch({ type: DELETE_POST_SUCCESS, postId, postType: type });
+};
+
+const getNewCommentsWithReply = (comments, reply) => {
+  const newComments = comments?.map((comment) => {
+    if (comment.id === reply.target_id) {
+      return {
+        ...comment,
+        replies: comment.replies ? [...comment.replies, reply] : [reply]
+      };
+    }
+    return comment;
+  });
+
+  return newComments;
 };
 
 export default function postReducer(state = initialState, action) {
@@ -154,16 +299,178 @@ export default function postReducer(state = initialState, action) {
       return { ...state };
     case CREATE_POST_SUCCESS: {
       const { newPost } = action;
-      const newFriendPosts = newPost.shareWithFriends
-        ? [newPost, ...state.friendPosts]
-        : state.friendPosts;
-      const newAnonPosts = newPost.shareAnonymously
+      const newFriendPosts = [newPost, ...state.friendPosts];
+      const newAnonPosts = newPost.share_anonymously
         ? [newPost, ...state.anonymousPosts]
         : state.anonymousPosts;
       return {
         ...state,
         anonymousPosts: newAnonPosts,
         friendPosts: newFriendPosts
+      };
+    }
+    case EDIT_SELECTED_ARTICLE_SUCCESS:
+      return {
+        ...state,
+        selectedPost: action.selectedPost
+      };
+    case EDIT_SELECTED_RESPONSE_SUCCESS:
+      return {
+        ...state,
+        selectedPost: action.selectedPost
+      };
+    case DELETE_POST_SUCCESS: {
+      const postKey = `${action.postType}-${action.postId}`;
+      const newFriendPosts = state.friendPosts.filter((post) => {
+        const key = `${post.type}-${post.id}`;
+        return key !== postKey;
+      });
+      return {
+        ...state,
+        friendPosts: newFriendPosts
+      };
+    }
+    case CREATE_COMMENT_SUCCESS: {
+      const { target_type, target_id } = action.result;
+      const newFriendPosts = state.friendPosts?.map((post) => {
+        if (post.id === target_id && post.type === target_type) {
+          return {
+            ...post,
+            comments: post.comments
+              ? [...post.comments, action.result]
+              : [action.result]
+          };
+        }
+        return post;
+      });
+
+      const newUserPosts = state.selectedUserPosts?.map((post) => {
+        if (post.id === target_id && post.type === target_type) {
+          return {
+            ...post,
+            comments: post.comments
+              ? [...post.comments, action.result]
+              : [action.result]
+          };
+        }
+        return post;
+      });
+
+      const { selectedPost } = state;
+      const newSelectedPost =
+        selectedPost &&
+        selectedPost.id === target_id &&
+        selectedPost.type === target_type
+          ? {
+              ...selectedPost,
+              comments: selectedPost.comments
+                ? [...selectedPost.comments, action.result]
+                : [action.result]
+            }
+          : selectedPost;
+
+      return {
+        ...state,
+        friendPosts: newFriendPosts,
+        selectedUserPosts: newUserPosts,
+        selectedPost: newSelectedPost
+      };
+    }
+    case CREATE_REPLY_SUCCESS: {
+      const reply = action.result;
+      const targetPost = state.friendPosts.find((post) => {
+        const key = `${post.type}-${post.id}`;
+        return key === action.postKey;
+      });
+
+      let newComments = getNewCommentsWithReply(targetPost?.comments, reply);
+      const newFriendPosts = state.friendPosts.map((post) => {
+        const key = `${post.type}-${post.id}`;
+        if (key === action.postKey) {
+          return { ...post, comments: newComments };
+        }
+        return post;
+      });
+
+      const newUserPosts = state.selectedUserPosts.map((post) => {
+        const key = `${post.type}-${post.id}`;
+        if (key === action.postKey) {
+          return { ...post, comments: newComments };
+        }
+        return post;
+      });
+
+      const selectedPostKey = `${state.selectedPost?.type}-${state.selectedPost?.id}`;
+      newComments = getNewCommentsWithReply(
+        state.selectedPost?.comments,
+        reply
+      );
+
+      const newSelectedPost =
+        selectedPostKey === action.postKey
+          ? { ...state.selectedPost, comments: newComments }
+          : state.selectedPost;
+
+      return {
+        ...state,
+        selectedUserPosts: newUserPosts,
+        selectedPost: newSelectedPost,
+        friendPosts: newFriendPosts
+      };
+    }
+
+    case DELETE_COMMENT_SUCCESS: {
+      const targetPost = state.friendPosts.find((post) => {
+        const key = `${post.type}-${post.id}`;
+        return key === action.postKey;
+      });
+
+      const getCommentsAfterDelete = (comments) => {
+        return comments
+          ?.filter((comment) => comment.id !== action.commentId)
+          .map((comment) => {
+            const newReplies = comment.replies?.filter(
+              (item) => item.id !== action.commentId
+            );
+            return {
+              ...comment,
+              replies: newReplies
+            };
+          });
+      };
+      const newComments = getCommentsAfterDelete(targetPost?.comments);
+
+      const newFriendPosts = state.friendPosts.map((post) => {
+        const key = `${post.type}-${post.id}`;
+        if (key === action.postKey) {
+          return { ...post, comments: newComments };
+        }
+        return post;
+      });
+
+      const newUserPosts = state.selectedUserPosts.map((post) => {
+        const key = `${post.type}-${post.id}`;
+        if (key === action.postKey) {
+          return { ...post, comments: newComments };
+        }
+        return post;
+      });
+
+      const selectedPostKey = `${state.selectedPost?.type}-${state.selectedPost?.id}`;
+
+      const newSelectedPost =
+        selectedPostKey === action.postKey
+          ? {
+              ...state.selectedPost,
+              comments: getCommentsAfterDelete(state.selectedPost?.comments)
+            }
+          : state.selectedPost;
+
+      return {
+        ...state,
+        friendPosts: newFriendPosts,
+        selectedPost: newSelectedPost,
+        selectedUserPosts: newUserPosts
       };
     }
 

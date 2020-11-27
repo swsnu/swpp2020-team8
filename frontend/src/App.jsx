@@ -1,7 +1,6 @@
 import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-
 import { useSelector } from 'react-redux';
 import Login from './pages/Login';
 import { GlobalStyle, MainWrapper, FeedWrapper } from './styles';
@@ -14,8 +13,10 @@ import FriendFeed from './pages/FriendFeed';
 import AnonymousFeed from './pages/AnonymousFeed';
 import QuestionFeed from './pages/QuestionFeed';
 import PrivateRoute from './components/PrivateRoute';
+import QuestionDetail from './pages/QuestionDetail';
 import PostDetail from './pages/PostDetail';
 import FriendsPage from './pages/FriendsPage';
+import PostEdit from './pages/PostEdit';
 
 const theme = createMuiTheme({
   palette: {
@@ -29,26 +30,23 @@ const theme = createMuiTheme({
 
 const App = () => {
   const user = useSelector((state) => state.userReducer.user);
+  const selectQuestion = useSelector(
+    (state) => state.userReducer.selectQuestion
+  );
   const signUpRedirectPath = user?.question_history
     ? '/friends'
     : 'select-questions';
-  // let signedIn = user !== null;
-
-  // useEffect(() => {
-  //   if (user == null) signedIn = false;
-  //   else signedIn = true;
-  // }, [user]);
 
   return (
     <MuiThemeProvider theme={theme}>
       <GlobalStyle />
       <Header />
-      {user == null ? (
+      {user === null || (!selectQuestion && user?.question_history === null) ? (
         <Switch>
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={SignUp} />
           <Route exact path="/select-questions" component={QuestionSelection} />
-          <Redirect path="/" to="/login" />
+          <Redirect from="/" to="/login" />
         </Switch>
       ) : (
         <MainWrapper>
@@ -67,9 +65,15 @@ const App = () => {
               <PrivateRoute exact path="/questions" component={QuestionFeed} />
               <PrivateRoute
                 exact
-                path="/:postType/:id"
-                component={PostDetail}
+                path="/questions/:id"
+                component={QuestionDetail}
               />
+              <PrivateRoute
+                exact
+                path="/:postType/:id/edit"
+                component={PostEdit}
+              />
+              <PrivateRoute path="/:postType/:id" component={PostDetail} />
               <PrivateRoute
                 exact
                 path="/users/:id/friends"

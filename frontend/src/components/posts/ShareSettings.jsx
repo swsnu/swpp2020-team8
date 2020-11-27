@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable camelcase */
+import React, { useState, useEffect } from 'react';
 import {
   FormGroup,
   FormControlLabel,
@@ -9,7 +10,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
-import { createPost } from '../modules/post';
+import { useLocation, useHistory } from 'react-router-dom';
+import { createPost, editSelectedPost } from '../../modules/post';
 
 const ShareSettingsWrapper = styled.div`
   display: flex;
@@ -23,29 +25,63 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export default function ShareSettings({ newPost, resetContent }) {
+export default function ShareSettings({
+  newPost,
+  resetContent,
+  edit,
+  postObj
+}) {
+  const history = useHistory();
   const dispatch = useDispatch();
   const classes = useStyles();
-
+  const location = useLocation();
   const [shareState, setShareState] = useState({
     shareWithFriends: true,
     shareAnonymously: false
   });
+
+  useEffect(() => {
+    if (location.pathname === '/anonymous') {
+      setShareState({ shareWithFriends: false, shareAnonymously: true });
+    } else if (
+      location.pathname?.includes('/articles') ||
+      location.pathname?.includes('/responses')
+    ) {
+      const { share_with_friends, share_anonymously } = postObj;
+      setShareState({
+        shareWithFriends: share_with_friends,
+        shareAnonymously: share_anonymously
+      });
+    }
+  }, [location, postObj]);
 
   const handleChange = (e) => {
     const { name, checked } = e.target;
     setShareState((prev) => ({ ...prev, [name]: checked }));
   };
 
-  const onClickSubmitButton = () => {
-    if (!newPost.content) return;
-    const postObj = {
-      ...shareState,
-      ...newPost
-    };
-    dispatch(createPost(postObj));
-    setShareState({ shareWithFriends: true, shareAnonymously: false });
-    resetContent();
+  const onClickSubmitButton = async () => {
+    if (edit) {
+      const editedPostObj = {
+        ...postObj,
+        share_with_friends: shareState.shareWithFriends,
+        share_anonymously: shareState.shareAnonymously
+      };
+      await dispatch(editSelectedPost(editedPostObj));
+      history.push(location.pathname.slice(0, -4));
+    } else {
+      const newPostObj = {
+        ...shareState,
+        ...newPost
+      };
+      dispatch(createPost(newPostObj));
+      resetContent();
+      if (location.pathname === '/anonymous') {
+        setShareState({ shareWithFriends: false, shareAnonymously: true });
+      } else {
+        setShareState({ shareWithFriends: true, shareAnonymously: false });
+      }
+    }
   };
 
   const controlShareWithFriends = (
@@ -91,6 +127,10 @@ export default function ShareSettings({ newPost, resetContent }) {
           variant="outlined"
           color="secondary"
           onClick={onClickSubmitButton}
+          disabled={
+            (!shareState.shareAnonymously && !shareState.shareWithFriends) ||
+            (edit ? !postObj?.content : !newPost?.content)
+          }
         >
           게시
         </Button>

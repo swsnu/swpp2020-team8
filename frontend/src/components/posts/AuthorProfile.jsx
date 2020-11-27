@@ -1,31 +1,45 @@
 import React from 'react';
 import styled from 'styled-components';
 import FaceIcon from '@material-ui/icons/Face';
+import { useLocation } from 'react-router-dom';
 
 const AuthorProfileWrapper = styled.div`
   display: flex;
   align-items: center;
+  font-weight: 500;
 `;
-const ProfileImage = styled.img`
+const AnonIcon = styled.div`
   border-radius: 50%;
-  margin-right: 8px;
-  width: ${(props) => (props.isComment ? '20px' : '30px')};
+  width: 26px;
+  height: 26px;
+  background: ${(props) => (props.hex ? props.hex : '#f12c56')};
 `;
+AnonIcon.displayName = 'AnonIcon';
 
 export default function AuthorProfile({ author, isComment = false }) {
+  const location = useLocation();
+  const isAnonFeed = location.pathname === '/anonymous';
+
+  if (!author) return null;
+  const { id, username, profile_pic: picHex, color_hex: hex } = author;
   return (
     <AuthorProfileWrapper>
-      {author.profile_pic ? (
-        <ProfileImage
-          id="profile-image"
-          src={author.profile_pic}
-          isComment={isComment}
+      {id && !isAnonFeed ? (
+        <FaceIcon
+          style={{
+            color: picHex,
+            marginRight: '4px',
+            width: isComment && '20px',
+            opacity: 0.8
+          }}
         />
       ) : (
-        <FaceIcon style={{ marginRight: '4px' }} />
+        <AnonIcon style={{ marginRight: '4px' }} hex={hex} />
       )}
 
-      <div>{author.username}</div>
+      {username && !isAnonFeed && (
+        <div style={{ fontSize: isComment ? '12px' : '14px' }}>{username}</div>
+      )}
     </AuthorProfileWrapper>
   );
 }
