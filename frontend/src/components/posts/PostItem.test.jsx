@@ -151,4 +151,17 @@ describe('<PostItem /> unit mount test', () => {
     const handleSubmit = jest.fn();
     expect(handleSubmit.mock.calls).toBeTruthy();
   });
+
+  it('should deal with delete action', () => {
+    const component = getPostWrapper();
+
+    const dialog = component.find('AlertDialog');
+    expect(dialog).toBeTruthy();
+
+    const confirmButton = component.find('#confirm-button');
+    expect(confirmButton).toBeTruthy();
+
+    const handleDelete = jest.fn();
+    expect(handleDelete.mock.calls).toBeTruthy();
+  });
 });

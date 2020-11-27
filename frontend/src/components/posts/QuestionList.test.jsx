@@ -9,4 +9,12 @@ describe('<QuestionList />', () => {
     const wrapper = component.find('#question-list');
     expect(wrapper.length).toBe(1);
   });
+
+  it('should display spinner when is appending', () => {
+    const component = shallow(
+      <QuestionList questions={mockQuestionFeed} isAppending />
+    );
+    const spinner = component.find('#spinner');
+    expect(spinner).toBeTruthy();
+  });
 });

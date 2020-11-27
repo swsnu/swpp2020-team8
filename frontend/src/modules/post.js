@@ -1,6 +1,10 @@
 /* eslint-disable camelcase */
 import axios from '../apis';
 
+export const APPEND_POSTS_REQUEST = 'post/APPEND_POSTS_REQUEST';
+export const APPEND_POSTS_SUCCESS = 'post/APPEND_POSTS_SUCCESS';
+export const APPEND_POSTS_FAILURE = 'post/APPEND_POSTS_FAILURE';
+
 export const GET_SELECTED_ARTICLE_REQUEST = 'post/GET_SELECTED_ARTICLE';
 export const GET_SELECTED_ARTICLE_SUCCESS = 'post/GET_SELECTED_ARTICLE_SUCCESS';
 export const GET_SELECTED_ARTICLE_FAILURE = 'post/GET_SELECTED_ARTICLE_FAILURE';
@@ -71,6 +75,26 @@ const initialState = {
   next: null
 };
 
+export const appendPosts = (origin) => async (dispatch, getState) => {
+  const { next } = getState().postReducer;
+  if (!next) return;
+  const nextUrl = next.replace('localhost:8000', 'localhost:3000');
+  let result;
+  dispatch({ type: APPEND_POSTS_REQUEST });
+  try {
+    result = await axios.get(nextUrl);
+  } catch (err) {
+    dispatch({ type: APPEND_POSTS_FAILURE, error: err });
+  }
+  const { data } = result;
+  dispatch({
+    type: APPEND_POSTS_SUCCESS,
+    posts: data.results,
+    next: data.next,
+    origin
+  });
+};
+
 export const getSelectedPost = (postType, id) => async (dispatch) => {
   const type = postType.toUpperCase().slice(0, -1);
   const apiType = postType.toLowerCase();
@@ -84,7 +108,8 @@ export const getSelectedPost = (postType, id) => async (dispatch) => {
   }
   dispatch({
     type: `post/GET_SELECTED_${type}_SUCCESS`,
-    selectedPost: result?.data
+    selectedPost: result?.data,
+    next: result?.next
   });
 };
 
@@ -293,6 +318,21 @@ export default function postReducer(state = initialState, action) {
     case GET_FRIEND_POSTS_REQUEST:
     case GET_USER_POSTS_REQUEST:
       return { ...initialState };
+    case APPEND_POSTS_REQUEST:
+      return {
+        ...state,
+        next: null
+      };
+    case APPEND_POSTS_SUCCESS:
+      const appendedResult = [
+        ...state[`${action.origin}Posts`],
+        ...action.posts
+      ];
+      return {
+        ...state,
+        [`${action.origin}Posts`]: appendedResult,
+        next: action.next
+      };
     case GET_ANON_POSTS_SUCCESS:
       return {
         ...state,

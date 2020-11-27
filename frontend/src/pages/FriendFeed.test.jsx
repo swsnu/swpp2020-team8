@@ -16,6 +16,13 @@ jest.mock('../components/posts/PostList', () => {
     return <div className="post-list" />;
   });
 });
+const observe = jest.fn();
+const unobserve = jest.fn();
+
+window.IntersectionObserver = jest.fn(() => ({
+  observe,
+  unobserve
+}));
 
 describe('<FriendFeed /> unit mount test', () => {
   const store = createStore(
@@ -43,5 +50,6 @@ describe('<FriendFeed /> unit mount test', () => {
     const postList = wrapper.find('.post-list');
     expect(postList.length).toBe(1);
     // expect(img).toHaveStyleRule('width', '30px');
+    expect(observe.mock.calls).toBeTruthy();
   });
 });
