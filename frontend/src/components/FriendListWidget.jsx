@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -53,9 +54,11 @@ const FriendListWidget = () => {
             <Typography variant="h6" className={classes.title}>
               친구
             </Typography>
-            <Button variant="outlined" size="small">
-              친구 관리
-            </Button>
+            <Link to="/friend">
+              <Button variant="outlined" size="small">
+                친구 관리
+              </Button>
+            </Link>
           </WidgetTitleWrapper>
           <List className={classes.list} aria-label="friend list">
             {friendItemList}
