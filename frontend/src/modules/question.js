@@ -122,7 +122,7 @@ export const getDailyQuestions = () => async (dispatch) => {
   }
   dispatch({
     type: 'question/GET_DAILY_QUESTIONS_SUCCESS',
-    res: res.data.results
+    res: res?.data?.results
   });
 };
 
@@ -145,8 +145,8 @@ export const getResponsesByQuestion = (id) => async (dispatch) => {
   }
   dispatch({
     type: 'question/GET_SELECTED_QUESTION_RESPONSES_SUCCESS',
-    res: res.data.response_set,
-    question: res.data
+    res: res?.data?.response_set,
+    question: res?.data
   });
 };
 
@@ -163,8 +163,8 @@ export const getFriendResponsesByQuestion = (id) => async (dispatch) => {
   }
   dispatch({
     type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS',
-    res: res.data.response_set,
-    question: res.data
+    res: res?.data?.response_set,
+    question: res?.data
   });
 };
 
@@ -181,7 +181,7 @@ export const getResponseRequestsByQuestion = (id) => async (dispatch) => {
   }
   dispatch({
     type: 'question/GET_RESPONSE_REQUESTS_SUCCESS',
-    res: res.data
+    res: res?.data
   });
 };
 
@@ -198,7 +198,7 @@ export const createResponseRequest = (qid, rid) => async (dispatch) => {
   }
   dispatch({
     type: 'question/CREATE_RESPONSE_REQUESTS_SUCCESS',
-    res: res.data
+    res: res?.data
   });
   dispatch(getResponseRequestsByQuestion(qid));
 };
@@ -216,7 +216,7 @@ export const deleteResponseRequest = (qid, rid) => async (dispatch) => {
   }
   dispatch({
     type: 'question/DELETE_RESPONSE_REQUESTS_SUCCESS',
-    res: res.data
+    res: res?.data
   });
   dispatch(getResponseRequestsByQuestion(qid));
 };
