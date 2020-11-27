@@ -12,7 +12,11 @@ import List from '@material-ui/core/List';
 import ListItemText from '@material-ui/core/ListItemText';
 import FaceIcon from '@material-ui/icons/Face';
 import { FriendItemWrapper } from './friends/FriendItem';
-import { getResponseRequestsByQuestion } from '../modules/question';
+import {
+  getResponseRequestsByQuestion,
+  createResponseRequest,
+  deleteResponseRequest
+} from '../modules/question';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -52,6 +56,9 @@ const useStyles = makeStyles((theme) => ({
   username: {
     fontSize: 14,
     marginLeft: theme.spacing(1)
+  },
+  button: {
+    height: '30px'
   }
 }));
 
@@ -102,7 +109,10 @@ const QuestionSendFriendItem = ({
           variant="outlined"
           color="primary"
           size="small"
-          onClick={handleSendResponseRequest(questionObj.id, friendObj.id)}
+          className={classes.button}
+          onClick={() => {
+            handleDeleteResponseRequest(questionObj.id, friendObj.id);
+          }}
         >
           보내기 취소
         </Button>
@@ -111,7 +121,10 @@ const QuestionSendFriendItem = ({
           variant="contained"
           color="primary"
           size="small"
-          onClick={handleDeleteResponseRequest(questionObj.id, friendObj.id)}
+          className={classes.button}
+          onClick={() => {
+            handleSendResponseRequest(questionObj.id, friendObj.id);
+          }}
         >
           보내기
         </SendButton>
@@ -133,10 +146,10 @@ const QuestionSendModal = ({ questionObj, open, handleClose }) => {
   }, [dispatch]);
 
   const handleSendResponseRequest = (qid, rid) => {
-    console.log(`send ${qid} question to ${rid} friend`);
+    dispatch(createResponseRequest(qid, rid));
   };
   const handleDeleteResponseRequest = (qid, rid) => {
-    console.log(`delete ${qid} question to ${rid} friend`);
+    dispatch(deleteResponseRequest(qid, rid));
   };
 
   const friendItemList = friendList?.map((friend) => {

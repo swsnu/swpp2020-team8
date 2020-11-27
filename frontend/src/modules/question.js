@@ -48,6 +48,20 @@ export const GET_RESPONSE_REQUESTS_SUCCESS =
 export const GET_RESPONSE_REQUESTS_FAILURE =
   'question/GET_RESPONSE_REQUESTS_FAILURE';
 
+export const CREATE_RESPONSE_REQUEST_REQUEST =
+  'question/CREATE_RESPONSE_REQUEST_REQUEST';
+export const CREATE_RESPONSE_REQUEST_SUCCESS =
+  'question/CREATE_RESPONSE_REQUEST_SUCCESS';
+export const CREATE_RESPONSE_REQUEST_FAILURE =
+  'question/CREATE_RESPONSE_REQUEST_FAILURE';
+
+export const DELETE_RESPONSE_REQUEST_REQUEST =
+  'question/DELETE_RESPONSE_REQUEST_REQUEST';
+export const DELETE_RESPONSE_REQUEST_SUCCESS =
+  'question/DELETE_RESPONSE_REQUEST_SUCCESS';
+export const DELETE_RESPONSE_REQUEST_FAILURE =
+  'question/DELETE_RESPONSE_REQUEST_FAILURE';
+
 const initialState = {
   dailyQuestions: [],
   sampleQuestions: [],
@@ -167,8 +181,44 @@ export const getResponseRequestsByQuestion = (id) => async (dispatch) => {
   }
   dispatch({
     type: 'question/GET_RESPONSE_REQUESTS_SUCCESS',
-    res: res.data.results
+    res: res.data
   });
+};
+
+export const createResponseRequest = (qid, rid) => async (dispatch) => {
+  let res;
+  dispatch({ type: 'question/CREATE_RESPONSE_REQUESTS_REQUEST' });
+  try {
+    res = await axios.post(`/feed/questions/${qid}/request-response/${rid}/`);
+  } catch (err) {
+    dispatch({
+      type: 'question/CREATE_RESPONSE_REQUESTS_FAILURE',
+      error: err
+    });
+  }
+  dispatch({
+    type: 'question/CREATE_RESPONSE_REQUESTS_SUCCESS',
+    res: res.data
+  });
+  dispatch(getResponseRequestsByQuestion(qid));
+};
+
+export const deleteResponseRequest = (qid, rid) => async (dispatch) => {
+  let res;
+  dispatch({ type: 'question/DELETE_RESPONSE_REQUESTS_REQUEST' });
+  try {
+    res = await axios.delete(`/feed/questions/${qid}/request-response/${rid}/`);
+  } catch (err) {
+    dispatch({
+      type: 'question/DELETE_RESPONSE_REQUESTS_FAILURE',
+      error: err
+    });
+  }
+  dispatch({
+    type: 'question/DELETE_RESPONSE_REQUESTS_SUCCESS',
+    res: res.data
+  });
+  dispatch(getResponseRequestsByQuestion(qid));
 };
 
 export default function questionReducer(state = initialState, action) {
