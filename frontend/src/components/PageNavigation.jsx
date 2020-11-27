@@ -20,13 +20,21 @@ const PageNavigation = (props) => {
             color="secondary"
             aria-label="text secondary button group"
           >
-            <Button disabled={!showPrevLink} onClick={handlePrevClick}>
+            <Button
+              className="prev-button"
+              disabled={!showPrevLink}
+              onClick={handlePrevClick}
+            >
               이전
             </Button>
             <Button disabled color="primary">
               {currentPageNo}
             </Button>
-            <Button disabled={!showNextLink} onClick={handleNextClick}>
+            <Button
+              className="next-button"
+              disabled={!showNextLink}
+              onClick={handleNextClick}
+            >
               다음
             </Button>
           </ButtonGroup>
