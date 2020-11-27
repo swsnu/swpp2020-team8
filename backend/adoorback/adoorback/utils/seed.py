@@ -85,7 +85,7 @@ def set_seed(n):
 
     # Seed Response Request
     for i in range(n):
-        question = random.choice(i)
+        question = Question.objects.get(id=i+1)
         random_actor_id = random.choice([1, 2, 3])
         random_recipient_id = random.choice([i for i in range(1, 3) if i not in [random_actor_id]])
         actor = User.objects.get(id=random_actor_id)
