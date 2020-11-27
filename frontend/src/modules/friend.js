@@ -25,10 +25,9 @@ export const getFriendList = () => async (dispatch) => {
   } catch (err) {
     dispatch({ type: GET_FRIEND_LIST_FAILURE, error: err });
   }
-  const { data } = result;
   dispatch({
     type: GET_FRIEND_LIST_SUCCESS,
-    result: data.results
+    result: result?.data.results
   });
 };
 
