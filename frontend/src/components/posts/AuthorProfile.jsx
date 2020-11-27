@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import FaceIcon from '@material-ui/icons/Face';
+import { useLocation } from 'react-router-dom';
 
 const AuthorProfileWrapper = styled.div`
   display: flex;
@@ -16,11 +17,14 @@ const AnonIcon = styled.div`
 AnonIcon.displayName = 'AnonIcon';
 
 export default function AuthorProfile({ author, isComment = false }) {
+  const location = useLocation();
+  const isAnonFeed = location.pathname === '/anonymous';
+
   if (!author) return null;
   const { id, username, profile_pic: picHex, color_hex: hex } = author;
   return (
     <AuthorProfileWrapper>
-      {id ? (
+      {id && !isAnonFeed ? (
         <FaceIcon
           style={{
             color: picHex,
@@ -33,7 +37,7 @@ export default function AuthorProfile({ author, isComment = false }) {
         <AnonIcon style={{ marginRight: '4px' }} hex={hex} />
       )}
 
-      {username && (
+      {username && !isAnonFeed && (
         <div style={{ fontSize: isComment ? '12px' : '14px' }}>{username}</div>
       )}
     </AuthorProfileWrapper>

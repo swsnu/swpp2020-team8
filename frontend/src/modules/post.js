@@ -15,6 +15,20 @@ export const GET_SELECTED_RESPONSE_SUCCESS =
 export const GET_SELECTED_RESPONSE_FAILURE =
   'post/GET_SELECTED_RESPONSE_FAILURE';
 
+export const EDIT_SELECTED_RESPONSE_REQUEST =
+  'post/EDIT_SELECTED_RESPONSE_REQUEST';
+export const EDIT_SELECTED_RESPONSE_SUCCESS =
+  'post/EDIT_SELECTED_RESPONSE_SUCCESS';
+export const EDIT_SELECTED_RESPONSE_FAILURE =
+  'post/EDIT_SELECTED_RESPONSE_FAILURE';
+
+export const EDIT_SELECTED_ARTICLE_REQUEST =
+  'post/EDIT_SELECTED_ARTICLE_REQUEST';
+export const EDIT_SELECTED_ARTICLE_SUCCESS =
+  'post/EDIT_SELECTED_ARTICLE_SUCCESS';
+export const EDIT_SELECTED_ARTICLE_FAILURE =
+  'post/EDIT_SELECTED_ARTICLE_FAILURE';
+
 export const GET_SELECTED_QUESTION_REQUEST = 'post/GET_SELECTED_QUESTION';
 export const GET_SELECTED_QUESTION_SUCCESS =
   'post/GET_SELECTED_QUESTION_SUCCESS';
@@ -83,17 +97,41 @@ export const appendPosts = (origin) => async (dispatch, getState) => {
 
 export const getSelectedPost = (postType, id) => async (dispatch) => {
   const type = postType.toUpperCase().slice(0, -1);
+  const apiType = postType.toLowerCase();
   let result;
   dispatch({ type: `post/GET_SELECTED_${type}_REQUEST` });
   try {
-    result = await axios.get(`feed/${postType}/${id}/`);
+    result = await axios.get(`feed/${apiType}/${id}/`);
   } catch (err) {
     dispatch({ type: `post/GET_SELECTED_${type}_FAILURE`, error: err });
+    return;
   }
   dispatch({
     type: `post/GET_SELECTED_${type}_SUCCESS`,
     selectedPost: result?.data,
     next: result?.next
+  });
+};
+
+export const editSelectedPost = (postObj) => async (dispatch) => {
+  // eslint-disable-next-line camelcase
+  const { type, content, share_with_friends, share_anonymously } = postObj;
+  const actionType = type.toUpperCase();
+  const apiType = `${type.toLowerCase()}s`;
+  let result;
+  dispatch({ type: `post/EDIT_SELECTED_${actionType}_REQUEST` });
+  try {
+    result = await axios.patch(`feed/${apiType}/${postObj.id}/`, {
+      content,
+      share_with_friends,
+      share_anonymously
+    });
+  } catch (err) {
+    dispatch({ type: `post/EDIT_SELECTED_${actionType}_FAILURE`, error: err });
+  }
+  dispatch({
+    type: `post/EDIT_SELECTED_${actionType}_SUCCESS`,
+    selectedPost: result?.data
   });
 };
 
@@ -107,7 +145,7 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
     } else {
       result =
         type === 'anon'
-          ? await axios.get('feed/anonymous')
+          ? await axios.get('feed/anonymous/')
           : await axios.get(`feed/${type}/`);
     }
   } catch (err) {
@@ -301,9 +339,7 @@ export default function postReducer(state = initialState, action) {
       return { ...state };
     case CREATE_POST_SUCCESS: {
       const { newPost } = action;
-      const newFriendPosts = newPost.share_with_friends
-        ? [newPost, ...state.friendPosts]
-        : state.friendPosts;
+      const newFriendPosts = [newPost, ...state.friendPosts];
       const newAnonPosts = newPost.share_anonymously
         ? [newPost, ...state.anonymousPosts]
         : state.anonymousPosts;
@@ -313,6 +349,16 @@ export default function postReducer(state = initialState, action) {
         friendPosts: newFriendPosts
       };
     }
+    case EDIT_SELECTED_ARTICLE_SUCCESS:
+      return {
+        ...state,
+        selectedPost: action.selectedPost
+      };
+    case EDIT_SELECTED_RESPONSE_SUCCESS:
+      return {
+        ...state,
+        selectedPost: action.selectedPost
+      };
     case DELETE_POST_SUCCESS: {
       const postKey = `${action.postType}-${action.postId}`;
       const newFriendPosts = state.friendPosts.filter((post) => {
