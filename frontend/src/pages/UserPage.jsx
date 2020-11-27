@@ -12,7 +12,7 @@ import Box from '@material-ui/core/Box';
 import { useParams } from 'react-router';
 import AppBar from '@material-ui/core/AppBar';
 import UserPostList from '../components/posts/UserPostList';
-import { getSelectedUserPosts } from '../modules/post';
+import { getSelectedUserPosts, appendPosts } from '../modules/post';
 import { getSelectedUser } from '../modules/user';
 import { getFriendList } from '../modules/friend';
 import FriendStatusButtons from '../components/friends/FriendStatusButtons';
@@ -65,6 +65,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function UserPage() {
+  const [target, setTarget] = useState(null);
   const { id } = useParams();
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -76,12 +77,34 @@ export default function UserPage() {
     (state) => state.postReducer.selectedUserPosts
   );
 
+  const isAppending = useSelector(
+    (state) => state.loadingReducer['post/APPEND_POSTS']
+  );
+  const isLoading = useSelector(
+    (state) => state.loadingReducer['post/GET_USER_POSTS']
+  );
+
   useEffect(() => {
     dispatch(getSelectedUser(id));
     dispatch(getSelectedUserPosts(id));
     dispatch(getFriendList());
     setValue('All');
   }, [dispatch, id]);
+
+  useEffect(() => {
+    let observer;
+    if (target) {
+      observer = new IntersectionObserver(onIntersect, { threshold: 1 });
+      observer.observe(target);
+    }
+    return () => observer && observer.disconnect();
+  }, [target]);
+
+  const onIntersect = ([entry]) => {
+    if (entry.isIntersecting) {
+      dispatch(appendPosts('selectedUser'));
+    }
+  };
 
   const friendIdList = friendList.map((friend) => friend.id);
   const isFriend = friendIdList.includes(selectedUser?.id);
@@ -146,16 +169,36 @@ export default function UserPage() {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index="All">
-        <UserPostList posts={selectedUserPosts} />
+        <UserPostList
+          posts={selectedUserPosts}
+          isAppending={isAppending}
+          isLoading={isLoading}
+        />
+        <div ref={setTarget} />
       </TabPanel>
       <TabPanel value={value} index="Q&A">
-        <UserPostList posts={userResponses} />
+        <UserPostList
+          posts={userResponses}
+          isAppending={isAppending}
+          isLoading={isLoading}
+        />
+        <div ref={setTarget} />
       </TabPanel>
       <TabPanel value={value} index="Articles">
-        <UserPostList posts={userArticles} />
+        <UserPostList
+          posts={userArticles}
+          isAppending={isAppending}
+          isLoading={isLoading}
+        />
+        <div ref={setTarget} />
       </TabPanel>
       <TabPanel value={value} index="CustomQuestions">
-        <UserPostList posts={userQuestions} />
+        <UserPostList
+          posts={userQuestions}
+          isAppending={isAppending}
+          isLoading={isLoading}
+        />
+        <div ref={setTarget} />
       </TabPanel>
     </div>
   );

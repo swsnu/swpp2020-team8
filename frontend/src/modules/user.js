@@ -39,7 +39,6 @@ export const getSelectedUser = (id) => async (dispatch) => {
     dispatch({ type: `user/GET_SELECTED_USER_FAILURE`, error: err });
     return;
   }
-  console.log(result);
   dispatch({
     type: `user/GET_SELECTED_USER_SUCCESS`,
     selectedUser: result?.data
