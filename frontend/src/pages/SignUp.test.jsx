@@ -76,4 +76,12 @@ describe('Sign up page unit test', () => {
     submitButton.simulate('click');
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
+
+  it('should redirect to login page when clicking login button', () => {
+    const wrapper = getWrapper();
+    const loginButton = wrapper.find('#login-button');
+    expect(loginButton).toBeTruthy();
+    loginButton.at(1).simulate('click');
+    history.push = jest.fn().mockImplementation(() => false);
+  });
 });
