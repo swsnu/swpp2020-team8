@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Paper from '@material-ui/core/Paper';
+// import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Container from '@material-ui/core/Container';
@@ -8,8 +9,11 @@ import styled from 'styled-components';
 import FaceIcon from '@material-ui/icons/Face';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import { useParams } from 'react-router';
+import AppBar from '@material-ui/core/AppBar';
 import UserPostList from '../components/posts/UserPostList';
 import { getSelectedUserPosts } from '../modules/post';
+import { getSelectedUser } from '../modules/user';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -40,22 +44,38 @@ function a11yProps(index) {
 
 const UserPageWrapper = styled.div`
   background: #ffffff;
-  height: 200px;
+  height: 120px;
   text-align: center;
+  padding-top: 50px;
 `;
 
-export default function UserPage() {
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.userReducer.user);
-  const [value, setValue] = React.useState('All');
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.paper
+  },
+  header: {
+    backgroundColor: 'white',
+    boxShadow:
+      '0 5px 10px rgba(154, 160, 185, 0.05), 0 5px 10px rgba(166, 173, 201, 0.2)'
+  }
+}));
 
+export default function UserPage() {
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const classes = useStyles();
+  const selectedUser = useSelector((state) => state.userReducer.selectedUser);
+  const [value, setValue] = useState('All');
   const selectedUserPosts = useSelector(
     (state) => state.postReducer.selectedUserPosts
   );
 
   useEffect(() => {
-    dispatch(getSelectedUserPosts(user.id));
-  }, [dispatch]);
+    dispatch(getSelectedUser(id));
+    dispatch(getSelectedUserPosts(id));
+    setValue('All');
+  }, [id]);
 
   const userResponses = selectedUserPosts?.filter(
     (post) => post.type === 'Response'
@@ -74,33 +94,39 @@ export default function UserPage() {
   };
 
   return (
-    <Paper square>
+    <div className={classes.root}>
       <Container fixed>
         <UserPageWrapper>
-          <FaceIcon />
-          <h3>{user.username}</h3>
+          <FaceIcon
+            style={{
+              color: selectedUser?.profile_pic
+            }}
+          />
+          <h3 margin-bottom="10px">{selectedUser?.username}</h3>
         </UserPageWrapper>
       </Container>
-      <Tabs
-        value={value}
-        indicatorColor="primary"
-        textColor="primary"
-        onChange={handleChange}
-        aria-label="disabled tabs example"
-      >
-        <Tab label="전체" value="All" {...a11yProps('All')} />
-        <Tab label="나의 Q&A" value="Q&A" {...a11yProps('Q&A')} />
-        <Tab
-          label="아무말 대잔치"
-          value="Articles"
-          {...a11yProps('Articles')}
-        />
-        <Tab
-          label="작성한 질문"
-          value="CustomQuestions"
-          {...a11yProps('CustomQuestions')}
-        />
-      </Tabs>
+      <AppBar position="static" className={classes.header}>
+        <Tabs
+          value={value}
+          indicatorColor="primary"
+          textColor="primary"
+          onChange={handleChange}
+          aria-label="user tabs"
+        >
+          <Tab label="전체" value="All" {...a11yProps('All')} />
+          <Tab label="나의 Q&A" value="Q&A" {...a11yProps('Q&A')} />
+          <Tab
+            label="아무말 대잔치"
+            value="Articles"
+            {...a11yProps('Articles')}
+          />
+          <Tab
+            label="작성한 질문"
+            value="CustomQuestions"
+            {...a11yProps('CustomQuestions')}
+          />
+        </Tabs>
+      </AppBar>
       <TabPanel value={value} index="All">
         <UserPostList posts={selectedUserPosts} />
       </TabPanel>
@@ -113,6 +139,6 @@ export default function UserPage() {
       <TabPanel value={value} index="CustomQuestions">
         <UserPostList posts={userQuestions} />
       </TabPanel>
-    </Paper>
+    </div>
   );
 }
