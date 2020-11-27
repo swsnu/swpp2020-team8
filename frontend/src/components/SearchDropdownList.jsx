@@ -26,11 +26,9 @@ const SearchDropdownList = () => {
   const classes = useStyles();
   const results = useSelector((state) => state.searchReducer.searchObj.results);
 
-  const userList = results?.map((user) => {
-    return (
-      <FriendItem key={user.id} friendObj={user} message={user.username} />
-    );
-  });
+  const userList = results?.map((user) => (
+    <FriendItem key={user.id} friendObj={user} message={user.username} />
+  ));
 
   return (
     <Card variant="outlined" className={classes.searchDropdown}>
