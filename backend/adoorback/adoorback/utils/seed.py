@@ -84,10 +84,12 @@ def set_seed(n):
         f"{Response.objects.count()} Response(s) created!") if DEBUG else None
 
     # Seed Response Request
-    for _ in range(n):
-        question = random.choice(questions)
-        actor = User.objects.get(id=random.choice([1, 2, 3]))
-        recipient = User.objects.get(id=random.choice([1, 2, 3]))
+    for i in range(n):
+        question = random.choice(i)
+        random_actor_id = random.choice([1, 2, 3])
+        random_recipient_id = random.choice([i for i in range(1, 3) if i not in [random_actor_id]])
+        actor = User.objects.get(id=random_actor_id)
+        recipient = User.objects.get(id=random_recipient_id)
         ResponseRequest.objects.create(
             actor=actor, recipient=recipient, question=question)
     logging.info(
