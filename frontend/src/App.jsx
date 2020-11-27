@@ -66,6 +66,7 @@ const App = () => {
               <PrivateRoute exact path="/anonymous" component={AnonymousFeed} />
               <PrivateRoute exact path="/questions" component={QuestionFeed} />
               <PrivateRoute exact path="/users/:id" component={UserPage} />
+
               <PrivateRoute
                 exact
                 path="/questions/:id"

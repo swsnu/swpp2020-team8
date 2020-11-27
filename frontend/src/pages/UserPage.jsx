@@ -14,6 +14,8 @@ import AppBar from '@material-ui/core/AppBar';
 import UserPostList from '../components/posts/UserPostList';
 import { getSelectedUserPosts } from '../modules/post';
 import { getSelectedUser } from '../modules/user';
+import { getFriendList } from '../modules/friend';
+import FriendStatusButtons from '../components/friends/FriendStatusButtons';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -47,6 +49,7 @@ const UserPageWrapper = styled.div`
   height: 120px;
   text-align: center;
   padding-top: 50px;
+  margin-bottom: 20px;
 `;
 
 const useStyles = makeStyles((theme) => ({
@@ -66,6 +69,8 @@ export default function UserPage() {
   const dispatch = useDispatch();
   const classes = useStyles();
   const selectedUser = useSelector((state) => state.userReducer.selectedUser);
+  const user = useSelector((state) => state.userReducer.user);
+  const friendList = useSelector((state) => state.friendReducer.friendList);
   const [value, setValue] = useState('All');
   const selectedUserPosts = useSelector(
     (state) => state.postReducer.selectedUserPosts
@@ -74,8 +79,12 @@ export default function UserPage() {
   useEffect(() => {
     dispatch(getSelectedUser(id));
     dispatch(getSelectedUserPosts(id));
+    dispatch(getFriendList());
     setValue('All');
-  }, [id]);
+  }, [dispatch, id]);
+
+  const friendIdList = friendList.map((friend) => friend.id);
+  const isFriend = friendIdList.includes(selectedUser?.id);
 
   const userResponses = selectedUserPosts?.filter(
     (post) => post.type === 'Response'
@@ -103,6 +112,15 @@ export default function UserPage() {
             }}
           />
           <h3 margin-bottom="10px">{selectedUser?.username}</h3>
+          {selectedUser && selectedUser.id !== user.id && (
+            <FriendStatusButtons
+              friendObj={selectedUser}
+              isFriend={isFriend}
+              isPending={false}
+              hasSentRequest={false}
+              requestId={user.id}
+            />
+          )}
         </UserPageWrapper>
       </Container>
       <AppBar position="static" className={classes.header}>

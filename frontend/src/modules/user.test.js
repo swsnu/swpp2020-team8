@@ -207,7 +207,8 @@ describe('User Reducer', () => {
       loginError: false,
       selectQuestion: true,
       signUpError: {},
-      user: null
+      user: null,
+      selectedUser: null
     });
   });
 
