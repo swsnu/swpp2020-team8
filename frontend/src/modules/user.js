@@ -18,11 +18,32 @@ export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
 
 export const SKIP_SELECT_QUESTIONS = 'user/SKIP_SELECT_QUESTIONS';
 
+export const GET_SELECTED_USER_REQUEST = 'user/GET_SELECTED_USER_REQUEST';
+export const GET_SELECTED_USER_SUCCESS = 'user/GET_SELECTED_USER_SUCCESS';
+export const GET_SELECTED_USER_FAILURE = 'user/GET_SELECTED_USER_FAILURE';
+
 const initialState = {
   loginError: false,
   signUpError: {},
   user: null,
-  selectQuestion: true
+  selectQuestion: true,
+  selectedUser: null
+};
+
+export const getSelectedUser = (id) => async (dispatch) => {
+  let result;
+  dispatch({ type: `user/GET_SELECTED_USER_REQUEST` });
+  try {
+    result = await axios.get(`user/${id}/`);
+  } catch (err) {
+    dispatch({ type: `user/GET_SELECTED_USER_FAILURE`, error: err });
+    return;
+  }
+  console.log(result);
+  dispatch({
+    type: `user/GET_SELECTED_USER_SUCCESS`,
+    selectedUser: result?.data
+  });
 };
 
 export const skipSelectQuestions = () => {
@@ -128,6 +149,21 @@ export const logout = () => async (dispatch) => {
 
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
+    case GET_SELECTED_USER_REQUEST:
+      return {
+        ...state,
+        selectedUser: null
+      };
+    case GET_SELECTED_USER_SUCCESS:
+      return {
+        ...state,
+        selectedUser: action.selectedUser
+      };
+    case GET_SELECTED_USER_FAILURE:
+      return {
+        ...state,
+        selectedUser: null
+      };
     case SIGN_UP_REQUEST:
       return {
         ...state,

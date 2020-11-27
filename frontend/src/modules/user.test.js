@@ -207,7 +207,8 @@ describe('User Reducer', () => {
       loginError: false,
       selectQuestion: true,
       signUpError: {},
-      user: null
+      user: null,
+      selectedUser: null
     });
   });
 
@@ -292,6 +293,37 @@ describe('User Reducer', () => {
     );
     expect(newState.user).toBeFalsy();
     expect(newState.signUpError).toBeFalsy();
+  });
+
+  it(`'getSelectedUser' should get responses of selected user correctly`, (done) => {
+    jest.mock('axios');
+    const selectedUser = { id: 1, username: 'selectedUser' };
+    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const res = {
+          data: selectedUser
+        };
+        resolve(res);
+      });
+    });
+
+    store.dispatch(actionCreators.getSelectedUser()).then(() => {
+      const newState = store.getState();
+      expect(spy).toHaveBeenCalled();
+      expect(newState.userReducer.selectedUser).toMatchObject(selectedUser);
+      done();
+    });
+  });
+
+  it('should dispatch question/GET_SELECTED_USER_FAILURE when api returns error', async () => {
+    jest.mock('axios');
+    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return Promise.reject(new Error('error'));
+    });
+
+    store.dispatch(actionCreators.getSelectedUser()).then(() => {
+      expect(spy).toHaveBeenCalled();
+    });
   });
 
   // it('should add post to feed when create success', () => {
