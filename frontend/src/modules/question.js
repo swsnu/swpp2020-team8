@@ -41,13 +41,21 @@ export const GET_SELECTED_QUESTION_RESPONSES_SUCCESS =
 export const GET_SELECTED_QUESTION_RESPONSES_FAILURE =
   'question/GET_SELECTED_QUESTION_RESPONSES_FAILURE';
 
+export const GET_RESPONSE_REQUESTS_REQUEST =
+  'question/GET_RESPONSE_REQUESTS_REQUEST';
+export const GET_RESPONSE_REQUESTS_SUCCESS =
+  'question/GET_RESPONSE_REQUESTS_SUCCESS';
+export const GET_RESPONSE_REQUESTS_FAILURE =
+  'question/GET_RESPONSE_REQUESTS_FAILURE';
+
 const initialState = {
   dailyQuestions: [],
   sampleQuestions: [],
   randomQuestions: [],
   recommendedQuestions: [],
   selectedQuestion: null,
-  selectedQuestionResponses: []
+  selectedQuestionResponses: [],
+  responseRequests: []
 };
 
 export const getSampleQuestions = () => {
@@ -146,6 +154,23 @@ export const getFriendResponsesByQuestion = (id) => async (dispatch) => {
   });
 };
 
+export const getResponseRequestsByQuestion = (id) => async (dispatch) => {
+  let res;
+  dispatch({ type: 'question/GET_RESPONSE_REQUESTS_REQUEST' });
+  try {
+    res = await axios.get(`/feed/questions/${id}/request-response/`);
+  } catch (err) {
+    dispatch({
+      type: 'question/GET_RESPONSE_REQUESTS_FAILURE',
+      error: err
+    });
+  }
+  dispatch({
+    type: 'question/GET_RESPONSE_REQUESTS_SUCCESS',
+    res: res.data.results
+  });
+};
+
 export default function questionReducer(state = initialState, action) {
   switch (action.type) {
     case GET_SAMPLE_QUESTIONS_SUCCESS: {
@@ -189,6 +214,11 @@ export default function questionReducer(state = initialState, action) {
         ...state,
         selectedQuestionResponses: action.res,
         selectedQuestion: action.question
+      };
+    case GET_RESPONSE_REQUESTS_SUCCESS:
+      return {
+        ...state,
+        responseRequests: action.res
       };
     default:
       return state;
