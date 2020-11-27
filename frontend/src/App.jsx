@@ -76,7 +76,6 @@ const App = () => {
                 component={FriendsPage}
               />
               <Route exact path="/search" component={SearchResults} />
-
               <Redirect exact path="/" to="/friends" />
             </Switch>
           </FeedWrapper>

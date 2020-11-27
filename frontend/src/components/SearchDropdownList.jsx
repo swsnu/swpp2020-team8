@@ -24,7 +24,7 @@ const useStyles = makeStyles({
 
 const SearchDropdownList = () => {
   const classes = useStyles();
-  const results = useSelector((state) => state.searchReducer.results);
+  const results = useSelector((state) => state.searchReducer.searchObj.results);
 
   const userList = results?.map((user) => {
     return (
