@@ -10,7 +10,9 @@ import {
 } from './constants';
 
 export const mockStore = {
-  friendReducer: {},
+  friendReducer: {
+    friendList: [{ username: 'friend', id: 1 }]
+  },
   notiReducer: {
     receivedNotifications: mockNotifications
   },
