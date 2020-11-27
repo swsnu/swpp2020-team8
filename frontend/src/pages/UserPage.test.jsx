@@ -12,6 +12,20 @@ import UserPage from './UserPage';
 import 'jest-styled-components';
 import history from '../history';
 
+jest.mock('../components/posts/PostList', () => {
+  return jest.fn(() => {
+    return <div className="post-list" />;
+  });
+});
+
+const observe = jest.fn();
+const unobserve = jest.fn();
+
+window.IntersectionObserver = jest.fn(() => ({
+  observe,
+  unobserve
+}));
+
 describe('<UserPage /> unit mount test', () => {
   const store = createStore(
     rootReducer,
@@ -28,6 +42,9 @@ describe('<UserPage /> unit mount test', () => {
   );
 
   it('NotificationPage Page should mount', async () => {
+    jest.mock('react-redux', () => ({
+      useDispatch: () => jest.fn()
+    }));
     const component = wrapper.find('UserPage');
     expect(component.length).toBe(1);
 
