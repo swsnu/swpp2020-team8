@@ -116,6 +116,16 @@ class Post(AdoorModel):
         ordering = ['-created_at']
         base_manager_name = 'objects'
 
+@receiver(post_save, sender=ResponseRequest)
+def create_response_request_noti(sender, **kwargs):
+    instance = kwargs['instance']
+    target = instance
+    origin = instance.question
+    actor = instance.actor
+    recipient = instance.recipient
+    message = f'{actor.username}님이 회원님에게 질문을 보냈습니다.'
+    Notification.objects.create(actor = actor, recipient = recipient, message = message,
+        origin = origin, target = target)
 
 @receiver(post_save, sender=Question)
 @receiver(post_save, sender=Response)
@@ -135,6 +145,23 @@ def create_post(sender, **kwargs):
     post.created_at = instance.created_at
     post.updated_at = instance.updated_at
     post.save()
+
+@receiver(post_save, sender=Response)
+def create_request_answered_noti(sender, **kwargs):
+    instance = kwargs['instance']
+    author_id = instance.author.id
+    question_id = instance.question.id
+    target = instance
+    origin = instance
+    actor = instance.author
+    related_requests = ResponseRequest.objects.filter(
+        recipient_id=author_id).filter(question_id=question_id)
+    for request in related_requests:
+        recipient = request.actor
+        message = f'{actor.username}님이 회원님이 보낸 질문에 답했습니다.'
+        Notification.objects.create(actor = actor, recipient = recipient, message = message,
+        origin = origin, target = target)
+
 
 
 @receiver(post_delete, sender=User)
