@@ -21,7 +21,7 @@ const QuestionItemWrapper = styled.div`
   background: #f4f4f4;
   padding: 12px;
   border-radius: 4px;
-  margin: 8px 0;
+  margin: 16px 0;
   position: relative;
 `;
 
