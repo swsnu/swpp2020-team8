@@ -18,7 +18,7 @@ export default function PostList({ posts, isAppending, isLoading }) {
 
   const loadingList = [...Array(5)].map((_, index) => (
     // eslint-disable-next-line react/no-array-index-key
-    <PostItemWrapper key={`loading-${index}`}>
+    <PostItemWrapper key={`loading-${index}`} className="skeleton-list">
       <Skeleton
         variant="circle"
         width={40}

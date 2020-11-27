@@ -17,7 +17,12 @@ jest.mock('../components/posts/QuestionList', () => {
   });
 });
 
-const observe = jest.fn();
+// const observe = jest.fn();
+const observe = () => {
+  return {
+    isIntersecting: true
+  };
+};
 const unobserve = jest.fn();
 
 window.IntersectionObserver = jest.fn(() => ({
