@@ -47,9 +47,17 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function NotificationPage() {
+export default function NotificationPage({ tabType }) {
   const classes = useStyles();
-  const [tab, setTab] = React.useState(0);
+
+  let initialTab = 0;
+  if (tabType === 'FriendRequest') {
+    initialTab = 1;
+  } else if (tabType === 'ResponseRequest') {
+    initialTab = 2;
+  }
+
+  const [tab, setTab] = React.useState(initialTab);
   const notifications = useSelector(
     (state) => state.notiReducer.receivedNotifications
   );

@@ -18,6 +18,7 @@ import PostDetail from './pages/PostDetail';
 import FriendsPage from './pages/FriendsPage';
 import NotificationPage from './pages/NotificationPage';
 import PostEdit from './pages/PostEdit';
+import UserPage from './pages/UserPage';
 import { getNotifications } from './modules/notification';
 
 const theme = createMuiTheme({
@@ -78,6 +79,24 @@ const App = () => {
               <PrivateRoute exact path="/friends" component={FriendFeed} />
               <PrivateRoute exact path="/anonymous" component={AnonymousFeed} />
               <PrivateRoute exact path="/questions" component={QuestionFeed} />
+              <PrivateRoute exact path="/users/:id" component={UserPage} />
+              <PrivateRoute
+                exact
+                path="/notifications"
+                component={NotificationPage}
+              />
+              <PrivateRoute
+                exact
+                path="/notifications/friend-request"
+                component={NotificationPage}
+                tabType="FriendRequest"
+              />
+              <PrivateRoute
+                exact
+                path="/notifications/response-request"
+                component={NotificationPage}
+                tabType="ResponseRequest"
+              />
               <PrivateRoute
                 exact
                 path="/questions/:id"
@@ -93,11 +112,6 @@ const App = () => {
                 exact
                 path="/users/:id/friends"
                 component={FriendsPage}
-              />
-              <PrivateRoute
-                exact
-                path="/notifications"
-                component={NotificationPage}
               />
               <Redirect exact path="/" to="/friends" />
             </Switch>

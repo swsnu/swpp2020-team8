@@ -17,6 +17,14 @@ jest.mock('../components/posts/PostList', () => {
   });
 });
 
+const observe = jest.fn();
+const unobserve = jest.fn();
+
+window.IntersectionObserver = jest.fn(() => ({
+  observe,
+  unobserve
+}));
+
 describe('Anonymous Feed Page unit mount test', () => {
   const store = createStore(
     rootReducer,

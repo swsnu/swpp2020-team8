@@ -17,7 +17,8 @@ export const mockStore = {
     receivedNotifications: mockNotifications
   },
   postReducer: {
-    selectedPost: mockCustomQuestion
+    selectedPost: mockCustomQuestion,
+    selectedUserPosts: [mockResponse, mockResponse2]
   },
   questionReducer: {
     dailyQuestions: mockQuestionFeed,
@@ -33,6 +34,10 @@ export const mockStore = {
       id: 123,
       username: 'curious',
       isLoggedIn: true
+    },
+    selectedUser: {
+      id: 1,
+      username: 'friend'
     }
   }
 };

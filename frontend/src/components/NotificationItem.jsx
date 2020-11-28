@@ -42,7 +42,14 @@ const NotificationItem = ({ notiObj, isNotificationPage }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const link = `/${notiObj?.feed_type?.toLowerCase()}s/${notiObj.feed_id}`;
+  let link;
+  if (notiObj.target_type === 'FriendRequest') {
+    link = '/notifications/friend-request';
+  } else if (notiObj.target_type === 'ResponseRequest') {
+    link = '/notifications/response-request';
+  } else {
+    link = `/${notiObj?.feed_type?.toLowerCase()}s/${notiObj.feed_id}`;
+  }
 
   const handleClickNotiItem = () => {
     dispatch(readNotification(notiObj.id));

@@ -93,6 +93,21 @@ describe('<FriendStatusButtons /> unit mount test', () => {
     expect(wrapper.find('AlertDialog').at(0).props().isOpen).toBeFalsy();
   });
 
+  it('should work with not want to deleteFriend', async () => {
+    const wrapper = getWrapper();
+    const buttons = wrapper.find('button');
+    expect(buttons.length).toBe(2);
+    const deleteButton = wrapper.find('#friend-delete-button').at(0);
+    deleteButton.simulate('click');
+    const confirmDialog = wrapper.find('AlertDialog');
+    expect(confirmDialog).toBeTruthy();
+
+    const confirmButton = wrapper.find('#cancel-button').at(1);
+    confirmButton.simulate('click');
+    wrapper.update();
+    expect(wrapper.find('AlertDialog').at(0).props().isOpen).toBeFalsy();
+  });
+
   it('should work with every type of friend', () => {
     const wrapper = getAllWrapper();
     const buttons = wrapper.find('button');
