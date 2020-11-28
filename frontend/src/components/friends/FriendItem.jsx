@@ -33,7 +33,6 @@ const useStyles = makeStyles((theme) => ({
 const FriendItem = ({
   friendObj,
   isWidget = false,
-  requestId,
   isFriend,
   hasSentRequest,
   isPending
@@ -55,7 +54,6 @@ const FriendItem = ({
           isFriend={isFriend}
           isPending={isPending}
           hasSentRequest={hasSentRequest}
-          requestId={requestId}
         />
       )}
     </FriendItemWrapper>

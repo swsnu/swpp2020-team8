@@ -143,7 +143,6 @@ export default function UserPage() {
               isFriend={isFriend}
               isPending={false}
               hasSentRequest={false}
-              requestId={user.id}
             />
           )}
         </UserPageWrapper>

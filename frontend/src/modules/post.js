@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import axios from '../apis';
+import { getFriendResponsesByQuestion } from './question';
 
 export const APPEND_POSTS_REQUEST = 'post/APPEND_POSTS_REQUEST';
 export const APPEND_POSTS_SUCCESS = 'post/APPEND_POSTS_SUCCESS';
@@ -176,7 +177,7 @@ export const getSelectedUserPosts = (userId) => async (dispatch) => {
   });
 };
 
-export const createPost = (newPost) => async (dispatch) => {
+export const createPost = (newPost) => async (dispatch, getState) => {
   dispatch({
     type: CREATE_POST_REQUEST,
     newPost
@@ -209,6 +210,14 @@ export const createPost = (newPost) => async (dispatch) => {
     type: CREATE_POST_SUCCESS,
     newPost: resultPost
   });
+
+  const { selectedQuestion } = getState().questionReducer;
+  if (
+    resultPost.type === 'Response' &&
+    selectedQuestion?.id === resultPost.question_id
+  ) {
+    dispatch(getFriendResponsesByQuestion(selectedQuestion?.id));
+  }
 };
 
 export const createComment = (newComment) => async (dispatch) => {

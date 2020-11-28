@@ -6,6 +6,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { TextareaAutosize, Button } from '@material-ui/core';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 import { createPost } from '../modules/post';
 
 const useStyles = makeStyles((theme) => ({
@@ -29,6 +31,12 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'bold',
     margin: 0,
     paddingBottom: 0
+  },
+  closeButton: {
+    position: 'absolute',
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500]
   },
   submitButton: {
     boxShadow: 'none',
@@ -75,7 +83,16 @@ const CustomQuestionModal = ({ open, handleClose }) => {
 
   return (
     <Dialog fullWidth onClose={handleClose} maxWidth="sm" open={open}>
-      <DialogTitle className={classes.modalTitle}>새로운 질문</DialogTitle>
+      <DialogTitle className={classes.modalTitle}>
+        새로운 질문
+        <IconButton
+          aria-label="close"
+          className={classes.closeButton}
+          onClick={handleClose}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
       <DialogContent className={classes.content}>
         <TextareaAutosize
           id="new-custom-question"

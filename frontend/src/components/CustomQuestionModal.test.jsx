@@ -36,7 +36,7 @@ describe('<CustomQuestionModal /> unit test', () => {
   it('should close modal when submit button clicked', () => {
     const component = getWrapper();
     expect(component.find('CustomQuestionModal').length).toBe(1);
-    const submitButton = component.find('button');
+    const submitButton = component.find('button').at(1);
     submitButton.simulate('click');
     expect(mockfn).toHaveBeenCalledTimes(1);
   });

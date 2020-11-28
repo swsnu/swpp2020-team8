@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function QuestionItem({ questionObj }) {
+export default function QuestionItem({ questionObj, onResetContent }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.userReducer.user);
   const isAuthor = user.id === questionObj.author_detail.id;
@@ -105,6 +105,7 @@ export default function QuestionItem({ questionObj }) {
 
   const resetContent = () => {
     setNewPost((prev) => ({ ...prev, content: '' }));
+    onResetContent();
   };
 
   return (
