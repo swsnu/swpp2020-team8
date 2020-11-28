@@ -1,7 +1,7 @@
-import React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Login from './pages/Login';
 import { GlobalStyle, MainWrapper, FeedWrapper } from './styles';
 import Header from './components/Header';
@@ -18,6 +18,7 @@ import PostDetail from './pages/PostDetail';
 import FriendsPage from './pages/FriendsPage';
 import NotificationPage from './pages/NotificationPage';
 import PostEdit from './pages/PostEdit';
+import { getNotifications } from './modules/notification';
 
 const theme = createMuiTheme({
   palette: {
@@ -30,6 +31,9 @@ const theme = createMuiTheme({
 });
 
 const App = () => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+
   const user = useSelector((state) => state.userReducer.user);
   const selectQuestion = useSelector(
     (state) => state.userReducer.selectQuestion
@@ -37,6 +41,16 @@ const App = () => {
   const signUpRedirectPath = user?.question_history
     ? '/friends'
     : 'select-questions';
+
+  useEffect(() => {
+    // eslint-disable-next-line no-unused-vars
+    return history.listen((location) => {
+      // console.log(`You changed the page to: ${location.pathname}`);
+      if (user) {
+        dispatch(getNotifications());
+      }
+    });
+  }, [history, dispatch]);
 
   return (
     <MuiThemeProvider theme={theme}>

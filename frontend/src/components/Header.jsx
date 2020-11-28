@@ -128,7 +128,9 @@ const Header = () => {
   const notiBadgeInvisible = unreadNotifications.length === 0;
 
   useEffect(() => {
-    dispatch(getNotifications());
+    if (user) {
+      dispatch(getNotifications());
+    }
   }, [dispatch, user]);
 
   const handleClickLogout = () => {
