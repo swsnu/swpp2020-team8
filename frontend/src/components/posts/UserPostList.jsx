@@ -3,10 +3,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Skeleton from '@material-ui/lab/Skeleton';
 import PostItem from './PostItem';
 import QuestionItem from './QuestionItem';
-import NewPost from './NewPost';
 import { PostItemWrapper } from '../../styles';
 
-export default function PostList({ posts, isAppending, isLoading }) {
+export default function UserPostList({ posts, isAppending, isLoading }) {
   const postList = posts.map((post) => {
     const postKey = `${post.type}-${post.id}`;
     if (post['content-type'] === 'Question' || post.type === 'Question')
@@ -36,7 +35,6 @@ export default function PostList({ posts, isAppending, isLoading }) {
 
   return (
     <div id="post-list">
-      <NewPost />
       {isLoading ? loadingList : postList}
       <div style={{ margin: '8px', textAlign: 'center' }}>
         {isAppending && <CircularProgress id="spinner" color="primary" />}

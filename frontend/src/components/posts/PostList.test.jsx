@@ -17,4 +17,17 @@ describe('<PostList />', () => {
     const questionItem = component.find('QuestionItem');
     expect(questionItem.length).toBe(1);
   });
+
+  it('should display skeleton when loding', () => {
+    const component = shallow(<PostList posts={mockFriendFeed} isLoading />);
+    const skeleton = component.find('.skeleton-list');
+    expect(skeleton).toBeTruthy();
+  });
+
+  it('should display spinner when is appending', () => {
+    const component = shallow(<PostList posts={mockFriendFeed} isAppending />);
+
+    const spinner = component.find('#spinner');
+    expect(spinner).toBeTruthy();
+  });
 });
