@@ -38,11 +38,10 @@ const ShareSettingInfo = styled.span`
 export default function PostItem({ postObj, postKey, isDetailPage }) {
   const history = useHistory();
   const dispatch = useDispatch();
-
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const isAuthor =
     postObj?.author && currentUser?.id === postObj.author_detail?.id;
-  const isAnon = !postObj?.author_detail?.id;
+  const isAnon = postObj?.author && !postObj?.author_detail?.id;
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);

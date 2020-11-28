@@ -22,7 +22,6 @@ FriendListWrapper.displayName = 'FriendListWrapper';
 
 export default function SearchResults() {
   const dispatch = useDispatch();
-
   const searchObj = useSelector((state) => state.searchReducer.searchObj);
 
   const showPrevLink = searchObj.currentPageNo > 1;

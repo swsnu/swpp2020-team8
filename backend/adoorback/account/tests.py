@@ -6,7 +6,6 @@ from test_plus.test import TestCase
 
 from adoorback.utils.seed import set_seed
 
-
 from account.models import Friendship, FriendRequest
 from notification.models import Notification
 

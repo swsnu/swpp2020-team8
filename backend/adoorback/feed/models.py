@@ -24,9 +24,11 @@ class Article(AdoorModel):
     article_comments = GenericRelation(Comment)
     article_likes = GenericRelation(Like)
     article_targetted_notis = GenericRelation(Notification,
-        content_type_field='target_type', object_id_field='target_id')
+                                              content_type_field='target_type',
+                                              object_id_field='target_id')
     article_originated_notis = GenericRelation(Notification,
-        content_type_field='origin_type', object_id_field='origin_id')
+                                               content_type_field='origin_type',
+                                               object_id_field='origin_id')
 
     @property
     def type(self):

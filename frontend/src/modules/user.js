@@ -26,23 +26,8 @@ const initialState = {
   loginError: false,
   signUpError: {},
   currentUser: null,
-  selectQuestion: true,
-  selectedUser: null
-};
-
-export const getSelectedUser = (id) => async (dispatch) => {
-  let result;
-  dispatch({ type: `user/GET_SELECTED_USER_REQUEST` });
-  try {
-    result = await axios.get(`user/${id}/`);
-  } catch (err) {
-    dispatch({ type: `user/GET_SELECTED_USER_FAILURE`, error: err });
-    return;
-  }
-  dispatch({
-    type: `user/GET_SELECTED_USER_SUCCESS`,
-    selectedUser: result?.data
-  });
+  selectedUser: null,
+  selectQuestion: true
 };
 
 export const skipSelectQuestions = () => {
@@ -145,6 +130,20 @@ async function getCurrentUser() {
   const userInfo = await axios.get('/user/me/');
   return userInfo.data;
 }
+
+export const getSelectedUser = (id) => async (dispatch) => {
+  let result;
+  dispatch({ type: `user/GET_SELECTED_USER_REQUEST` });
+  try {
+    result = await axios.get(`user/${id}/`);
+  } catch (err) {
+    dispatch({ type: `user/GET_SELECTED_USER_FAILURE`, error: err });
+  }
+  dispatch({
+    type: `user/GET_SELECTED_USER_SUCCESS`,
+    selectedUser: result?.data
+  });
+};
 
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
