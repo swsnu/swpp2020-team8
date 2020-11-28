@@ -85,13 +85,15 @@ class Response(AdoorModel):
     def type(self):
         return self.__class__.__name__
 
+
 class ResponseRequest(AdoorTimestampedModel):
-    actor = models.ForeignKey(User, related_name='sent_response_request_set', on_delete=models.CASCADE)
-    recipient = models.ForeignKey(User, related_name='received_response_request_set', on_delete=models.CASCADE)
+    requester = models.ForeignKey(User, related_name='sent_response_request_set', on_delete=models.CASCADE)
+    requestee = models.ForeignKey(User, related_name='received_response_request_set', on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.question.content
+
 
 class PostManager(models.Manager):
 
@@ -141,6 +143,15 @@ def create_post(sender, **kwargs):
 @receiver(post_delete, sender=Question)
 @receiver(post_delete, sender=Response)
 @receiver(post_delete, sender=Article)
+def delete_post(sender, **kwargs):
+    instance = kwargs['instance']
+    if sender == User:
+        Post.objects.filter(author_id=instance.id).delete()
+    else:
+        Post.objects.get(content_type=ContentType.objects.get_for_model(sender), object_id=instance.id).delete()
+
+
+@receiver(post_save, sender=Response)
 def delete_post(sender, **kwargs):
     instance = kwargs['instance']
     if sender == User:

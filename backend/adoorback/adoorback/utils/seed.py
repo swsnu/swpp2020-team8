@@ -85,12 +85,12 @@ def set_seed(n):
     # Seed Response Request
     for _ in range(n):
         question = random.choice(questions)
-        actor = User.objects.get(id=random.choice([1, 2, 3]))
-        recipient = User.objects.get(id=random.choice([1, 2, 3]))
+        user = User.objects.get(id=random.choice([1, 2, 3]))
+        friend = User.objects.get(id=random.choice([1, 2, 3]))
         ResponseRequest.objects.create(
-            actor=actor, recipient=recipient, question=question)
+            requester=user, requestee=friend, question=question)
     logging.info(
-        f"{ResponseRequest.objects.all().count()} ResponseRequest(s) created!") if DEBUG else None
+        f"{ResponseRequest.objects.count()} ResponseRequest(s) created!") if DEBUG else None
 
     # Seed Comment (target=Feed)
     articles = Article.objects.all()
@@ -141,16 +141,12 @@ def set_seed(n):
     user_2 = User.objects.get(id=2)
     user_3 = User.objects.get(id=3)
     Friendship.objects.create(user=user_1, friend=user_2)
-    Friendship.objects.create(user=user_2, friend=user_3)
+    Friendship.objects.create(user=user_2, friend=user_1)
 
     # Seed Friend Request
-    FriendRequest.objects.create(
-        requester=user_1, responder=user_3, responded=False)
-    # FriendRequest.objects.create(
-    #     requester=user_1, responder=user_3, responded=False)
-    # FriendRequest.objects.create(
-    #     requester=user_2, responder=user_3, responded=False)
-
+    FriendRequest.objects.create(requester=user_2, requestee=user_1)
+    FriendRequest.objects.create(requester=user_3, requestee=user_1)
+    FriendRequest.objects.create(requester=user_3, requestee=user_2)
 
 def fill_data():
     User = get_user_model()

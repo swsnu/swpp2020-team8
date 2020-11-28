@@ -16,6 +16,8 @@ urlpatterns = [
     path('signup/', views.user_signup, name='user-signup'),
     path('select-questions/', views.SignupQuestions.as_view(),
          name='signup-questions'),
+
+    # Current User Related
     path('me/', views.current_user, name='current-user'),
 
     # Token related
@@ -27,12 +29,14 @@ urlpatterns = [
     # Friendship related
     path('friends/', views.UserFriendList.as_view(),
          name='user-friend-list'),
-    path('friendship/<int:fid>/', views.UserFriendshipDetail.as_view(),
-         name='user-friend-detail'),
+    path('friendship/<int:pk>/', views.UserFriendshipDestroy.as_view(),
+         name='user-friend-destroy'),
 
     # FriendRequest related
     path('friend-requests/', views.UserFriendRequestList.as_view(),
          name='user-friend-request-list'),
-    path('friend-requests/<int:pk>/', views.UserFriendRequestDetail.as_view(),
-         name='user-friend-request-detail'),
+    path('friend-requests/<int:pk>/', views.UserFriendRequestDestroy.as_view(),
+         name='user-friend-request-destroy'),
+    path('friend-requests/<int:pk>/respond/', views.UserFriendRequestUpdate.as_view(),
+         name='user-friend-request-update'),
 ]
