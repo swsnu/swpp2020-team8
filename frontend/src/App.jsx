@@ -1,7 +1,7 @@
-import React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Login from './pages/Login';
 import { GlobalStyle, MainWrapper, FeedWrapper } from './styles';
 import Header from './components/Header';
@@ -17,9 +17,10 @@ import QuestionDetail from './pages/QuestionDetail';
 import PostDetail from './pages/PostDetail';
 import FriendsPage from './pages/FriendsPage';
 import SearchResults from './pages/SearchResults';
+import NotificationPage from './pages/NotificationPage';
 import PostEdit from './pages/PostEdit';
 import UserPage from './pages/UserPage';
-import Friend from './Friend';
+import { getNotifications } from './modules/notification';
 
 const theme = createMuiTheme({
   palette: {
@@ -33,12 +34,24 @@ const theme = createMuiTheme({
 
 const App = () => {
   const currentUser = useSelector((state) => state.userReducer.currentUser);
+  const dispatch = useDispatch();
+  const history = useHistory();
   const selectQuestion = useSelector(
     (state) => state.userReducer.selectQuestion
   );
   const signUpRedirectPath = currentUser?.question_history
     ? '/friends'
     : 'select-questions';
+
+  useEffect(() => {
+    // eslint-disable-next-line no-unused-vars
+    return history.listen((location) => {
+      // console.log(`You changed the page to: ${location.pathname}`);
+      if (currentUser) {
+        dispatch(getNotifications());
+      }
+    });
+  }, [history, dispatch, currentUser]);
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -68,7 +81,23 @@ const App = () => {
               <PrivateRoute exact path="/anonymous" component={AnonymousFeed} />
               <PrivateRoute exact path="/questions" component={QuestionFeed} />
               <PrivateRoute exact path="/users/:id" component={UserPage} />
-
+              <PrivateRoute
+                exact
+                path="/notifications"
+                component={NotificationPage}
+              />
+              <PrivateRoute
+                exact
+                path="/notifications/friend-request"
+                component={NotificationPage}
+                tabType="FriendRequest"
+              />
+              <PrivateRoute
+                exact
+                path="/notifications/response-request"
+                component={NotificationPage}
+                tabType="ResponseRequest"
+              />
               <PrivateRoute
                 exact
                 path="/questions/:id"
@@ -83,7 +112,6 @@ const App = () => {
 
               <PrivateRoute path="/:postType/:id" component={PostDetail} />
               <PrivateRoute exact path="/my-friends" component={FriendsPage} />
-              <PrivateRoute exact path="/friend" component={Friend} />
               <Redirect exact path="/" to="/friends" />
             </Switch>
           </FeedWrapper>

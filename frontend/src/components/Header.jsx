@@ -15,6 +15,7 @@ import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
 import SearchDropdownList from './SearchDropdownList';
 import { logout } from '../modules/user';
+import { getNotifications } from '../modules/notification';
 import { fetchSearchResults } from '../modules/search';
 
 const useStyles = makeStyles((theme) => ({
@@ -89,8 +90,21 @@ const Header = () => {
 
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const totalPages = useSelector(
-    (state) => state.searchReducer.searchObj.totalPages
+    (state) => state.searchReducer.searchObj?.totalPages
   );
+
+  const notifications = useSelector(
+    (state) => state.notiReducer.receivedNotifications
+  );
+
+  const unreadNotifications = notifications.filter((noti) => !noti.is_read);
+  const notiBadgeInvisible = unreadNotifications.length === 0;
+
+  useEffect(() => {
+    if (currentUser) {
+      dispatch(getNotifications());
+    }
+  }, [dispatch, currentUser]);
 
   const handleNotiClose = () => {
     setIsNotiOpen(false);
@@ -181,15 +195,16 @@ const Header = () => {
             toggleNotiOpen();
           }}
         >
-          <Badge badgeContent={3} color="primary">
+          <Badge variant="dot" invisible={notiBadgeInvisible} color="primary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
+
         <IconButton
           aria-label="account of current user"
           className={classes.iconButton}
         >
-          <Link to={`/users/${currentUser?.id}/`}>
+          <Link to="/my-friends">
             <AccountCircle />
           </Link>
         </IconButton>

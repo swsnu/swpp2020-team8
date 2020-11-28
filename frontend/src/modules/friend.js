@@ -24,12 +24,9 @@ export const DELETE_REQUEST_SUCCESS = 'friend/DELETE_REQUEST_SUCCESS';
 export const DELETE_REQUEST_FAILURE = 'friend/DELETE_REQUEST_FAILURE';
 
 export const ACCEPT_FRIEND_REQUEST = 'friend/ACCEPT_FRIEND_REQUEST';
-
 export const REJECT_FRIEND_REQUEST = 'friend/REJECT_FRIEND_REQUEST';
 
-export const getFriendList = () => async (dispatch, getState) => {
-  const userId = getState().userReducer.currentUser?.id;
-  console.log(userId);
+export const getFriendList = () => async (dispatch) => {
   dispatch({ type: GET_FRIEND_LIST_REQUEST });
   let result;
   try {
@@ -38,12 +35,10 @@ export const getFriendList = () => async (dispatch, getState) => {
     dispatch({ type: GET_FRIEND_LIST_FAILURE, error: err });
     return;
   }
-  const { data } = result;
-  if (data)
-    dispatch({
-      type: GET_FRIEND_LIST_SUCCESS,
-      result: data.results
-    });
+  dispatch({
+    type: GET_FRIEND_LIST_SUCCESS,
+    result: result?.data.results
+  });
 };
 
 export const deleteFriend = (friendId) => async (dispatch, getState) => {
@@ -81,7 +76,7 @@ export const requestFriend = (responderId) => async (dispatch, getState) => {
     type: REQUEST_FRIEND_REQUEST
   });
   await axios.post('user/friend-requests/', {
-    responder_id: responderId,
+    requestee_id: responderId,
     requester_id: userId
   });
 
@@ -95,7 +90,7 @@ export const acceptFriendRequest = (friendId) => async (dispatch) => {
   dispatch({
     type: ACCEPT_FRIEND_REQUEST
   });
-  await axios.patch(`user/friend-requests/${friendId}/`, {
+  await axios.patch(`user/friend-requests/${friendId}/respond/`, {
     responded: true
   });
   dispatch(getFriendList());
@@ -105,8 +100,8 @@ export const rejectFriendRequest = (friendId) => async (dispatch) => {
   dispatch({
     type: REJECT_FRIEND_REQUEST
   });
-  await axios.patch(`user/friend-requests/${friendId}/`, {
-    responded: '???'
+  await axios.patch(`user/friend-requests/${friendId}/respond/`, {
+    responded: false
   });
 };
 
