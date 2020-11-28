@@ -66,21 +66,32 @@ export default function NotificationPage({ tabType }) {
     setTab(newValue);
   };
 
-  const notificationList = notifications.map((noti) => (
-    <NotificationItem
-      key={`noti-${noti?.id}`}
-      notiObj={noti}
-      isNotificationPage
-    />
-  ));
+  const notificationList = notifications.map((noti) => {
+    if (noti.target_type === 'FriendRequest') {
+      return (
+        <FriendItem
+          key={`friend-request-${noti?.target_id}`}
+          isPending
+          friendObj={noti?.actor_detail}
+        />
+      );
+    }
+    return (
+      <NotificationItem
+        key={`noti-${noti?.id}`}
+        notiObj={noti}
+        isNotificationPage
+      />
+    );
+  });
 
   const friendRequestList = notifications
     .filter((noti) => noti.target_type === 'FriendRequest')
     .map((friendRequest) => (
       <FriendItem
-        key={`friend-request-${friendRequest?.id}`}
-        friendObj={friendRequest.actor_detail}
-        isFriend={false}
+        key={`friend-request-${friendRequest?.target_id}`}
+        isPending
+        friendObj={friendRequest?.actor_detail}
       />
     ));
 

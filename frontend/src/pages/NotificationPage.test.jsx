@@ -52,5 +52,33 @@ describe('<NotificationPage /> unit mount test', () => {
     responseRequestTab = component.find('button').get(2);
   });
 
-  it('should render FriendRequest, RespsonseRequest correctly', async () => {});
+  it('should render FriendRequest correctly', async () => {
+    const ResponseRequestWrapper = mount(
+      <Provider store={store}>
+        <Router history={history}>
+          <NotificationPage tabType="FriendRequest" />
+        </Router>
+      </Provider>
+    );
+
+    const tabPanel = ResponseRequestWrapper.find('TabPanel');
+    expect(tabPanel.length).toBe(3);
+    const responseRequestTabPanel = tabPanel.at(1).find('div').at(0);
+    expect(responseRequestTabPanel.prop('hidden')).toBeFalsy();
+  });
+
+  it('should render ResponseRequest correctly', async () => {
+    const ResponseRequestWrapper = mount(
+      <Provider store={store}>
+        <Router history={history}>
+          <NotificationPage tabType="ResponseRequest" />
+        </Router>
+      </Provider>
+    );
+
+    const tabPanel = ResponseRequestWrapper.find('TabPanel');
+    expect(tabPanel.length).toBe(3);
+    const responseRequestTabPanel = tabPanel.at(2).find('div').at(0);
+    expect(responseRequestTabPanel.prop('hidden')).toBeFalsy();
+  });
 });
