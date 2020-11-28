@@ -6,7 +6,7 @@ from test_plus.test import TestCase
 
 from adoorback.utils.seed import set_seed
 
-from account.models import Friendship, FriendRequest
+from account.models import FriendRequest
 from notification.models import Notification
 
 User = get_user_model()
@@ -29,24 +29,17 @@ class UserFriendshipCase(TestCase):
     def setUp(self):
         set_seed(N)
 
-    def test_friendship_count(self):
-        self.assertEqual(Friendship.objects.all().count(), 2)
-
-    def test_friendship_str(self):
-        friendship = Friendship.objects.first()
-        self.assertEqual(friendship.type, 'Friendship')
-        self.assertEqual(friendship.__str__(),
-                         f'{friendship.user} & {friendship.friend}')
+    def test_on_friend_request_create_friendship(self):
+        user = User.objects.first()
+        self.assertEqual(user.friends.count(), 1)
 
     def test_on_delete_user_cascade(self):
-        user = User.objects.get(id=1)
-        self.assertEqual(user.friends.all().count(), 1)
-
+        user = User.objects.first()
+        user_id = user.id
+        friend = user.friends.first()
         user.delete()
-        self.assertEqual(User.objects.all().filter(id=1).count(), 0)
-        self.assertEqual(Friendship.objects.all().filter(user_id=1).count(), 0)
-        self.assertEqual(Friendship.objects.all().filter(
-            friend_id=1).count(), 0)
+        self.assertEqual(User.objects.filter(id=user_id).count(), 0)
+        self.assertEqual(friend.friends.count(), 0)
 
 
 class FriendRequestTestCase(TestCase):
@@ -92,16 +85,6 @@ class FriendRequestTestCase(TestCase):
         self.assertEqual(FriendRequest.objects.filter(requester_id=user.id).count(), 0)
         self.assertEqual(FriendRequest.objects.filter(requestee_id=user.id).count(), 0)
 
-    def test_on_accept_cascade(self):
-        friend_request = FriendRequest.objects.create(requester_id=2, requestee_id=3)
-        friend_request.accepted = True
-        friend_request.save()
-
-        friendship = Friendship.objects.filter(user_id=2, friend_id=3)
-        self.assertEqual(friendship.count(), 1)
-        friendship = Friendship.objects.filter(user_id=3, friend_id=2)
-        self.assertEqual(friendship.count(), 1)
-
 
 class APITestCase(TestCase):
     client_class = APIClient
@@ -122,23 +105,15 @@ class UserAPITestCase(APITestCase):
 
     def test_friend_list(self):
         current_user = self.make_user(username='current_user')
-        friend_user = self.make_user(username='friend_user')
 
         with self.login(username=current_user.username, password='password'):
-            response = self.get('user-friend-list')
+            response = self.get('current-user-friends')
             self.assertEqual(response.status_code, 200)
-
-        # POST Friend (friend_user_2 -> friend_user_1)
-        with self.login(username=current_user.username, password='password'):
-            data = {"user_id": current_user.id, "friend_id": friend_user.id}
-            response = self.post('user-friend-list', data=data)
-            self.assertEqual(response.status_code, 201)
 
     def test_user_friend_detail(self):
         current_user = self.make_user(username='current_user')
         friend_user = self.make_user(username='friend_user')
-        Friendship.objects.create(user=current_user, friend=friend_user)
-        Friendship.objects.create(user=friend_user, friend=current_user)
+        current_user.friends.add(friend_user)
 
         with self.login(username=current_user.username, password='password'):
             response = self.delete(
@@ -257,20 +232,19 @@ class AuthAPITestCase(APITestCase):
             self.assertEqual(response.data['count'], n)
 
     def test_current_user(self):
-        client = Client()
-
-        response = client.get('/api/user/me/')
-        self.assertEqual(response.status_code, 401)
-
-        response = client.post('/api/user/me/', {},
-                               content_type='application/json')
-        self.assertEqual(response.status_code, 405)
-
         self.make_user(username="test_user", password="test_pw")
         with self.login(username="test_user", password="test_pw"):
             response = self.get('current-user')
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()['username'], "test_user")
+
+            data = {"question_history": '[1, 2, 3]'}
+            response = self.patch('current-user', data=data)
+            self.assertEqual(response.status_code, 200)
+
+            data = {"question_history": '[1, 2, 3]'}
+            response = self.post('current-user', data=data)
+            self.assertEqual(response.status_code, 405)
 
 
 class FriendRequestAPITestCase(APITestCase):

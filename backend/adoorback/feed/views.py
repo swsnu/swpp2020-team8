@@ -21,10 +21,9 @@ class FriendFeedPostList(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        current_user_id = self.request.user.id
-        friend_ids = User.objects.get(id=current_user_id).friends.values_list('friend_id', flat=True)
-        queryset = Post.objects.friend_posts_only().filter(author_id__in=friend_ids) | \
-                   Post.objects.filter(author_id=current_user_id)
+        current_user = self.request.user
+        queryset = Post.objects.friend_posts_only().filter(author_id__in=current_user.friend_ids) | \
+                   Post.objects.filter(author_id=current_user.id)
         return queryset
 
 

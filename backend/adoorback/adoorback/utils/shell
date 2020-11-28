@@ -1,6 +1,6 @@
 python manage.py shell
 
-from account.models import Friendship
+from account.models import FriendRequest
 from feed.models import Question, Article, Response, Post
 from comment.models import Comment
 from like.models import Like
@@ -20,7 +20,6 @@ question = Question.objects.all().last()
 comment = Comment.objects.all().last()
 like = Like.objects.all().last()
 post = Post.objects.all().last()
-friendship = Friendship.objects.last()
 
 admin_question = Question.objects.admin_questions_only().last()
 custom_question = Question.objects.custom_questions_only().last()

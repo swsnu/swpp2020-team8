@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from faker import Faker
 
 from adoorback.utils.content_types import get_content_type
-from account.models import Friendship, FriendRequest
+from account.models import FriendRequest
 from feed.models import Article, Response, Question, ResponseRequest
 from comment.models import Comment
 from like.models import Like
@@ -156,13 +156,14 @@ logging.info(
     user_1 = User.objects.get(id=1)
     user_2 = User.objects.get(id=2)
     user_3 = User.objects.get(id=3)
-    Friendship.objects.create(user=user_1, friend=user_2)
-    Friendship.objects.create(user=user_2, friend=user_1)
 
     # Seed Friend Request
     FriendRequest.objects.create(requester=user_2, requestee=user_1)
     FriendRequest.objects.create(requester=user_3, requestee=user_1)
     FriendRequest.objects.create(requester=user_3, requestee=user_2)
+    accepted_friend_request = FriendRequest.objects.first()
+    accepted_friend_request.accepted = True
+    accepted_friend_request.save()
 
 
 def fill_data():

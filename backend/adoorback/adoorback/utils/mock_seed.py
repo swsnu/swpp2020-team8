@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from faker import Faker
 
 from adoorback.utils.content_types import get_content_type
-from account.models import Friendship, FriendRequest
+from account.models import FriendRequest
 from feed.models import Article, Response, Question
 from comment.models import Comment
 from like.models import Like
@@ -166,8 +166,8 @@ def set_mock_seed():
 
         FriendRequest.objects.get_or_create(user=user_1, friend=user_2)
 
-    for i in range(500):
+    for i in range(300):
         user_1 = random.choice(users)
         user_2 = random.choice(users.exclude(id=user_1.id))
 
-        Friendship.objects.get_or_create(user=user_1, friend=user_2)
+        user_1.friends.add(user_2)
