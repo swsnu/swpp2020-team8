@@ -93,6 +93,7 @@ export default function QuestionItem({ questionObj }) {
     setQuestionSendModalOpen(false);
   };
 
+  const handleEdit = () => {};
   const handleDelete = () => {};
 
   const resetContent = () => {

@@ -30,14 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // eslint-disable-next-line react/prop-types
-const FriendItem = ({
-  friendObj,
-  isWidget = false,
-  requestId,
-  isFriend,
-  hasSentRequest,
-  isPending
-}) => {
+const FriendItem = ({ friendObj, isWidget = false }) => {
   const classes = useStyles();
   const { username } = friendObj;
   return (
@@ -49,15 +42,7 @@ const FriendItem = ({
           primary={username}
         />
       </FriendLink>
-      {!isWidget && (
-        <FriendStatusButtons
-          friendObj={friendObj}
-          isFriend={isFriend}
-          isPending={isPending}
-          hasSentRequest={hasSentRequest}
-          requestId={requestId}
-        />
-      )}
+      {!isWidget && <FriendStatusButtons friendObj={friendObj} isFriend />}
     </FriendItemWrapper>
   );
 };

@@ -5,17 +5,11 @@ import {
   mockQuestionFeed,
   mockRecommendQuestions,
   mockResponse,
-  mockResponse2,
-  mockResponseRequests,
-  mockFriendList
+  mockResponse2
 } from './constants';
 
 export const mockStore = {
-  friendReducer: {
-    friendList: mockFriendList,
-    selectedUser: {},
-    selectedUserPosts: []
-  },
+  friendReducer: {},
   notiReducer: {},
   postReducer: {
     selectedPost: mockCustomQuestion
@@ -26,8 +20,7 @@ export const mockStore = {
     sampleQuestions: mockQuestions,
     recommendedQuestions: mockRecommendQuestions,
     selectedQuestion: mockQuestionFeed[0],
-    selectedQuestionResponses: [mockResponse, mockResponse2],
-    responseRequests: mockResponseRequests
+    selectedQuestionResponses: [mockResponse, mockResponse2]
   },
   userReducer: {
     error: false,

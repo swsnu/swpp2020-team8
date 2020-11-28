@@ -41,35 +41,13 @@ export const GET_SELECTED_QUESTION_RESPONSES_SUCCESS =
 export const GET_SELECTED_QUESTION_RESPONSES_FAILURE =
   'question/GET_SELECTED_QUESTION_RESPONSES_FAILURE';
 
-export const GET_RESPONSE_REQUESTS_REQUEST =
-  'question/GET_RESPONSE_REQUESTS_REQUEST';
-export const GET_RESPONSE_REQUESTS_SUCCESS =
-  'question/GET_RESPONSE_REQUESTS_SUCCESS';
-export const GET_RESPONSE_REQUESTS_FAILURE =
-  'question/GET_RESPONSE_REQUESTS_FAILURE';
-
-export const CREATE_RESPONSE_REQUEST_REQUEST =
-  'question/CREATE_RESPONSE_REQUEST_REQUEST';
-export const CREATE_RESPONSE_REQUEST_SUCCESS =
-  'question/CREATE_RESPONSE_REQUEST_SUCCESS';
-export const CREATE_RESPONSE_REQUEST_FAILURE =
-  'question/CREATE_RESPONSE_REQUEST_FAILURE';
-
-export const DELETE_RESPONSE_REQUEST_REQUEST =
-  'question/DELETE_RESPONSE_REQUEST_REQUEST';
-export const DELETE_RESPONSE_REQUEST_SUCCESS =
-  'question/DELETE_RESPONSE_REQUEST_SUCCESS';
-export const DELETE_RESPONSE_REQUEST_FAILURE =
-  'question/DELETE_RESPONSE_REQUEST_FAILURE';
-
 const initialState = {
   dailyQuestions: [],
   sampleQuestions: [],
   randomQuestions: [],
   recommendedQuestions: [],
   selectedQuestion: null,
-  selectedQuestionResponses: [],
-  responseRequests: []
+  selectedQuestionResponses: []
 };
 
 export const getSampleQuestions = () => {
@@ -122,7 +100,7 @@ export const getDailyQuestions = () => async (dispatch) => {
   }
   dispatch({
     type: 'question/GET_DAILY_QUESTIONS_SUCCESS',
-    res: res?.data?.results
+    res: res.data.results
   });
 };
 
@@ -145,8 +123,8 @@ export const getResponsesByQuestion = (id) => async (dispatch) => {
   }
   dispatch({
     type: 'question/GET_SELECTED_QUESTION_RESPONSES_SUCCESS',
-    res: res?.data?.response_set,
-    question: res?.data
+    res: res.data.response_set,
+    question: res.data
   });
 };
 
@@ -163,62 +141,9 @@ export const getFriendResponsesByQuestion = (id) => async (dispatch) => {
   }
   dispatch({
     type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS',
-    res: res?.data?.response_set,
-    question: res?.data
+    res: res.data.response_set,
+    question: res.data
   });
-};
-
-export const getResponseRequestsByQuestion = (id) => async (dispatch) => {
-  let res;
-  dispatch({ type: 'question/GET_RESPONSE_REQUESTS_REQUEST' });
-  try {
-    res = await axios.get(`/feed/questions/${id}/request-response/`);
-  } catch (err) {
-    dispatch({
-      type: 'question/GET_RESPONSE_REQUESTS_FAILURE',
-      error: err
-    });
-  }
-  dispatch({
-    type: 'question/GET_RESPONSE_REQUESTS_SUCCESS',
-    res: res?.data
-  });
-};
-
-export const createResponseRequest = (qid, rid) => async (dispatch) => {
-  let res;
-  dispatch({ type: 'question/CREATE_RESPONSE_REQUESTS_REQUEST' });
-  try {
-    res = await axios.post(`/feed/questions/${qid}/request-response/${rid}/`);
-  } catch (err) {
-    dispatch({
-      type: 'question/CREATE_RESPONSE_REQUESTS_FAILURE',
-      error: err
-    });
-  }
-  dispatch({
-    type: 'question/CREATE_RESPONSE_REQUESTS_SUCCESS',
-    res: res?.data
-  });
-  dispatch(getResponseRequestsByQuestion(qid));
-};
-
-export const deleteResponseRequest = (qid, rid) => async (dispatch) => {
-  let res;
-  dispatch({ type: 'question/DELETE_RESPONSE_REQUESTS_REQUEST' });
-  try {
-    res = await axios.delete(`/feed/questions/${qid}/request-response/${rid}/`);
-  } catch (err) {
-    dispatch({
-      type: 'question/DELETE_RESPONSE_REQUESTS_FAILURE',
-      error: err
-    });
-  }
-  dispatch({
-    type: 'question/DELETE_RESPONSE_REQUESTS_SUCCESS',
-    res: res?.data
-  });
-  dispatch(getResponseRequestsByQuestion(qid));
 };
 
 export default function questionReducer(state = initialState, action) {
@@ -264,11 +189,6 @@ export default function questionReducer(state = initialState, action) {
         ...state,
         selectedQuestionResponses: action.res,
         selectedQuestion: action.question
-      };
-    case GET_RESPONSE_REQUESTS_SUCCESS:
-      return {
-        ...state,
-        responseRequests: action.res
       };
     default:
       return state;
