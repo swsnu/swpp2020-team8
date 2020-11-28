@@ -3,13 +3,6 @@ import { mockFriendList } from '../constants';
 import store from '../store';
 import friendReducer, * as actionCreators from './friend';
 
-const result = {
-  data: {
-    count: 4,
-    results: mockFriendList
-  }
-};
-
 describe('friendActions', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -18,10 +11,14 @@ describe('friendActions', () => {
   it(`'getFriendList' should fetch friends`, (done) => {
     jest.mock('axios');
 
-    // axios.get.mockResolvedValue(result);
     const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
       return new Promise((resolve) => {
-        resolve(result);
+        const res = {
+          data: {
+            results: mockFriendList
+          }
+        };
+        resolve(res);
       });
     });
 
@@ -34,6 +31,7 @@ describe('friendActions', () => {
   });
 
   it(`should not modify friend list when get friend list has error`, (done) => {
+    jest.mock('axios');
     const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
       return Promise.reject(new Error('error'));
     });
@@ -46,6 +44,7 @@ describe('friendActions', () => {
   });
 
   it(`'deleteFriend' should delete friend correctly`, (done) => {
+    jest.mock('axios');
     const spy = jest.spyOn(axios, 'delete').mockImplementation(() => {
       return new Promise((resolve) => {
         resolve();
@@ -62,6 +61,7 @@ describe('friendActions', () => {
   });
 
   it(`should not modify friend list when delete friend has error`, (done) => {
+    jest.mock('axios');
     const spy = jest.spyOn(axios, 'delete').mockImplementation(() => {
       return Promise.reject(new Error('error'));
     });
@@ -76,6 +76,7 @@ describe('friendActions', () => {
   });
 
   it(`should not modify friend list when delete friend request has error`, (done) => {
+    jest.mock('axios');
     const spy = jest.spyOn(axios, 'delete').mockImplementation(() => {
       return Promise.reject(new Error('error'));
     });
@@ -89,6 +90,7 @@ describe('friendActions', () => {
   });
 
   it(`'deleteFriendRequest' should make delete call`, (done) => {
+    jest.mock('axios');
     const spy = jest.spyOn(axios, 'delete').mockImplementation(() => {
       return new Promise((resolve) => {
         resolve();
@@ -101,6 +103,7 @@ describe('friendActions', () => {
   });
 
   it(`'acceptFriendRequest' should make patch call`, (done) => {
+    jest.mock('axios');
     const spy = jest.spyOn(axios, 'patch').mockImplementation(() => {
       return new Promise((resolve) => {
         resolve();
@@ -113,6 +116,7 @@ describe('friendActions', () => {
   });
 
   it(`'requestFriend' should make post call`, (done) => {
+    jest.mock('axios');
     const spy = jest.spyOn(axios, 'post').mockImplementation(() => {
       return new Promise((resolve) => {
         resolve();

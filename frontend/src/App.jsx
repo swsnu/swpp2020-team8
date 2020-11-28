@@ -18,7 +18,6 @@ import PostDetail from './pages/PostDetail';
 import FriendsPage from './pages/FriendsPage';
 import PostEdit from './pages/PostEdit';
 import UserPage from './pages/UserPage';
-import Friend from './Friend';
 
 const theme = createMuiTheme({
   palette: {
@@ -78,12 +77,7 @@ const App = () => {
                 component={PostEdit}
               />
               <PrivateRoute path="/:postType/:id" component={PostDetail} />
-              <PrivateRoute
-                exact
-                path="/users/:id/friends"
-                component={FriendsPage}
-              />
-              <PrivateRoute exact path="/friend" component={Friend} />
+              <PrivateRoute exact path="/my-friends" component={FriendsPage} />
               <Redirect exact path="/" to="/friends" />
             </Switch>
           </FeedWrapper>

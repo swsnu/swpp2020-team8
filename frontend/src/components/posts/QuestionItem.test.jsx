@@ -9,6 +9,7 @@ import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 import { act } from 'react-dom/test-utils';
+import axios from '../../apis';
 import history from '../../history';
 import rootReducer from '../../modules';
 import QuestionItem from './QuestionItem';
@@ -88,6 +89,28 @@ describe('<QuestionItem/>', () => {
   });
 
   it('should toggle like', async () => {
+    jest.mock('axios');
+
+    jest.spyOn(axios, 'get').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const res = {
+          data: {
+            postInfo: {
+              target_id: 1,
+              target_type: 'Question'
+            },
+            results: [{ id: 10, target_id: 1, target_type: 'Question' }]
+          }
+        };
+        resolve(res);
+      });
+    });
+
+    jest.spyOn(axios, 'delete').mockImplementation(() => {
+      return new Promise((resolve) => {
+        resolve();
+      });
+    });
     wrapper = getWrapper();
 
     let component = wrapper.find('#user-question');

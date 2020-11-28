@@ -11,19 +11,6 @@ import CloseIcon from '@material-ui/icons/Close';
 import { createPost } from '../modules/post';
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
-    position: 'absolute',
-    width: 550,
-    backgroundColor: theme.palette.background.paper,
-    border: 'none',
-    borderRadius: '4px',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2),
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%,-50%)',
-    outline: 0
-  },
   content: {
     padding: theme.spacing(1, 2, 2, 2)
   },

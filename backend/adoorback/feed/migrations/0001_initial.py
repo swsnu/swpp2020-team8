@@ -46,9 +46,6 @@ class Migration(migrations.Migration):
                 ('recipient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
                                                 related_name='received_response_request_set', to=settings.AUTH_USER_MODEL)),
             ],
-            options={
-                'abstract': False,
-            },
         ),
         migrations.CreateModel(
             name='Response',
@@ -105,5 +102,9 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
+        ),
+        migrations.AddConstraint(
+            model_name='responserequest',
+            constraint=models.UniqueConstraint(fields=('actor', 'recipient', 'question'), name='unique_response_request'),
         ),
     ]

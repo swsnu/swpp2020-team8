@@ -27,9 +27,8 @@ export const ACCEPT_FRIEND_REQUEST = 'friend/ACCEPT_FRIEND_REQUEST';
 
 export const REJECT_FRIEND_REQUEST = 'friend/REJECT_FRIEND_REQUEST';
 
-export const getFriendList = () => async (dispatch, getState) => {
-  const userId = getState().userReducer.user?.id;
-  dispatch({ type: GET_FRIEND_LIST_REQUEST, userId });
+export const getFriendList = () => async (dispatch) => {
+  dispatch({ type: GET_FRIEND_LIST_REQUEST });
   let result;
   try {
     result = await axios.get(`user/friends/`);
@@ -37,12 +36,10 @@ export const getFriendList = () => async (dispatch, getState) => {
     dispatch({ type: GET_FRIEND_LIST_FAILURE, error: err });
     return;
   }
-  const { data } = result;
-  if (data)
-    dispatch({
-      type: GET_FRIEND_LIST_SUCCESS,
-      result: data.results
-    });
+  dispatch({
+    type: GET_FRIEND_LIST_SUCCESS,
+    result: result?.data.results
+  });
 };
 
 export const deleteFriend = (friendId) => async (dispatch, getState) => {
