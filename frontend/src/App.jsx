@@ -50,7 +50,7 @@ const App = () => {
         dispatch(getNotifications());
       }
     });
-  }, [history, dispatch]);
+  }, [history, dispatch, user]);
 
   return (
     <MuiThemeProvider theme={theme}>
