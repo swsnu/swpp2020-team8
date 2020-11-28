@@ -3,7 +3,7 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 import ListItemText from '@material-ui/core/ListItemText';
 import FaceIcon from '@material-ui/icons/Face';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { FriendItemWrapper } from './friends/FriendItem';
 import {
   createResponseRequest,
@@ -40,9 +40,15 @@ const QuestionSendFriendItem = ({ questionObj, friendObj, sended }) => {
   const classes = useStyles();
   const { username } = friendObj;
   const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.userReducer.currentUser);
 
-  const handleSendResponseRequest = (qid, rid) => {
-    dispatch(createResponseRequest(qid, rid));
+  const handleSendResponseRequest = (questionId, requesteeId) => {
+    const responseRequestObj = {
+      requester_id: currentUser.id,
+      requestee_id: requesteeId,
+      question_id: questionId
+    };
+    dispatch(createResponseRequest(responseRequestObj));
   };
   const handleDeleteResponseRequest = (qid, rid) => {
     dispatch(deleteResponseRequest(qid, rid));
