@@ -185,7 +185,7 @@ const Header = () => {
           aria-label="account of current user"
           className={classes.iconButton}
         >
-          <Link to="/my-friends">
+          <Link to={`/users/${user?.id}/friends`}>
             <AccountCircle />
           </Link>
         </IconButton>

@@ -90,12 +90,6 @@ class ResponseRequest(AdoorTimestampedModel):
     recipient = models.ForeignKey(User, related_name='received_response_request_set', on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['actor', 'recipient', 'question'], name='unique_response_request'),
-        ]
-
     def __str__(self):
         return self.question.content
 

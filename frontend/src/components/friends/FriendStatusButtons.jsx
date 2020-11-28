@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@material-ui/core';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
-import {
-  acceptFriendRequest,
-  deleteFriend,
-  deleteFriendRequest,
-  requestFriend
-} from '../../modules/friend';
+import { acceptFriendRequest, deleteFriend } from '../../modules/friend';
 import AlertDialog from '../common/AlertDialog';
 
 const FriendButton = styled(Button)`
@@ -15,18 +10,8 @@ const FriendButton = styled(Button)`
   margin: 0 4px;
 `;
 
-// isFriend: 이미 친구
-// isPending: 해당 유저가 나한테 보낸 요청이 있음 => 이 때는 requestId 필수
-// hasSentRequest: 내가 유저한테 보낸 요청이 있음 => 이 때는 requestId 필수
-export default function FriendStatusButtons({
-  isFriend,
-  isPending,
-  hasSentRequest,
-  friendObj,
-  requestId
-}) {
+export default function FriendStatusButtons({ isFriend, friendObj }) {
   const dispatch = useDispatch();
-  const [isRequestSubmitted, setIsRequestSubmitted] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const onClickDeleteFriendButton = () => {
@@ -43,95 +28,54 @@ export default function FriendStatusButtons({
   };
 
   const onClickDeleteRequestButton = () => {
-    dispatch(deleteFriendRequest(requestId));
+    // todo: delete request action
   };
   const onClickAcceptRequestButton = () => {
-    dispatch(acceptFriendRequest(requestId));
+    dispatch(acceptFriendRequest(friendObj));
+    // todo: accept request action
   };
 
-  const onClickRequestFriendButton = () => {
-    dispatch(requestFriend(friendObj.id));
-    setIsRequestSubmitted(true);
-  };
-
-  if (isFriend)
-    return (
-      <div id={friendObj.id}>
-        <FriendButton
-          variant="outlined"
-          color="primary"
-          id="friend-status-button"
-        >
-          친구 ✓
-        </FriendButton>
-        <FriendButton
-          variant="outlined"
-          color="secondary"
-          id="friend-delete-button"
-          onClick={onClickDeleteFriendButton}
-        >
-          삭제
-        </FriendButton>
-        <AlertDialog
-          message="친구를 삭제하시겠습니까?"
-          onConfirm={onConfirmDeleteFriend}
-          onClose={onCancelDeleteFriend}
-          isOpen={isDeleteDialogOpen}
-        />
-      </div>
-    );
-  if (isPending)
-    return (
-      <div id={friendObj.id}>
-        <FriendButton
-          variant="outlined"
-          color="primary"
-          id="request-accept-button"
-          onClick={onClickAcceptRequestButton}
-        >
-          수락
-        </FriendButton>
-        <FriendButton
-          variant="outlined"
-          color="secondary"
-          id="request-delete-button"
-          onClick={onClickDeleteRequestButton}
-        >
-          거절
-        </FriendButton>
-      </div>
-    );
-
-  if (hasSentRequest || isRequestSubmitted)
-    return (
-      <div id={friendObj.id}>
-        <FriendButton
-          variant="outlined"
-          color="primary"
-          id="has-sent-request-button"
-        >
-          요청됨
-        </FriendButton>
-        <FriendButton
-          variant="outlined"
-          color="secondary"
-          id="sent-request-delete-button"
-          onClick={onClickDeleteRequestButton}
-        >
-          취소
-        </FriendButton>
-      </div>
-    );
-
-  return (
+  return isFriend ? (
     <div id={friendObj.id}>
       <FriendButton
         variant="outlined"
         color="primary"
-        id="request-friend-button"
-        onClick={onClickRequestFriendButton}
+        id="friend-status-button"
       >
-        친구 요청
+        친구 ✓
+      </FriendButton>
+      <FriendButton
+        variant="outlined"
+        color="secondary"
+        id="friend-delete-button"
+        onClick={onClickDeleteFriendButton}
+      >
+        삭제
+      </FriendButton>
+      <AlertDialog
+        message="친구를 삭제하시겠습니까?"
+        onConfirm={onConfirmDeleteFriend}
+        onClose={onCancelDeleteFriend}
+        isOpen={isDeleteDialogOpen}
+      />
+    </div>
+  ) : (
+    <div id={friendObj.id}>
+      <FriendButton
+        variant="outlined"
+        color="primary"
+        id="request-accept-button"
+        onClick={onClickAcceptRequestButton}
+      >
+        수락
+      </FriendButton>
+      <FriendButton
+        variant="outlined"
+        color="secondary"
+        id="request-delete-button"
+        onClick={onClickDeleteRequestButton}
+      >
+        거절
       </FriendButton>
     </div>
   );
