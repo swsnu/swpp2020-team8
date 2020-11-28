@@ -7,6 +7,7 @@ from adoorback.models import AdoorTimestampedModel
 
 User = get_user_model()
 
+
 class Notification(AdoorTimestampedModel):
     message = models.CharField(max_length=100)
 

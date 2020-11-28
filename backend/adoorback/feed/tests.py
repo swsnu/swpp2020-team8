@@ -5,7 +5,6 @@ from rest_framework.test import APIClient
 
 from django.contrib.auth import get_user_model
 
-from account.models import Friendship
 from feed.models import Article, Response, Question, Post, ResponseRequest
 from notification.models import Notification
 
@@ -374,7 +373,7 @@ class ResponseRequestAPITestCase(APITestCase):
 
         question = Question.objects.create(author_id=current_user.id, content="test_question", is_admin_question=False)
         ResponseRequest.objects.create(requester=friend_user, requestee=current_user, question=question)
-        Friendship.objects.create(user=current_user, friend=friend_user)
+        current_user.friends.add(friend_user)
         adoor_received_response_request = ResponseRequest.objects.create(requester=current_user,
                                                                          requestee=user_adoor, question=question)
 

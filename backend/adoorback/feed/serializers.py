@@ -196,8 +196,7 @@ class QuestionDetailAllResponsesSerializer(QuestionResponsiveSerializer):
 
     def get_response_set(self, obj):
         current_user = self.context.get('request', None).user
-        friend_ids = current_user.friends.values_list('friend_id', flat=True)
-        responses = obj.response_set.filter(author_id__in=friend_ids) | \
+        responses = obj.response_set.filter(author_id__in=current_user.friend_ids) | \
                     obj.response_set.filter(share_anonymously=True) | \
                     obj.response_set.filter(author_id=current_user.id)
         return ResponseResponsiveSerializer(responses, many=True, read_only=True,
@@ -216,8 +215,7 @@ class QuestionDetailFriendResponsesSerializer(QuestionResponsiveSerializer):
 
     def get_response_set(self, obj):
         current_user = self.context.get('request', None).user
-        friend_ids = current_user.friends.values_list('friend_id', flat=True)
-        responses = obj.response_set.filter(author_id__in=friend_ids) | \
+        responses = obj.response_set.filter(author_id__in=current_user.friend_ids) | \
                     obj.response_set.filter(author_id=current_user.id)
         return ResponseFriendSerializer(responses, many=True, read_only=True,
                                         context={'request': self.context.get('request', None)}).data
