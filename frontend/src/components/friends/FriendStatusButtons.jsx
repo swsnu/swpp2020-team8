@@ -22,8 +22,7 @@ export default function FriendStatusButtons({
   isFriend,
   isPending,
   hasSentRequest,
-  friendObj,
-  requestId
+  friendObj
 }) {
   const dispatch = useDispatch();
   const [isRequestSubmitted, setIsRequestSubmitted] = useState(false);
@@ -38,15 +37,16 @@ export default function FriendStatusButtons({
     setIsDeleteDialogOpen(false);
   };
 
+  const onClickRejectRequestButton = () => {};
   const onCancelDeleteFriend = () => {
     setIsDeleteDialogOpen(false);
   };
 
   const onClickDeleteRequestButton = () => {
-    dispatch(deleteFriendRequest(requestId));
+    dispatch(deleteFriendRequest(friendObj.id));
   };
   const onClickAcceptRequestButton = () => {
-    dispatch(acceptFriendRequest(requestId));
+    dispatch(acceptFriendRequest(friendObj.id));
   };
 
   const onClickRequestFriendButton = () => {
@@ -95,7 +95,7 @@ export default function FriendStatusButtons({
           variant="outlined"
           color="secondary"
           id="request-delete-button"
-          onClick={onClickDeleteRequestButton}
+          onClick={onClickRejectRequestButton}
         >
           거절
         </FriendButton>

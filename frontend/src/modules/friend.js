@@ -23,12 +23,9 @@ export const DELETE_REQUEST_REQUEST = 'friend/DELETE_REQUEST_REQUEST';
 export const DELETE_REQUEST_SUCCESS = 'friend/DELETE_REQUEST_SUCCESS';
 export const DELETE_REQUEST_FAILURE = 'friend/DELETE_REQUEST_FAILURE';
 
-export const ACCEPT_FRIEND_REQUEST_REQUEST =
-  'friend/ACCEPT_FRIEND_REQUEST_REQUEST';
-export const ACCEPT_FRIEND_REQUEST_SUCCESS =
-  'friend/ACCEPT_FRIEND_REQUEST_SUCCESS';
-export const ACCEPT_FRIEND_REQUEST_FAILURE =
-  'friend/ACCEPT_FRIEND_REQUEST_FAILURE';
+export const ACCEPT_FRIEND_REQUEST = 'friend/ACCEPT_FRIEND_REQUEST';
+
+export const REJECT_FRIEND_REQUEST = 'friend/REJECT_FRIEND_REQUEST';
 
 export const getFriendList = () => async (dispatch, getState) => {
   const userId = getState().userReducer.user?.id;
@@ -63,17 +60,17 @@ export const deleteFriend = (friendId) => async (dispatch, getState) => {
   });
 };
 
-export const deleteFriendRequest = (requestId) => async (dispatch) => {
+export const deleteFriendRequest = (friendId) => async (dispatch) => {
   dispatch({ type: DELETE_REQUEST_REQUEST });
   try {
-    await axios.delete(`user/friend-requests/${requestId}/`);
+    await axios.delete(`user/friend-requests/${friendId}/`);
   } catch (err) {
     dispatch({ type: DELETE_REQUEST_FAILURE, error: err });
     return;
   }
   dispatch({
     type: DELETE_REQUEST_SUCCESS,
-    requestId
+    friendId
   });
 };
 
@@ -93,14 +90,23 @@ export const requestFriend = (responderId) => async (dispatch, getState) => {
   });
 };
 
-export const acceptFriendRequest = (requestId) => async (dispatch) => {
+export const acceptFriendRequest = (friendId) => async (dispatch) => {
   dispatch({
-    type: ACCEPT_FRIEND_REQUEST_REQUEST
+    type: ACCEPT_FRIEND_REQUEST
   });
-  await axios.patch(`user/friend-requests/${requestId}/`, {
+  await axios.patch(`user/friend-requests/${friendId}/`, {
     responded: true
   });
   dispatch(getFriendList());
+};
+
+export const rejectFriendRequest = (friendId) => async (dispatch) => {
+  dispatch({
+    type: REJECT_FRIEND_REQUEST
+  });
+  await axios.patch(`user/friend-requests/${friendId}/`, {
+    responded: '???'
+  });
 };
 
 export default function friendReducer(state = initialState, action) {
