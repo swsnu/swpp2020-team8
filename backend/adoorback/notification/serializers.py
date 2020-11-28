@@ -46,7 +46,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     def get_feed_type(self, obj):
         if obj.origin.type == 'Comment':
             if obj.origin.target.type == 'Comment':
-                return obj.target.target.type
+                return obj.origin.target.target.type
             return obj.origin.target.type
         else:
             return obj.origin.type
