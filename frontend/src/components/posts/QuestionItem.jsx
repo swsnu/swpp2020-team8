@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -16,12 +16,13 @@ import { PostItemHeaderWrapper, PostItemButtonsWrapper } from '../../styles';
 import ShareSettings from './ShareSettings';
 import QuestionSendModal from '../QuestionSendModal';
 import { mockFriendList } from '../../constants';
+import { likePost, unlikePost } from '../../modules/like';
 
 const QuestionItemWrapper = styled.div`
   background: #f4f4f4;
   padding: 12px;
   border-radius: 4px;
-  margin: 8px 0;
+  margin: 16px 0;
   position: relative;
 `;
 
@@ -49,7 +50,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function QuestionItem({ questionObj }) {
+export default function QuestionItem({ questionObj, onResetContent }) {
+  const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const isAuthor = currentUser.id === questionObj.author_detail.id;
 
@@ -73,10 +75,16 @@ export default function QuestionItem({ questionObj }) {
   };
 
   const toggleLike = () => {
+    const postInfo = {
+      target_type: questionObj.type,
+      target_id: questionObj.id
+    };
     if (liked) {
       setLikeCount((prev) => prev - 1);
+      dispatch(unlikePost(postInfo));
     } else {
       setLikeCount((prev) => prev + 1);
+      dispatch(likePost(postInfo));
     }
     setLiked((prev) => !prev);
   };
@@ -97,6 +105,7 @@ export default function QuestionItem({ questionObj }) {
 
   const resetContent = () => {
     setNewPost((prev) => ({ ...prev, content: '' }));
+    onResetContent();
   };
 
   return (

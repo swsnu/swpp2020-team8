@@ -39,7 +39,7 @@ export default function PostAuthorButtons({
         style={{ padding: '4px' }}
         onClick={() => setShowButtons((prev) => !prev)}
       >
-        <MoreHorizIcon />
+        <MoreHorizIcon className="more-button" />
       </IconButton>
       <Grow in={showButtons}>
         <Card className={classes.card}>

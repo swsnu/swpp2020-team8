@@ -27,9 +27,14 @@ urlpatterns = [
          views.QuestionFriendResponsesDetail.as_view(), name='question-detail-friend'),
     path('questions/<int:pk>/anonymous/',
          views.QuestionAnonymousResponsesDetail.as_view(), name='question-detail-anonymous'),
-    path('questions/<int:pk>/request-response/', views.ResponseRequestList.as_view(), name='response-request-list'),
-    path('questions/<int:qid>/request-response/<int:rid>/', views.response_request_detail,
-          name='response-request-detail'),
+
+    # Response Request related
+    path('questions/response-request/', views.ResponseRequestCreate.as_view(),
+         name='response-request-create'),
+    path('questions/<int:qid>/response-request/', views.ResponseRequestList.as_view(),
+         name='response-request-list'),
+    path('questions/<int:qid>/response-request/<int:rid>/', views.ResponseRequestDestroy.as_view(),
+         name='response-request-destroy'),
 
     path('friend/', views.FriendFeedPostList.as_view(), name='friend-feed-post-list'),
     path('anonymous/', views.AnonymousFeedPostList.as_view(), name='anonymous-feed-post-list'),

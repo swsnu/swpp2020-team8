@@ -18,6 +18,7 @@ import PostDetail from './pages/PostDetail';
 import FriendsPage from './pages/FriendsPage';
 import SearchResults from './pages/SearchResults';
 import PostEdit from './pages/PostEdit';
+import UserPage from './pages/UserPage';
 import Friend from './Friend';
 
 const theme = createMuiTheme({
@@ -66,6 +67,8 @@ const App = () => {
               <PrivateRoute exact path="/friends" component={FriendFeed} />
               <PrivateRoute exact path="/anonymous" component={AnonymousFeed} />
               <PrivateRoute exact path="/questions" component={QuestionFeed} />
+              <PrivateRoute exact path="/users/:id" component={UserPage} />
+
               <PrivateRoute
                 exact
                 path="/questions/:id"
@@ -81,7 +84,6 @@ const App = () => {
               <PrivateRoute path="/:postType/:id" component={PostDetail} />
               <PrivateRoute exact path="/my-friends" component={FriendsPage} />
               <PrivateRoute exact path="/friend" component={Friend} />
-
               <Redirect exact path="/" to="/friends" />
             </Switch>
           </FeedWrapper>

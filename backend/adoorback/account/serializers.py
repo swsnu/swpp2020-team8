@@ -85,7 +85,7 @@ class UserFriendRequestSerializer(serializers.ModelSerializer):
         fields = ['id', 'requester_id', 'requestee_id', 'accepted']
 
 
-class UserSearchSerializer(AuthorFriendSerializer):
+class UserFriendshipStatusSerializer(AuthorFriendSerializer):
     sent_friend_request_to = serializers.SerializerMethodField(read_only=True)
     received_friend_request_from = serializers.SerializerMethodField(read_only=True)
     are_friends = serializers.SerializerMethodField(read_only=True, allow_null=True)

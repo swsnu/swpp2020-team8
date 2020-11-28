@@ -72,7 +72,9 @@ def set_seed(n):
     questions = Question.objects.all()
     for _ in range(n):
         question = random.choice(questions)
-        response = Response.objects.create(author=user, content=faker.text(max_nb_chars=50), question=question,
+        response = Response.objects.create(author=user,
+                                           content=faker.text(max_nb_chars=50),
+                                           question=question,
                                            share_with_friends=random.choice(
                                                [True, False]),
                                            share_anonymously=random.choice([True, False]))
@@ -87,7 +89,7 @@ def set_seed(n):
         question = random.choice(questions)
         user = User.objects.get(id=random.choice([1, 2, 3]))
         friend = User.objects.get(id=random.choice([1, 2, 3]))
-        ResponseRequest.objects.create(
+        ResponseRequest.objects.get_or_create(
             requester=user, requestee=friend, question=question)
     logging.info(
         f"{ResponseRequest.objects.count()} ResponseRequest(s) created!") if DEBUG else None

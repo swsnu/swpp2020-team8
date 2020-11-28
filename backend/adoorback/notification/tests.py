@@ -12,9 +12,12 @@ from adoorback.utils.content_types import get_content_type
 User = get_user_model()
 N = 10
 
+
 class NotificationTestCase(TestCase):
+
     def setUp(self):
         set_seed(N)
+
     def test_noti_count(self):
         self.assertGreater(Notification.objects.all().count(), N * 2)
         comment_noti_count = Notification.objects.filter(
@@ -23,8 +26,6 @@ class NotificationTestCase(TestCase):
         like_noti_count = Notification.objects.filter(target_type=get_content_type('Like')).count()
         self.assertGreater(like_noti_count, N)
         # should be created automatically
-
-
 
     def test_noti_str(self):
         noti = Notification.objects.all().last()
@@ -61,7 +62,6 @@ class NotificationTestCase(TestCase):
         user.delete()
         self.assertEqual(User.objects.all().filter(id=user_id).count(), 0)
         self.assertEqual(Notification.objects.all().filter(recipient_id=user_id).count(), 0)
-
 
     # test on delete target
     def test_on_delete_target_cascade(self):
@@ -114,8 +114,10 @@ class NotificationTestCase(TestCase):
         self.assertEqual(Notification.objects.all().filter(
             origin_type=get_content_type("Comment"),origin_id=origin_id).count(), 0)
 
+
 class APITestCase(TestCase):
     client_class = APIClient
+
 
 class NotificationAPITestCase(APITestCase):
 
@@ -156,7 +158,6 @@ class NotificationAPITestCase(APITestCase):
             self.assertGreater(len(noti['recipient_detail']), 1)
             self.assertEqual(len(noti['actor_detail']), 1)
 
-
     def test_noti_update(self):
         current_user = self.make_user(username='receiver')
         # create noti object that current user receives
@@ -166,14 +167,14 @@ class NotificationAPITestCase(APITestCase):
         recipient = current_user
         target = comment
         message = f'{actor} commented on your {origin.type}'
-        Notification.objects.create(actor = actor, recipient = recipient, message = message,
-            origin = origin, target= target, is_read = False, is_visible = True)
+        Notification.objects.create(actor=actor, recipient=recipient, message=message,
+            origin=origin, target= target, is_read = False, is_visible = True)
 
         received_noti = Notification.objects.filter(recipient=current_user).last()
         data = {"is_read": True }
         with self.login(username=current_user.username, password='password'):
             response = self.patch(self.reverse('notification-update',
-                pk=received_noti.id), data=data)
+                                               pk=received_noti.id), data=data)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data['is_read'], True)
         # test restriction
@@ -181,5 +182,5 @@ class NotificationAPITestCase(APITestCase):
 
         with self.login(username=spy_user.username, password='password'):
             response = self.patch(self.reverse('notification-update',
-                pk=received_noti.id), data=data)
+                                               pk=received_noti.id), data=data)
             self.assertEqual(response.status_code, 403)

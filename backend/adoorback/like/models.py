@@ -48,7 +48,7 @@ class Like(models.Model):
 
 
 @receiver(post_save, sender=Like)
-def create_noti(sender, **kwargs):
+def create_like_noti(sender, **kwargs):
     instance = kwargs['instance']
     target = instance
     origin = instance.target
@@ -59,5 +59,5 @@ def create_noti(sender, **kwargs):
     if User.are_friends(actor, recipient):
         actor_name = f'{actor.username}님이'
     message = f'{actor_name} 회원님의 {origin_name}을 좋아합니다.'
-    Notification.objects.create(actor = actor, recipient = recipient, message = message,
-        origin = origin, target = target)
+    Notification.objects.create(actor=actor, recipient=recipient, message=message,
+                                origin=origin, target=target)

@@ -11,7 +11,7 @@ from adoorback.permissions import IsOwnerOrReadOnly
 from account.models import FriendRequest, Friendship
 from account.serializers import UserProfileSerializer, \
     UserFriendshipDetailSerializer, UserFriendRequestSerializer, \
-    UserSearchSerializer
+    UserFriendshipStatusSerializer
 from feed.serializers import QuestionAnonymousSerializer
 from feed.models import Question
 
@@ -95,7 +95,7 @@ class UserDetail(generics.RetrieveUpdateAPIView):
 
 
 class UserSearch(generics.ListAPIView):
-    serializer_class = UserSearchSerializer
+    serializer_class = UserFriendshipStatusSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):

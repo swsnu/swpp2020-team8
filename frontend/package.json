@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -89,7 +90,8 @@
       "!src/store/index.js",
       "!src/serviceWorker.js",
       "!src/utils/dateTimeHelpers.js",
-      "!src/styles.js"
+      "!src/styles.js",
+      "!src/Friend.jsx"
     ]
   },
   "proxy": "http://localhost:8000"

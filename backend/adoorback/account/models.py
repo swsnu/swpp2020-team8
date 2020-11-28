@@ -3,6 +3,7 @@ Define Models for account APIs
 """
 import random
 
+from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -103,3 +104,26 @@ def create_friendship(sender, **kwargs):
         Friendship.objects.create(user_id=requestee_id, friend_id=requester_id)
     else:
         return
+
+
+@receiver(post_save, sender=FriendRequest)
+def create_friend_request_noti(sender, **kwargs):
+    instance = kwargs['instance']
+    accepted = instance.accepted
+    Notification = apps.get_model('notification', 'Notification')
+    if not accepted:
+        actor = instance.requester
+        recipient = instance.requestee
+        origin = instance
+        target = instance
+        message = f'{actor.username}님이 친구 요청을 보냈습니다.'
+        Notification.objects.create(actor=actor, recipient=recipient, message=message,
+            origin=origin, target=target)
+    else:
+        actor = instance.requestee
+        recipient = instance.requester
+        origin = actor
+        target = instance
+        message = f'{actor.username}님과 친구가 되었습니다.'
+        Notification.objects.create(actor=actor, recipient=recipient, message=message,
+            origin=origin, target=target)
