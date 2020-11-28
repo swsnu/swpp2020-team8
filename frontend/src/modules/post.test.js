@@ -245,6 +245,54 @@ describe('Post Reducer', () => {
     });
   });
 
+  it('should add post to feed when append friend posts success', () => {
+    const newState = postReducer(
+      {
+        anonymousPosts: [],
+        friendPosts: [],
+        selectedUserPosts: [],
+        selectedPost: {},
+        next: null
+      },
+      {
+        type: actionCreators.APPEND_POSTS_SUCCESS,
+        origin: 'friend',
+        posts: mockFriendFeed
+      }
+    );
+    expect(newState).toEqual({
+      anonymousPosts: [],
+      friendPosts: mockFriendFeed,
+      selectedUserPosts: [],
+      selectedPost: {},
+      next: undefined
+    });
+  });
+
+  it('should add post to feed when append anon posts success', () => {
+    const newState = postReducer(
+      {
+        anonymousPosts: [],
+        friendPosts: [],
+        selectedUserPosts: [],
+        selectedPost: {},
+        next: null
+      },
+      {
+        type: actionCreators.APPEND_POSTS_SUCCESS,
+        origin: 'anonymous',
+        posts: mockFriendFeed
+      }
+    );
+    expect(newState).toEqual({
+      anonymousPosts: mockFriendFeed,
+      friendPosts: [],
+      selectedUserPosts: [],
+      selectedPost: {},
+      next: undefined
+    });
+  });
+
   it('should return same state when api requested', () => {
     const initialState = {
       anonymousPosts: [],

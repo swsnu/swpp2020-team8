@@ -2,6 +2,7 @@ import axios from '../apis';
 import store from '../store';
 import { mockQuestionFeed, questionDetailPosts } from '../constants';
 import * as actionCreators from './question';
+import questionReducer from './question';
 
 describe('questionActions', () => {
   afterEach(() => {
@@ -124,6 +125,49 @@ describe('questionActions', () => {
       expect(newState.questionReducer.questionDetailPosts).toMatchObject(
         questionDetailPosts
       );
+    });
+  });
+});
+
+describe('Question Reducer', () => {
+  it('should return default state', () => {
+    const newState = questionReducer(undefined, {}); // initialize
+    expect(newState).toEqual({
+      dailyQuestions: [],
+      sampleQuestions: [],
+      randomQuestions: [],
+      recommendedQuestions: [],
+      selectedQuestion: null,
+      selectedQuestionResponses: [],
+      next: null
+    });
+  });
+
+  it('should add daily question to feed when append success', () => {
+    const newState = questionReducer(
+      {
+        dailyQuestions: [],
+        sampleQuestions: [],
+        randomQuestions: [],
+        recommendedQuestions: [],
+        selectedQuestion: null,
+        selectedQuestionResponses: [],
+        next: null
+      },
+      {
+        type: actionCreators.APPEND_QUESTIONS_SUCCESS,
+        questions: mockQuestionFeed,
+        next: 'mockUrl'
+      }
+    );
+    expect(newState).toEqual({
+      dailyQuestions: mockQuestionFeed,
+      sampleQuestions: [],
+      randomQuestions: [],
+      recommendedQuestions: [],
+      selectedQuestion: null,
+      selectedQuestionResponses: [],
+      next: 'mockUrl'
     });
   });
 });
