@@ -2,12 +2,9 @@ import os
 import pandas as pd
 
 from django.contrib.auth import get_user_model
-from django.http import HttpResponse, HttpResponseNotAllowed
+from django.http import HttpResponseBadRequest
 from rest_framework import generics
 from rest_framework import permissions
-from rest_framework import status
-from rest_framework.response import Response as DRF_Response
-from rest_framework.decorators import api_view
 
 import feed.serializers as fs
 from feed.models import Article, Response, Question, Post, ResponseRequest
@@ -169,48 +166,32 @@ class ResponseRequestList(generics.ListAPIView):
     pagination_class = None
 
     def get_queryset(self):
-        question_id = self.kwargs['pk']
+        try:
+            question = Question.objects.get(id=self.kwargs['qid'])
+        except Question.DoesNotExist:
+            return HttpResponseBadRequest
         sent_response_request_set = self.request.user.sent_response_request_set.all()
-        responseRequests = sent_response_request_set.filter(question_id=question_id).order_by('-created_at')
+        responseRequests = sent_response_request_set.filter(question=question).order_by('-created_at')
         return responseRequests
 
 
-@api_view(["POST", "DELETE"])
-def response_request_detail(request, qid, rid):
-    if not request.user.is_authenticated:
-        return HttpResponse(status=401)
+class ResponseRequestCreate(generics.CreateAPIView):
+    """
+    Get response requests of the selected question.
+    """
+    queryset = ResponseRequest.objects.all()
+    serializer_class = fs.ResponseRequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-    try:
-        recipient = User.objects.get(id=rid)
-        question = Question.objects.get(id=qid)
-    except (User.DoesNotExist, Question.DoesNotExist):
-        return HttpResponse(status=404)
 
-    if request.method == 'POST':
-        recipient = User.objects.get(id=rid)
+class ResponseRequestDestroy(generics.DestroyAPIView):
+    serializer_class = fs.ResponseRequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-        if not User.are_friends(request.user, recipient):
-            return HttpResponse(status=403)
-        else:
-            new_response_request = ResponseRequest.objects.create(actor=request.user,
-                                                                  recipient=recipient, question=question)
-
-            serializer = fs.ResponseRequestSerializer(new_response_request)
-            return DRF_Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    elif request.method == 'DELETE':
-        try:
-            response_request = ResponseRequest.objects.get(question_id=qid, recipient_id=rid)
-        except ResponseRequest.DoesNotExist:
-            return HttpResponse(status=404)
-
-        if request.user.id == response_request.actor.id:
-            response_request.delete()
-            return HttpResponse(status=204)
-        else:
-            return HttpResponse(status=403)
-
-    return HttpResponseNotAllowed(['GET'])
+    def get_object(self):
+        return ResponseRequest.objects.get(requester_id=self.kwargs.get('rid'),
+                                           requestee_id=self.request.user.id,
+                                           question_id=self.kwargs.get('qid'))
 
 
 class DailyQuestionList(generics.ListAPIView):

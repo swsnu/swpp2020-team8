@@ -12,13 +12,16 @@ class Notification(AdoorTimestampedModel):
 
     actor = models.ForeignKey(User, related_name='sent_noti_set', on_delete=models.CASCADE)
     recipient = models.ForeignKey(User, related_name='received_noti_set', on_delete=models.CASCADE)
+
     target_type = models.ForeignKey(ContentType,
-        on_delete=models.CASCADE, related_name='targetted_noti_set')
+                                    on_delete=models.CASCADE,
+                                    related_name='targetted_noti_set')
     target_id = models.IntegerField(blank=True, null=True)
     target = GenericForeignKey('target_type', 'target_id')
 
     origin_type = models.ForeignKey(ContentType,
-        on_delete=models.CASCADE, related_name='origin_noti_set')
+                                    on_delete=models.CASCADE,
+                                    related_name='origin_noti_set')
     origin_id = models.IntegerField(blank=True, null=True)
     origin = GenericForeignKey('origin_type', 'origin_id')
 

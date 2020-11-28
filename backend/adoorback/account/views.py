@@ -1,6 +1,5 @@
 import json
 
-from django.db.models import Q
 from django.contrib.auth import get_user_model, authenticate, login
 from django.http import JsonResponse, HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from rest_framework import generics
@@ -9,9 +8,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 
 from adoorback.permissions import IsOwnerOrReadOnly
-from account.models import Friendship, FriendRequest
-from account.serializers import UserProfileSerializer, AuthorFriendSerializer, \
-    UserFriendshipDetailSerializer, UserFriendRequestSerializer
+from account.models import FriendRequest, Friendship
+from account.serializers import UserProfileSerializer, \
+    UserFriendshipDetailSerializer, UserFriendRequestSerializer, \
+    UserFriendshipStatusSerializer
 from feed.serializers import QuestionAnonymousSerializer
 from feed.models import Question
 
@@ -95,7 +95,7 @@ class UserDetail(generics.RetrieveUpdateAPIView):
 
 
 class UserSearch(generics.ListAPIView):
-    serializer_class = UserProfileSerializer
+    serializer_class = UserFriendshipStatusSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -107,33 +107,28 @@ class UserSearch(generics.ListAPIView):
         return queryset
 
 
-class UserFriendList(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = AuthorFriendSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        queryset = []
-        friendship_set = self.request.user.friends.all()
-        for friendship in friendship_set:
-            queryset.append(friendship.friend)
-        return queryset
-
-
-class UserFriendshipDetail(generics.CreateAPIView, generics.RetrieveDestroyAPIView):
-    """
-    Retrieve or destroy a friendship.
-    """
-    queryset = Friendship.objects.all()
+class UserFriendList(generics.ListCreateAPIView):
+    queryset = Friendship.objects.all().order_by('-created_at')
     serializer_class = UserFriendshipDetailSerializer
     permission_classes = [IsAuthenticated]
 
+
+class UserFriendshipDestroy(generics.DestroyAPIView):
+    """
+    Retrieve or destroy a friendship.
+    """
+    serializer_class = UserFriendshipDetailSerializer
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
     def get_object(self):
-        queryset = self.filter_queryset(self.get_queryset())
-        obj = queryset.get(user_id=self.request.user.id,
-                           friend_id=self.kwargs.get('fid'))
-        self.check_object_permissions(self.request, obj)
-        return obj
+        return Friendship.objects.get(user_id=self.request.user.id,
+                                      friend_id=self.kwargs.get('pk'))
+
+    def perform_destroy(self, obj):
+        user_id = obj.user_id
+        friend_id = obj.friend_id
+        obj.delete()
+        Friendship.objects.get(user_id=friend_id, friend_id=user_id).delete()
 
 
 class UserFriendRequestList(generics.ListCreateAPIView):
@@ -142,25 +137,22 @@ class UserFriendRequestList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        queryset = FriendRequest.objects.filter(
-            Q(responder_id=self.request.user.id) | Q(requester_id=self.request.user.id))
-        return queryset
+        return FriendRequest.objects.filter(requestee=self.request.user)
 
 
-class UserFriendRequestDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = FriendRequest.objects.all()
+class UserFriendRequestDestroy(generics.DestroyAPIView):
     serializer_class = UserFriendRequestSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        try:
-            queryset = self.filter_queryset(self.get_queryset())
-            obj = queryset.get(id=self.kwargs.get('pk'))
-            self.check_object_permissions(self.request, obj)
-            return obj
-        except FriendRequest.DoesNotExist:
-            return None
+        return FriendRequest.objects.get(requester_id=self.request.user.id,
+                                         requestee_id=self.kwargs.get('pk'))
 
-    def perform_destroy(self, instance):
-        instance = self.get_object()
-        instance.delete()
+
+class UserFriendRequestUpdate(generics.UpdateAPIView):
+    serializer_class = UserFriendRequestSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return FriendRequest.objects.get(requester_id=self.kwargs.get('pk'),
+                                         requestee_id=self.request.user.id)
