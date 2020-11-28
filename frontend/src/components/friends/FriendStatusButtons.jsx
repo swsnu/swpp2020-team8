@@ -6,7 +6,8 @@ import {
   acceptFriendRequest,
   deleteFriend,
   deleteFriendRequest,
-  requestFriend
+  requestFriend,
+  rejectFriendRequest
 } from '../../modules/friend';
 import AlertDialog from '../common/AlertDialog';
 
@@ -27,6 +28,7 @@ export default function FriendStatusButtons({
   const dispatch = useDispatch();
   const [isRequestSubmitted, setIsRequestSubmitted] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isRequestResetted, setIsRequestResetted] = useState(false);
 
   const onClickDeleteFriendButton = () => {
     setIsDeleteDialogOpen(true);
@@ -35,16 +37,22 @@ export default function FriendStatusButtons({
   const onConfirmDeleteFriend = () => {
     dispatch(deleteFriend(friendObj.id));
     setIsDeleteDialogOpen(false);
+    setIsRequestResetted(true);
   };
 
-  const onClickRejectRequestButton = () => {};
+  const onClickRejectRequestButton = () => {
+    dispatch(rejectFriendRequest(friendObj.id));
+    setIsRequestResetted(true);
+  };
   const onCancelDeleteFriend = () => {
     setIsDeleteDialogOpen(false);
   };
 
   const onClickDeleteRequestButton = () => {
     dispatch(deleteFriendRequest(friendObj.id));
+    setIsRequestResetted(true);
   };
+
   const onClickAcceptRequestButton = () => {
     dispatch(acceptFriendRequest(friendObj.id));
   };
@@ -54,6 +62,19 @@ export default function FriendStatusButtons({
     setIsRequestSubmitted(true);
   };
 
+  if (isRequestResetted)
+    return (
+      <div id={friendObj.id}>
+        <FriendButton
+          variant="outlined"
+          color="primary"
+          id="request-friend-button"
+          onClick={onClickRequestFriendButton}
+        >
+          친구 요청
+        </FriendButton>
+      </div>
+    );
   if (isFriend)
     return (
       <div id={friendObj.id}>
