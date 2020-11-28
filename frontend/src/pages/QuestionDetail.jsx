@@ -46,6 +46,9 @@ const QuestionDetail = (props) => {
 
   useEffect(() => {
     dispatch(getFriendResponsesByQuestion(questionId));
+    return () => {
+      setViewAnonymousResponses(false);
+    };
   }, [dispatch, questionId]);
 
   const handleChangeViewAnonymousResponses = (event) => {
