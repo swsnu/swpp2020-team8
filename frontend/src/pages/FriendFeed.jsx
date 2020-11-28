@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PostList from '../components/posts/PostList';
 import { getPostsByType } from '../modules/post';
-// import Article from './temp/Article';
+import NoContentInfo from '../components/NoContentInfo';
 
 const FriendFeed = () => {
   const dispatch = useDispatch();
@@ -14,7 +14,11 @@ const FriendFeed = () => {
 
   return (
     <>
-      <PostList posts={friendPosts} />
+      {friendPosts?.length === 0 ? (
+        <NoContentInfo message="친구를 맺어보세요!" />
+      ) : (
+        <PostList posts={friendPosts} />
+      )}
     </>
   );
 };

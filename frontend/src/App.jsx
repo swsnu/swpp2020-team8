@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
@@ -76,9 +77,7 @@ const App = () => {
               />
               <PrivateRoute path="/:postType/:id" component={PostDetail} />
               <PrivateRoute exact path="/my-friends" component={FriendsPage} />
-
               <PrivateRoute exact path="/friend" component={Friend} />
-
               <Redirect exact path="/" to="/friends" />
             </Switch>
           </FeedWrapper>
