@@ -24,9 +24,11 @@ class Article(AdoorModel):
     article_comments = GenericRelation(Comment)
     article_likes = GenericRelation(Like)
     article_targetted_notis = GenericRelation(Notification,
-        content_type_field='target_type', object_id_field='target_id')
+                                              content_type_field='target_type',
+                                              object_id_field='target_id')
     article_originated_notis = GenericRelation(Notification,
-        content_type_field='origin_type', object_id_field='origin_id')
+                                               content_type_field='origin_type',
+                                               object_id_field='origin_id')
 
     @property
     def type(self):
@@ -85,19 +87,21 @@ class Response(AdoorModel):
     def type(self):
         return self.__class__.__name__
 
+
 class ResponseRequest(AdoorTimestampedModel):
-    actor = models.ForeignKey(User, related_name='sent_response_request_set', on_delete=models.CASCADE)
-    recipient = models.ForeignKey(User, related_name='received_response_request_set', on_delete=models.CASCADE)
+    requester = models.ForeignKey(User, related_name='sent_response_request_set', on_delete=models.CASCADE)
+    requestee = models.ForeignKey(User, related_name='received_response_request_set', on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['actor', 'recipient', 'question'], name='unique_response_request'),
+                fields=['requester', 'requestee', 'question'], name='unique_response_request'),
         ]
 
     def __str__(self):
-        return self.question.content
+        return f'{self.requester} sent ({self.question}) to {self.requestee}'
+
 
 class PostManager(models.Manager):
 
@@ -122,16 +126,18 @@ class Post(AdoorModel):
         ordering = ['-created_at']
         base_manager_name = 'objects'
 
+
 @receiver(post_save, sender=ResponseRequest)
 def create_response_request_noti(sender, **kwargs):
     instance = kwargs['instance']
     target = instance
     origin = instance.question
-    actor = instance.actor
-    recipient = instance.recipient
-    message = f'{actor.username}님이 회원님에게 질문을 보냈습니다.'
-    Notification.objects.create(actor = actor, recipient = recipient, message = message,
-        origin = origin, target = target)
+    requester = instance.requester
+    requestee = instance.requestee
+    message = f'{requester.username}님이 회원님에게 질문을 보냈습니다.'
+    Notification.objects.create(actor=requester, recipient=requestee, message=message,
+        origin=origin, target=target)
+
 
 @receiver(post_save, sender=Question)
 @receiver(post_save, sender=Response)
@@ -152,6 +158,7 @@ def create_post(sender, **kwargs):
     post.updated_at = instance.updated_at
     post.save()
 
+
 @receiver(post_save, sender=Response)
 def create_request_answered_noti(sender, **kwargs):
     instance = kwargs['instance']
@@ -161,13 +168,12 @@ def create_request_answered_noti(sender, **kwargs):
     origin = instance
     actor = instance.author
     related_requests = ResponseRequest.objects.filter(
-        recipient_id=author_id).filter(question_id=question_id)
+        requestee_id=author_id).filter(question_id=question_id)
     for request in related_requests:
-        recipient = request.actor
+        recipient = request.requester
         message = f'{actor.username}님이 회원님이 보낸 질문에 답했습니다.'
-        Notification.objects.create(actor = actor, recipient = recipient, message = message,
-        origin = origin, target = target)
-
+        Notification.objects.create(actor=actor, recipient=recipient, message=message,
+                                    origin=origin, target=target)
 
 
 @receiver(post_delete, sender=User)
@@ -179,4 +185,16 @@ def delete_post(sender, **kwargs):
     if sender == User:
         Post.objects.filter(author_id=instance.id).delete()
     else:
-        Post.objects.get(content_type=ContentType.objects.get_for_model(sender), object_id=instance.id).delete()
+        Post.objects.get(content_type=ContentType.objects.get_for_model(sender),
+                         object_id=instance.id).delete()
+
+
+@receiver(post_save, sender=Response)
+def delete_response_request(sender, **kwargs):
+    instance = kwargs['instance']
+    try:
+        response_requests = ResponseRequest.objects.filter(requestee_id=instance.author.id,
+                                                           question=instance.question)
+    except ResponseRequest.DoesNotExist:
+        return
+    response_requests.delete()

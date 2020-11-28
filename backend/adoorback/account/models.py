@@ -7,7 +7,7 @@ from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from adoorback.models import AdoorTimestampedModel
@@ -18,18 +18,14 @@ def random_profile_color():
     return '#{0:06X}'.format(random.randint(0, 16777216))
 
 
-class User(AbstractUser):
+class User(AbstractUser, AdoorTimestampedModel):
     """User Model
     This model extends the Django Abstract User model
     """
     email = models.EmailField(unique=True)
     question_history = models.CharField(null=True,
-                                        # validators=[int_list_validator(sep=',',
-                                        #                                allow_negative=True)])
                                         max_length=500)
     profile_pic = models.CharField(default=random_profile_color, max_length=7)
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['username']
@@ -42,8 +38,12 @@ class User(AbstractUser):
     def type(self):
         return self.__class__.__name__
 
+    @property
+    def friend_ids(self):
+        return self.friends.values_list('id', flat=True)
 
-class Friendship(models.Model):
+
+class Friendship(AdoorTimestampedModel):
     """Friendship Model
     This model describes Friendship between users
     """
@@ -51,7 +51,6 @@ class Friendship(models.Model):
         get_user_model(), related_name='friends', on_delete=models.CASCADE)
     friend = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
 
     objects = models.Manager()
 
@@ -75,19 +74,19 @@ class FriendRequest(AdoorTimestampedModel):
     """
     requester = models.ForeignKey(
         get_user_model(), related_name='sent_friend_requests', on_delete=models.CASCADE)
-    responder = models.ForeignKey(
+    requestee = models.ForeignKey(
         get_user_model(), related_name='received_friend_requests', on_delete=models.CASCADE)
-    responded = models.BooleanField(default=False)
+    accepted = models.BooleanField(null=True)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['requester', 'responder', ], name='unique_friend_request'),
+                fields=['requester', 'requestee', ], name='unique_friend_request'),
         ]
-        ordering = ['-created_at']
+        ordering = ['-updated_at']
 
     def __str__(self):
-        return f'{self.requester} sent to {self.responder} ({self.responded})'
+        return f'{self.requester} sent to {self.requestee} ({self.accepted})'
 
     @property
     def type(self):
@@ -98,51 +97,33 @@ class FriendRequest(AdoorTimestampedModel):
 def create_friendship(sender, **kwargs):
     instance = kwargs['instance']
     requester_id = instance.requester_id
-    responder_id = instance.responder_id
-    responded = instance.responded
-    if responded:
-        Friendship.objects.create(user_id=requester_id, friend_id=responder_id)
+    requestee_id = instance.requestee_id
+    accepted = instance.accepted
+    if accepted:
+        Friendship.objects.create(user_id=requester_id, friend_id=requestee_id)
+        Friendship.objects.create(user_id=requestee_id, friend_id=requester_id)
     else:
         return
+
 
 @receiver(post_save, sender=FriendRequest)
 def create_friend_request_noti(sender, **kwargs):
     instance = kwargs['instance']
-    responded = instance.responded
+    accepted = instance.accepted
     Notification = apps.get_model('notification', 'Notification')
-    if not responded:
+    if not accepted:
         actor = instance.requester
-        recipient = instance.responder
+        recipient = instance.requestee
         origin = instance
         target = instance
         message = f'{actor.username}님이 친구 요청을 보냈습니다.'
-        Notification.objects.create(actor = actor, recipient = recipient, message = message,
-            origin = origin, target = target)
+        Notification.objects.create(actor=actor, recipient=recipient, message=message,
+            origin=origin, target=target)
     else:
-        actor = instance.responder
+        actor = instance.requestee
         recipient = instance.requester
         origin = actor
         target = instance
         message = f'{actor.username}님과 친구가 되었습니다.'
-        Notification.objects.create(actor = actor, recipient = recipient, message = message,
-            origin = origin, target = target)
-
-@receiver(post_save, sender=Friendship)
-def create_reverse_friendship(sender, **kwargs):
-    instance = kwargs['instance']
-    user_id = instance.user_id
-    friend_id = instance.friend_id
-    try:
-        sender.objects.get(user_id=friend_id, friend_id=user_id)
-    except sender.DoesNotExist:
-        sender.objects.create(user_id=friend_id, friend_id=user_id)
-
-@receiver(post_delete, sender=Friendship)
-def delete_reverse_friendship(sender, **kwargs):
-    instance = kwargs['instance']
-    user_id = instance.user_id
-    friend_id = instance.friend_id
-    try:
-        sender.objects.get(user_id=friend_id, friend_id=user_id).delete()
-    except sender.DoesNotExist:
-        return
+        Notification.objects.create(actor=actor, recipient=recipient, message=message,
+            origin=origin, target=target)

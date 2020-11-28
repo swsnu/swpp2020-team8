@@ -72,7 +72,9 @@ def set_seed(n):
     questions = Question.objects.all()
     for _ in range(n):
         question = random.choice(questions)
-        response = Response.objects.create(author=user, content=faker.text(max_nb_chars=50), question=question,
+        response = Response.objects.create(author=user,
+                                           content=faker.text(max_nb_chars=50),
+                                           question=question,
                                            share_with_friends=random.choice(
                                                [True, False]),
                                            share_anonymously=random.choice([True, False]))
@@ -87,12 +89,11 @@ def set_seed(n):
         question = Question.objects.get(id=i+1)
         random_actor_id = random.choice([1, 2, 3])
         random_recipient_id = random.choice([i for i in range(1, 3) if i not in [random_actor_id]])
-        actor = User.objects.get(id=random_actor_id)
-        recipient = User.objects.get(id=random_recipient_id)
-        ResponseRequest.objects.create(
-            actor=actor, recipient=recipient, question=question)
+        requester = User.objects.get(id=random_actor_id)
+        requestee = User.objects.get(id=random_recipient_id)
+        ResponseRequest.objects.create(requester=requester, requestee=requestee, question=question)
     logging.info(
-        f"{ResponseRequest.objects.all().count()} ResponseRequest(s) created!") if DEBUG else None
+        f"{ResponseRequest.objects.count()} ResponseRequest(s) created!") if DEBUG else None
 
     # Seed Comment (target=Feed)
     articles = Article.objects.all()
@@ -138,48 +139,17 @@ def set_seed(n):
     logging.info(
         f"{Like.objects.count()} Like(s) created!") if DEBUG else None
 
-<<<<<<< HEAD
-    # # Seed Notification for likes
-    # likes = Like.objects.all()
-    # for like in likes[:n]:
-    #     actor = like.user
-    #     origin = like.target
-    #     recipient = origin.author
-    #     target = like
-    #     message = f'{actor} likes your {origin.type}'
-    #     Notification.objects.create(actor=actor, recipient=recipient, message=message,
-    #                                 origin=origin, target=target, is_read=False, is_visible=True)
-
-    # # Seed Notification for comments
-    # for comment in comments[:n]:
-    #     actor = comment.author
-    #     origin = comment.target
-    #     recipient = origin.author
-    #     target = comment
-    #     message = f'{actor} commented on your {origin.type}'
-    #     Notification.objects.create(actor=actor, recipient=recipient, message=message,
-    #                                 origin=origin, target=target, is_read=False, is_visible=True)
-    # # TODO: noti for friendship & response requests
-    # logging.info(
-    #     f"{Notification.objects.all().count()} Notification(s) created!") if DEBUG else None
-
-=======
->>>>>>> 65942497e3f92c22a028f2325d6eba1bdc46dd9a
     # Seed Friendship
     user_1 = User.objects.get(id=1)
     user_2 = User.objects.get(id=2)
     user_3 = User.objects.get(id=3)
     Friendship.objects.create(user=user_1, friend=user_2)
-    Friendship.objects.create(user=user_2, friend=user_3)
+    Friendship.objects.create(user=user_2, friend=user_1)
 
     # Seed Friend Request
-    FriendRequest.objects.create(
-        requester=user_1, responder=user_3, responded=False)
-    # FriendRequest.objects.create(
-    #     requester=user_1, responder=user_3, responded=False)
-    # FriendRequest.objects.create(
-    #     requester=user_2, responder=user_3, responded=False)
-
+    FriendRequest.objects.create(requester=user_2, requestee=user_1)
+    FriendRequest.objects.create(requester=user_3, requestee=user_1)
+    FriendRequest.objects.create(requester=user_3, requestee=user_2)
 
 def fill_data():
     User = get_user_model()
