@@ -63,7 +63,12 @@ const QuestionDetail = (props) => {
 
   return (
     <div>
-      {question && <QuestionItem questionObj={question} />}
+      {question && (
+        <QuestionItem
+          questionObj={question}
+          onResetContent={() => setViewAnonymousResponses(false)}
+        />
+      )}
       <SwitchWrapper>
         <span className={classes.switchLabel}>익명의 답변 보기</span>
         <FormControlLabel
