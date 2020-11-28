@@ -31,6 +31,17 @@ describe('likeActions', () => {
     });
   });
 
+  it('should dispatch LIKE_POST_FAILURE when api returns error', async () => {
+    jest.mock('axios');
+    const spy = jest.spyOn(axios, 'post').mockImplementation(() => {
+      return Promise.reject(new Error('error'));
+    });
+
+    store.dispatch(actionCreators.likePost(postInfo)).then(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it(`unlikePost should unlike correctly`, (done) => {
     const spyGet = jest.spyOn(axios, 'get').mockImplementation(() => {
       return new Promise((resolve) => {
