@@ -80,7 +80,7 @@ export const requestFriend = (responderId) => async (dispatch, getState) => {
     type: REQUEST_FRIEND_REQUEST
   });
   await axios.post('user/friend-requests/', {
-    responder_id: responderId,
+    requestee_id: responderId,
     requester_id: userId
   });
 
@@ -94,7 +94,7 @@ export const acceptFriendRequest = (friendId) => async (dispatch) => {
   dispatch({
     type: ACCEPT_FRIEND_REQUEST
   });
-  await axios.patch(`user/friend-requests/${friendId}/`, {
+  await axios.patch(`user/friend-requests/${friendId}/respond/`, {
     responded: true
   });
   dispatch(getFriendList());
@@ -104,8 +104,8 @@ export const rejectFriendRequest = (friendId) => async (dispatch) => {
   dispatch({
     type: REJECT_FRIEND_REQUEST
   });
-  await axios.patch(`user/friend-requests/${friendId}/`, {
-    responded: '???'
+  await axios.patch(`user/friend-requests/${friendId}/respond/`, {
+    responded: false
   });
 };
 
