@@ -95,6 +95,32 @@ export const PostItemHeaderWrapper = styled.div`
 
 export const PostItemFooterWrapper = styled.div`
   display: flex;
-  flex-direction: row-reverse;
+  justify-content: space-between;
   align-items: center;
 `;
+
+export const PostItemButtonsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+`;
+
+export const PostItemWrapper = styled.div`
+  background: #fff;
+  padding: 16px;
+  font-size: 14px;
+  border: 1px solid #eee;
+  margin: 16px 0;
+  position: relative;
+  border-radius: 4px;
+`;
+
+// export const PostItemWrapper = styled.div`
+//   background: #fff;
+//   padding: 16px;
+//   font-size: 14px;
+//   border: 1px solid #eee;
+//   margin: 16px 0;
+//   position: relative;
+//   border-radius: 4px;
+// `;

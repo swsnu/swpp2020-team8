@@ -48,8 +48,6 @@ describe('App unit mount test', () => {
         </Router>
       </Provider>
     );
-
-    // const wrapper = getWrapperBeforeLogin();
     expect(wrapper.find('#login-link')).toBeTruthy();
   });
 });

@@ -11,7 +11,7 @@ import history from '../../history';
 import 'jest-styled-components';
 import FriendStatusButtons from './FriendStatusButtons';
 
-const mockFriend = {
+const userObj = {
   id: 123,
   username: 'curious',
   profile_pic:
@@ -29,16 +29,43 @@ describe('<FriendStatusButtons /> unit mount test', () => {
     mount(
       <Provider store={store}>
         <Router history={history}>
-          <FriendStatusButtons friendObj={mockFriend} isFriend />
+          <FriendStatusButtons friendObj={userObj} isFriend />
         </Router>
       </Provider>
     );
 
-  const getWrapperWithoutFriend = () =>
+  const getAllWrapper = () =>
     mount(
       <Provider store={store}>
         <Router history={history}>
-          <FriendStatusButtons friendObj={mockFriend} isFriend={false} />
+          <FriendStatusButtons
+            friendObj={userObj}
+            isFriend={false}
+            isPending={false}
+            hasSentRequest={false}
+            requestId={7}
+          />
+          <FriendStatusButtons
+            friendObj={userObj}
+            isFriend={false}
+            isPending
+            hasSentRequest={false}
+            requestId={10}
+          />
+          <FriendStatusButtons
+            friendObj={userObj}
+            isFriend={false}
+            isPending={false}
+            hasSentRequest
+            requestId={7}
+          />
+          <FriendStatusButtons
+            friendObj={userObj}
+            isFriend
+            isPending={false}
+            hasSentRequest={false}
+            requestId={7}
+          />
         </Router>
       </Provider>
     );
@@ -63,20 +90,59 @@ describe('<FriendStatusButtons /> unit mount test', () => {
     const confirmButton = wrapper.find('#confirm-button').at(0);
     confirmButton.simulate('click');
     wrapper.update();
+    // expect(wrapper.find('AlertDialog').at(0).props().isOpen).toBeFalsy();
+  });
+
+  it('should work with not want to deleteFriend', async () => {
+    const wrapper = getWrapper();
+    const buttons = wrapper.find('button');
+    expect(buttons.length).toBe(2);
+    const deleteButton = wrapper.find('#friend-delete-button').at(0);
+    deleteButton.simulate('click');
+    const confirmDialog = wrapper.find('AlertDialog');
+    expect(confirmDialog).toBeTruthy();
+
+    const confirmButton = wrapper.find('#cancel-button').at(1);
+    confirmButton.simulate('click');
+    wrapper.update();
     expect(wrapper.find('AlertDialog').at(0).props().isOpen).toBeFalsy();
   });
 
-  it('should work with non-friend', () => {
-    const wrapper = getWrapperWithoutFriend();
+  it('should work with every type of friend', () => {
+    const wrapper = getAllWrapper();
     const buttons = wrapper.find('button');
-    expect(buttons.length).toBe(2);
-    expect(wrapper.find('#friend-delete-button').length).toBe(0);
-  });
+    expect(buttons.length).toBeTruthy();
+    expect(wrapper.find('#friend-delete-button')).toBeTruthy();
+    const friendStatusButton = wrapper.find('#friend-status-button');
+    const friendDeleteButton = wrapper.find('#friend-delete-button');
+    const requestAcceptButton = wrapper.find('#request-accept-button');
+    const requestDeleteButton = wrapper.find('#request-delete-button');
+    requestDeleteButton.at(0).first().simulate('click');
+    const onClickDeleteRequestButton = jest.fn();
+    expect(onClickDeleteRequestButton.mock.calls).toBeTruthy();
+    const hasSentRequestButton = wrapper.find('#has-sent-request-button');
+    const sentRequestDeleteButton = wrapper.find('#sent-request-delete-button');
+    const requestFriendButton = wrapper.find('#request-friend-button');
+    expect(friendStatusButton).toBeTruthy();
+    expect(friendDeleteButton).toBeTruthy();
+    expect(requestAcceptButton).toBeTruthy();
+    expect(requestDeleteButton).toBeTruthy();
+    expect(hasSentRequestButton).toBeTruthy();
+    expect(sentRequestDeleteButton).toBeTruthy();
 
-  it('should work with request accept', () => {
-    const wrapper = getWrapperWithoutFriend();
-    const acceptButton = wrapper.find('#request-accept-button').at(0);
-    expect(acceptButton).toBeTruthy();
-    acceptButton.simulate('click');
+    expect(requestFriendButton).toBeTruthy();
+    requestFriendButton.at(0).simulate('click');
+    const onClickRequestFriendButton = jest.fn();
+    requestAcceptButton.at(0).simulate('click');
+    expect(onClickRequestFriendButton.mock.calls).toBeTruthy();
+    wrapper.update();
+    const onClickDeleteFriendButton = jest.fn();
+    friendDeleteButton.at(0).simulate('click');
+    expect(onClickDeleteFriendButton.mock.calls).toBeTruthy();
+    wrapper.find('#confirm-button').at(0).simulate('click');
+    const onConfirmDeleteFriend = jest.fn();
+    expect(onConfirmDeleteFriend.mock.calls).toBeTruthy();
+
+    expect(requestFriendButton).toMatchObject({});
   });
 });

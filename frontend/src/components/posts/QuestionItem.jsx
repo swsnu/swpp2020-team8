@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -12,14 +12,17 @@ import { makeStyles } from '@material-ui/core/styles';
 import AuthorProfile from './AuthorProfile';
 import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
-import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
-import ShareSettings from '../ShareSettings';
+import { PostItemHeaderWrapper, PostItemButtonsWrapper } from '../../styles';
+import ShareSettings from './ShareSettings';
+import QuestionSendModal from '../QuestionSendModal';
+import { mockFriendList } from '../../constants';
+import { likePost, unlikePost } from '../../modules/like';
 
 const QuestionItemWrapper = styled.div`
   background: #f4f4f4;
   padding: 12px;
   border-radius: 4px;
-  margin: 8px 0;
+  margin: 16px 0;
   position: relative;
 `;
 
@@ -47,8 +50,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-// TODO: share settings
-export default function QuestionItem({ questionObj }) {
+export default function QuestionItem({ questionObj, onResetContent }) {
+  const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const isAuthor = currentUser.id === questionObj.author_detail.id;
 
@@ -62,6 +65,7 @@ export default function QuestionItem({ questionObj }) {
     content: '',
     type: 'Response'
   });
+  const [isQuestionSendModalOpen, setQuestionSendModalOpen] = useState(false);
 
   const handleContentChange = (e) => {
     setNewPost((prev) => ({
@@ -71,10 +75,16 @@ export default function QuestionItem({ questionObj }) {
   };
 
   const toggleLike = () => {
+    const postInfo = {
+      target_type: questionObj.type,
+      target_id: questionObj.id
+    };
     if (liked) {
       setLikeCount((prev) => prev - 1);
+      dispatch(unlikePost(postInfo));
     } else {
       setLikeCount((prev) => prev + 1);
+      dispatch(likePost(postInfo));
     }
     setLiked((prev) => !prev);
   };
@@ -83,12 +93,19 @@ export default function QuestionItem({ questionObj }) {
     setIsWriting(!isWriting);
   };
 
-  const handleSendButton = () => {};
-  const handleEdit = () => {};
+  const handleSendButton = () => {
+    setQuestionSendModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setQuestionSendModalOpen(false);
+  };
+
   const handleDelete = () => {};
 
   const resetContent = () => {
     setNewPost((prev) => ({ ...prev, content: '' }));
+    onResetContent();
   };
 
   return (
@@ -98,17 +115,14 @@ export default function QuestionItem({ questionObj }) {
           <AuthorProfile author={questionObj.author_detail} />
         )}
         {!questionObj.is_admin_question && isAuthor && (
-          <PostAuthorButtons
-            onClickEdit={handleEdit}
-            onClickDelete={handleDelete}
-          />
+          <PostAuthorButtons isQuestion onClickDelete={handleDelete} />
         )}
       </PostItemHeaderWrapper>
       <Question>
         <Link to={`/questions/${questionObj.id}`}>{questionObj.content}</Link>
       </Question>
       <CreateTime createTime={questionObj.created_at} />
-      <PostItemFooterWrapper>
+      <PostItemButtonsWrapper>
         <IconButton color="secondary" size="small" onClick={handleSendButton}>
           <SendIcon color="secondary" />
         </IconButton>
@@ -129,7 +143,7 @@ export default function QuestionItem({ questionObj }) {
             {likeCount}
           </div>
         )}
-      </PostItemFooterWrapper>
+      </PostItemButtonsWrapper>
       {isWriting && (
         <>
           <TextareaAutosize
@@ -142,6 +156,14 @@ export default function QuestionItem({ questionObj }) {
           />
           <ShareSettings newPost={newPost} resetContent={resetContent} />
         </>
+      )}
+      {isQuestionSendModalOpen && (
+        <QuestionSendModal
+          questionObj={questionObj}
+          open={isQuestionSendModalOpen}
+          handleClose={handleModalClose}
+          friends={mockFriendList}
+        />
       )}
     </QuestionItemWrapper>
   );

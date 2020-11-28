@@ -23,7 +23,7 @@ export default function FriendsPage() {
   }, [dispatch]);
 
   const friendItemList = friendList?.map((friend) => {
-    return <FriendItem key={friend.id} friendObj={friend} />;
+    return <FriendItem key={friend.id} friendObj={friend} isFriend />;
   });
   return (
     <FriendListWrapper>

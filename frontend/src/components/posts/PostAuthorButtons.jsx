@@ -23,7 +23,11 @@ const PostAuthorWrapper = styled.div`
   justify-self: right;
 `;
 
-export default function PostAuthorButtons({ onClickEdit, onClickDelete }) {
+export default function PostAuthorButtons({
+  isQuestion,
+  onClickEdit,
+  onClickDelete
+}) {
   const classes = useStyles();
   const [showButtons, setShowButtons] = useState(false);
   return (
@@ -35,18 +39,16 @@ export default function PostAuthorButtons({ onClickEdit, onClickDelete }) {
         style={{ padding: '4px' }}
         onClick={() => setShowButtons((prev) => !prev)}
       >
-        <MoreHorizIcon />
+        <MoreHorizIcon className="more-button" />
       </IconButton>
       <Grow in={showButtons}>
         <Card className={classes.card}>
           <List style={{ padding: '0' }}>
-            <ListItem button>
-              <ListItemText
-                id="post-edit-button"
-                primary="수정하기"
-                onClick={onClickEdit}
-              />
-            </ListItem>
+            {!isQuestion && (
+              <ListItem button>
+                <ListItemText primary="수정하기" onClick={onClickEdit} />
+              </ListItem>
+            )}
             <ListItem button>
               <ListItemText
                 id="post-delete-button"

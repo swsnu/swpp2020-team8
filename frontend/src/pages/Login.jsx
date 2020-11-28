@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
@@ -23,10 +23,9 @@ const SignUpButton = styled.button`
 `;
 
 const WarningMessage = styled.div`
-  font-size: 20px;
+  font-size: 14px;
   color: #ff395b;
-  text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 4px;
 `;
 
 WarningMessage.displayName = 'WarningMessage';
@@ -36,6 +35,11 @@ export default function Login() {
   const dispatch = useDispatch();
   const [loginInfo, setLoginInfo] = useState({ username: '', password: '' });
   const loginError = useSelector((state) => state.userReducer.loginError);
+  const [loginWarning, setLoginWarning] = useState(false);
+
+  useEffect(() => {
+    if (loginError) setLoginWarning(true);
+  }, [loginError]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,7 +51,7 @@ export default function Login() {
   };
 
   const onKeySubmit = (e) => {
-    if (e.keyCode === 13) {
+    if (e.key === 'Enter') {
       dispatch(requestLogin(loginInfo));
     }
   };
@@ -76,9 +80,9 @@ export default function Login() {
         onChange={handleChange}
         onKeyDown={onKeySubmit}
       />
-      {loginError && loginError.length && (
+      {loginWarning && (
         <WarningMessage id="login-error-message">
-          닉네임 혹은 비밀번호를 다시 확인해주세요
+          닉네임 혹은 비밀번호를 다시 확인해주세요!
         </WarningMessage>
       )}
       <CommonButton

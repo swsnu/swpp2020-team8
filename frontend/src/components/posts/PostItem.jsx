@@ -9,21 +9,17 @@ import AuthorProfile from './AuthorProfile';
 import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
 import QuestionBox from './QuestionBox';
-import { PostItemHeaderWrapper, PostItemFooterWrapper } from '../../styles';
+import {
+  PostItemHeaderWrapper,
+  PostItemFooterWrapper,
+  PostItemWrapper,
+  PostItemButtonsWrapper
+} from '../../styles';
 import CommentItem from '../comments/CommentItem';
 import NewComment from '../comments/NewComment';
+import { likePost, unlikePost } from '../../modules/like';
 import { createComment, deletePost } from '../../modules/post';
 import AlertDialog from '../common/AlertDialog';
-
-const PostItemWrapper = styled.div`
-  background: #fff;
-  padding: 16px;
-  font-size: 14px;
-  border: 1px solid #eee;
-  margin: 16px 0;
-  position: relative;
-  border-radius: 4px;
-`;
 
 PostItemWrapper.displayName = 'PostItemWrapper';
 
@@ -32,6 +28,12 @@ const ContentWrapper = styled.div`
 `;
 
 const CommentWrapper = styled.div``;
+const ShareSettingsWrapper = styled.div``;
+const ShareSettingInfo = styled.span`
+  margin-right: 4px;
+  color: #777;
+  font-size: 12px;
+`;
 
 export default function PostItem({ postObj, postKey, isDetailPage }) {
   const history = useHistory();
@@ -81,16 +83,24 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
   };
 
   const toggleLike = () => {
+    const postInfo = {
+      target_type: postObj.type,
+      target_id: postObj.id
+    };
     if (liked) {
       setLikeCount((prev) => prev - 1);
+      dispatch(unlikePost(postInfo));
     } else {
       setLikeCount((prev) => prev + 1);
+      dispatch(likePost(postInfo));
     }
     setLiked((prev) => !prev);
   };
+
   const handleEdit = () => {
-    // todo: redirect to edit page
+    history.push(`/${postObj.type.toLowerCase()}s/${postObj.id}/edit`);
   };
+
   const handleDelete = () => {
     dispatch(deletePost(postObj.id, postObj.type));
     setIsDeleteDialogOpen(false);
@@ -103,6 +113,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
         <AuthorProfile author={postObj && postObj.author_detail} />
         {isAuthor && (
           <PostAuthorButtons
+            isQuestion={false}
             onClickEdit={handleEdit}
             onClickDelete={() => setIsDeleteDialogOpen(true)}
           />
@@ -112,20 +123,34 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       <ContentWrapper>{postObj.content}</ContentWrapper>
       <CreateTime createdTime={postObj.created_at} />
       <PostItemFooterWrapper>
-        {liked ? (
-          <IconButton color="primary" size="small" onClick={toggleLike}>
-            <FavoriteIcon className="unlike" color="primary" />
-          </IconButton>
-        ) : (
-          <IconButton color="primary" size="small" onClick={toggleLike}>
-            <FavoriteBorderIcon className="like" color="primary" />
-          </IconButton>
-        )}
-        {isAuthor && (
-          <div id="like-count" style={{ margin: '4px' }}>
-            {likeCount}
-          </div>
-        )}
+        <ShareSettingsWrapper>
+          <ShareSettingInfo>공개범위:</ShareSettingInfo>
+          {isAuthor && postObj.share_with_friends && (
+            <ShareSettingInfo>친구</ShareSettingInfo>
+          )}
+          {isAuthor &&
+            postObj.share_with_friends &&
+            postObj.share_anonymously && <ShareSettingInfo>|</ShareSettingInfo>}
+          {isAuthor && postObj.share_anonymously && (
+            <ShareSettingInfo>익명</ShareSettingInfo>
+          )}
+        </ShareSettingsWrapper>
+        <PostItemButtonsWrapper>
+          {liked ? (
+            <IconButton color="primary" size="small" onClick={toggleLike}>
+              <FavoriteIcon className="unlike" color="primary" />
+            </IconButton>
+          ) : (
+            <IconButton color="primary" size="small" onClick={toggleLike}>
+              <FavoriteBorderIcon className="like" color="primary" />
+            </IconButton>
+          )}
+          {isAuthor && (
+            <div id="like-count" style={{ margin: '4px' }}>
+              {likeCount}
+            </div>
+          )}
+        </PostItemButtonsWrapper>
       </PostItemFooterWrapper>
       {!isAnon && (
         <>

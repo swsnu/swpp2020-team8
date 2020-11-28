@@ -33,6 +33,6 @@ urlpatterns = [
     # FriendRequest related
     path('friend-requests/', views.UserFriendRequestList.as_view(),
          name='user-friend-request-list'),
-    path('friend-requests/<int:rid>/', views.UserFriendRequestDetail.as_view(),
+    path('friend-requests/<int:pk>/', views.UserFriendRequestDetail.as_view(),
          name='user-friend-request-detail'),
 ]

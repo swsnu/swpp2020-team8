@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Badge from '@material-ui/core/Badge';
@@ -10,10 +10,12 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import TextField from '@material-ui/core/TextField';
 import { NavLink, Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import useOnClickOutside from 'use-onclickoutside';
 import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
 import SearchDropdownList from './SearchDropdownList';
 import { logout } from '../modules/user';
+import { getNotifications } from '../modules/notification';
 import { fetchSearchResults } from '../modules/search';
 
 const useStyles = makeStyles((theme) => ({
@@ -58,39 +60,11 @@ const useStyles = makeStyles((theme) => ({
   tabActive: {
     color: primaryColor
   },
-  search: {
-    position: 'relative',
-    borderColor,
-    border: '1px solid',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: fade(theme.palette.common.white, 0.25)
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(3),
-      width: 'auto'
-    },
-    display: 'flex',
-    alignItems: 'center'
-  },
-  inputRoot: {
-    color: 'inherit'
-  },
-  inputInput: {
+  textField: {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch'
-    },
+    width: '21ch',
     color: 'black',
-    fontSize: '14px'
+    fontSize: '13px'
   },
   sectionDesktop: {
     display: 'none',
@@ -111,8 +85,37 @@ const Header = () => {
   const [query, setQuery] = useState('');
   const dispatch = useDispatch();
   const history = useHistory();
+  const notiRef = useRef(null);
+  const searchRef = useRef(null);
 
   const currentUser = useSelector((state) => state.userReducer.currentUser);
+  const totalPages = useSelector(
+    (state) => state.searchReducer.searchObj?.totalPages
+  );
+
+  const notifications = useSelector(
+    (state) => state.notiReducer.receivedNotifications
+  );
+
+  const unreadNotifications = notifications.filter((noti) => !noti.is_read);
+  const notiBadgeInvisible = unreadNotifications.length === 0;
+
+  useEffect(() => {
+    if (currentUser) {
+      dispatch(getNotifications());
+    }
+  }, [dispatch, currentUser]);
+
+  const handleNotiClose = () => {
+    setIsNotiOpen(false);
+  };
+
+  const handleSearchClose = () => {
+    setIsSearchOpen(false);
+  };
+
+  useOnClickOutside(notiRef, handleNotiClose);
+  useOnClickOutside(searchRef, handleSearchClose);
 
   const handleClickLogout = () => {
     dispatch(logout());
@@ -123,14 +126,13 @@ const Header = () => {
   };
 
   useEffect(() => {
-    // if ()
-    if (query !== '' && window.location.pathname !== '/search') {
+    if (totalPages > 0 && window.location.pathname !== '/search') {
       setIsSearchOpen(true);
     } else {
       setIsSearchOpen(false);
     }
     dispatch(fetchSearchResults(1, query));
-  }, [dispatch, query, isSearchOpen]);
+  }, [dispatch, query, totalPages]);
 
   const handleChange = (e) => {
     const { value } = e.target;
@@ -138,7 +140,7 @@ const Header = () => {
   };
 
   const onKeySubmit = (e) => {
-    if (e.keyCode === 13 && query !== '') {
+    if (e.key === 'Enter' && query !== '') {
       setIsSearchOpen(false);
       history.push(`/search`);
     }
@@ -174,11 +176,13 @@ const Header = () => {
       <div className={classes.sectionDesktop}>
         <TextField
           required
-          id="outlined-search"
+          id="input-search-field"
+          className={classes.textField}
+          size="small"
           value={query}
           label="사용자 검색"
           type="search"
-          variant="outlined"
+          variant="standard"
           placeholder={query}
           onChange={handleChange}
           onKeyDown={onKeySubmit}
@@ -191,15 +195,16 @@ const Header = () => {
             toggleNotiOpen();
           }}
         >
-          <Badge badgeContent={3} color="primary">
+          <Badge variant="dot" invisible={notiBadgeInvisible} color="primary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
+
         <IconButton
           aria-label="account of current user"
           className={classes.iconButton}
         >
-          <Link to={`/users/${currentUser?.id}/friends`}>
+          <Link to="/my-friends">
             <AccountCircle />
           </Link>
         </IconButton>
@@ -244,8 +249,8 @@ const Header = () => {
           </Toolbar>
         </AppBar>
       </div>
-      {isNotiOpen && <NotificationDropdownList />}
-      {isSearchOpen && <SearchDropdownList />}
+      <div ref={notiRef}>{isNotiOpen && <NotificationDropdownList />}</div>
+      <div ref={searchRef}>{isSearchOpen && <SearchDropdownList />}</div>
     </>
   );
 };

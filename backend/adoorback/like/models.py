@@ -48,7 +48,7 @@ class Like(models.Model):
 
 
 @receiver(post_save, sender=Like)
-def create_noti(sender, **kwargs):
+def create_like_noti(sender, **kwargs):
     instance = kwargs['instance']
     target = instance
     origin = instance.target
