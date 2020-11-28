@@ -54,7 +54,7 @@ const FriendListWidget = () => {
             <Typography variant="h6" className={classes.title}>
               친구
             </Typography>
-            <Link to="/friend">
+            <Link to="/my-friends">
               <Button variant="outlined" size="small">
                 친구 관리
               </Button>
