@@ -47,7 +47,7 @@ export default function QuestionSelection() {
     (state) => state.questionReducer.sampleQuestions
   );
 
-  const userId = useSelector((state) => state.userReducer.user?.id);
+  const userId = useSelector((state) => state.userReducer.currentUser?.id);
   const dispatch = useDispatch();
 
   useEffect(() => {

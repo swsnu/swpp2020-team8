@@ -5,7 +5,7 @@ urlpatterns = [
     # Feed related
     path('friend/', views.FriendFeedPostList.as_view(), name='friend-feed-post-list'),
     path('anonymous/', views.AnonymousFeedPostList.as_view(), name='anonymous-feed-post-list'),
-    path('user/<int:pk>/', views.UserFeedPostList.as_view(), name='user-feed-post-list'),
+    path('users/<int:pk>/', views.UserFeedPostList.as_view(), name='user-feed-post-list'),
 
     # Article related
     path('articles/', views.ArticleList.as_view(), name='article-list'),

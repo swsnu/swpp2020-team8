@@ -20,7 +20,7 @@ const useStyles = makeStyles({
     position: 'fixed',
     top: 68,
     right: 50,
-    zIndex: 1,
+    zIndex: 2,
     boxShadow: 'rgba(0, 0, 0, 0.08) 0px 1px 12px'
   },
   notificationDropdownContent: {

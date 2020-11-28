@@ -1,20 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import InputBase from '@material-ui/core/InputBase';
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import SearchIcon from '@material-ui/icons/Search';
-import { NavLink, Link } from 'react-router-dom';
+import TextField from '@material-ui/core/TextField';
+import { NavLink, Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import useOnClickOutside from 'use-onclickoutside';
 import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
+import SearchDropdownList from './SearchDropdownList';
 import { logout } from '../modules/user';
 import { getNotifications } from '../modules/notification';
+import { fetchSearchResults } from '../modules/search';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -58,49 +60,11 @@ const useStyles = makeStyles((theme) => ({
   tabActive: {
     color: primaryColor
   },
-  search: {
-    position: 'relative',
-    borderColor,
-    border: '1px solid',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: fade(theme.palette.common.white, 0.25)
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(3),
-      width: 'auto'
-    },
-    display: 'flex',
-    alignItems: 'center'
-  },
-  searchIcon: {
-    padding: theme.spacing(0, 2),
-    height: '80%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: borderColor
-  },
-  inputRoot: {
-    color: 'inherit'
-  },
-  inputInput: {
+  textField: {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch'
-    },
+    width: '21ch',
     color: 'black',
-    fontSize: '14px'
+    fontSize: '13px'
   },
   sectionDesktop: {
     display: 'none',
@@ -117,9 +81,18 @@ const useStyles = makeStyles((theme) => ({
 const Header = () => {
   const classes = useStyles();
   const [isNotiOpen, setIsNotiOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [query, setQuery] = useState('');
   const dispatch = useDispatch();
+  const history = useHistory();
+  const notiRef = useRef(null);
+  const searchRef = useRef(null);
 
-  const user = useSelector((state) => state.userReducer.user);
+  const currentUser = useSelector((state) => state.userReducer.currentUser);
+  const totalPages = useSelector(
+    (state) => state.searchReducer.searchObj?.totalPages
+  );
+
   const notifications = useSelector(
     (state) => state.notiReducer.receivedNotifications
   );
@@ -128,10 +101,21 @@ const Header = () => {
   const notiBadgeInvisible = unreadNotifications.length === 0;
 
   useEffect(() => {
-    if (user) {
+    if (currentUser) {
       dispatch(getNotifications());
     }
-  }, [dispatch, user]);
+  }, [dispatch, currentUser]);
+
+  const handleNotiClose = () => {
+    setIsNotiOpen(false);
+  };
+
+  const handleSearchClose = () => {
+    setIsSearchOpen(false);
+  };
+
+  useOnClickOutside(notiRef, handleNotiClose);
+  useOnClickOutside(searchRef, handleSearchClose);
 
   const handleClickLogout = () => {
     dispatch(logout());
@@ -139,6 +123,27 @@ const Header = () => {
 
   const toggleNotiOpen = () => {
     setIsNotiOpen(!isNotiOpen);
+  };
+
+  useEffect(() => {
+    if (totalPages > 0 && window.location.pathname !== '/search') {
+      setIsSearchOpen(true);
+    } else {
+      setIsSearchOpen(false);
+    }
+    dispatch(fetchSearchResults(1, query));
+  }, [dispatch, query, totalPages]);
+
+  const handleChange = (e) => {
+    const { value } = e.target;
+    setQuery(value);
+  };
+
+  const onKeySubmit = (e) => {
+    if (e.key === 'Enter' && query !== '') {
+      setIsSearchOpen(false);
+      history.push(`/search`);
+    }
   };
 
   const renderHeaderSignedInItems = (
@@ -169,19 +174,19 @@ const Header = () => {
       </NavLink>
       <div className={classes.grow} />
       <div className={classes.sectionDesktop}>
-        <div className={classes.search}>
-          <div className={classes.searchIcon}>
-            <SearchIcon />
-          </div>
-          <InputBase
-            placeholder="사용자 검색"
-            classes={{
-              root: classes.inputRoot,
-              input: classes.inputInput
-            }}
-            inputProps={{ 'aria-label': 'search' }}
-          />
-        </div>
+        <TextField
+          required
+          id="input-search-field"
+          className={classes.textField}
+          size="small"
+          value={query}
+          label="사용자 검색"
+          type="search"
+          variant="standard"
+          placeholder={query}
+          onChange={handleChange}
+          onKeyDown={onKeySubmit}
+        />
         <IconButton
           aria-label="show new notifications"
           className={`${classes.iconButton} noti-button`}
@@ -199,7 +204,7 @@ const Header = () => {
           aria-label="account of current user"
           className={classes.iconButton}
         >
-          <Link to={`/users/${user?.id}`}>
+          <Link to="/my-friends">
             <AccountCircle />
           </Link>
         </IconButton>
@@ -218,14 +223,13 @@ const Header = () => {
       </div>
     </>
   );
-
   return (
     <>
       <div className={classes.grow}>
         <AppBar position="static" className={classes.header}>
           <Toolbar>
             <Link to="/friends" className={classes.logo} />
-            {user !== null ? (
+            {currentUser !== null ? (
               renderHeaderSignedInItems
             ) : (
               <>
@@ -245,14 +249,9 @@ const Header = () => {
           </Toolbar>
         </AppBar>
       </div>
-      {isNotiOpen && (
-        <NotificationDropdownList
-          setIsNotiOpen={setIsNotiOpen}
-          notifications={notifications}
-        />
-      )}
+      <div ref={notiRef}>{isNotiOpen && <NotificationDropdownList />}</div>
+      <div ref={searchRef}>{isSearchOpen && <SearchDropdownList />}</div>
     </>
   );
 };
-
 export default Header;

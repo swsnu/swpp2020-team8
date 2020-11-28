@@ -16,6 +16,7 @@ import PrivateRoute from './components/PrivateRoute';
 import QuestionDetail from './pages/QuestionDetail';
 import PostDetail from './pages/PostDetail';
 import FriendsPage from './pages/FriendsPage';
+import SearchResults from './pages/SearchResults';
 import NotificationPage from './pages/NotificationPage';
 import PostEdit from './pages/PostEdit';
 import UserPage from './pages/UserPage';
@@ -32,14 +33,13 @@ const theme = createMuiTheme({
 });
 
 const App = () => {
+  const currentUser = useSelector((state) => state.userReducer.currentUser);
   const dispatch = useDispatch();
   const history = useHistory();
-
-  const user = useSelector((state) => state.userReducer.user);
   const selectQuestion = useSelector(
     (state) => state.userReducer.selectQuestion
   );
-  const signUpRedirectPath = user?.question_history
+  const signUpRedirectPath = currentUser?.question_history
     ? '/friends'
     : 'select-questions';
 
@@ -47,17 +47,18 @@ const App = () => {
     // eslint-disable-next-line no-unused-vars
     return history.listen((location) => {
       // console.log(`You changed the page to: ${location.pathname}`);
-      if (user) {
+      if (currentUser) {
         dispatch(getNotifications());
       }
     });
-  }, [history, dispatch, user]);
+  }, [history, dispatch, currentUser]);
 
   return (
     <MuiThemeProvider theme={theme}>
       <GlobalStyle />
       <Header />
-      {user === null || (!selectQuestion && user?.question_history === null) ? (
+      {currentUser == null ||
+      (!selectQuestion && currentUser?.question_history === null) ? (
         <Switch>
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={SignUp} />
@@ -107,6 +108,8 @@ const App = () => {
                 path="/:postType/:id/edit"
                 component={PostEdit}
               />
+              <Route exact path="/search" component={SearchResults} />
+
               <PrivateRoute path="/:postType/:id" component={PostDetail} />
               <PrivateRoute exact path="/my-friends" component={FriendsPage} />
               <Redirect exact path="/" to="/friends" />

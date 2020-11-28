@@ -5,12 +5,12 @@ import { useSelector } from 'react-redux';
 
 // eslint-disable-next-line react/prop-types
 const PrivateRoute = ({ component: Component, ...rest }) => {
-  const user = useSelector((state) => state.userReducer.user);
+  const currentUser = useSelector((state) => state.userReducer.currentUser);
   return (
     <Route
       {...rest}
       render={(props) =>
-        user !== null ? (
+        currentUser !== null ? (
           <Component {...props} {...rest} />
         ) : (
           <Redirect to="/login" />
