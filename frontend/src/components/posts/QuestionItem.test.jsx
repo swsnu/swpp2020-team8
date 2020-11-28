@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/button-has-type */
+/* eslint-disable no-unused-vars */
 import { mount } from 'enzyme';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -8,10 +9,12 @@ import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 import { act } from 'react-dom/test-utils';
+import axios from '../../apis';
 import history from '../../history';
 import rootReducer from '../../modules';
 import QuestionItem from './QuestionItem';
 import { mockStore } from '../../mockStore';
+// import * as actionCreators from '../../modules/post';
 
 jest.mock('./ShareSettings', () => {
   return jest.fn((props) => {
@@ -86,6 +89,28 @@ describe('<QuestionItem/>', () => {
   });
 
   it('should toggle like', async () => {
+    jest.mock('axios');
+
+    jest.spyOn(axios, 'get').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const res = {
+          data: {
+            postInfo: {
+              target_id: 1,
+              target_type: 'Question'
+            },
+            results: [{ id: 10, target_id: 1, target_type: 'Question' }]
+          }
+        };
+        resolve(res);
+      });
+    });
+
+    jest.spyOn(axios, 'delete').mockImplementation(() => {
+      return new Promise((resolve) => {
+        resolve();
+      });
+    });
     wrapper = getWrapper();
 
     let component = wrapper.find('#user-question');
@@ -181,9 +206,7 @@ describe('<QuestionItem/>', () => {
     let component = wrapper.find('#admin-question');
     const writeButton = component.find('CreateIcon').closest('button');
 
-    await act(async () => {
-      writeButton.simulate('click');
-    });
+    writeButton.simulate('click');
 
     wrapper.update();
     component = wrapper.find('#admin-question');
@@ -194,9 +217,16 @@ describe('<QuestionItem/>', () => {
 
     expect(submitButton.length).toBe(1);
 
-    await act(async () => {
-      submitButton.simulate('click');
-    });
+    // const createResponse = jest
+    //   .spyOn(actionCreators, 'createPost')
+    //   .mockImplementation(() => {
+    //     return (dispatch) => {};
+    //   });
+
+    // await act(async () => {
+    //   submitButton.simulate('click');
+    // });
+    // expect(createResponse).toHaveBeenCalledTimes(1);
 
     wrapper.update();
     component = wrapper.find('#admin-question');

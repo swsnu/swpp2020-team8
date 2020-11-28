@@ -6,6 +6,10 @@ import {
 } from '../constants';
 import axios from '../apis';
 
+export const APPEND_QUESTIONS_REQUEST = 'post/APPEND_QUESTIONS_REQUEST';
+export const APPEND_QUESTIONS_SUCCESS = 'post/APPEND_QUESTIONS_SUCCESS';
+export const APPEND_QUESTIONS_FAILURE = 'post/APPEND_QUESTIONS_FAILURE';
+
 export const GET_SAMPLE_QUESTIONS = 'question/GET_SAMPLE_QUESTIONS';
 export const GET_SAMPLE_QUESTIONS_SUCCESS =
   'question/GET_SAMPLE_QUESTIONS_SUCCESS';
@@ -69,7 +73,8 @@ const initialState = {
   recommendedQuestions: [],
   selectedQuestion: null,
   selectedQuestionResponses: [],
-  responseRequests: []
+  responseRequests: [],
+  next: null
 };
 
 export const getSampleQuestions = () => {
@@ -120,9 +125,31 @@ export const getDailyQuestions = () => async (dispatch) => {
   } catch (err) {
     dispatch({ type: 'question/GET_DAILY_QUESTIONS_FAILURE', error: err });
   }
+  const { data } = res;
   dispatch({
     type: 'question/GET_DAILY_QUESTIONS_SUCCESS',
-    res: res?.data?.results
+    res: data.results,
+    next: data.next
+  });
+};
+
+export const appendDailyQuestions = (origin) => async (dispatch, getState) => {
+  const { next } = getState().questionReducer;
+  if (!next) return;
+  const nextUrl = next.replace('localhost:8000', 'localhost:3000');
+  let result;
+  dispatch({ type: APPEND_QUESTIONS_REQUEST });
+  try {
+    result = await axios.get(nextUrl);
+  } catch (err) {
+    dispatch({ type: APPEND_QUESTIONS_FAILURE, error: err });
+  }
+  const { data } = result;
+  dispatch({
+    type: APPEND_QUESTIONS_SUCCESS,
+    questions: data.results,
+    next: data.next,
+    origin
   });
 };
 
@@ -242,7 +269,19 @@ export default function questionReducer(state = initialState, action) {
     case GET_DAILY_QUESTIONS_SUCCESS:
       return {
         ...state,
-        dailyQuestions: action.res
+        dailyQuestions: action.res,
+        next: action.next
+      };
+    case APPEND_QUESTIONS_REQUEST:
+      return {
+        ...state,
+        next: null
+      };
+    case APPEND_QUESTIONS_SUCCESS:
+      return {
+        ...state,
+        dailyQuestions: [...state.dailyQuestions, ...action.questions],
+        next: action.next
       };
     case GET_RANDOM_QUESTIONS:
       const { dailyQuestions } = state;

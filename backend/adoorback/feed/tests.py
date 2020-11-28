@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 
 from account.models import Friendship
 from feed.models import Article, Response, Question, Post, ResponseRequest
+from notification.models import Notification
 
 from adoorback.utils.seed import set_seed, fill_data
 from adoorback.utils.content_types import get_content_type
@@ -353,9 +354,13 @@ class ResponseRequestAPITestCase(APITestCase):
                                             content="test_question", is_admin_question=False)
         question_2 = Question.objects.create(author_id=current_user.id,
                                             content="test_question", is_admin_question=False)
+
+        prev_noti_count = Notification.objects.count()
         ResponseRequest.objects.create(actor=current_user, recipient=friend_user_1, question=question_1)
         ResponseRequest.objects.create(actor=current_user, recipient=friend_user_2, question=question_2)
         ResponseRequest.objects.create(actor=friend_user_1, recipient=friend_user_2, question=question_1)
+        curr_noti_count = Notification.objects.count()
+        self.assertGreater(curr_noti_count, prev_noti_count)
 
         with self.login(username=current_user.username, password='password'):
             response = self.get(self.reverse('response-request-list', pk=question_1.id))

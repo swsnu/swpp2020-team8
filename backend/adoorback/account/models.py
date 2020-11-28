@@ -3,6 +3,7 @@ Define Models for account APIs
 """
 import random
 
+from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -104,6 +105,27 @@ def create_friendship(sender, **kwargs):
     else:
         return
 
+@receiver(post_save, sender=FriendRequest)
+def create_friend_request_noti(sender, **kwargs):
+    instance = kwargs['instance']
+    responded = instance.responded
+    Notification = apps.get_model('notification', 'Notification')
+    if not responded:
+        actor = instance.requester
+        recipient = instance.responder
+        origin = instance
+        target = instance
+        message = f'{actor.username}님이 친구 요청을 보냈습니다.'
+        Notification.objects.create(actor = actor, recipient = recipient, message = message,
+            origin = origin, target = target)
+    else:
+        actor = instance.responder
+        recipient = instance.requester
+        origin = actor
+        target = instance
+        message = f'{actor.username}님과 친구가 되었습니다.'
+        Notification.objects.create(actor = actor, recipient = recipient, message = message,
+            origin = origin, target = target)
 
 @receiver(post_save, sender=Friendship)
 def create_reverse_friendship(sender, **kwargs):
@@ -114,7 +136,6 @@ def create_reverse_friendship(sender, **kwargs):
         sender.objects.get(user_id=friend_id, friend_id=user_id)
     except sender.DoesNotExist:
         sender.objects.create(user_id=friend_id, friend_id=user_id)
-
 
 @receiver(post_delete, sender=Friendship)
 def delete_reverse_friendship(sender, **kwargs):

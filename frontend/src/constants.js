@@ -624,3 +624,14 @@ export const mockResponseRequests = [
     question_id: 20
   }
 ];
+export const mockLike = {
+  id: 2,
+  type: 'Like',
+  target_type: 'Article',
+  target_id: 13,
+  user: 'http://localhost:8000/api/user/10/',
+  user_detail: {
+    id: 1,
+    username: 'hawkinscameron'
+  }
+};
