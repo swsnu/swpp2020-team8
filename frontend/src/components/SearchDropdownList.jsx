@@ -3,7 +3,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
-import FriendItem from './FriendItem';
+import FriendItem from './friends/FriendItem';
 
 const useStyles = makeStyles({
   searchDropdown: {
@@ -24,13 +24,11 @@ const useStyles = makeStyles({
 
 const SearchDropdownList = () => {
   const classes = useStyles();
-  const results = useSelector((state) => state.searchReducer.results);
+  const results = useSelector((state) => state.searchReducer.searchObj.results);
 
-  const userList = results?.map((user) => {
-    return (
-      <FriendItem key={user.id} friendObj={user} message={user.username} />
-    );
-  });
+  const userList = results?.map((user) => (
+    <FriendItem key={user.id} friendObj={user} isWidget />
+  ));
 
   return (
     <Card variant="outlined" className={classes.searchDropdown}>

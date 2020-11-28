@@ -1,40 +1,44 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
 
 const PageNavigation = (props) => {
   const {
-    numResults,
+    totalPages,
+    currentPageNo,
     showPrevLink,
     showNextLink,
     handlePrevClick,
     handleNextClick
   } = props;
   return (
-    <div className="nav-link-container">
-      {numResults === 0 ? (
-        <span />
-      ) : (
-        <span>
-          {showPrevLink ? (
-            <Button variant="contained" onClick={handlePrevClick}>
+    <div>
+      {totalPages !== 0 && (
+        <div style={{ textAlign: 'center' }}>
+          <ButtonGroup
+            variant="text"
+            color="secondary"
+            aria-label="text secondary button group"
+          >
+            <Button
+              className="prev-button"
+              disabled={!showPrevLink}
+              onClick={handlePrevClick}
+            >
               이전
             </Button>
-          ) : (
-            <Button variant="contained" disabled onClick={handlePrevClick}>
-              이전
+            <Button disabled color="primary">
+              {currentPageNo}
             </Button>
-          )}
-          <span> </span>
-          {showNextLink ? (
-            <Button variant="contained" onClick={handleNextClick}>
+            <Button
+              className="next-button"
+              disabled={!showNextLink}
+              onClick={handleNextClick}
+            >
               다음
             </Button>
-          ) : (
-            <Button variant="contained" disabled onClick={handleNextClick}>
-              다음
-            </Button>
-          )}
-        </span>
+          </ButtonGroup>
+        </div>
       )}
     </div>
   );

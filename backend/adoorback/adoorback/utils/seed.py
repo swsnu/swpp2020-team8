@@ -138,6 +138,7 @@ def set_seed(n):
     logging.info(
         f"{Like.objects.count()} Like(s) created!") if DEBUG else None
 
+<<<<<<< HEAD
     # # Seed Notification for likes
     # likes = Like.objects.all()
     # for like in likes[:n]:
@@ -162,6 +163,8 @@ def set_seed(n):
     # logging.info(
     #     f"{Notification.objects.all().count()} Notification(s) created!") if DEBUG else None
 
+=======
+>>>>>>> 65942497e3f92c22a028f2325d6eba1bdc46dd9a
     # Seed Friendship
     user_1 = User.objects.get(id=1)
     user_2 = User.objects.get(id=2)

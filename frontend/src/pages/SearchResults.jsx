@@ -2,8 +2,8 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React from 'react';
 import styled from 'styled-components';
-// import CircularProgress from '@material-ui/core/CircularProgress';
 import { useDispatch, useSelector } from 'react-redux';
+// import LinearProgress from '@material-ui/core/LinearProgress';
 import FriendItem from '../components/friends/FriendItem';
 import PageNavigation from '../components/PageNavigation';
 import { fetchSearchResults } from '../modules/search';
@@ -22,52 +22,44 @@ FriendListWrapper.displayName = 'FriendListWrapper';
 
 export default function SearchResults() {
   const dispatch = useDispatch();
+  const searchObj = useSelector((state) => state.searchReducer.searchObj);
 
-  const query = useSelector((state) => state.searchReducer.query);
-  const results = useSelector((state) => state.searchReducer.results);
-  const loading = useSelector((state) => state.searchReducer.loading);
-  const message = useSelector((state) => state.searchReducer.message);
-  const totalPages = useSelector((state) => state.searchReducer.totalPages);
-  const currentPageNo = useSelector(
-    (state) => state.searchReducer.currentPageNo
-  );
-  const numResults = useSelector((state) => state.searchReducer.numResults);
-  const searchError = useSelector((state) => state.searchReducer.searchError);
-
-  const showPrevLink = currentPageNo > 1;
-  const showNextLink = totalPages > currentPageNo;
+  const showPrevLink = searchObj.currentPageNo > 1;
+  const showNextLink = searchObj.totalPages > searchObj.currentPageNo;
 
   const handlePageClick = (type, event) => {
     event.preventDefault();
     const updatePageNo =
-      type === 'prev' ? currentPageNo - 1 : currentPageNo + 1;
+      type === 'prev'
+        ? searchObj.currentPageNo - 1
+        : searchObj.currentPageNo + 1;
 
-    if (!loading) {
-      dispatch(fetchSearchResults(updatePageNo, query));
+    if (!searchObj.loading) {
+      dispatch(fetchSearchResults(updatePageNo, searchObj.query));
     }
   };
 
   const renderSearchResults = () => {
-    const userItemList = results?.map((user) => {
+    const userItemList = searchObj.results?.map((user) => {
       return <FriendItem key={user.id} friendObj={user} />;
     });
 
-    if (Object.keys(results).length && results.length) {
+    if (Object.keys(searchObj.results).length && searchObj.results.length) {
       return (
         <span>
-          {searchError ? (
-            message && <p className="message">{message}</p>
+          {searchObj.searchError ? (
+            searchObj.message && <p className="message">{searchObj.message}</p>
           ) : (
             <FriendListWrapper>
               <h3>
                 친구 목록
-                {`(${numResults})`}
+                {`(${searchObj.numResults})`}
               </h3>
-              <h5>
-                페이지
-                {` ${currentPageNo}`}
-              </h5>
-              {/* {loading && numResults > 0 ? <CircularProgress /> : <span />} */}
+              {/* {searchObj.loading && searchObj.numResults > 0 ? ( */}
+              {/*  <LinearProgress /> */}
+              {/* ) : ( */}
+              {/*  <span /> */}
+              {/* )} */}
               {userItemList}
             </FriendListWrapper>
           )}
@@ -79,18 +71,11 @@ export default function SearchResults() {
 
   return (
     <span>
-      <PageNavigation
-        numResults={numResults}
-        showPrevLink={showPrevLink}
-        showNextLink={showNextLink}
-        handlePrevClick={(event) => handlePageClick('prev', event)}
-        handleNextClick={(event) => handlePageClick('next', event)}
-      />
-
       {renderSearchResults()}
 
       <PageNavigation
-        numResults={numResults}
+        totalPages={searchObj.totalPages}
+        currentPageNo={searchObj.currentPageNo}
         showPrevLink={showPrevLink}
         showNextLink={showNextLink}
         handlePrevClick={(event) => handlePageClick('prev', event)}

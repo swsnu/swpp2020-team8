@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
@@ -5,10 +6,12 @@ import { Router } from 'react-router-dom';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
+import { act } from 'react-dom/test-utils';
 import SearchResults from './SearchResults';
 import rootReducer from '../modules';
 import history from '../history';
 import { mockStore } from '../mockStore';
+import * as actionCreators from '../modules/user';
 
 describe('<SearchResults /> unit test', () => {
   const mStore = createStore(
