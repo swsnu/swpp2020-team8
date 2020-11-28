@@ -14,7 +14,7 @@ const PageNavigation = (props) => {
   return (
     <div>
       {totalPages !== 0 && (
-        <span>
+        <div style={{ textAlign: 'center' }}>
           <ButtonGroup
             variant="text"
             color="secondary"
@@ -38,7 +38,7 @@ const PageNavigation = (props) => {
               다음
             </Button>
           </ButtonGroup>
-        </span>
+        </div>
       )}
     </div>
   );
