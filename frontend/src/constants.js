@@ -988,3 +988,28 @@ export const mockNotifications = [
     ]
   }
 ];
+export const mockResponseRequests = [
+  {
+    id: 18,
+    actor_id: 3,
+    recipient_id: 1,
+    question_id: 20
+  },
+  {
+    id: 18,
+    actor_id: 3,
+    recipient_id: 2,
+    question_id: 20
+  }
+];
+export const mockLike = {
+  id: 2,
+  type: 'Like',
+  target_type: 'Article',
+  target_id: 13,
+  user: 'http://localhost:8000/api/user/10/',
+  user_detail: {
+    id: 1,
+    username: 'hawkinscameron'
+  }
+};

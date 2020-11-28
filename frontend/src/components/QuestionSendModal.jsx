@@ -4,33 +4,14 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import { makeStyles } from '@material-ui/core/styles';
-import { Button } from '@material-ui/core';
-import styled from 'styled-components';
-// import { useDispatch } from 'react-redux';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
-import ListItemText from '@material-ui/core/ListItemText';
-import FaceIcon from '@material-ui/icons/Face';
-import { getFriendList } from '../modules/friend';
-import { FriendItemWrapper } from './friends/FriendItem';
+import styled from 'styled-components';
+import { getResponseRequestsByQuestion } from '../modules/question';
+import QuestionSendFriendItem from './QuestionSendFriendItem';
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
-    position: 'absolute',
-    width: 550,
-    backgroundColor: theme.palette.background.paper,
-    border: 'none',
-    borderRadius: '4px',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2),
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%,-50%)',
-    outline: 0
-  },
   content: {
     padding: theme.spacing(1, 2, 2, 2)
   },
@@ -46,36 +27,10 @@ const useStyles = makeStyles((theme) => ({
     top: theme.spacing(1),
     color: theme.palette.grey[500]
   },
-  submitButton: {
-    boxShadow: 'none',
-    opacity: 0.8,
-    '&:hover': {
-      boxShadow: 'none',
-      opacity: 1
-    }
-  },
-  submitDetail: {
-    fontSize: '12px',
-    color: 'grey',
-    marginRight: theme.spacing(1)
-  },
   list: {
     paddingTop: 0
-  },
-  friend: {
-    fontSize: 14
-  },
-  username: {
-    fontSize: 14,
-    marginLeft: theme.spacing(1)
   }
 }));
-
-const SubmitButtonWrapper = styled.div`
-  display: flex;
-  flex-direction: row-reverse;
-  align-items: center;
-`;
 
 const Question = styled.div`
   text-align: center;
@@ -83,51 +38,29 @@ const Question = styled.div`
   font-size: 15px;
 `;
 
-FriendItemWrapper.displayName = 'FriendItemWrapper';
-
-const QuestionSendFriendItem = ({ friendObj, isWidget = false }) => {
-  const classes = useStyles();
-  const { username } = friendObj;
-  const [checked, setChecked] = React.useState(false);
-  const handleChange = (event) => {
-    setChecked(event.target.checked);
-  };
-
-  return (
-    <FriendItemWrapper isWidget={isWidget}>
-      <Checkbox
-        checked={checked}
-        onChange={handleChange}
-        inputProps={{ 'aria-label': 'primary checkbox' }}
-      />
-      <FaceIcon />
-      <ListItemText
-        classes={{ primary: classes.username }}
-        primary={username}
-      />
-    </FriendItemWrapper>
-  );
-};
-
 const QuestionSendModal = ({ questionObj, open, handleClose }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const friendList = useSelector((state) => state.friendReducer.friendList);
+  const responseRequests = useSelector(
+    (state) => state.questionReducer.responseRequests
+  );
 
   useEffect(() => {
-    dispatch(getFriendList());
-  }, [dispatch]);
+    dispatch(getResponseRequestsByQuestion(questionObj.id));
+  }, [dispatch, questionObj]);
 
   const friendItemList = friendList?.map((friend) => {
     return (
-      <QuestionSendFriendItem key={friend.id} friendObj={friend} isWidget />
+      <QuestionSendFriendItem
+        key={friend.id}
+        questionObj={questionObj}
+        friendObj={friend}
+        isWidget
+        sended={responseRequests?.find((r) => r.recipient_id === friend.id)}
+      />
     );
   });
-
-  const onClickSendButton = () => {
-    // TODO: question send API Linking
-    handleClose();
-  };
 
   return (
     <Dialog fullWidth onClose={handleClose} maxWidth="sm" open={open}>
@@ -148,18 +81,6 @@ const QuestionSendModal = ({ questionObj, open, handleClose }) => {
         <List className={classes.list} aria-label="friend list">
           {friendItemList}
         </List>
-        <FormHelperText> 한 명 이상 선택해주세요 :)</FormHelperText>
-        <SubmitButtonWrapper>
-          <Button
-            size="medium"
-            variant="contained"
-            color="primary"
-            className={classes.submitButton}
-            onClick={onClickSendButton}
-          >
-            보내기
-          </Button>
-        </SubmitButtonWrapper>
       </DialogContent>
     </Dialog>
   );

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
@@ -5,10 +6,12 @@ import { Router } from 'react-router-dom';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
+import { act } from 'react-dom/test-utils';
 import PostItem from './PostItem';
 import history from '../../history';
 import rootReducer from '../../modules';
 import { mockStore } from '../../mockStore';
+import * as actionCreators from '../../modules/like';
 
 const samplePostObj = {
   id: 0,
@@ -122,11 +125,37 @@ describe('<PostItem /> unit mount test', () => {
     const likeCount = component.find('#like-count');
     expect(likeButton).toBeTruthy();
     expect(unlikeButton.length).toBe(0);
-    likeButton.simulate('click');
+
+    const toggleLike = jest
+      .spyOn(actionCreators, 'likePost')
+      .mockImplementation(() => {
+        return (dispatch) => {};
+      });
+
+    await act(async () => {
+      likeButton.simulate('click');
+    });
+
+    expect(toggleLike).toHaveBeenCalledTimes(1);
+
     await new Promise((resolve) => setTimeout(resolve, 500));
+    component.update();
+
     unlikeButton = component.find('.unlike').at(0);
     expect(unlikeButton).toBeTruthy();
-    unlikeButton.simulate('click');
+
+    const toggleUnlike = jest
+      .spyOn(actionCreators, 'unlikePost')
+      .mockImplementation(() => {
+        return (dispatch) => {};
+      });
+
+    unlikeButton = component.find('.unlike').at(0);
+    await act(async () => {
+      unlikeButton.simulate('click');
+    });
+
+    expect(toggleUnlike).toHaveBeenCalledTimes(1);
     await new Promise((resolve) => setTimeout(resolve, 500));
     expect(likeCount).toMatchObject({});
   });

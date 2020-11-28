@@ -17,6 +17,7 @@ import {
 } from '../../styles';
 import CommentItem from '../comments/CommentItem';
 import NewComment from '../comments/NewComment';
+import { likePost, unlikePost } from '../../modules/like';
 import { createComment, deletePost } from '../../modules/post';
 import AlertDialog from '../common/AlertDialog';
 
@@ -81,10 +82,16 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
   };
 
   const toggleLike = () => {
+    const postInfo = {
+      target_type: postObj.type,
+      target_id: postObj.id
+    };
     if (liked) {
       setLikeCount((prev) => prev - 1);
+      dispatch(unlikePost(postInfo));
     } else {
       setLikeCount((prev) => prev + 1);
+      dispatch(likePost(postInfo));
     }
     setLiked((prev) => !prev);
   };
