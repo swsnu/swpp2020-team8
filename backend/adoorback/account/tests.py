@@ -9,6 +9,7 @@ from adoorback.utils.seed import set_seed
 
 
 from account.models import Friendship, FriendRequest
+from notification.models import Notification
 
 User = get_user_model()
 N = 10
@@ -269,12 +270,15 @@ class FriendRequestAPITestCase(APITestCase):
         friend_user_1 = self.make_user(username='friend_user_1')
         friend_user_2 = self.make_user(username='friend_user_2')
 
+        prev_noti_count = Notification.objects.count()
         FriendRequest.objects.create(
             requester=current_user, responder=friend_user_1, responded=False)
         FriendRequest.objects.create(
             requester=current_user, responder=friend_user_2, responded=False)
         FriendRequest.objects.create(
             requester=friend_user_1, responder=friend_user_2, responded=False)
+        curr_noti_count = Notification.objects.count()
+        self.assertEqual(curr_noti_count, prev_noti_count + 3)
 
         with self.login(username=current_user.username, password='password'):
             response = self.get('user-friend-request-list')
