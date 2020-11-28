@@ -4,7 +4,6 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from account import views
 
-
 urlpatterns = [
     # User Profile related
     path('', views.UserList.as_view(), name='user-list'),
@@ -18,7 +17,8 @@ urlpatterns = [
          name='signup-questions'),
 
     # Current User Related
-    path('me/', views.current_user, name='current-user'),
+    path('me/', views.CurrentUserProfile.as_view(), name='current-user'),
+    path('me/friends/', views.CurrentUserFriendList.as_view(), name='current-user-friends'),
 
     # Token related
     path('token/', ensure_csrf_cookie(TokenObtainPairView.as_view()),
@@ -27,10 +27,7 @@ urlpatterns = [
     path('token/verify/', TokenVerifyView.as_view(), name='token-verify'),
 
     # Friendship related
-    path('friends/', views.UserFriendList.as_view(),
-         name='user-friend-list'),
-    path('friendship/<int:pk>/', views.UserFriendshipDestroy.as_view(),
-         name='user-friend-destroy'),
+    path('friend/<int:pk>/', views.UserFriendDestroy.as_view(), name='user-friend-destroy'),
 
     # FriendRequest related
     path('friend-requests/', views.UserFriendRequestList.as_view(),

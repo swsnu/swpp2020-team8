@@ -15,7 +15,8 @@ def notification_list(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=401)
 
-    notifications = Notification.objects.filter(recipient_id=request.user.id, is_visible=True).order_by('-created_at')
+    notifications = Notification.objects.filter(recipient_id=request.user.id,
+                                                is_visible=True).order_by('-created_at')
     paginator = PageNumberPagination()
     paginator.page_size = 15
 
@@ -29,6 +30,7 @@ def notification_list(request):
         paginated_result = paginator.paginate_queryset(notifications, request)
         serializer = NotificationSerializer(paginated_result, many=True, context={'request': request})
         return paginator.get_paginated_response(serializer.data)
+
 
 class NotificationDetail(generics.UpdateAPIView):
     queryset = Notification.objects.all()

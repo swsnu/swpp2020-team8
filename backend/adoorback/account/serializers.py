@@ -3,7 +3,7 @@ import random
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-from account.models import FriendRequest, Friendship
+from account.models import FriendRequest
 from adoorback.settings import BASE_URL
 
 User = get_user_model()
@@ -66,15 +66,6 @@ class UserFriendListSerializer(serializers.ModelSerializer):
         fields = ['friend_ids']
 
 
-class UserFriendshipDetailSerializer(serializers.ModelSerializer):
-    user_id = serializers.IntegerField()
-    friend_id = serializers.IntegerField()
-
-    class Meta:
-        model = Friendship
-        fields = ['user_id', 'friend_id']
-
-
 class UserFriendRequestSerializer(serializers.ModelSerializer):
     requester_id = serializers.IntegerField()
     requestee_id = serializers.IntegerField()
@@ -99,14 +90,10 @@ class UserFriendshipStatusSerializer(AuthorFriendSerializer):
                list(obj.received_friend_requests.values_list('requester_id', flat=True))
 
     def get_are_friends(self, obj):
-        user_id=self.context.get('request', None).user.id
-        if user_id == obj.id:
+        user = self.context.get('request', None).user
+        if user == obj:
             return None
-        elif Friendship.objects.filter(user_id=self.context.get('request', None).user.id,
-                                       friend_id=obj.id).exists():
-            return True
-        else:
-            return False
+        return User.are_friends(user, obj)
 
     class Meta(AuthorFriendSerializer.Meta):
         model = User

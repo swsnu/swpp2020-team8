@@ -3,7 +3,7 @@ import csv
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
-from feed.models import Question
+from feed.models import Question, Notification
 
 
 def select_daily_questions():
