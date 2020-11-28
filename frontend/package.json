@@ -88,7 +88,8 @@
       "!src/store/index.js",
       "!src/serviceWorker.js",
       "!src/utils/dateTimeHelpers.js",
-      "!src/styles.js"
+      "!src/styles.js",
+      "!src/Friend.jsx"
     ]
   },
   "proxy": "http://localhost:8000"
