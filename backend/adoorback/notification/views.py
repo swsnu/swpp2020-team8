@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from notification.models import Notification
 from notification.serializers import NotificationSerializer
 
-from adoorback.permissions import IsRecipient
+from adoorback.permissions import IsOwnerOrReadOnly
 
 
 @api_view(["GET", "PUT"])
@@ -35,4 +35,4 @@ def notification_list(request):
 class NotificationDetail(generics.UpdateAPIView):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
-    permission_classes = [permissions.IsAuthenticated, IsRecipient]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]

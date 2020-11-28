@@ -1,5 +1,5 @@
 from rest_framework import generics
-from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated
 
 from like.models import Like
 from like.serializers import LikeSerializer
@@ -14,7 +14,7 @@ class LikeList(generics.ListCreateAPIView):
     """
     queryset = Like.objects.order_by('-id')
     serializer_class = LikeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         content_type_id = get_content_type(self.request.data['target_type']).id
@@ -29,4 +29,4 @@ class LikeDestroy(generics.DestroyAPIView):
     """
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]

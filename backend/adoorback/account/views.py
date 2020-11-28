@@ -7,7 +7,8 @@ from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 
-from adoorback.permissions import IsOwnerOrReadOnly
+from adoorback.permissions import IsCurrentUserOrReadOnly, IsRequesteeOrReadOnly, \
+    IsRequesterOrReadOnly, IsOwnerOrReadOnly
 from account.models import FriendRequest
 from account.serializers import UserProfileSerializer, \
     UserFriendRequestSerializer, \
@@ -64,6 +65,7 @@ class SignupQuestions(generics.ListAPIView):
     queryset = Question.objects.order_by('?')[:5]
     serializer_class = QuestionAnonymousSerializer
     model = serializer_class.Meta.model
+    permission_classes = [IsAuthenticated]
 
 
 class UserList(generics.ListAPIView):
@@ -88,7 +90,7 @@ class CurrentUserFriendList(generics.ListAPIView):
 
 class CurrentUserProfile(generics.RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated, IsCurrentUserOrReadOnly]
 
     def get_object(self):
         return User.objects.get(id=self.request.user.id)
@@ -118,7 +120,7 @@ class UserFriendDestroy(generics.DestroyAPIView):
     Destroy a friendship.
     """
     queryset = User.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsCurrentUserOrReadOnly]
 
     def perform_destroy(self, obj):
         obj.friends.remove(self.request.user)
@@ -135,7 +137,7 @@ class UserFriendRequestList(generics.ListCreateAPIView):
 
 class UserFriendRequestDestroy(generics.DestroyAPIView):
     serializer_class = UserFriendRequestSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsRequesterOrReadOnly]
 
     def get_object(self):
         return FriendRequest.objects.get(requester_id=self.request.user.id,
@@ -144,7 +146,7 @@ class UserFriendRequestDestroy(generics.DestroyAPIView):
 
 class UserFriendRequestUpdate(generics.UpdateAPIView):
     serializer_class = UserFriendRequestSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsRequesteeOrReadOnly]
 
     def get_object(self):
         return FriendRequest.objects.get(requester_id=self.kwargs.get('pk'),

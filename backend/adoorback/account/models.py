@@ -46,30 +46,6 @@ class User(AbstractUser, AdoorTimestampedModel):
         return list(self.friends.values_list('id', flat=True))
 
 
-#
-# class Friendship(AdoorTimestampedModel):
-#     """Friendship Model
-#     This model describes Friendship between users
-#     """
-#     user = models.ForeignKey(get_user_model(), related_name="friends", on_delete=models.CASCADE)
-#     friend = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-#
-#     objects = models.Manager()
-#
-#     class Meta:
-#         constraints = [
-#             models.UniqueConstraint(
-#                 fields=['user', 'friend', ], name='unique_friendship'),
-#         ]
-#
-#     def __str__(self):
-#         return f'{self.user} & {self.friend}'
-#
-#     @property
-#     def type(self):
-#         return self.__class__.__name__
-
-
 class FriendRequest(AdoorTimestampedModel):
     """FriendRequest Model
     This model describes FriendRequest between users

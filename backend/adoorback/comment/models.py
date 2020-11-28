@@ -47,6 +47,10 @@ class Comment(AdoorModel):
     def type(self):
         return self.__class__.__name__
 
+    @property
+    def liked_user_ids(self):
+        return self.comment_likes.values_list('user_id', flat=True)
+
     class Meta:
         base_manager_name = 'objects'
 
