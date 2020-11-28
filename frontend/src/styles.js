@@ -21,6 +21,9 @@ export const GlobalStyle = createGlobalStyle`
     outline: none;
     cursor: pointer;
   }
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 export const CommonInput = styled.input`

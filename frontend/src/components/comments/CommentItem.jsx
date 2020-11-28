@@ -42,12 +42,12 @@ export default function CommentItem({
   isReply = false,
   isAuthor = false
 }) {
-  const user = useSelector((state) => state.userReducer.user);
-  const isCommentAuthor = user?.id === commentObj?.author_detail?.id;
+  const currentUser = useSelector((state) => state.userReducer.currentUser);
+  const isCommentAuthor = currentUser?.id === commentObj?.author_detail?.id;
   const [isReplyInputOpen, setIsReplyInputOpen] = useState(false);
   const dispatch = useDispatch();
   const replyItems = commentObj?.replies?.map((reply) => {
-    const isReplyAuthor = user?.id === reply.author_detail?.id;
+    const isReplyAuthor = currentUser?.id === reply.author_detail?.id;
     if (reply.is_private && !isAuthor && !isReplyAuthor && !isCommentAuthor) {
       return null;
     }

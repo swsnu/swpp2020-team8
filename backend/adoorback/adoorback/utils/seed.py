@@ -8,10 +8,9 @@ from faker import Faker
 
 from adoorback.utils.content_types import get_content_type
 from account.models import Friendship, FriendRequest
-from feed.models import Article, Response, Question, Post, ResponseRequest
+from feed.models import Article, Response, Question, ResponseRequest
 from comment.models import Comment
 from like.models import Like
-from notification.models import Notification
 
 DEBUG = False
 
@@ -126,9 +125,9 @@ def set_seed(n):
     # Seed Like
     for i in range(n):
         user = random.choice(users)
-        article = Article.objects.get(id=i+1)
-        question = Question.objects.get(id=i+1)
-        response = Response.objects.get(id=i+1)
+        article = Article.objects.get(id=i + 1)
+        question = Question.objects.get(id=i + 1)
+        response = Response.objects.get(id=i + 1)
         comment = Comment.objects.comments_only()[i]
         reply = Comment.objects.replies_only()[i]
         Like.objects.create(user=user, target=article)
@@ -139,6 +138,7 @@ def set_seed(n):
     logging.info(
         f"{Like.objects.count()} Like(s) created!") if DEBUG else None
 
+<<<<<<< HEAD
     # # Seed Notification for likes
     # likes = Like.objects.all()
     # for like in likes[:n]:
@@ -163,6 +163,8 @@ def set_seed(n):
     # logging.info(
     #     f"{Notification.objects.all().count()} Notification(s) created!") if DEBUG else None
 
+=======
+>>>>>>> 65942497e3f92c22a028f2325d6eba1bdc46dd9a
     # Seed Friendship
     user_1 = User.objects.get(id=1)
     user_2 = User.objects.get(id=2)

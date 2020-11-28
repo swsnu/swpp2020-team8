@@ -1,6 +1,8 @@
 import Cookie from 'js.cookie';
 import axios from '../apis';
-// import axios from 'axios';
+
+export const GET_CURRENT_USER_REQUEST = 'user/GET_CURRENT_USER_REQUEST';
+export const GET_CURRENT_USER_SUCCESS = 'user/GET_CURRENT_USER_SUCCESS';
 
 export const SIGN_UP_REQUEST = 'user/SIGN_UP_REQUEST';
 export const SIGN_UP_SUCCESS = 'user/SIGN_UP_SUCCESS';
@@ -10,9 +12,7 @@ export const LOGIN_REQUEST = 'user/LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
 export const LOGIN_FAILURE = 'user/LOGIN_FAILURE';
 
-export const LOGOUT_REQUEST = 'user/LOGOUT_REQUEST';
 export const LOGOUT_SUCCESS = 'user/LOGOUT_SUCCESS';
-export const LOGOUT_FAILURE = 'user/LOGOUT_FAILURE';
 
 export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
 
@@ -25,24 +25,9 @@ export const GET_SELECTED_USER_FAILURE = 'user/GET_SELECTED_USER_FAILURE';
 const initialState = {
   loginError: false,
   signUpError: {},
-  user: null,
-  selectQuestion: true,
-  selectedUser: null
-};
-
-export const getSelectedUser = (id) => async (dispatch) => {
-  let result;
-  dispatch({ type: `user/GET_SELECTED_USER_REQUEST` });
-  try {
-    result = await axios.get(`user/${id}/`);
-  } catch (err) {
-    dispatch({ type: `user/GET_SELECTED_USER_FAILURE`, error: err });
-    return;
-  }
-  dispatch({
-    type: `user/GET_SELECTED_USER_SUCCESS`,
-    selectedUser: result?.data
-  });
+  currentUser: null,
+  selectedUser: null,
+  selectQuestion: true
 };
 
 export const skipSelectQuestions = () => {
@@ -59,7 +44,7 @@ export const requestSignUp = (signUpInfo) => {
       if (data.id) {
         dispatch({
           type: SIGN_UP_SUCCESS,
-          user: data
+          currentUser: data
         });
         dispatch(requestLogin(signUpInfo));
       } else {
@@ -89,11 +74,6 @@ export const postSelectedQuestions = (selectedQuestions, userId) => {
   };
 };
 
-async function getUser() {
-  const userInfo = await axios.get('/user/me/');
-  return userInfo.data;
-}
-
 export const requestLogin = (loginInfo) => {
   return async (dispatch) => {
     dispatch({ type: 'user/LOGIN_REQUEST' });
@@ -108,7 +88,7 @@ export const requestLogin = (loginInfo) => {
       // try login
       await axios.post('user/login/', loginInfo);
       // set user info
-      currentUser = await getUser();
+      currentUser = await getCurrentUser();
       dispatch(loginSuccess(currentUser));
     } catch (err) {
       dispatch(loginFailure(err));
@@ -118,10 +98,10 @@ export const requestLogin = (loginInfo) => {
   };
 };
 
-export const loginSuccess = (user) => {
+export const loginSuccess = (currentUser) => {
   return {
     type: LOGIN_SUCCESS,
-    user
+    currentUser
   };
 };
 
@@ -146,6 +126,25 @@ export const logout = () => async (dispatch) => {
   });
 };
 
+async function getCurrentUser() {
+  const userInfo = await axios.get('/user/me/');
+  return userInfo.data;
+}
+
+export const getSelectedUser = (id) => async (dispatch) => {
+  let result;
+  dispatch({ type: `user/GET_SELECTED_USER_REQUEST` });
+  try {
+    result = await axios.get(`user/${id}/`);
+  } catch (err) {
+    dispatch({ type: `user/GET_SELECTED_USER_FAILURE`, error: err });
+  }
+  dispatch({
+    type: `user/GET_SELECTED_USER_SUCCESS`,
+    selectedUser: result?.data
+  });
+};
+
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
     case GET_SELECTED_USER_REQUEST:
@@ -166,31 +165,31 @@ export default function userReducer(state = initialState, action) {
     case SIGN_UP_REQUEST:
       return {
         ...state,
-        user: null,
+        currentUser: null,
         signUpError: false
       };
     case LOGIN_REQUEST:
       return {
         ...state,
-        user: null,
+        currentUser: null,
         loginError: false
       };
     case LOGIN_SUCCESS:
       return {
         ...state,
-        user: action.user,
+        currentUser: action.currentUser,
         loginError: false
       };
     case LOGIN_FAILURE:
       return {
         ...state,
-        user: null,
+        currentUser: null,
         loginError: action.error
       };
     case LOGOUT_SUCCESS:
       return {
         ...state,
-        user: null,
+        currentUser: null,
         loginError: false,
         selectQuestion: true
       };
@@ -212,13 +211,20 @@ export default function userReducer(state = initialState, action) {
       };
     case UPDATE_QUESTION_SELECT: {
       const newUser = {
-        ...state.user,
+        ...state.currentUser,
         question_history: action.selectedQuestions
       };
       return {
         ...state,
-        user: newUser,
+        currentUser: newUser,
         selectQuestion: true
+      };
+    }
+    case GET_CURRENT_USER_REQUEST:
+    case GET_CURRENT_USER_SUCCESS: {
+      return {
+        ...state,
+        currentUser: action.currentUser
       };
     }
     default:

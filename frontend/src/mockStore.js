@@ -35,7 +35,7 @@ export const mockStore = {
   },
   userReducer: {
     error: false,
-    user: {
+    currentUser: {
       id: 123,
       username: 'curious',
       isLoggedIn: true
@@ -43,6 +43,22 @@ export const mockStore = {
     selectedUser: {
       id: 1,
       username: 'friend'
+    }
+  },
+  searchReducer: {
+    searchObj: {
+      searchError: false,
+      results: [
+        {
+          id: 123,
+          username: 'curious'
+        }
+      ],
+      loading: false,
+      message: '',
+      totalPages: 3,
+      currentPageNo: 2,
+      numResults: 15
     }
   }
 };
@@ -63,7 +79,7 @@ export const mockStoreBeforeLogin = {
   },
   userReducer: {
     error: false,
-    user: null
+    currentUser: null
   }
 };
 
@@ -81,7 +97,7 @@ export const mockStoreWithArticle = {
   },
   userReducer: {
     error: false,
-    user: {
+    currentUser: {
       id: 0,
       username: 'mock',
       isLoggedIn: false

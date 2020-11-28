@@ -38,9 +38,10 @@ const ShareSettingInfo = styled.span`
 export default function PostItem({ postObj, postKey, isDetailPage }) {
   const history = useHistory();
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.userReducer.user);
-  const isAuthor = postObj?.author && user?.id === postObj.author_detail?.id;
-  const isAnon = !postObj?.author_detail?.id;
+  const currentUser = useSelector((state) => state.userReducer.currentUser);
+  const isAuthor =
+    postObj?.author && currentUser?.id === postObj.author_detail?.id;
+  const isAnon = postObj?.author && !postObj?.author_detail?.id;
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -55,7 +56,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
 
   const commentList = postObj?.comments?.map((comment) => {
     if (!comment) return null;
-    const isCommentAuthor = comment.author_detail?.id === user.id;
+    const isCommentAuthor = comment.author_detail?.id === currentUser.id;
     if (comment.is_private && !isAuthor && !isCommentAuthor) return null;
     return (
       <CommentItem

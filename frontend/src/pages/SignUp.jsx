@@ -34,17 +34,19 @@ export default function SignUp() {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const { user, signUpError } = useSelector((state) => state.userReducer);
+  const { currentUser, signUpError } = useSelector(
+    (state) => state.userReducer
+  );
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isUsernameValid, setIsUsernameValid] = useState(true);
   const [isEmailValid, setIsEmailValid] = useState(true);
 
   useEffect(() => {
-    if (user && user.id) {
+    if (currentUser && currentUser.id) {
       history.push('/select-questions');
     }
-  }, [user, history]);
+  }, [currentUser, history]);
 
   useEffect(() => {
     if (!isSubmitted) return;

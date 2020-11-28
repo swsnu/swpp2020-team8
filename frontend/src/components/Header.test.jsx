@@ -5,16 +5,26 @@ import { Router } from 'react-router-dom';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
-import { mockStore, mockStoreBeforeLogin } from '../mockStore';
+import * as reactRedux from 'react-redux';
+import { mockStore } from '../mockStore';
 import rootReducer from '../modules';
 import 'jest-styled-components';
 import history from '../history';
+import axios from '../apis';
 import Header from './Header';
 import NotificationDropdownList from './NotificationDropdownList';
 
 jest.mock('../components/CustomQuestionModal', () => {
   return jest.fn(() => {
     return <div className="custom-question-modal" />;
+  });
+});
+
+jest.mock('../apis');
+
+jest.spyOn(axios, 'get').mockImplementation(() => {
+  return new Promise((resolve) => {
+    resolve();
   });
 });
 
@@ -25,18 +35,20 @@ describe('<Header/>', () => {
     composeWithDevTools(applyMiddleware(thunk))
   );
 
-  const wrapper = mount(
-    <Provider store={store}>
-      <Router history={history}>
-        <Header />
-      </Router>
-    </Provider>
-  );
+  const getWrapper = () =>
+    mount(
+      <Provider store={store}>
+        <Router history={history}>
+          <Header />
+        </Router>
+      </Provider>
+    );
 
-  it('should mount Question List Widget', async () => {
+  it('should mount Header', async () => {
     jest.mock('react-redux', () => ({
-      useDisPatch: () => jest.fn()
+      useDispatch: () => jest.fn()
     }));
+    const wrapper = getWrapper();
     const header = wrapper.find('Header');
     expect(header.length).toBe(1);
   });
@@ -46,9 +58,62 @@ describe('<Header/>', () => {
     jest.mock('react-redux', () => ({
       useDispatch: () => jest.fn()
     }));
-    const notiButton = wrapper.find('.noti-button');
+    const component = getWrapper();
+    const notiButton = component.find('.noti-button');
     notiButton.at(0).simulate('click', { stopPropagation: () => undefined });
-    expect(wrapper.find(NotificationDropdownList)).toHaveLength(1);
+    expect(component.find(NotificationDropdownList)).toHaveLength(1);
+
+    component
+      .find('div')
+      .at(0)
+      .simulate('click', { stopPropagation: () => undefined });
+    expect(component.find(NotificationDropdownList)).toMatchObject({});
+  });
+
+  it(`should set state properly on query input`, () => {
+    const query = 'TEST_QUERY';
+    const component = getWrapper();
+    const textField = component.find('#input-search-field').at(0);
+    expect(textField.length).toBe(1);
+    expect(textField.prop('value')).toEqual('');
+    const event = {
+      preventDefault() {},
+      target: { value: query }
+    };
+    textField.simulate('change', event);
+  });
+
+  it('should render search text field and dispatch when query changes', async () => {
+    jest.mock('react-redux', () => ({
+      useDispatch: () => jest.fn()
+    }));
+    const mockDispatch = jest.fn();
+    jest.spyOn(reactRedux, 'useDispatch');
+    const component = getWrapper();
+    const searchField = component.find('#input-search-field');
+    expect(searchField.length).toBeTruthy();
+    const input = searchField.at(1);
+    const { value } = input.props();
+    expect(value).toEqual('');
+
+    searchField.forEach((item, index) => {
+      const changeEvent = {
+        target: { value: 'hello' }
+      };
+      searchField.at(index).simulate('change', changeEvent);
+    });
+    component.update();
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    expect(mockDispatch.mock.calls).toBeTruthy();
+
+    searchField.at(0).simulate('keyDown', { key: 13, keyCode: 13 });
+    history.push = jest.fn();
+
+    component.update();
+    expect(component.find('SearchDropdownList')).toBeTruthy();
+
+    component.unmount();
   });
 
   it('should render and call logout when clicked', () => {
@@ -56,34 +121,18 @@ describe('<Header/>', () => {
     jest.mock('react-redux', () => ({
       useDispatch: () => jest.fn()
     }));
-    const logout = wrapper.find('#logout-button');
+    const mockDispatch = jest.fn();
+    jest.spyOn(reactRedux, 'useDispatch');
+    const component = getWrapper();
+    const logout = component.find('#logout-button');
     expect(logout.exists()).toBeTruthy();
     logout.forEach((button) => {
       button.simulate('click');
     });
 
     setTimeout(() => {
-      const dispatch = jest.fn().mockImplementation(() => false);
-      expect(dispatch).toBeCalled();
+      expect(mockDispatch).toBeCalled();
     }, 500);
-  });
-
-  it('should render signedInItems not login button', () => {
-    const BeforeLoginStore = createStore(
-      rootReducer,
-      mockStoreBeforeLogin,
-      composeWithDevTools(applyMiddleware(thunk))
-    );
-
-    const beforeLoginWrapper = mount(
-      <Provider store={BeforeLoginStore}>
-        <Router history={history}>
-          <Header />
-        </Router>
-      </Provider>
-    );
-
-    const loginButton = beforeLoginWrapper.find('#login-link').at(0);
-    expect(loginButton).toHaveLength(1);
+    component.unmount();
   });
 });

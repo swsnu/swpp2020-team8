@@ -24,7 +24,6 @@ export const DELETE_REQUEST_SUCCESS = 'friend/DELETE_REQUEST_SUCCESS';
 export const DELETE_REQUEST_FAILURE = 'friend/DELETE_REQUEST_FAILURE';
 
 export const ACCEPT_FRIEND_REQUEST = 'friend/ACCEPT_FRIEND_REQUEST';
-
 export const REJECT_FRIEND_REQUEST = 'friend/REJECT_FRIEND_REQUEST';
 
 export const getFriendList = () => async (dispatch) => {
@@ -43,7 +42,7 @@ export const getFriendList = () => async (dispatch) => {
 };
 
 export const deleteFriend = (friendId) => async (dispatch, getState) => {
-  const userId = getState().userReducer.user?.id;
+  const userId = getState().userReducer.currentUser?.id;
   dispatch({ type: DELETE_FRIEND_REQUEST, userId });
   try {
     await axios.delete(`user/friendship/${friendId}/`);

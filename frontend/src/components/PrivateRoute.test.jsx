@@ -18,7 +18,7 @@ describe('<PrivateRoute />', () => {
       postReducer: {},
       questionReducer: {},
       userReducer: {
-        user: {
+        currentUser: {
           id: 0
         }
       },
@@ -56,7 +56,7 @@ describe('<PrivateRoute />', () => {
         postReducer: {},
         questionReducer: {},
         userReducer: {
-          user: null
+          currentUser: null
         },
         loadingReducer: {}
       },

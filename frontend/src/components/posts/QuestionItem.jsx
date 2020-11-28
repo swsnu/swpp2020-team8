@@ -52,8 +52,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function QuestionItem({ questionObj, onResetContent }) {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.userReducer.user);
-  const isAuthor = user.id === questionObj.author_detail.id;
+  const currentUser = useSelector((state) => state.userReducer.currentUser);
+  const isAuthor = currentUser.id === questionObj.author_detail.id;
 
   const classes = useStyles();
   const [liked, setLiked] = useState(questionObj.current_user_liked);
