@@ -32,7 +32,7 @@ export const unlikePost = (postInfo) => async (dispatch) => {
   const likeList = data.results.filter(
     (like) => like.target_id === postId && like.target_type === postType
   );
-  const likeId = likeList[0].id;
+  const likeId = likeList[0]?.id;
   try {
     await axios.delete(`/likes/${likeId}/`);
   } catch (error) {

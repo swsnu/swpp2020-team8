@@ -610,6 +610,20 @@ export const mockFriendList = [
   }
 ];
 
+export const mockResponseRequests = [
+  {
+    id: 18,
+    actor_id: 3,
+    recipient_id: 1,
+    question_id: 20
+  },
+  {
+    id: 18,
+    actor_id: 3,
+    recipient_id: 2,
+    question_id: 20
+  }
+];
 export const mockLike = {
   id: 2,
   type: 'Like',
