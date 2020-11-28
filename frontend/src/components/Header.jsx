@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import InputBase from '@material-ui/core/InputBase';
@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
 import { logout } from '../modules/user';
+import { getNotifications } from '../modules/notification';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -119,6 +120,18 @@ const Header = () => {
   const dispatch = useDispatch();
 
   const user = useSelector((state) => state.userReducer.user);
+  const notifications = useSelector(
+    (state) => state.notiReducer.receivedNotifications
+  );
+
+  const unreadNotifications = notifications.filter((noti) => !noti.is_read);
+  const notiBadgeInvisible = unreadNotifications.length === 0;
+
+  useEffect(() => {
+    if (user) {
+      dispatch(getNotifications());
+    }
+  }, [dispatch, user]);
 
   const handleClickLogout = () => {
     dispatch(logout());
@@ -177,10 +190,11 @@ const Header = () => {
             toggleNotiOpen();
           }}
         >
-          <Badge badgeContent={3} color="primary">
+          <Badge variant="dot" invisible={notiBadgeInvisible} color="primary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
+
         <IconButton
           aria-label="account of current user"
           className={classes.iconButton}
@@ -231,7 +245,12 @@ const Header = () => {
           </Toolbar>
         </AppBar>
       </div>
-      {isNotiOpen && <NotificationDropdownList />}
+      {isNotiOpen && (
+        <NotificationDropdownList
+          setIsNotiOpen={setIsNotiOpen}
+          notifications={notifications}
+        />
+      )}
     </>
   );
 };

@@ -1,10 +1,10 @@
 // eslint-disable-next-line no-unused-vars
+import axios from '../apis';
 import {
   mockQuestions,
   // mockQuestionFeed,
   mockRecommendQuestions
 } from '../constants';
-import axios from '../apis';
 
 export const APPEND_QUESTIONS_REQUEST = 'post/APPEND_QUESTIONS_REQUEST';
 export const APPEND_QUESTIONS_SUCCESS = 'post/APPEND_QUESTIONS_SUCCESS';

@@ -30,8 +30,9 @@ const ContentWrapper = styled.div`
 const CommentWrapper = styled.div``;
 const ShareSettingsWrapper = styled.div``;
 const ShareSettingInfo = styled.span`
-  margin-right: 8px;
+  margin-right: 4px;
   color: #777;
+  font-size: 12px;
 `;
 
 export default function PostItem({ postObj, postKey, isDetailPage }) {
@@ -122,11 +123,15 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       <CreateTime createdTime={postObj.created_at} />
       <PostItemFooterWrapper>
         <ShareSettingsWrapper>
+          <ShareSettingInfo>공개범위:</ShareSettingInfo>
           {isAuthor && postObj.share_with_friends && (
-            <ShareSettingInfo>친구공개</ShareSettingInfo>
+            <ShareSettingInfo>친구</ShareSettingInfo>
           )}
+          {isAuthor &&
+            postObj.share_with_friends &&
+            postObj.share_anonymously && <ShareSettingInfo>|</ShareSettingInfo>}
           {isAuthor && postObj.share_anonymously && (
-            <ShareSettingInfo>익명공개</ShareSettingInfo>
+            <ShareSettingInfo>익명</ShareSettingInfo>
           )}
         </ShareSettingsWrapper>
         <PostItemButtonsWrapper>
