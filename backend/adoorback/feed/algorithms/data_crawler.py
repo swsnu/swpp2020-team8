@@ -7,12 +7,12 @@ from feed.models import Question
 
 
 def select_daily_questions():
-    questions = Question.objects.all().filter(
+    questions = Question.objects.filter(
         selected_date__isnull=True).order_by('?')[:30]
     # if we run out of questions to select from
     if questions.count() < 30:
-        Question.objects.all().update(selected_date=None)
-    questions |= Question.objects.all().filter(
+        Question.objects.update(selected_date=None)
+    questions |= Question.objects.filter(
         selected_date__isnull=True).order_by('?')[:(30-questions.count())]
     for question in questions:
         question.selected_date = timezone.now()

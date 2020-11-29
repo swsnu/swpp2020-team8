@@ -232,7 +232,7 @@ class QuestionDetailAnonymousResponsesSerializer(QuestionResponsiveSerializer):
     response_set = serializers.SerializerMethodField()
 
     def get_response_set(self, obj):
-        responses = obj.response_set.all().filter(share_anonymously=True)
+        responses = obj.response_set.filter(share_anonymously=True)
         return ResponseAnonymousSerializer(responses, many=True, read_only=True,
                                            context={'request': self.context.get('request', None)}).data
 

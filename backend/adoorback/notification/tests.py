@@ -20,7 +20,7 @@ class NotificationTestCase(TestCase):
         set_seed(N)
 
     def test_noti_count(self):
-        self.assertGreater(Notification.objects.all().count(), N * 2)
+        self.assertGreater(Notification.objects.count(), N * 2)
         comment_noti_count = Notification.objects.filter(
             target_type=get_comment_type()).count()
         self.assertGreater(comment_noti_count, N)
@@ -29,7 +29,7 @@ class NotificationTestCase(TestCase):
         # should be created automatically
 
     def test_noti_str(self):
-        noti = Notification.objects.all().last()
+        noti = Notification.objects.last()
         self.assertEqual(noti.__str__(), noti.message)
 
         comment_noti = Notification.objects.filter(target_type=get_comment_type()).last()
@@ -41,78 +41,78 @@ class NotificationTestCase(TestCase):
     # test on delete actor user
     def test_on_delete_actor_cascade(self):
         fill_data()
-        user = User.objects.all().last()
+        user = User.objects.last()
         user_id = user.id
         sent_notis = user.sent_noti_set.all()
-        noti_acted = Notification.objects.all().filter(actor_id=user_id)
+        noti_acted = Notification.objects.filter(actor_id=user_id)
         self.assertEqual(sent_notis.count(), noti_acted.count())
 
         user.delete()
-        self.assertEqual(User.objects.all().filter(id=user_id).count(), 0)
-        self.assertEqual(Notification.objects.all().filter(actor_id=user_id).count(), 0)
+        self.assertEqual(User.objects.filter(id=user_id).count(), 0)
+        self.assertEqual(Notification.objects.filter(actor_id=user_id).count(), 0)
 
     # test on delete recipient user
     def test_on_delete_recipient_cascade(self):
         fill_data()
-        user = User.objects.all().first()
+        user = User.objects.first()
         user_id = user.id
         received_notis = user.received_noti_set.all()
-        noti_received = Notification.objects.all().filter(user_id=user_id)
+        noti_received = Notification.objects.filter(user_id=user_id)
         self.assertEqual(received_notis.count(), noti_received.count())
 
         user.delete()
-        self.assertEqual(User.objects.all().filter(id=user_id).count(), 0)
-        self.assertEqual(Notification.objects.all().filter(user_id=user_id).count(), 0)
+        self.assertEqual(User.objects.filter(id=user_id).count(), 0)
+        self.assertEqual(Notification.objects.filter(user_id=user_id).count(), 0)
 
     # test on delete target
     def test_on_delete_target_cascade(self):
         # target = comment
         fill_data()
-        noti = Notification.objects.all().filter(target_type=get_comment_type()).last()
+        noti = Notification.objects.filter(target_type=get_comment_type()).last()
         target = noti.target
         target_id = target.id
         target.delete()
-        self.assertEqual(Notification.objects.all().filter(
+        self.assertEqual(Notification.objects.filter(
             target_type=get_comment_type(), target_id=target_id).count(), 0)
 
         # target = like
-        noti = Notification.objects.all().filter(target_type=get_like_type()).last()
+        noti = Notification.objects.filter(target_type=get_like_type()).last()
         target = noti.target
         target_id = target.id
         target.delete()
-        self.assertEqual(Notification.objects.all().filter(
+        self.assertEqual(Notification.objects.filter(
             target_type=get_like_type(), target_id=target_id).count(), 0)
 
     # test on delete origin
     def test_on_delete_origin_cascade(self):
         # origin = article
         fill_data()
-        noti = Notification.objects.all().filter(origin_type=get_article_type()).last()
+        noti = Notification.objects.filter(origin_type=get_article_type()).last()
         origin = noti.origin
         origin_id = origin.id
         origin.delete()
-        self.assertEqual(Notification.objects.all().filter(
+        self.assertEqual(Notification.objects.filter(
             origin_type=get_article_type(), origin_id=origin_id).count(), 0)
         # origin = response
-        noti = Notification.objects.all().filter(origin_type=get_response_type()).last()
+        noti = Notification.objects.filter(origin_type=get_response_type()).last()
         origin = noti.origin
         origin_id = origin.id
         origin.delete()
-        self.assertEqual(Notification.objects.all().filter(
+        self.assertEqual(Notification.objects.filter(
             origin_type=get_response_type(), origin_id=origin_id).count(), 0)
         # origin = question
-        noti = Notification.objects.all().filter(origin_type=get_question_type()).last()
+        noti = Notification.objects.filter(origin_type=get_question_type()).last()
         origin = noti.origin
         origin_id = origin.id
         origin.delete()
-        self.assertEqual(Notification.objects.all().filter(
+        self.assertEqual(Notification.objects.filter(
             origin_type=get_question_type(), origin_id=origin_id).count(), 0)
         # origin = comment
-        noti = Notification.objects.all().filter(origin_type=get_comment_type()).last()
+        noti = Notification.objects.filter(origin_type=get_comment_type()).last()
         origin = noti.origin
         origin_id = origin.id
         origin.delete()
-        self.assertEqual(Notification.objects.all().filter(
+        self.assertEqual(Notification.objects.filter(
             origin_type=get_comment_type(), origin_id=origin_id).count(), 0)
 
 
@@ -137,7 +137,7 @@ class NotificationAPITestCase(APITestCase):
         current_user = self.make_user(username='current_user')
         spy_user = self.make_user(username='spy_user')
 
-        like = Like.objects.all().first()
+        like = Like.objects.first()
         target = like
         message = 'test noti'
         Notification.objects.create(actor = current_user, user = current_user, message = message,
@@ -169,7 +169,7 @@ class NotificationAPITestCase(APITestCase):
     def test_noti_update(self):
         current_user = self.make_user(username='receiver')
         # create noti object that current user receives
-        comment = Comment.objects.all().first()
+        comment = Comment.objects.first()
         actor = comment.author
         origin = comment.target
         target = comment

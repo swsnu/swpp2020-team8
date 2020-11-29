@@ -21,12 +21,12 @@ class FeedTestCase(TestCase):
         set_seed(N)
 
     def test_feed_count(self):
-        self.assertEqual(Article.objects.all().count(), N)
+        self.assertEqual(Article.objects.count(), N)
         self.assertEqual(Question.objects.admin_questions_only().count(), N)
         self.assertEqual(Question.objects.custom_questions_only().count(), N)
         self.assertLessEqual(Question.objects.daily_questions().count(), 30)
-        self.assertEqual(Response.objects.all().count(), N)
-        self.assertEqual(Post.objects.all().count(), N*4)
+        self.assertEqual(Response.objects.count(), N)
+        self.assertEqual(Post.objects.count(), N*4)
 
     def test_feed_str(self):
         article = Article.objects.create(author_id=1, content="test_content")
@@ -44,10 +44,10 @@ class FeedTestCase(TestCase):
         self.assertGreater(questions.count(), 0)
 
         user.delete()
-        self.assertEqual(User.objects.all().filter(id=2).count(), 0)
-        self.assertEqual(Article.objects.all().filter(author_id=2).count(), 0)
-        self.assertEqual(Response.objects.all().filter(author_id=2).count(), 0)
-        self.assertEqual(Question.objects.all().filter(author_id=2).count(), 0)
+        self.assertEqual(User.objects.filter(id=2).count(), 0)
+        self.assertEqual(Article.objects.filter(author_id=2).count(), 0)
+        self.assertEqual(Response.objects.filter(author_id=2).count(), 0)
+        self.assertEqual(Question.objects.filter(author_id=2).count(), 0)
 
     # response must be deleted along with question
     def test_on_delete_question_cascade(self):
@@ -55,7 +55,7 @@ class FeedTestCase(TestCase):
         response_id = response.id
 
         response.question.delete()
-        self.assertEqual(Response.objects.all().filter(id=response_id).count(), 0)
+        self.assertEqual(Response.objects.filter(id=response_id).count(), 0)
 
     # post content must change to reflect target content
     def test_post_update(self):
@@ -63,7 +63,7 @@ class FeedTestCase(TestCase):
         response.content = "modified content"
         response.save()
 
-        self.assertEqual(Post.objects.all().filter(content_type=get_response_type(),
+        self.assertEqual(Post.objects.filter(content_type=get_response_type(),
                                                    object_id=response.id).last().content, response.content)
 
     # post content must be removed along with target
@@ -71,7 +71,7 @@ class FeedTestCase(TestCase):
         response = Response.objects.last()
         response.delete()
 
-        self.assertEqual(Post.objects.all().filter(object_id=response.id).count(), 0)
+        self.assertEqual(Post.objects.filter(object_id=response.id).count(), 0)
 
 
 class ResponseRequestTestCase(TestCase):
@@ -82,14 +82,14 @@ class ResponseRequestTestCase(TestCase):
         self.assertGreater(ResponseRequest.objects.count(), 0)  # due to unique constraint
 
     def test_on_delete_actor_cascade(self):
-        user = ResponseRequest.objects.all().first().requester
+        user = ResponseRequest.objects.first().requester
         sent_response_requests = user.sent_response_request_set.all()
         self.assertGreater(sent_response_requests.count(), 0)
 
         user.delete()
-        self.assertEqual(User.objects.all().filter(id=user.id).count(), 0)
-        self.assertEqual(ResponseRequest.objects.all().filter(requester_id=user.id).count(), 0)
-        self.assertEqual(ResponseRequest.objects.all().filter(requestee_id=user.id).count(), 0)
+        self.assertEqual(User.objects.filter(id=user.id).count(), 0)
+        self.assertEqual(ResponseRequest.objects.filter(requester_id=user.id).count(), 0)
+        self.assertEqual(ResponseRequest.objects.filter(requestee_id=user.id).count(), 0)
 
     def test_on_delete_recipient_cascade(self):
         user = ResponseRequest.objects.first().requestee
@@ -227,7 +227,7 @@ class QuestionAPITestCase(APITestCase):
             response = self.post('question-list', data=data)
             self.assertEqual(response.status_code, 201)
 
-        question_id = Question.objects.all().last().id
+        question_id = Question.objects.last().id
         with self.login(username=current_user.username, password='password'):
             data = {"content": "test content", "question_id": question_id,
                     "share_with_friends": True, "share_anonymously": True}
