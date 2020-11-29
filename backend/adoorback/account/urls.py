@@ -6,8 +6,7 @@ from account import views
 
 urlpatterns = [
     # Token related
-    path('token/', ensure_csrf_cookie(TokenObtainPairView.as_view()),
-         name='token-obtain-pair'),
+    path('token/', ensure_csrf_cookie(TokenObtainPairView.as_view()), name='token-obtain-pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token-verify'),
 

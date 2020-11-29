@@ -12,7 +12,6 @@ from like.models import Like
 from adoorback.models import AdoorModel, AdoorTimestampedModel
 from notification.models import Notification
 
-
 User = get_user_model()
 
 

@@ -157,7 +157,7 @@ class AuthAPITestCase(APITestCase):
             username="test_username", email="test@email.com", password="test_password")
 
         response = client.get('/api/user/login/')
-        self.assertEqual(response.status_code, 405)     # Request not allowed
+        self.assertEqual(response.status_code, 405)  # Request not allowed
 
         response = client.post('/api/user/login/', {},
                                content_type='application/json')
@@ -194,7 +194,7 @@ class AuthAPITestCase(APITestCase):
         }
 
         response = client.get('/api/user/signup/')
-        self.assertEqual(response.status_code, 405)     # Request not allowed
+        self.assertEqual(response.status_code, 405)  # Request not allowed
 
         response = client.post('/api/user/signup/',
                                signup_data, content_type='application/json')

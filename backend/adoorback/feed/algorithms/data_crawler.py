@@ -13,7 +13,7 @@ def select_daily_questions():
     if questions.count() < 30:
         Question.objects.update(selected_date=None)
     questions |= Question.objects.filter(
-        selected_date__isnull=True).order_by('?')[:(30-questions.count())]
+        selected_date__isnull=True).order_by('?')[:(30 - questions.count())]
     for question in questions:
         question.selected_date = timezone.now()
         question.save()

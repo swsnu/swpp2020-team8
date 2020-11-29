@@ -18,7 +18,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
 
-
 urlpatterns = [
     path('api/likes/', include('like.urls')),
     path('api/comments/', include('comment.urls')),

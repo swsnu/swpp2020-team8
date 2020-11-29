@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 from comment.models import Comment
 
 from adoorback.utils.seed import set_seed, fill_data
-from adoorback.utils.content_types import get_article_type, get_response_type, get_comment_type
+from adoorback.content_types import get_article_type, get_response_type, get_comment_type
 
 User = get_user_model()
 N = 10
@@ -16,7 +16,7 @@ class CommentTestCase(TestCase):
         set_seed(N)
 
     def test_comment_count(self):
-        self.assertEqual(Comment.objects.count(), N*3)
+        self.assertEqual(Comment.objects.count(), N * 3)
 
     def test_comment_str(self):
         comment = Comment.objects.last()
@@ -76,7 +76,7 @@ class CommentAPITestCase(APITestCase):
         with self.login(username=current_user.username, password='password'):
             response = self.get('comment-list')
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.data['count'], N*3)
+            self.assertEqual(response.data['count'], N * 3)
 
     def test_reply_list(self):
         current_user = self.make_user(username='current_user')

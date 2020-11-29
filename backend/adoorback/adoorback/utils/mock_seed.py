@@ -8,14 +8,14 @@ import pandas as pd
 from django.contrib.auth import get_user_model
 from faker import Faker
 
-from adoorback.utils.content_types import get_article_type, get_question_type, \
+from adoorback.content_types import get_article_type, get_question_type, \
     get_response_type, get_comment_type
 from account.models import FriendRequest
-from feed.models import Article, Response, Question
+from feed.models import Article, Response, Question, ResponseRequest
 from comment.models import Comment
 from like.models import Like
 
-DEBUG = False
+DEBUG = True
 
 
 def set_question_seed():
@@ -59,15 +59,21 @@ def set_mock_seed():
         User.objects.create_superuser(
             username='adoor', email='adoor.team@gmail.com', password='adoor2020:)',
             question_history=",".join(map(str, faker.random_elements(
-                                                  elements=range(1, 1501),
-                                                  length=random.randint(3, 10),
-                                                  unique=True))))
+                elements=range(1, 1501),
+                length=random.randint(3, 10),
+                unique=True))))
     logging.info("Superuser created!") if DEBUG else None
 
+    # Seed Known Non-Superuser (for Locust testing)
+    User.objects.create_user(username="adoor_user",
+                             email="adoor@gmail.com",
+                             password="adoor2020:)",
+                             question_history="3,4,7,14")
+
     # Seed User
-    for i in range(100):
-        User.objects.create_user(username=faker.user_name() + str(i),
-                                 email=faker.email(),
+    for i in range(1000):
+        User.objects.create_user(username=str(i) + faker.user_name(),
+                                 email=str(i) + faker.email(),
                                  password=faker.password(),
                                  question_history=",".join(map(str,
                                                                faker.random_elements(
@@ -75,11 +81,26 @@ def set_mock_seed():
                                                                    length=random.randint(3, 10),
                                                                    unique=True))))
     logging.info(
-        f"{User.objects.count()} User(s) created!") if DEBUG else None
+        f"{User.objects.count()} User created!") if DEBUG else None
 
-    # Seed Article/AdminQuestion/CustomQuestionPost
     users = User.objects.all()
-    for _ in range(1000):
+
+    # Seed Friendship
+    for user in users:
+        user.friends.add(*faker.random_elements(elements=range(1, 100), length=random.randint(0, 50), unique=True))
+    logging.info("Friendship Relations created!") if DEBUG else None
+
+    # Seed Friend Request
+    for _ in range(500):
+        requester = random.choice(users)
+        requestee = random.choice(users.exclude(id=requester.id))
+        if not User.are_friends(requestee, requester):
+            FriendRequest.objects.create(requester=requester, requestee=requestee)
+    logging.info(
+        f"{FriendRequest.objects.count()} Friendship Requests created!") if DEBUG else None
+
+    # Seed Article
+    for _ in range(10000):
         user = random.choice(users)
         article = Article.objects.create(author=user,
                                          content=faker.bs(),
@@ -88,7 +109,11 @@ def set_mock_seed():
         if not article.share_anonymously and not article.share_with_friends:
             article.share_with_friends = True
             article.save()
-    for _ in range(500):
+    logging.info(
+        f"{Article.objects.count()} Articles created!") if DEBUG else None
+
+    # Seed Custom Question
+    for _ in range(1000):
         user = random.choice(users)
         Question.objects.create(
             author=user, is_admin_question=False, content=faker.bs())
@@ -97,25 +122,38 @@ def set_mock_seed():
     logging.info(f"{Question.objects.count()} Question(s) created!") \
         if DEBUG else None
     set_question_seed()
+    logging.info(
+        f"{Question.objects.count()} Questions created!") if DEBUG else None
+
+    # Seed Response Request
+    questions = Question.objects.all()
+    for i in range(5000):
+        question = random.choice(questions)
+        requester = random.choice(users)
+        requestee = random.choice(users.exclude(id=requester.id))
+        ResponseRequest.objects.get_or_create(requester=requester, requestee=requestee, question=question)
+    logging.info(
+        f"{ResponseRequest.objects.count()} ResponseRequests created!") if DEBUG else None
 
     # Seed Response
-    questions = Question.objects.all()
-    for _ in range(2000):
+    for _ in range(10000):
         user = random.choice(users)
         question = random.choice(questions)
-        response = Response.objects.create(author=user, content=faker.catch_phrase(), question=question,
+        response = Response.objects.create(author=user,
+                                           content=faker.catch_phrase(),
+                                           question=question,
                                            share_with_friends=random.choice([True, False]),
                                            share_anonymously=random.choice([True, False]))
         if not response.share_anonymously and not response.share_with_friends:
             response.share_with_friends = True
             response.save()
     logging.info(
-        f"{Response.objects.count()} Response(s) created!") if DEBUG else None
+        f"{Response.objects.count()} Responses created!") if DEBUG else None
 
     # Seed Comment (target=Feed)
     articles = Article.objects.all()
     responses = Response.objects.all()
-    for _ in range(5000):
+    for _ in range(50000):
         user = random.choice(users)
         article = random.choice(articles)
         response = random.choice(responses)
@@ -124,12 +162,11 @@ def set_mock_seed():
         Comment.objects.create(author=user, target=response,
                                content=faker.catch_phrase(), is_private=_ % 2)
     logging.info(
-        f"{Comment.objects.count()} Comment(s) created!") if DEBUG else None
+        f"{Comment.objects.count()} Comments created!") if DEBUG else None
 
     # Seed Reply Comment (target=Comment)
-    comment_model = get_comment_type()
     comments = Comment.objects.all()
-    for _ in range(15000):
+    for _ in range(200000):
         user = random.choice(users)
         comment = random.choice(comments)
         reply = Comment.objects.create(author=user, target=comment,
@@ -137,11 +174,11 @@ def set_mock_seed():
         if reply.target.is_private:
             reply.is_private = True
             reply.save()
-    logging.info(f"{Comment.objects.filter(content_type=comment_model).count()} Repl(ies) created!") \
+    logging.info(f"{Comment.objects.filter(content_type=get_comment_type()).count()} Replies created!") \
         if DEBUG else None
 
     # Seed Feed Like
-    for i in range(3000):
+    for i in range(50000):
         user = random.choice(users)
         article = Article.objects.get(id=i % 1000 + 1)
         question = Question.objects.get(id=i % 1500 + 1)
@@ -149,6 +186,7 @@ def set_mock_seed():
         Like.objects.get_or_create(user=user, content_type=get_article_type(), object_id=article.id)
         Like.objects.get_or_create(user=user, content_type=get_question_type(), object_id=question.id)
         Like.objects.get_or_create(user=user, content_type=get_response_type(), object_id=response.id)
+    logging.info(f"{Like.objects.count()} Likes created!") if DEBUG else None
 
     # Seed Comment Like
     for i in range(10000):
@@ -157,18 +195,5 @@ def set_mock_seed():
         reply = Comment.objects.replies_only()[i % 15000]
         Like.objects.get_or_create(user=user, content_type=get_comment_type(), object_id=comment.id)
         Like.objects.get_or_create(user=user, content_type=get_comment_type(), object_id=reply.id)
-    logging.info(
-        f"{Like.objects.count()} Like(s) created!") if DEBUG else None
-
-    # Seed Friend Request
-    for i in range(1000):
-        user_1 = random.choice(users)
-        user_2 = random.choice(users.exclude(id=user_1.id))
-
-        FriendRequest.objects.get_or_create(user=user_1, friend=user_2)
-
-    for i in range(300):
-        user_1 = random.choice(users)
-        user_2 = random.choice(users.exclude(id=user_1.id))
-
-        user_1.friends.add(user_2)
+    logging.info(f"{Like.objects.filter(content_type=get_comment_type()).count()} Comment Likes created!") \
+        if DEBUG else None

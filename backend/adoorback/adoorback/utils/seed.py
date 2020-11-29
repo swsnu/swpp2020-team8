@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from faker import Faker
 
-from adoorback.utils.content_types import get_comment_type
+from adoorback.content_types import get_comment_type
 from account.models import FriendRequest
 from feed.models import Article, Response, Question, ResponseRequest
 from comment.models import Comment
@@ -86,12 +86,10 @@ def set_seed(n):
 
     # Seed Response Request
     for i in range(n):
-        question = Question.objects.get(id=i+1)
-        random_actor_id = random.choice([1, 2, 3])
-        random_recipient_id = random.choice([i for i in range(1, 3) if i not in [random_actor_id]])
-        requester = User.objects.get(id=random_actor_id)
-        requestee = User.objects.get(id=random_recipient_id)
-        ResponseRequest.objects.create(requester=requester, requestee=requestee, question=question)
+        question = random.choice(questions)
+        requester = random.choice(users)
+        requestee = random.choice(users.exclude(id=requester.id))
+        ResponseRequest.objects.get_or_create(requester=requester, requestee=requestee, question=question)
     logging.info(
         f"{ResponseRequest.objects.count()} ResponseRequest(s) created!") if DEBUG else None
 
@@ -139,18 +137,19 @@ def set_seed(n):
     logging.info(
         f"{Like.objects.count()} Like(s) created!") if DEBUG else None
 
-    # Seed Friendship
+    # Seed Friend Request
     user_1 = User.objects.get(id=1)
     user_2 = User.objects.get(id=2)
     user_3 = User.objects.get(id=3)
-
-    # Seed Friend Request
     FriendRequest.objects.create(requester=user_2, requestee=user_1)
     FriendRequest.objects.create(requester=user_3, requestee=user_1)
     FriendRequest.objects.create(requester=user_3, requestee=user_2)
+
+    # Seed Friendship (user_1 and user_2 are friends)
     accepted_friend_request = FriendRequest.objects.first()
     accepted_friend_request.accepted = True
     accepted_friend_request.save()
+
 
 def fill_data():
     User = get_user_model()

@@ -4,12 +4,10 @@ from django.contrib.auth import get_user_model
 from notification.models import Notification
 from account.serializers import AuthorFriendSerializer, AuthorAnonymousSerializer
 
-
 User = get_user_model()
 
 
 class NotificationSerializer(serializers.ModelSerializer):
-
     actor = serializers.HyperlinkedIdentityField(
         view_name='user-detail', read_only=True)
     actor_detail = serializers.SerializerMethodField(read_only=True)

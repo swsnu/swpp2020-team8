@@ -7,7 +7,7 @@ from like.models import Like
 from notification.models import Notification
 
 from adoorback.utils.seed import set_seed, fill_data
-from adoorback.utils.content_types import get_comment_type, get_like_type, \
+from adoorback.content_types import get_comment_type, get_like_type, \
     get_article_type, get_question_type, get_response_type
 
 User = get_user_model()
@@ -140,10 +140,10 @@ class NotificationAPITestCase(APITestCase):
         like = Like.objects.first()
         target = like
         message = 'test noti'
-        Notification.objects.create(actor = current_user, user = current_user, message = message,
-            origin = target, target= target)
-        Notification.objects.create(actor = current_user, user = spy_user, message = message,
-            origin = target, target= target)
+        Notification.objects.create(actor=current_user, user=current_user, message=message,
+                                    origin=target, target=target)
+        Notification.objects.create(actor=current_user, user=spy_user, message=message,
+                                    origin=target, target=target)
 
         # not authenticated
         response = self.get('notification-list')
@@ -165,7 +165,6 @@ class NotificationAPITestCase(APITestCase):
             response = self.put('notification-list')
             self.assertEqual(response.status_code, 200)
 
-
     def test_noti_update(self):
         current_user = self.make_user(username='receiver')
         # create noti object that current user receives
@@ -175,10 +174,10 @@ class NotificationAPITestCase(APITestCase):
         target = comment
         message = f'{actor} commented on your {origin.type}'
         Notification.objects.create(actor=actor, user=current_user, message=message,
-            origin=origin, target= target, is_read = False, is_visible = True)
+                                    origin=origin, target=target, is_read=False, is_visible=True)
 
         received_noti = Notification.objects.filter(user=current_user).last()
-        data = {"is_read": True }
+        data = {"is_read": True}
         with self.login(username=current_user.username, password='password'):
             response = self.patch(self.reverse('notification-update',
                                                pk=received_noti.id), data=data)

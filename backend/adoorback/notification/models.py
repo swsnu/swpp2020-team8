@@ -4,7 +4,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from adoorback.models import AdoorTimestampedModel
 
-
 User = get_user_model()
 
 

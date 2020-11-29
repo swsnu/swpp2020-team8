@@ -1,0 +1,12 @@
+psql
+drop database adoor
+drop database test_adoor
+create database adoor with owner adoor
+create database test_adoor with owner adoor
+\q
+
+python manage.py flush
+yes
+rm -r */migrations
+python manage.py makemigrations account feed comment like notification
+python manage.py migrate --database test
