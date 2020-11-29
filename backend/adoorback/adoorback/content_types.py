@@ -26,6 +26,11 @@ def get_response_type():
     return ContentType.objects.get_for_model(Response)
 
 
+def get_response_request_type():
+    from feed.models import ResponseRequest
+    return ContentType.objects.get_for_model(ResponseRequest)
+
+
 def get_post_type():
     from feed.models import Post
     return ContentType.objects.get_for_model(Post)
