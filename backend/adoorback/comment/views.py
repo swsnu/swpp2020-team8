@@ -5,7 +5,7 @@ from comment.models import Comment
 from comment.serializers import CommentFriendSerializer
 
 from adoorback.permissions import IsAuthorOrReadOnly
-from adoorback.utils.content_types import get_content_type
+from adoorback.utils.content_types import get_generic_relation_type
 
 
 class CommentList(generics.ListCreateAPIView):
@@ -17,7 +17,7 @@ class CommentList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        content_type_id = get_content_type(self.request.data['target_type']).id
+        content_type_id = get_generic_relation_type(self.request.data['target_type']).id
 
         serializer.save(author=self.request.user,
                         content_type_id=content_type_id,

@@ -1,9 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-from feed.models import Article, Response, Question
-from comment.models import Comment
-
 User = get_user_model()
 
 

@@ -9,8 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 import feed.serializers as fs
 from feed.models import Article, Response, Question, Post, ResponseRequest
 from feed.algorithms.data_crawler import select_daily_questions
-from adoorback.permissions import IsAuthorOrReadOnly, IsRequesterOrReadOnly, \
-    IsRequesteeOrReadOnly, IsShared
+from adoorback.permissions import IsAuthorOrReadOnly, IsShared
 
 User = get_user_model()
 
@@ -169,11 +168,12 @@ class ResponseRequestCreate(generics.CreateAPIView):
 
 class ResponseRequestDestroy(generics.DestroyAPIView):
     serializer_class = fs.ResponseRequestSerializer
-    permission_classes = [IsAuthenticated, IsRequesterOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        return ResponseRequest.objects.get(requester_id=self.kwargs.get('rid'),
-                                           requestee_id=self.request.user.id,
+        # since the requester is the authenticated user, no further permission checking unnecessary
+        return ResponseRequest.objects.get(requester_id=self.request.user.id,
+                                           requestee_id=self.kwargs.get('rid'),
                                            question_id=self.kwargs.get('qid'))
 
 

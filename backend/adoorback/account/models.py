@@ -90,17 +90,17 @@ def create_friend_request_noti(sender, **kwargs):
     Notification = apps.get_model('notification', 'Notification')
     if not accepted:
         actor = instance.requester
-        recipient = instance.requestee
+        user = instance.requestee
         origin = instance
         target = instance
         message = f'{actor.username}님이 친구 요청을 보냈습니다.'
-        Notification.objects.create(actor=actor, recipient=recipient, message=message,
+        Notification.objects.create(actor=actor, user=user, message=message,
                                     origin=origin, target=target)
     else:
         actor = instance.requestee
-        recipient = instance.requester
+        user = instance.requester
         origin = actor
         target = instance
         message = f'{actor.username}님과 친구가 되었습니다.'
-        Notification.objects.create(actor=actor, recipient=recipient, message=message,
+        Notification.objects.create(actor=actor, user=user, message=message,
                                     origin=origin, target=target)

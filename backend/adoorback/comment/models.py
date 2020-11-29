@@ -9,7 +9,7 @@ from django.db.models.signals import post_save
 from like.models import Like
 from notification.models import Notification
 from adoorback.models import AdoorModel
-from adoorback.utils.content_types import get_content_type, get_korean_type_name
+from adoorback.utils.content_types import get_korean_type_name, get_comment_type
 
 
 User = get_user_model()
@@ -18,10 +18,10 @@ User = get_user_model()
 class CommentManager(models.Manager):
 
     def comments_only(self, **kwargs):
-        return self.exclude(content_type=get_content_type("Comment"), **kwargs)
+        return self.exclude(content_type=get_comment_type(), **kwargs)
 
     def replies_only(self, **kwargs):
-        return self.filter(content_type=get_content_type("Comment"), **kwargs)
+        return self.filter(content_type=get_comment_type(), **kwargs)
 
 
 class Comment(AdoorModel):
@@ -29,7 +29,7 @@ class Comment(AdoorModel):
     is_private = models.BooleanField(default=False)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.IntegerField(blank=True, null=True)
+    object_id = models.IntegerField()
     target = GenericForeignKey('content_type', 'object_id')
 
     replies = GenericRelation('self')
@@ -61,8 +61,8 @@ def create_noti(sender, **kwargs):
     target = instance
     origin = instance.target
     actor = instance.author
-    recipient = instance.target.author
+    user = instance.target.author
     origin_name = get_korean_type_name(origin.type)
     message = f'{actor.username}님이 회원님의 {origin_name}에 댓글을 남겼습니다.'
-    Notification.objects.create(actor=actor, recipient=recipient, message=message,
+    Notification.objects.create(actor=actor, user=user, message=message,
                                 origin=origin, target=target)

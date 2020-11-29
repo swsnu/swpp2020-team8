@@ -7,8 +7,6 @@ from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 
-from adoorback.permissions import IsCurrentUserOrReadOnly, IsRequesteeOrReadOnly, \
-    IsRequesterOrReadOnly, IsOwnerOrReadOnly
 from account.models import FriendRequest
 from account.serializers import UserProfileSerializer, \
     UserFriendRequestSerializer, \
@@ -90,9 +88,11 @@ class CurrentUserFriendList(generics.ListAPIView):
 
 class CurrentUserProfile(generics.RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
-    permission_classes = [IsAuthenticated, IsCurrentUserOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
+        # since the obtained user object is the authenticated user,
+        # no further permission checking unnecessary
         return User.objects.get(id=self.request.user.id)
 
 
@@ -120,7 +120,7 @@ class UserFriendDestroy(generics.DestroyAPIView):
     Destroy a friendship.
     """
     queryset = User.objects.all()
-    permission_classes = [IsAuthenticated, IsCurrentUserOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     def perform_destroy(self, obj):
         obj.friends.remove(self.request.user)
@@ -137,17 +137,19 @@ class UserFriendRequestList(generics.ListCreateAPIView):
 
 class UserFriendRequestDestroy(generics.DestroyAPIView):
     serializer_class = UserFriendRequestSerializer
-    permission_classes = [IsAuthenticated, IsRequesterOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
+        # since the requester is the authenticated user, no further permission checking unnecessary
         return FriendRequest.objects.get(requester_id=self.request.user.id,
                                          requestee_id=self.kwargs.get('pk'))
 
 
 class UserFriendRequestUpdate(generics.UpdateAPIView):
     serializer_class = UserFriendRequestSerializer
-    permission_classes = [IsAuthenticated, IsRequesteeOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
+        # since the requestee is the authenticated user, no further permission checking unnecessary
         return FriendRequest.objects.get(requester_id=self.kwargs.get('pk'),
                                          requestee_id=self.request.user.id)

@@ -151,7 +151,7 @@ def create_response_request_noti(sender, **kwargs):
     requester = instance.requester
     requestee = instance.requestee
     message = f'{requester.username}님이 회원님에게 질문을 보냈습니다.'
-    Notification.objects.create(actor=requester, recipient=requestee,
+    Notification.objects.create(actor=requester, user=requestee,
                                 message=message, origin=origin, target=target)
 
 
@@ -186,9 +186,9 @@ def create_request_answered_noti(sender, **kwargs):
     related_requests = ResponseRequest.objects.filter(
         requestee_id=author_id).filter(question_id=question_id)
     for request in related_requests:
-        recipient = request.requester
+        user = request.requester
         message = f'{actor.username}님이 회원님이 보낸 질문에 답했습니다.'
-        Notification.objects.create(actor=actor, recipient=recipient, message=message,
+        Notification.objects.create(actor=actor, user=user, message=message,
                                     origin=origin, target=target)
 
 

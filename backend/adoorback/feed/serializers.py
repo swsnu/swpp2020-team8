@@ -123,7 +123,7 @@ class ResponseResponsiveSerializer(ResponseBaseSerializer):
         return AuthorAnonymousSerializer(obj.author).data
 
     def get_author(self, obj):
-        if obj.author == self.context.get('request', None).user:
+        if User.are_friends(self.context.get('request', None).user, obj.author):
             return f'{BASE_URL}/api/user/{obj.author.id}/'
         return None
 
@@ -147,7 +147,7 @@ class QuestionResponsiveSerializer(QuestionBaseSerializer):
         return AuthorAnonymousSerializer(obj.author).data
 
     def get_author(self, obj):
-        if obj.author == self.context.get('request', None).user:
+        if User.are_friends(self.context.get('request', None).user, obj.author):
             return f'{BASE_URL}/api/user/{obj.author.id}/'
         return None
 

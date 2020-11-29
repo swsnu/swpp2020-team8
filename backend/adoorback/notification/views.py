@@ -15,7 +15,7 @@ def notification_list(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=401)
 
-    notifications = Notification.objects.filter(recipient_id=request.user.id,
+    notifications = Notification.objects.filter(user_id=request.user.id,
                                                 is_visible=True).order_by('-created_at')
     paginator = PageNumberPagination()
     paginator.page_size = 15

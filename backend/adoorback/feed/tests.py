@@ -9,7 +9,7 @@ from feed.models import Article, Response, Question, Post, ResponseRequest
 from notification.models import Notification
 
 from adoorback.utils.seed import set_seed, fill_data
-from adoorback.utils.content_types import get_content_type
+from adoorback.utils.content_types import get_response_type
 
 
 User = get_user_model()
@@ -63,7 +63,7 @@ class FeedTestCase(TestCase):
         response.content = "modified content"
         response.save()
 
-        self.assertEqual(Post.objects.all().filter(content_type=get_content_type("Response"),
+        self.assertEqual(Post.objects.all().filter(content_type=get_response_type(),
                                                    object_id=response.id).last().content, response.content)
 
     # post content must be removed along with target
