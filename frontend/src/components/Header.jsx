@@ -213,6 +213,10 @@ const Header = () => {
           variant="outlined"
           size="medium"
           className={classes.logoutButton}
+          style={{
+            marginTop: '10px',
+            height: '40px'
+          }}
           id="logout-button"
           onClick={(e) => {
             e.stopPropagation();
@@ -250,7 +254,14 @@ const Header = () => {
           </Toolbar>
         </AppBar>
       </div>
-      <div ref={notiRef}>{isNotiOpen && <NotificationDropdownList />}</div>
+      <div ref={notiRef}>
+        {isNotiOpen && (
+          <NotificationDropdownList
+            notifications={notifications}
+            setIsNotiOpen={setIsNotiOpen}
+          />
+        )}
+      </div>
       <div ref={searchRef}>{isSearchOpen && <SearchDropdownList />}</div>
     </>
   );

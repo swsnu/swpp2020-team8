@@ -188,8 +188,8 @@ class ResponseRequestDestroy(generics.DestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        return ResponseRequest.objects.get(requester_id=self.kwargs.get('rid'),
-                                           requestee_id=self.request.user.id,
+        return ResponseRequest.objects.get(requester_id=self.request.user.id,
+                                           requestee_id=self.kwargs.get('rid'),
                                            question_id=self.kwargs.get('qid'))
 
 
