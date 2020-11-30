@@ -105,7 +105,7 @@ export default function QuestionItem({ questionObj, onResetContent }) {
 
   const resetContent = () => {
     setNewPost((prev) => ({ ...prev, content: '' }));
-    onResetContent();
+    if (onResetContent) onResetContent();
   };
 
   return (
