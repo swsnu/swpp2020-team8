@@ -42,8 +42,8 @@ const QuestionSendModal = ({ questionObj, open, handleClose }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const friendList = useSelector((state) => state.friendReducer.friendList);
-  const responseRequests = useSelector(
-    (state) => state.questionReducer.responseRequests
+  const selectedQuestionResponseRequests = useSelector(
+    (state) => state.questionReducer.selectedQuestionResponseRequests
   );
 
   useEffect(() => {
@@ -57,7 +57,9 @@ const QuestionSendModal = ({ questionObj, open, handleClose }) => {
         questionObj={questionObj}
         friendObj={friend}
         isWidget
-        sended={responseRequests?.find((r) => r.recipient_id === friend.id)}
+        sended={selectedQuestionResponseRequests?.find(
+          (r) => r.requestee_id === friend.id
+        )}
       />
     );
   });

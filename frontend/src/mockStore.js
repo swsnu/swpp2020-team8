@@ -31,7 +31,8 @@ export const mockStore = {
     recommendedQuestions: mockRecommendQuestions,
     selectedQuestion: mockQuestionFeed[0],
     selectedQuestionResponses: [mockResponse, mockResponse2],
-    responseRequests: mockResponseRequests
+    selectedQuestionResponseRequests: mockResponseRequests,
+    next: 'http://localhost:8000/api/feed/questions/daily/?page=2'
   },
   userReducer: {
     error: false,
