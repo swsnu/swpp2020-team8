@@ -13,9 +13,7 @@ import {
 
 export const mockStore = {
   friendReducer: {
-    friendList: mockFriendList,
-    selectedUser: {},
-    selectedUserPosts: []
+    friendList: mockFriendList
   },
   notiReducer: {
     receivedNotifications: mockNotifications

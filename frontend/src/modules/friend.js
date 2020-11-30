@@ -2,8 +2,6 @@ import axios from '../apis';
 
 const initialState = {
   friendList: [],
-  selectedUser: {},
-  selectedUserPosts: [],
   friendRequestError: false
 };
 
