@@ -34,6 +34,10 @@ class Article(AdoorModel):
     def type(self):
         return self.__class__.__name__
 
+    @property
+    def liked_user_ids(self):
+        return self.article_likes.values_list('user_id', flat=True)
+
 
 class QuestionManager(models.Manager):
 
@@ -56,15 +60,21 @@ class Question(AdoorModel):
     question_comments = GenericRelation(Comment)
     question_likes = GenericRelation(Like)
     question_targetted_notis = GenericRelation(Notification,
-        content_type_field='target_type', object_id_field='target_id')
+                                               content_type_field='target_type',
+                                               object_id_field='target_id')
     question_originated_notis = GenericRelation(Notification,
-        content_type_field='origin_type', object_id_field='origin_id')
+                                                content_type_field='origin_type',
+                                                object_id_field='origin_id')
 
     objects = QuestionManager()
 
     @property
     def type(self):
         return self.__class__.__name__
+
+    @property
+    def liked_user_ids(self):
+        return self.question_likes.values_list('user_id', flat=True)
 
     class Meta:
         base_manager_name = 'objects'
@@ -79,13 +89,19 @@ class Response(AdoorModel):
     response_comments = GenericRelation(Comment)
     response_likes = GenericRelation(Like)
     response_targetted_notis = GenericRelation(Notification,
-        content_type_field='target_type', object_id_field='target_id')
+                                               content_type_field='target_type',
+                                               object_id_field='target_id')
     response_originated_notis = GenericRelation(Notification,
-        content_type_field='origin_type', object_id_field='origin_id')
+                                                content_type_field='origin_type',
+                                                object_id_field='origin_id')
 
     @property
     def type(self):
         return self.__class__.__name__
+
+    @property
+    def liked_user_ids(self):
+        return self.response_likes.values_list('user_id', flat=True)
 
 
 class ResponseRequest(AdoorTimestampedModel):
@@ -135,8 +151,8 @@ def create_response_request_noti(sender, **kwargs):
     requester = instance.requester
     requestee = instance.requestee
     message = f'{requester.username}님이 회원님에게 질문을 보냈습니다.'
-    Notification.objects.create(actor=requester, recipient=requestee, message=message,
-        origin=origin, target=target)
+    Notification.objects.create(actor=requester, user=requestee,
+                                message=message, origin=origin, target=target)
 
 
 @receiver(post_save, sender=Question)
@@ -170,9 +186,9 @@ def create_request_answered_noti(sender, **kwargs):
     related_requests = ResponseRequest.objects.filter(
         requestee_id=author_id).filter(question_id=question_id)
     for request in related_requests:
-        recipient = request.requester
+        user = request.requester
         message = f'{actor.username}님이 회원님이 보낸 질문에 답했습니다.'
-        Notification.objects.create(actor=actor, recipient=recipient, message=message,
+        Notification.objects.create(actor=actor, user=user, message=message,
                                     origin=origin, target=target)
 
 

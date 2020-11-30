@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from notification.models import Notification
 from notification.serializers import NotificationSerializer
 
-from adoorback.permissions import IsRecipient
+from adoorback.permissions import IsOwnerOrReadOnly
 
 
 @api_view(["GET", "PUT"])
@@ -15,7 +15,7 @@ def notification_list(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=401)
 
-    notifications = Notification.objects.filter(recipient_id=request.user.id,
+    notifications = Notification.objects.filter(user_id=request.user.id,
                                                 is_visible=True).order_by('-created_at')
     paginator = PageNumberPagination()
     paginator.page_size = 15
@@ -35,4 +35,4 @@ def notification_list(request):
 class NotificationDetail(generics.UpdateAPIView):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
-    permission_classes = [permissions.IsAuthenticated, IsRecipient]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]

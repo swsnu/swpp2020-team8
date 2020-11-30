@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 from comment.models import Comment
 
 from adoorback.utils.seed import set_seed, fill_data
-from adoorback.utils.content_types import get_content_type
+from adoorback.utils.content_types import get_article_type, get_response_type, get_comment_type
 
 User = get_user_model()
 N = 10
@@ -36,8 +36,8 @@ class CommentTestCase(TestCase):
 
     # comment must be deleted along with target
     def test_on_delete_feed_cascade(self):
-        article = Comment.objects.filter(content_type=get_content_type("Article")).last().target
-        response = Comment.objects.filter(content_type=get_content_type("Response")).last().target
+        article = Comment.objects.filter(content_type=get_article_type()).last().target
+        response = Comment.objects.filter(content_type=get_response_type()).last().target
         article_id = article.id
         response_id = response.id
         self.assertGreater(article.article_comments.count(), 0)
@@ -45,14 +45,14 @@ class CommentTestCase(TestCase):
 
         article.delete()
         response.delete()
-        self.assertEqual(Comment.objects.filter(content_type=get_content_type("Article"),
-                                                      object_id=article_id).count(), 0)
-        self.assertEqual(Comment.objects.filter(content_type=get_content_type("Response"),
-                                                      object_id=response_id).count(), 0)
+        self.assertEqual(Comment.objects.filter(content_type=get_article_type(),
+                                                object_id=article_id).count(), 0)
+        self.assertEqual(Comment.objects.filter(content_type=get_response_type(),
+                                                object_id=response_id).count(), 0)
 
     # comment must also work properly when target is Comment
     def test_reply_comment(self):
-        reply = Comment.objects.filter(content_type=get_content_type("Comment")).last()
+        reply = Comment.objects.filter(content_type=get_comment_type()).last()
         reply_id = reply.id
         comment_id = reply.object_id
 
