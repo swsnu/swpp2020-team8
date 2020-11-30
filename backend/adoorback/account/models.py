@@ -46,30 +46,6 @@ class User(AbstractUser, AdoorTimestampedModel):
         return list(self.friends.values_list('id', flat=True))
 
 
-#
-# class Friendship(AdoorTimestampedModel):
-#     """Friendship Model
-#     This model describes Friendship between users
-#     """
-#     user = models.ForeignKey(get_user_model(), related_name="friends", on_delete=models.CASCADE)
-#     friend = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-#
-#     objects = models.Manager()
-#
-#     class Meta:
-#         constraints = [
-#             models.UniqueConstraint(
-#                 fields=['user', 'friend', ], name='unique_friendship'),
-#         ]
-#
-#     def __str__(self):
-#         return f'{self.user} & {self.friend}'
-#
-#     @property
-#     def type(self):
-#         return self.__class__.__name__
-
-
 class FriendRequest(AdoorTimestampedModel):
     """FriendRequest Model
     This model describes FriendRequest between users
@@ -114,17 +90,17 @@ def create_friend_request_noti(sender, **kwargs):
     Notification = apps.get_model('notification', 'Notification')
     if not accepted:
         actor = instance.requester
-        recipient = instance.requestee
+        user = instance.requestee
         origin = instance
         target = instance
         message = f'{actor.username}님이 친구 요청을 보냈습니다.'
-        Notification.objects.create(actor=actor, recipient=recipient, message=message,
+        Notification.objects.create(actor=actor, user=user, message=message,
                                     origin=origin, target=target)
     else:
         actor = instance.requestee
-        recipient = instance.requester
+        user = instance.requester
         origin = actor
         target = instance
         message = f'{actor.username}님과 친구가 되었습니다.'
-        Notification.objects.create(actor=actor, recipient=recipient, message=message,
+        Notification.objects.create(actor=actor, user=user, message=message,
                                     origin=origin, target=target)

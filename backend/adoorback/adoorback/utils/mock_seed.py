@@ -8,7 +8,8 @@ import pandas as pd
 from django.contrib.auth import get_user_model
 from faker import Faker
 
-from adoorback.utils.content_types import get_content_type
+from adoorback.utils.content_types import get_article_type, get_question_type, \
+    get_response_type, get_comment_type
 from account.models import FriendRequest
 from feed.models import Article, Response, Question
 from comment.models import Comment
@@ -126,7 +127,7 @@ def set_mock_seed():
         f"{Comment.objects.count()} Comment(s) created!") if DEBUG else None
 
     # Seed Reply Comment (target=Comment)
-    comment_model = get_content_type("Comment")
+    comment_model = get_comment_type()
     comments = Comment.objects.all()
     for _ in range(15000):
         user = random.choice(users)
@@ -145,17 +146,17 @@ def set_mock_seed():
         article = Article.objects.get(id=i % 1000 + 1)
         question = Question.objects.get(id=i % 1500 + 1)
         response = Response.objects.get(id=i % 2000 + 1)
-        Like.objects.get_or_create(user=user, content_type=get_content_type("Article"), object_id=article.id)
-        Like.objects.get_or_create(user=user, content_type=get_content_type("Question"), object_id=question.id)
-        Like.objects.get_or_create(user=user, content_type=get_content_type("Response"), object_id=response.id)
+        Like.objects.get_or_create(user=user, content_type=get_article_type(), object_id=article.id)
+        Like.objects.get_or_create(user=user, content_type=get_question_type(), object_id=question.id)
+        Like.objects.get_or_create(user=user, content_type=get_response_type(), object_id=response.id)
 
     # Seed Comment Like
     for i in range(10000):
         user = random.choice(users)
         comment = Comment.objects.comments_only()[i % 5000]
         reply = Comment.objects.replies_only()[i % 15000]
-        Like.objects.get_or_create(user=user, content_type=get_content_type("Comment"), object_id=comment.id)
-        Like.objects.get_or_create(user=user, content_type=get_content_type("Comment"), object_id=reply.id)
+        Like.objects.get_or_create(user=user, content_type=get_comment_type(), object_id=comment.id)
+        Like.objects.get_or_create(user=user, content_type=get_comment_type(), object_id=reply.id)
     logging.info(
         f"{Like.objects.count()} Like(s) created!") if DEBUG else None
 

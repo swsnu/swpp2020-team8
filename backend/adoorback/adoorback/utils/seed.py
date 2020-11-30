@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from faker import Faker
 
-from adoorback.utils.content_types import get_content_type
+from adoorback.utils.content_types import get_comment_type
 from account.models import FriendRequest
 from feed.models import Article, Response, Question, ResponseRequest
 from comment.models import Comment
@@ -123,7 +123,7 @@ logging.info(
         f"{Comment.objects.count()} Comment(s) created!") if DEBUG else None
 
     # Seed Reply Comment (target=Comment)
-    comment_model = get_content_type("Comment")
+    comment_model = get_comment_type()
     comments = Comment.objects.all()
     for _ in range(n):
         user = random.choice(users)
