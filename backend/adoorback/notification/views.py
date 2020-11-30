@@ -4,12 +4,17 @@ from rest_framework.decorators import api_view
 from rest_framework.pagination import PageNumberPagination
 from django.http import HttpResponse
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
+
 from notification.models import Notification
 from notification.serializers import NotificationSerializer
 
 from adoorback.permissions import IsOwnerOrReadOnly
 
 
+@cache_page(60 * 3)
 @api_view(["GET", "PUT"])
 def notification_list(request):
     if not request.user.is_authenticated:

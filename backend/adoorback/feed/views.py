@@ -5,6 +5,9 @@ from django.contrib.auth import get_user_model
 from django.http import HttpResponseBadRequest
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 
 import feed.serializers as fs
 from feed.models import Article, Response, Question, Post, ResponseRequest
@@ -27,6 +30,11 @@ class FriendFeedPostList(generics.ListAPIView):
                    Post.objects.filter(author_id=current_user.id)
         return queryset
 
+    @method_decorator(vary_on_cookie)
+    @method_decorator(cache_page(60 * 3))
+    def dispatch(self, *args, **kwargs):
+          return super(FriendFeedPostList, self).dispatch(*args, **kwargs)
+
 
 class AnonymousFeedPostList(generics.ListAPIView):
     """
@@ -35,6 +43,10 @@ class AnonymousFeedPostList(generics.ListAPIView):
     queryset = Post.objects.anonymous_posts_only()
     serializer_class = fs.PostAnonymousSerializer
     permission_classes = [IsAuthenticated]
+
+    @method_decorator(cache_page(60 * 3))
+    def dispatch(self, *args, **kwargs):
+          return super(AnonymousFeedPostList, self).dispatch(*args, **kwargs)
 
 
 class UserFeedPostList(generics.ListAPIView):
@@ -46,6 +58,10 @@ class UserFeedPostList(generics.ListAPIView):
 
     def get_queryset(self):
         return Post.objects.friend_posts_only().filter(author_id=self.kwargs.get('pk'))
+
+    @method_decorator(cache_page(60 * 3))
+    def dispatch(self, *args, **kwargs):
+          return super(UserFeedPostList, self).dispatch(*args, **kwargs)
 
 
 class ArticleList(generics.CreateAPIView):
@@ -129,6 +145,11 @@ class QuestionFriendResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = fs.QuestionDetailFriendResponsesSerializer
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly, IsShared]
 
+    @method_decorator(vary_on_cookie)
+    @method_decorator(cache_page(60 * 3))
+    def dispatch(self, *args, **kwargs):
+          return super(QuestionFriendResponsesDetail, self).dispatch(*args, **kwargs)
+
 
 class QuestionAnonymousResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -137,6 +158,10 @@ class QuestionAnonymousResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Question.objects.all()
     serializer_class = fs.QuestionDetailAnonymousResponsesSerializer
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly, IsShared]
+
+    @method_decorator(cache_page(60 * 3))
+    def dispatch(self, *args, **kwargs):
+          return super(QuestionAnonymousResponsesDetail, self).dispatch(*args, **kwargs)
 
 
 class ResponseRequestList(generics.ListAPIView):
@@ -185,6 +210,11 @@ class DailyQuestionList(generics.ListAPIView):
         if Question.objects.daily_questions().count() == 0:
             select_daily_questions()
         return Question.objects.daily_questions().order_by('-id')
+    
+    @method_decorator(vary_on_cookie)
+    @method_decorator(cache_page(60 * 60 * 3))
+    def dispatch(self, *args, **kwargs):
+          return super(DailyQuestionList, self).dispatch(*args, **kwargs)
 
 
 class RecommendedQuestionList(generics.ListAPIView):
