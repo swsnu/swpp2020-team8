@@ -23,6 +23,7 @@ class Article(AdoorModel):
 
     article_comments = GenericRelation(Comment)
     article_likes = GenericRelation(Like)
+
     article_targetted_notis = GenericRelation(Notification,
                                               content_type_field='target_type',
                                               object_id_field='target_id')
@@ -59,6 +60,7 @@ class Question(AdoorModel):
 
     question_comments = GenericRelation(Comment)
     question_likes = GenericRelation(Like)
+
     question_targetted_notis = GenericRelation(Notification,
                                                content_type_field='target_type',
                                                object_id_field='target_id')
@@ -88,6 +90,7 @@ class Response(AdoorModel):
 
     response_comments = GenericRelation(Comment)
     response_likes = GenericRelation(Like)
+
     response_targetted_notis = GenericRelation(Notification,
                                                content_type_field='target_type',
                                                object_id_field='target_id')
@@ -109,6 +112,13 @@ class ResponseRequest(AdoorTimestampedModel):
     requestee = models.ForeignKey(User, related_name='received_response_request_set', on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
+    response_request_targetted_notis = GenericRelation('notification.Notification',
+                                                       content_type_field='target_type',
+                                                       object_id_field='target_id')
+    response_request_originated_notis = GenericRelation('notification.Notification',
+                                                        content_type_field='origin_type',
+                                                        object_id_field='origin_id')
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -117,6 +127,10 @@ class ResponseRequest(AdoorTimestampedModel):
 
     def __str__(self):
         return f'{self.requester} sent ({self.question}) to {self.requestee}'
+
+    @property
+    def type(self):
+        return self.__class__.__name__
 
 
 class PostManager(models.Manager):
@@ -130,9 +144,11 @@ class PostManager(models.Manager):
 
 class Post(AdoorModel):
     author_id = models.IntegerField()
+
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.IntegerField()
     target = GenericForeignKey('content_type', 'object_id')
+
     share_with_friends = models.BooleanField(default=True)
     share_anonymously = models.BooleanField(default=True)
 

@@ -5,9 +5,10 @@ import random
 
 from django.apps import apps
 from django.contrib.auth import get_user_model
-from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.db.models.signals import post_save
+from django.contrib.contenttypes.fields import GenericRelation
+from django.db import models
+from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 
 from adoorback.models import AdoorTimestampedModel
@@ -23,12 +24,9 @@ class User(AbstractUser, AdoorTimestampedModel):
     This model extends the Django Abstract User model
     """
     email = models.EmailField(unique=True)
-    question_history = models.CharField(null=True,
-                                        max_length=500)
+    question_history = models.CharField(null=True, max_length=500)
     profile_pic = models.CharField(default=random_profile_color, max_length=7)
-    friends = models.ManyToManyField('self',
-                                     symmetrical=True,
-                                     blank=True)
+    friends = models.ManyToManyField('self', symmetrical=True, blank=True)
 
     class Meta:
         ordering = ['username']
@@ -56,6 +54,13 @@ class FriendRequest(AdoorTimestampedModel):
         get_user_model(), related_name='received_friend_requests', on_delete=models.CASCADE)
     accepted = models.BooleanField(null=True)
 
+    friend_request_targetted_notis = GenericRelation("notification.Notification",
+                                                     content_type_field='target_type',
+                                                     object_id_field='target_id')
+    friend_request_originated_notis = GenericRelation("notification.Notification",
+                                                      content_type_field='origin_type',
+                                                      object_id_field='origin_id')
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -71,36 +76,45 @@ class FriendRequest(AdoorTimestampedModel):
         return self.__class__.__name__
 
 
-@receiver(post_save, sender=FriendRequest)
-def create_friendship(sender, **kwargs):
-    instance = kwargs['instance']
-    requester = instance.requester
-    requestee = instance.requestee
-    accepted = instance.accepted
-    if accepted:
-        requester.friends.add(requestee)
-    else:
-        return
+@receiver(m2m_changed, sender=User)
+def delete_friendship_noti(action, pk_set, instance):
+    Notification = apps.get_model('notification', 'Notification')
+    if action == "post_remove":
+        friend = User.objects.get(id=pk_set.pop())
+        Notification.objects.filter(user=instance, actor=friend,
+                                    target=friend, origin__type='FriendRequest').delete()
 
 
 @receiver(post_save, sender=FriendRequest)
-def create_friend_request_noti(sender, **kwargs):
-    instance = kwargs['instance']
+def create_friend_noti(created, instance):
     accepted = instance.accepted
     Notification = apps.get_model('notification', 'Notification')
-    if not accepted:
-        actor = instance.requester
-        user = instance.requestee
-        origin = instance
-        target = instance
-        message = f'{actor.username}님이 친구 요청을 보냈습니다.'
-        Notification.objects.create(actor=actor, user=user, message=message,
-                                    origin=origin, target=target)
+    if created:
+        requestee = instance.requestee
+        requester = instance.requester
+        Notification.objects.create(user=requestee, actor=requester,
+                                    origin=instance, target=instance,
+                                    message=f'{requester.username}님이 친구 요청을 보냈습니다.',
+                                    redirect_url=f'/user/{requester.id}')
+    elif accepted:
+        requester = instance.requester
+        requestee = instance.requestee
+        Notification.objects.create(user=requestee, actor=requester,
+                                    origin=requester, target=instance,
+                                    message=f'{requester.username}님과 친구가 되었습니다.',
+                                    redirect_url=f'/user/{requester}')
+        Notification.objects.create(user=requester, actor=requestee,
+                                    origin=requestee, target=instance,
+                                    message=f'{requestee.username}님과 친구가 되었습니다.',
+                                    redirect_url=f'/user/{requestee.id}')
+        # add friendship
+        requester.friends.add(requestee)
+    # recipient refused friend request
     else:
-        actor = instance.requestee
-        user = instance.requester
-        origin = actor
-        target = instance
-        message = f'{actor.username}님과 친구가 되었습니다.'
-        Notification.objects.create(actor=actor, user=user, message=message,
-                                    origin=origin, target=target)
+        requestee = instance.requestee
+        requester = instance.requester
+        # should be unique
+        notification = Notification.objects.get(user=requestee, actor=requester,
+                                                origin=instance, target=instance)
+        notification.is_visible = False
+        notification.save()

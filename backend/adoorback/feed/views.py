@@ -1,15 +1,15 @@
 import os
-import pandas as pd
-
-from django.contrib.auth import get_user_model
-from django.http import HttpResponseBadRequest
-from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
 
 import feed.serializers as fs
-from feed.models import Article, Response, Question, Post, ResponseRequest
-from feed.algorithms.data_crawler import select_daily_questions
+import pandas as pd
 from adoorback.permissions import IsAuthorOrReadOnly, IsShared
+from django.contrib.auth import get_user_model
+from django.http import HttpResponseBadRequest
+from feed.algorithms.data_crawler import select_daily_questions
+from feed.models import Article, Response, Question, Post, ResponseRequest
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 
 User = get_user_model()
 
@@ -45,6 +45,8 @@ class UserFeedPostList(generics.ListAPIView):
     permissions_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        if not self.kwargs.get('pk') in self.request.user.friend_ids:
+            raise PermissionDenied("you're not his/her friend...")
         return Post.objects.friend_posts_only().filter(author_id=self.kwargs.get('pk'))
 
 

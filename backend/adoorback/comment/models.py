@@ -34,6 +34,7 @@ class Comment(AdoorModel):
 
     replies = GenericRelation('self')
     comment_likes = GenericRelation(Like)
+
     comment_targetted_notis = GenericRelation(Notification,
                                               content_type_field='target_type',
                                               object_id_field='target_id')

@@ -4,9 +4,7 @@ from account.models import FriendRequest
 from feed.models import Question, Article, Response, Post
 from comment.models import Comment
 from like.models import Like
-from django.contrib.contenttypes.models import ContentType
 from adoorback.utils.seed import set_seed
-from adoorback.utils.content_types import get_content_type
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
