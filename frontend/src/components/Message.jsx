@@ -8,22 +8,30 @@ const useStyles = makeStyles({
     width: '100%',
     borderColor: '#eee'
   },
+  nonBorderCard: {
+    width: '100%',
+    border: 'none'
+  },
   cardContent: {
-    padding: '16px'
+    padding: '16px !important'
   },
   title: {
-    marginTop: 0,
+    margin: 0,
     textAlign: 'center'
   },
   detail: {
-    textAlign: 'center'
+    textAlign: 'center',
+    marginTop: '16px'
   }
 });
 
-const Message = ({ message, messageDetail }) => {
+const Message = ({ message, messageDetail, noBorder }) => {
   const classes = useStyles();
   return (
-    <Card className={classes.card} variant="outlined">
+    <Card
+      className={noBorder ? classes.nonBorderCard : classes.card}
+      variant="outlined"
+    >
       <CardContent className={classes.cardContent}>
         {message && <h2 className={classes.title}>{message}</h2>}
         {messageDetail && <div className={classes.detail}>{messageDetail}</div>}
