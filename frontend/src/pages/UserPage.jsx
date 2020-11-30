@@ -156,16 +156,16 @@ export default function UserPage() {
           aria-label="user tabs"
         >
           <Tab label="전체" value="All" {...a11yProps('All')} />
-          <Tab label="나의 Q&A" value="Q&A" {...a11yProps('Q&A')} />
-          <Tab
-            label="아무말 대잔치"
-            value="Articles"
-            {...a11yProps('Articles')}
-          />
           <Tab
             label="작성한 질문"
             value="CustomQuestions"
             {...a11yProps('CustomQuestions')}
+          />
+          <Tab label="작성한 답변" value="Q&A" {...a11yProps('Q&A')} />
+          <Tab
+            label="아무말 대잔치"
+            value="Articles"
+            {...a11yProps('Articles')}
           />
         </Tabs>
       </AppBar>
