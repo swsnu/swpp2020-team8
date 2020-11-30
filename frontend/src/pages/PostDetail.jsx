@@ -21,8 +21,8 @@ export default function PostDetail() {
   if (selectedPostFailure) {
     return (
       <Message
-        message="permission"
-        messageDetail="접근할 수 없는 게시물입니다"
+        message="접근할 수 없는 게시물입니다"
+        messageDetail="읽기 권한이 없는 게시물입니다"
       />
     );
   }
