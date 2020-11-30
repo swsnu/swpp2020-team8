@@ -142,10 +142,13 @@ describe('postActions', () => {
       });
     });
 
-    store.dispatch(actionCreators.createComment(newComment)).then(() => {
-      expect(spy).toHaveBeenCalledTimes(1);
-      done();
-    });
+    const postKey = `Article-${mockPost.id}`;
+    store
+      .dispatch(actionCreators.createComment(newComment, postKey))
+      .then(() => {
+        expect(spy).toHaveBeenCalledTimes(1);
+        done();
+      });
   });
 
   it(`createReply should create reply correctly`, (done) => {
@@ -399,7 +402,7 @@ describe('Post Reducer', () => {
     const newComment = {
       id: 124,
       target_type: 'Article',
-      target_id: 1,
+      target_id: mockPost.id,
       content: 'test comment',
       author_detail: {
         id: 1,
@@ -418,7 +421,8 @@ describe('Post Reducer', () => {
       },
       {
         type: actionCreators.CREATE_COMMENT_SUCCESS,
-        result: newComment
+        result: newComment,
+        postKey: `Article-${mockPost.id}`
       }
     );
     expect(newState.friendPosts[0].comments.length).toEqual(prevLength + 1);

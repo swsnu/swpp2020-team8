@@ -44,6 +44,7 @@ export const mockPost = {
     profile_pic: null
   },
   content: '사람들의 무리한 부탁을 잘 거절하는 편',
+  comments: [],
   created_at: '2020-11-05T14:16:13.801119+08:00',
   updated_at: null
 };
