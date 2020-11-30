@@ -105,4 +105,24 @@ export const mockStoreWithArticle = {
   }
 };
 
+export const mockStoreWithNoFriendFeed = {
+  friendReducer: {},
+  notiReducer: {},
+  postReducer: {
+    friendPosts: []
+  },
+  questionReducer: {},
+  userReducer: {
+    error: false,
+    currentUser: {
+      id: 0,
+      username: 'mock',
+      isLoggedIn: false
+    }
+  },
+  loadingReducer: {
+    'post/GET_FRIEND_POSTS': false
+  }
+};
+
 export const mockFriendReducer = {};
