@@ -76,6 +76,7 @@ export default function QuestionSelection() {
   ));
 
   const onClickSubmitButton = async () => {
+    console.log(userId);
     await dispatch(postSelectedQuestions(selectedQuestions, userId));
     history.push('/');
   };
@@ -87,9 +88,11 @@ export default function QuestionSelection() {
 
   return (
     <QuestionsWrapper>
-      <h1 id="question-selection-title">
-        마음에 드는 질문을 골라주세요. (3개 이상)
-      </h1>
+      <h3 id="question-selection-title">
+        adoor는 매일 새로운 질문을 추천해드립니다!
+        <br />
+        질문 추천을 위해 마음에 드는 질문을 3개 이상 골라주세요 &#128522;
+      </h3>
       <div>{sampleQuestionList}</div>
       <CommonButton
         disabled={selectedQuestions.length < 3}

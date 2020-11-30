@@ -89,29 +89,19 @@ def set_seed(n):
         question = Question.objects.get(id=i+1)
         random_actor_id = random.choice([1, 2, 3])
 
+        random_recipient_id = random.choice(
+            [i for i in range(1, 3) if i not in [random_actor_id]])
+        requester = User.objects.get(id=random_actor_id)
+        requestee = User.objects.get(id=random_recipient_id)
+        ResponseRequest.objects.create(
+            requester=requester, requestee=requestee, question=question)
+    logging.info(
+        f"{ResponseRequest.objects.count()} ResponseRequest(s) created!") if DEBUG else None
 
-<< << << < HEAD
-random_recipient_id = random.choice(
-     [i for i in range(1, 3) if i not in [random_actor_id]])
- actor = User.objects.get(id=random_actor_id)
-  recipient = User.objects.get(id=random_recipient_id)
-   ResponseRequest.objects.create(
-        actor=actor, recipient=recipient, question=question)
-== == == =
-random_recipient_id = random.choice(
-    [i for i in range(1, 3) if i not in [random_actor_id]])
- requester = User.objects.get(id=random_actor_id)
-  requestee = User.objects.get(id=random_recipient_id)
-   ResponseRequest.objects.create(
-        requester=requester, requestee=requestee, question=question)
->>>>>> > 9954de49fb3100791258ca00837e474db0b11ffb
-logging.info(
-     f"{ResponseRequest.objects.count()} ResponseRequest(s) created!") if DEBUG else None
-
- # Seed Comment (target=Feed)
- articles = Article.objects.all()
-  responses = Response.objects.all()
-   for _ in range(n):
+    # Seed Comment (target=Feed)
+    articles = Article.objects.all()
+    responses = Response.objects.all()
+    for _ in range(n):
         user = random.choice(users)
         article = random.choice(articles)
         response = random.choice(responses)
