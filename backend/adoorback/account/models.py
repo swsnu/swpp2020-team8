@@ -7,6 +7,7 @@ from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -79,6 +80,10 @@ class FriendRequest(AdoorTimestampedModel):
     requestee = models.ForeignKey(
         get_user_model(), related_name='received_friend_requests', on_delete=models.CASCADE)
     accepted = models.BooleanField(null=True)
+    request_targetted_notis = GenericRelation("notification.Notification",
+        content_type_field='target_type', object_id_field='target_id')
+    request_originated_notis = GenericRelation("notification.Notification",
+        content_type_field='origin_type', object_id_field='origin_id')
 
     class Meta:
         constraints = [
@@ -112,7 +117,7 @@ def create_friend_request_noti(sender, **kwargs):
     instance = kwargs['instance']
     accepted = instance.accepted
     Notification = apps.get_model('notification', 'Notification')
-    if not accepted:
+    if accepted is None:
         actor = instance.requester
         recipient = instance.requestee
         origin = instance
@@ -120,7 +125,7 @@ def create_friend_request_noti(sender, **kwargs):
         message = f'{actor.username}님이 친구 요청을 보냈습니다.'
         Notification.objects.create(actor=actor, recipient=recipient, message=message,
                                     origin=origin, target=target)
-    else:
+    elif accepted is True:
         actor = instance.requestee
         recipient = instance.requester
         origin = actor
