@@ -37,6 +37,14 @@ describe('postActions', () => {
       expect(newState.postReducer.friendPosts).toMatchObject(mockFriendFeed);
       done();
     });
+
+    store.dispatch(actionCreators.appendPosts('friend')).then(() => {
+      const newState = store.getState();
+      expect(spy).toHaveBeenCalledTimes(0);
+      expect(newState.postReducer.friendPosts).toEqual(mockFriendFeed);
+      expect(newState.postReducer.next).toEqual(null);
+      done();
+    });
   });
 
   it(`'getPostsByType:anonymous' should fetch posts correctly`, (done) => {
@@ -208,6 +216,109 @@ describe('postActions', () => {
         done();
       });
   });
+
+  it(`'getSelectedPost' should work correctly`, async (done) => {
+    jest.mock('axios');
+    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const res = {
+          data: mockArticle
+        };
+        resolve(res);
+      });
+    });
+
+    store.dispatch(actionCreators.getSelectedPost('article', 1)).then(() => {
+      const newState = store.getState();
+      expect(spy).toHaveBeenCalled();
+      expect(newState.postReducer.selectedPostFailure).toBeFalsy();
+      done();
+    });
+  });
+
+  it(`should patch 'GET_SELECTED_ARTICLE_FAILURE' when get post failure`, () => {
+    jest.mock('axios');
+    const spy = jest.spyOn(axios, 'get').mockImplementation(() =>
+      // eslint-disable-next-line prefer-promise-reject-errors
+      Promise.reject({ response: { status: 403 } })
+    );
+
+    store.dispatch(actionCreators.getSelectedPost('response', 1)).catch(() => {
+      const newState = store.getState();
+      expect(spy).toHaveBeenCalled();
+      expect(newState.postReducer.selectedPost).toEqual(null);
+      expect(newState.postReducer.selectedPostFailure).toEqual(true);
+    });
+  });
+
+  it(`'editSelectedPost' for article should work correctly`, async (done) => {
+    jest.mock('axios');
+    const spyForArticle = jest.spyOn(axios, 'patch').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const res = {
+          data: mockPost
+        };
+        resolve(res);
+      });
+    });
+
+    store.dispatch(actionCreators.editSelectedPost(mockPost)).then(() => {
+      const newState = store.getState();
+      expect(spyForArticle).toHaveBeenCalled();
+      expect(newState.postReducer.selectedPost).toMatchObject(mockPost);
+      done();
+    });
+  });
+
+  it(`'editSelectedPost' for response should work correctly`, async (done) => {
+    jest.mock('axios');
+    const spyForArticle = jest.spyOn(axios, 'patch').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const res = {
+          data: mockResponse
+        };
+        resolve(res);
+      });
+    });
+
+    store.dispatch(actionCreators.editSelectedPost(mockResponse)).then(() => {
+      const newState = store.getState();
+      expect(spyForArticle).toHaveBeenCalled();
+      expect(newState.postReducer.selectedPost).toMatchObject(mockResponse);
+      done();
+    });
+  });
+
+  it(`'appendPosts' should work correctly when post list has next`, async (done) => {
+    jest.mock('axios');
+    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const res = {
+          data: {
+            results: mockFriendFeed,
+            next: 'next'
+          }
+        };
+        resolve(res);
+      });
+    });
+
+    store.dispatch(actionCreators.getPostsByType('friend')).then(() => {
+      const newState = store.getState();
+      expect(spy).toHaveBeenCalled();
+      expect(newState.postReducer.friendPosts).toMatchObject(mockFriendFeed);
+      expect(newState.postReducer.next).toEqual('next');
+      done();
+    });
+
+    store.dispatch(actionCreators.appendPosts('friend')).then(() => {
+      const newState = store.getState();
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(newState.postReducer.friendPosts).toMatchObject(mockFriendFeed);
+      expect(newState.postReducer.next).toEqual('next');
+      done();
+    });
+  });
 });
 
 describe('Post Reducer', () => {
@@ -217,6 +328,7 @@ describe('Post Reducer', () => {
       anonymousPosts: [],
       friendPosts: [],
       selectedUserPosts: [],
+      selectedPostFailure: false,
       next: null,
       selectedPost: null
     });
@@ -383,19 +495,6 @@ describe('Post Reducer', () => {
   });
 
   it('should add comment to friendPosts/SelectedPost/userPosts when create comment success', () => {
-    // export const mockPost = {
-    //   id: 1,
-    //   'content-type': 'Article',
-    //   is_admin_question: 'true',
-    //   author_detail: {
-    //     id: 1,
-    //     username: 'admin',
-    //     profile_pic: null
-    //   },
-    //   content: '사람들의 무리한 부탁을 잘 거절하는 편',
-    //   created_at: '2020-11-05T14:16:13.801119+08:00',
-    //   updated_at: null
-    // };
     const newComment = {
       id: 124,
       target_type: 'Article',
@@ -427,46 +526,6 @@ describe('Post Reducer', () => {
     );
     expect(newState.selectedPost.comments.length).toEqual(prevLength + 1);
   });
-
-  // export const mockResponse = {
-  //   id: 5999,
-  //   'content-type': 'Response',
-  //   type: 'Response',
-  //   author_detail: {
-  //     id: 123,
-  //     username: 'curious',
-  //     profile_pic:
-  //       'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
-  //   },
-  //   question: 1244,
-  //   question_detail: {
-  //     id: 1244,
-  //     content: '어디서 마시는 커피를 가장 좋아하는가?'
-  //   },
-  //   content:
-  //     '스타벅스에서 먹는 바닐라크림콜드브루! 시럽은 1번만 넣고 에스프레소휩을 올리면 행복~',
-  //   comments: [
-  //     {
-  //       id: 1274,
-  //       post_id: 383,
-  //       content: '오 마져 맛이써!!!!',
-  //       author: 3,
-  //       author_detail: {
-  //         id: 2,
-  //         profile_pic:
-  //           'https://images.vexels.com/media/users/3/144928/isolated/preview/ebbccaf76f41f7d83e45a42974cfcd87-dog-illustration-by-vexels.png',
-  //         username: '아이폰'
-  //       },
-  //       referenced_comments: 1274,
-  //       is_reply: false,
-  //       is_private: true,
-  //       create_dt: '2020-09-23T10:40:42.268355+08:00',
-  //       update_dt: '2020-09-23T10:40:42.268384+08:00'
-  //     }
-  //   ],
-  //   created_at: '2020-11-05T14:16:13.801119+08:00',
-  //   updated_at: null
-  // };
 
   it('should add reply to posts when create reply success', () => {
     const newComment = {

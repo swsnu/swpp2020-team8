@@ -22,7 +22,8 @@ export const mockStore = {
   },
   postReducer: {
     selectedPost: mockCustomQuestion,
-    selectedUserPosts: [mockResponse, mockResponse2]
+    selectedUserPosts: [mockResponse, mockResponse2],
+    selectedPostFailure: false
   },
   questionReducer: {
     dailyQuestions: mockQuestionFeed,
