@@ -73,6 +73,7 @@ const initialState = {
   friendPosts: [],
   selectedUserPosts: [],
   selectedPost: null,
+  selectedPostFailure: false,
   next: null
 };
 
@@ -104,7 +105,10 @@ export const getSelectedPost = (postType, id) => async (dispatch) => {
   try {
     result = await axios.get(`feed/${apiType}/${id}/`);
   } catch (err) {
-    dispatch({ type: `post/GET_SELECTED_${type}_FAILURE`, error: err });
+    dispatch({
+      type: `post/GET_SELECTED_${type}_FAILURE`,
+      error: err.response.status
+    });
     return;
   }
   dispatch({
@@ -323,6 +327,14 @@ export default function postReducer(state = initialState, action) {
         selectedPost: action.selectedPost
       };
     }
+    case GET_SELECTED_ARTICLE_FAILURE:
+    case GET_SELECTED_RESPONSE_FAILURE:
+    case GET_SELECTED_QUESTION_FAILURE:
+      return {
+        ...state,
+        selectedPost: null,
+        selectedPostFailure: action.error
+      };
     case GET_ANON_POSTS_REQUEST:
     case GET_FRIEND_POSTS_REQUEST:
     case GET_USER_POSTS_REQUEST:

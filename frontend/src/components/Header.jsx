@@ -249,7 +249,14 @@ const Header = () => {
           </Toolbar>
         </AppBar>
       </div>
-      <div ref={notiRef}>{isNotiOpen && <NotificationDropdownList />}</div>
+      <div ref={notiRef}>
+        {isNotiOpen && (
+          <NotificationDropdownList
+            setIsNotiOpen={setIsNotiOpen}
+            notifications={notifications}
+          />
+        )}
+      </div>
       <div ref={searchRef}>{isSearchOpen && <SearchDropdownList />}</div>
     </>
   );
