@@ -30,7 +30,7 @@ export const getFriendList = () => async (dispatch) => {
   dispatch({ type: GET_FRIEND_LIST_REQUEST });
   let result;
   try {
-    result = await axios.get(`user/friends/`);
+    result = await axios.get(`user/me/friends/`);
   } catch (err) {
     dispatch({ type: GET_FRIEND_LIST_FAILURE, error: err });
     return;
@@ -71,13 +71,14 @@ export const deleteFriendRequest = (friendId) => async (dispatch) => {
 };
 
 export const requestFriend = (responderId) => async (dispatch, getState) => {
-  const userId = getState().userReducer.user?.id;
+  const userId = getState().userReducer.currentUser?.id;
   dispatch({
     type: REQUEST_FRIEND_REQUEST
   });
   await axios.post('user/friend-requests/', {
     requestee_id: responderId,
-    requester_id: userId
+    requester_id: userId,
+    accepted: false
   });
 
   dispatch({

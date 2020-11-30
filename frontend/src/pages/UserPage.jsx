@@ -73,7 +73,7 @@ export default function UserPage() {
   const classes = useStyles();
   const selectedUser = useSelector((state) => state.userReducer.selectedUser);
   const currentUser = useSelector((state) => state.userReducer.currentUser);
-  const friendList = useSelector((state) => state.friendReducer.friendList);
+  // const friendList = useSelector((state) => state.friendReducer.friendList);
   const [value, setValue] = useState('All');
   const selectedUserPosts = useSelector(
     (state) => state.postReducer.selectedUserPosts
@@ -108,8 +108,8 @@ export default function UserPage() {
     }
   };
 
-  const friendIdList = friendList.map((friend) => friend.id);
-  const isFriend = friendIdList.includes(selectedUser?.id);
+  // const friendIdList = friendList.map((friend) => friend.id);
+  // const isFriend = friendIdList.includes(selectedUser?.id);
 
   const userResponses = selectedUserPosts?.filter(
     (post) => post.type === 'Response'
@@ -140,9 +140,9 @@ export default function UserPage() {
           {selectedUser && selectedUser.id !== currentUser.id && (
             <FriendStatusButtons
               friendObj={selectedUser}
-              isFriend={isFriend}
-              isPending={false}
-              hasSentRequest={false}
+              isFriend={selectedUser.are_friends}
+              isPending={selectedUser.received_friend_request_from}
+              hasSentRequest={selectedUser.sent_friend_request_to}
             />
           )}
         </UserPageWrapper>
