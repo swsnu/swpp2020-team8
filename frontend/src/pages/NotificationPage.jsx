@@ -68,7 +68,10 @@ export default function NotificationPage({ tabType }) {
   };
 
   const notificationList = notifications.map((noti) => {
-    if (noti.target_type === 'FriendRequest') {
+    if (
+      noti.target_type === 'FriendRequest' &&
+      noti.origin_type === 'FriendRequest'
+    ) {
       const isFriend = friendList.find(
         (friend) => +friend.id === +noti?.actor_detail?.id
       );
@@ -97,13 +100,20 @@ export default function NotificationPage({ tabType }) {
       const isFriend = friendList.find(
         (friend) => +friend.id === +friendRequest?.actor_detail?.id
       );
-      return (
+
+      return friendRequest.origin_type === 'FriendRequest' ? (
         <FriendItem
           key={`friend-request-${friendRequest?.target_id}`}
           isFriend={isFriend}
           message={friendRequest.message}
           isPending={!isFriend}
           friendObj={friendRequest?.actor_detail}
+        />
+      ) : (
+        <NotificationItem
+          key={`friend-request-${friendRequest?.id}`}
+          notiObj={friendRequest}
+          isNotificationPage
         />
       );
     });
