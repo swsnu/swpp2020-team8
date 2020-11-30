@@ -10,8 +10,8 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('contenttypes', '0002_remove_content_type_name'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('contenttypes', '0002_remove_content_type_name'),
     ]
 
     operations = [
@@ -28,8 +28,8 @@ class Migration(migrations.Migration):
                 ('is_read', models.BooleanField(default=False)),
                 ('actor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sent_noti_set', to=settings.AUTH_USER_MODEL)),
                 ('origin_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='origin_noti_set', to='contenttypes.contenttype')),
-                ('recipient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='received_noti_set', to=settings.AUTH_USER_MODEL)),
                 ('target_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='targetted_noti_set', to='contenttypes.contenttype')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='received_noti_set', to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'abstract': False,

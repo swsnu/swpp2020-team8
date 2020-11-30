@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
-from adoorback.utils.content_types import get_content_type, get_korean_type_name
+from adoorback.utils.content_types import get_korean_type_name, get_comment_type
 from notification.models import Notification
 
 User = get_user_model()
@@ -15,23 +15,25 @@ class LikeManager(models.Manager):
     use_for_related_fields = True
 
     def comment_likes_only(self, **kwargs):
-        return self.filter(content_type=get_content_type("Comment"), **kwargs)
+        return self.filter(content_type=get_comment_type(), **kwargs)
 
     def feed_likes_only(self, **kwargs):
-        return self.exclude(content_type=get_content_type("Comment"), **kwargs)
+        return self.exclude(content_type=get_comment_type(), **kwargs)
 
 
 class Like(models.Model):
     user = models.ForeignKey(User, related_name='like_set', on_delete=models.CASCADE)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.IntegerField(blank=True, null=True)
+    object_id = models.IntegerField()
     target = GenericForeignKey('content_type', 'object_id')
 
     like_targetted_notis = GenericRelation(Notification,
-        content_type_field='target_type', object_id_field='target_id')
+                                           content_type_field='target_type',
+                                           object_id_field='target_id')
     like_originated_notis = GenericRelation(Notification,
-        content_type_field='origin_type', object_id_field='origin_id')
+                                            content_type_field='origin_type',
+                                            object_id_field='origin_id')
     objects = LikeManager()
 
     class Meta:
@@ -55,9 +57,9 @@ def create_like_noti(sender, **kwargs):
     origin_name = get_korean_type_name(origin.type)
     actor = instance.user
     actor_name = '익명의 사용자가'
-    recipient = instance.target.author
-    if User.are_friends(actor, recipient):
+    user = instance.target.author
+    if User.are_friends(actor, user):
         actor_name = f'{actor.username}님이'
     message = f'{actor_name} 회원님의 {origin_name}을 좋아합니다.'
-    Notification.objects.create(actor=actor, recipient=recipient, message=message,
+    Notification.objects.create(actor=actor, user=user, message=message,
                                 origin=origin, target=target)

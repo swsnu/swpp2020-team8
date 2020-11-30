@@ -12,7 +12,7 @@ class Notification(AdoorTimestampedModel):
     message = models.CharField(max_length=100)
 
     actor = models.ForeignKey(User, related_name='sent_noti_set', on_delete=models.CASCADE)
-    recipient = models.ForeignKey(User, related_name='received_noti_set', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='received_noti_set', on_delete=models.CASCADE)
 
     target_type = models.ForeignKey(ContentType,
                                     on_delete=models.CASCADE,

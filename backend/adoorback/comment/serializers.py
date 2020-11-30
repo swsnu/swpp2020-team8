@@ -17,23 +17,14 @@ class RecursiveReplyField(serializers.Serializer):
 
 
 class CommentBaseSerializer(AdoorBaseSerializer):
-    target_type = serializers.SerializerMethodField()
-    target_id = serializers.SerializerMethodField()
     is_reply = serializers.SerializerMethodField(read_only=True)
-
-    def get_target_type(self, obj):
-        return obj.target.type
-
-    def get_target_id(self, obj):
-        return obj.object_id
 
     def get_is_reply(self, obj):
         return obj.target.type == 'Comment'
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Comment
-        fields = AdoorBaseSerializer.Meta.fields + ['is_reply', 'is_private',
-                                                    'target_type', 'target_id']
+        fields = AdoorBaseSerializer.Meta.fields + ['is_reply', 'is_private']
 
 
 class CommentFriendSerializer(CommentBaseSerializer):

@@ -1,28 +1,48 @@
 from django.contrib.contenttypes.models import ContentType
 
 
-def get_content_type(model_name):
-    if model_name == 'Comment':
-        from comment.models import Comment
-        model = Comment
-    elif model_name == 'Like':
-        from like.models import Like
-        model = Like
-    elif model_name == 'Article':
-        from feed.models import Article
-        model = Article
-    elif model_name == 'Question':
-        from feed.models import Question
-        model = Question
-    elif model_name == 'Response':
-        from feed.models import Response
-        model = Response
-    elif model_name == 'Post':
-        from feed.models import Post
-        model = Post
+def get_comment_type():
+    from comment.models import Comment
+    return ContentType.objects.get_for_model(Comment)
+
+
+def get_like_type():
+    from like.models import Like
+    return ContentType.objects.get_for_model(Like)
+
+
+def get_article_type():
+    from feed.models import Article
+    return ContentType.objects.get_for_model(Article)
+
+
+def get_question_type():
+    from feed.models import Question
+    return ContentType.objects.get_for_model(Question)
+
+
+def get_response_type():
+    from feed.models import Response
+    return ContentType.objects.get_for_model(Response)
+
+
+def get_post_type():
+    from feed.models import Post
+    return ContentType.objects.get_for_model(Post)
+
+
+def get_generic_relation_type(model):
+    if model == 'Comment':
+        return get_comment_type()
+    elif model == 'Article':
+        return get_article_type()
+    elif model == 'Response':
+        return get_response_type()
+    elif model == 'Question':
+        return get_question_type()
     else:
-        model = None
-    return ContentType.objects.get_for_model(model)
+        return None
+
 
 def get_korean_type_name(model_name):
     if model_name == 'Comment':
@@ -40,4 +60,3 @@ def get_korean_type_name(model_name):
     else:
         result = ''
     return result
-    

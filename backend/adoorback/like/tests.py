@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 from like.models import Like
 
 from adoorback.utils.seed import set_seed, fill_data
-from adoorback.utils.content_types import get_content_type
+from adoorback.utils.content_types import get_article_type, get_question_type, get_comment_type
 
 User = get_user_model()
 N = 10
@@ -34,8 +34,8 @@ class LikeTestCase(TestCase):
 
     # like must be deleted along with target Feed
     def test_on_delete_feed_cascade(self):
-        article_model = get_content_type("Article")
-        question_model = get_content_type("Question")
+        article_model = get_article_type()
+        question_model = get_question_type()
         article = Like.objects.filter(content_type=article_model).last().target
         question = Like.objects.filter(content_type=question_model).last().target
         self.assertGreater(article.article_likes.count(), 0)
@@ -50,7 +50,7 @@ class LikeTestCase(TestCase):
 
     # like must be deleted along with target Comment
     def test_delete_comment_cascade(self):
-        content_type = get_content_type("Comment")
+        content_type = get_comment_type()
         comment = Like.objects.filter(content_type=content_type).last().target
         object_id = comment.id
         self.assertGreater(comment.comment_likes.count(), 0)
