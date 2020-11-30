@@ -56,9 +56,9 @@ class FriendRequest(AdoorTimestampedModel):
     requestee = models.ForeignKey(
         get_user_model(), related_name='received_friend_requests', on_delete=models.CASCADE)
     accepted = models.BooleanField(null=True)
-    request_targetted_notis = GenericRelation("notification.Notification",
+    friend_request_targetted_notis = GenericRelation("notification.Notification",
         content_type_field='target_type', object_id_field='target_id')
-    request_originated_notis = GenericRelation("notification.Notification",
+    friend_request_originated_notis = GenericRelation("notification.Notification",
         content_type_field='origin_type', object_id_field='origin_id')
 
     class Meta:
@@ -109,6 +109,6 @@ def create_friend_request_noti(sender, **kwargs):
         message = f'{actor.username}님과 친구가 되었습니다.'
         Notification.objects.create(actor=actor, user=user, message=message,
                                     origin=origin, target=target)
-        message = f'{recipient.username}님과 친구가 되었습니다.'
-        Notification.objects.create(actor=recipient, recipient=actor, message=message,
+        message = f'{user.username}님과 친구가 되었습니다.'
+        Notification.objects.create(actor=user, user=actor, message=message,
                                     origin=origin, target=target)

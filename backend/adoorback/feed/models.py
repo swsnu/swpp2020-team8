@@ -108,9 +108,9 @@ class ResponseRequest(AdoorTimestampedModel):
     requester = models.ForeignKey(User, related_name='sent_response_request_set', on_delete=models.CASCADE)
     requestee = models.ForeignKey(User, related_name='received_response_request_set', on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    request_targetted_notis = GenericRelation("notification.Notification",
+    response_request_targetted_notis = GenericRelation("notification.Notification",
         content_type_field='target_type', object_id_field='target_id')
-    request_originated_notis = GenericRelation("notification.Notification",
+    response_request_originated_notis = GenericRelation("notification.Notification",
         content_type_field='origin_type', object_id_field='origin_id')
 
     class Meta:
