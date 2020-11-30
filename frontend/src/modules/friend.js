@@ -30,7 +30,7 @@ export const getFriendList = () => async (dispatch) => {
   dispatch({ type: GET_FRIEND_LIST_REQUEST });
   let result;
   try {
-    result = await axios.get(`user/friends/`);
+    result = await axios.get(`user/me/friends/`);
   } catch (err) {
     dispatch({ type: GET_FRIEND_LIST_FAILURE, error: err });
     return;
