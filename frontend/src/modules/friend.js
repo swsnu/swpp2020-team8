@@ -45,7 +45,7 @@ export const deleteFriend = (friendId) => async (dispatch, getState) => {
   const userId = getState().userReducer.currentUser?.id;
   dispatch({ type: DELETE_FRIEND_REQUEST, userId });
   try {
-    await axios.delete(`user/friendship/${friendId}/`);
+    await axios.delete(`user/friend/${friendId}/`);
   } catch (err) {
     dispatch({ type: DELETE_FRIEND_FAILURE, error: err });
     return;
@@ -78,7 +78,7 @@ export const requestFriend = (responderId) => async (dispatch, getState) => {
   await axios.post('user/friend-requests/', {
     requestee_id: responderId,
     requester_id: userId,
-    accepted: false
+    accepted: null
   });
 
   dispatch({
@@ -92,7 +92,7 @@ export const acceptFriendRequest = (friendId) => async (dispatch) => {
     type: ACCEPT_FRIEND_REQUEST
   });
   await axios.patch(`user/friend-requests/${friendId}/respond/`, {
-    responded: true
+    accepted: true
   });
   dispatch(getFriendList());
 };
@@ -102,7 +102,7 @@ export const rejectFriendRequest = (friendId) => async (dispatch) => {
     type: REJECT_FRIEND_REQUEST
   });
   await axios.patch(`user/friend-requests/${friendId}/respond/`, {
-    responded: false
+    accepted: false
   });
 };
 
