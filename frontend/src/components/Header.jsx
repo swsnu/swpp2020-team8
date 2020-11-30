@@ -204,7 +204,7 @@ const Header = () => {
           aria-label="account of current user"
           className={classes.iconButton}
         >
-          <Link to="/my-friends">
+          <Link to={`/user/${currentUser?.id}`}>
             <AccountCircle />
           </Link>
         </IconButton>
@@ -249,7 +249,14 @@ const Header = () => {
           </Toolbar>
         </AppBar>
       </div>
-      <div ref={notiRef}>{isNotiOpen && <NotificationDropdownList />}</div>
+      <div ref={notiRef}>
+        {isNotiOpen && (
+          <NotificationDropdownList
+            notifications={notifications}
+            setIsNotiOpen={setIsNotiOpen}
+          />
+        )}
+      </div>
       <div ref={searchRef}>{isSearchOpen && <SearchDropdownList />}</div>
     </>
   );

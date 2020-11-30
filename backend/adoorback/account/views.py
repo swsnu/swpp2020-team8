@@ -134,6 +134,9 @@ class UserFriendRequestList(generics.ListCreateAPIView):
     def get_queryset(self):
         return FriendRequest.objects.filter(requestee=self.request.user)
 
+    def perform_create(self, serializer):
+        serializer.save(accepted=None)
+
 
 class UserFriendRequestDestroy(generics.DestroyAPIView):
     serializer_class = UserFriendRequestSerializer

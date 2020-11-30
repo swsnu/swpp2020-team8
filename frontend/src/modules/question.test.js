@@ -139,9 +139,9 @@ describe('questionActions', () => {
     store.dispatch(actionCreators.getResponseRequestsByQuestion(1)).then(() => {
       const newState = store.getState();
       expect(spy).toHaveBeenCalled();
-      expect(newState.questionReducer.responseRequests).toMatchObject(
-        mockResponseRequests
-      );
+      expect(
+        newState.questionReducer.selectedQuestionResponseRequests
+      ).toMatchObject(mockResponseRequests);
       done();
     });
   });
@@ -155,7 +155,9 @@ describe('questionActions', () => {
     store.dispatch(actionCreators.getResponseRequestsByQuestion(1)).then(() => {
       const newState = store.getState();
       expect(spy).toHaveBeenCalled();
-      expect(newState.questionReducer.responseRequests).toEqual(undefined);
+      expect(newState.questionReducer.selectedQuestionResponseRequests).toEqual(
+        undefined
+      );
       done();
     });
   });
@@ -187,7 +189,9 @@ describe('questionActions', () => {
     store.dispatch(actionCreators.createResponseRequest(1, 2)).then(() => {
       const newState = store.getState();
       expect(spy).toHaveBeenCalled();
-      expect(newState.questionReducer.responseRequests).toEqual(undefined);
+      expect(newState.questionReducer.selectedQuestionResponseRequests).toEqual(
+        undefined
+      );
       done();
     });
   });
@@ -219,7 +223,9 @@ describe('questionActions', () => {
     store.dispatch(actionCreators.deleteResponseRequest(1, 2)).then(() => {
       const newState = store.getState();
       expect(spy).toHaveBeenCalled();
-      expect(newState.questionReducer.responseRequests).toEqual(undefined);
+      expect(newState.questionReducer.selectedQuestionResponseRequests).toEqual(
+        undefined
+      );
       done();
     });
   });
@@ -235,7 +241,7 @@ describe('Question Reducer', () => {
       recommendedQuestions: [],
       selectedQuestion: null,
       selectedQuestionResponses: [],
-      responseRequests: [],
+      selectedQuestionResponseRequests: [],
       next: null
     });
   });
