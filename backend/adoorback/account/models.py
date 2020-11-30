@@ -11,6 +11,7 @@ from django.db import models
 from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 
+from adoorback.utils.content_types import get_friend_request_type, get_user_type
 from adoorback.models import AdoorTimestampedModel
 
 
@@ -27,6 +28,13 @@ class User(AbstractUser, AdoorTimestampedModel):
     question_history = models.CharField(null=True, max_length=500)
     profile_pic = models.CharField(default=random_profile_color, max_length=7)
     friends = models.ManyToManyField('self', symmetrical=True, blank=True)
+
+    friendship_targetted_notis = GenericRelation("notification.Notification",
+                                                 content_type_field='target_type',
+                                                 object_id_field='target_id')
+    friendship_originated_notis = GenericRelation("notification.Notification",
+                                                  content_type_field='origin_type',
+                                                  object_id_field='origin_id')
 
     class Meta:
         ordering = ['username']
@@ -58,8 +66,8 @@ class FriendRequest(AdoorTimestampedModel):
                                                      content_type_field='target_type',
                                                      object_id_field='target_id')
     friend_request_originated_notis = GenericRelation("notification.Notification",
-                                                      content_type_field='origin_type',
-                                                      object_id_field='origin_id')
+                                                      content_type_field='target_type',
+                                                      object_id_field='target_id')
 
     class Meta:
         constraints = [
@@ -76,29 +84,33 @@ class FriendRequest(AdoorTimestampedModel):
         return self.__class__.__name__
 
 
-@receiver(m2m_changed, sender=User)
-def delete_friendship_noti(action, pk_set, instance):
+@receiver(m2m_changed)
+def delete_friendship_noti(action, pk_set, instance, **kwargs):
     Notification = apps.get_model('notification', 'Notification')
     if action == "post_remove":
         friend = User.objects.get(id=pk_set.pop())
         Notification.objects.filter(user=instance, actor=friend,
-                                    target=friend, origin__type='FriendRequest').delete()
+                                    origin_type=get_user_type(),
+                                    target_type=get_friend_request_type()).delete()
+        Notification.objects.filter(user=friend, actor=instance,
+                                    origin_type=get_user_type(),
+                                    target_type=get_friend_request_type()).delete()
 
 
 @receiver(post_save, sender=FriendRequest)
-def create_friend_noti(created, instance):
+def create_friend_noti(created, instance, **kwargs):
     accepted = instance.accepted
     Notification = apps.get_model('notification', 'Notification')
+    requester = instance.requester
+    requestee = instance.requestee
+
     if created:
-        requestee = instance.requestee
-        requester = instance.requester
         Notification.objects.create(user=requestee, actor=requester,
                                     origin=instance, target=instance,
                                     message=f'{requester.username}님이 친구 요청을 보냈습니다.',
                                     redirect_url=f'/user/{requester.id}')
+        return
     elif accepted:
-        requester = instance.requester
-        requestee = instance.requestee
         Notification.objects.create(user=requestee, actor=requester,
                                     origin=requester, target=instance,
                                     message=f'{requester.username}님과 친구가 되었습니다.',
@@ -109,12 +121,8 @@ def create_friend_noti(created, instance):
                                     redirect_url=f'/user/{requestee.id}')
         # add friendship
         requester.friends.add(requestee)
-    # recipient refused friend request
-    else:
-        requestee = instance.requestee
-        requester = instance.requester
-        # should be unique
-        notification = Notification.objects.get(user=requestee, actor=requester,
-                                                origin=instance, target=instance)
-        notification.is_visible = False
-        notification.save()
+
+    # make friend request notification invisible if requestee has responded
+    Notification.objects.filter(user=requestee, actor=requester,
+                                origin_type=get_friend_request_type()).update(is_read=True,
+                                                                              is_visible=False)

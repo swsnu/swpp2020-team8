@@ -25,7 +25,8 @@ class Notification(AdoorTimestampedModel):
     origin = GenericForeignKey('origin_type', 'origin_id')
 
     message = models.CharField(max_length=100)
-    redirect_url = models.CharField(max_length=150)
+    # TODO: remove blank=True, null=True after fixing feed/comment/like models
+    redirect_url = models.CharField(max_length=150, blank=True, null=True)
 
     is_visible = models.BooleanField(default=True)
     is_read = models.BooleanField(default=False)

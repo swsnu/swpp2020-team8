@@ -1,6 +1,17 @@
 from django.contrib.contenttypes.models import ContentType
 
 
+def get_user_type():
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    return ContentType.objects.get_for_model(User)
+
+
+def get_friend_request_type():
+    from account.models import FriendRequest
+    return ContentType.objects.get_for_model(FriendRequest)
+
+
 def get_comment_type():
     from comment.models import Comment
     return ContentType.objects.get_for_model(Comment)

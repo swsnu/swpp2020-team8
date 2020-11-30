@@ -160,6 +160,7 @@ class PostAPITestCase(APITestCase):
         Article.objects.create(author_id=fid, content="test_article", share_with_friends=False)
 
         user_id = User.objects.last().id
+        current_user.friends.add(friend_user)
         with self.login(username=current_user.username, password='password'):
             response = self.get(self.reverse('user-feed-post-list', pk=user_id))
             self.assertEqual(response.data['count'], 3)

@@ -147,6 +147,9 @@ class UserFriendRequestDestroy(generics.DestroyAPIView):
         return FriendRequest.objects.get(requester_id=self.request.user.id,
                                          requestee_id=self.kwargs.get('pk'))
 
+    def perform_destroy(self, obj):
+        obj.delete()
+
 
 class UserFriendRequestUpdate(generics.UpdateAPIView):
     serializer_class = UserFriendRequestSerializer

@@ -1,12 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.test import Client
-from rest_framework.utils import json
 from rest_framework.test import APIClient
+from rest_framework.utils import json
 from test_plus.test import TestCase
 
-from adoorback.utils.seed import set_seed
-
 from account.models import FriendRequest
+from adoorback.utils.seed import set_seed
 from notification.models import Notification
 
 User = get_user_model()
@@ -157,7 +156,7 @@ class AuthAPITestCase(APITestCase):
             username="test_username", email="test@email.com", password="test_password")
 
         response = client.get('/api/user/login/')
-        self.assertEqual(response.status_code, 405)     # Request not allowed
+        self.assertEqual(response.status_code, 405)  # Request not allowed
 
         response = client.post('/api/user/login/', {},
                                content_type='application/json')
@@ -194,7 +193,7 @@ class AuthAPITestCase(APITestCase):
         }
 
         response = client.get('/api/user/signup/')
-        self.assertEqual(response.status_code, 405)     # Request not allowed
+        self.assertEqual(response.status_code, 405)  # Request not allowed
 
         response = client.post('/api/user/signup/',
                                signup_data, content_type='application/json')
@@ -238,11 +237,11 @@ class AuthAPITestCase(APITestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()['username'], "test_user")
 
-            data = {"question_history": '[1, 2, 3]'}
+            data = {"question_history": '1, 2, 3'}
             response = self.patch('current-user', data=data)
             self.assertEqual(response.status_code, 200)
 
-            data = {"question_history": '[1, 2, 3]'}
+            data = {"question_history": '1, 2, 3'}
             response = self.post('current-user', data=data)
             self.assertEqual(response.status_code, 405)
 
@@ -254,61 +253,35 @@ class FriendRequestAPITestCase(APITestCase):
 
     def test_friend_request_list(self):
         current_user = self.make_user(username='current_user')
-        friend_user_1 = self.make_user(username='friend_user_1')
-        friend_user_2 = self.make_user(username='friend_user_2')
+        friend_user = self.make_user(username='friend_user')
 
-        prev_noti_count = Notification.objects.count()
-        FriendRequest.objects.create(
-            requester=current_user, requestee=friend_user_1)
-        FriendRequest.objects.create(
-            requester=current_user, requestee=friend_user_2)
-        FriendRequest.objects.create(
-            requester=friend_user_1, requestee=friend_user_2, accepted=False)
-        curr_noti_count = Notification.objects.count()
-        self.assertEqual(curr_noti_count, prev_noti_count + 3)
-
-        with self.login(username=current_user.username, password='password'):
+        with self.login(username=friend_user.username, password='password'):
             response = self.get('user-friend-request-list')
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data['count'], 0)
 
-        with self.login(username=friend_user_1.username, password='password'):
+        with self.login(username=friend_user.username, password='password'):
+            response = self.post('user-friend-request-list',
+                                 data={"requester_id": friend_user.id,
+                                       "requestee_id": current_user.id})
+            self.assertEqual(response.status_code, 201)
+            self.assertEqual(FriendRequest.objects.last().accepted, None)
+
+        with self.login(username=current_user.username, password='password'):
             response = self.get('user-friend-request-list')
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data['count'], 1)
-
-        with self.login(username=friend_user_2.username, password='password'):
-            response = self.get('user-friend-request-list')
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.data['count'], 2)
 
     def test_friend_request_detail(self):
         current_user = self.make_user(username='current_user')
         friend_user_1 = self.make_user(username='friend_user_1')
         friend_user_2 = self.make_user(username='friend_user_2')
 
-        # id = 1
-        FriendRequest.objects.create(
-            requester=current_user, requestee=friend_user_1)
-        # id = 2
-        FriendRequest.objects.create(
-            requester=current_user, requestee=friend_user_2)
-        # id = 3
-        FriendRequest.objects.create(
-            requester=friend_user_1, requestee=friend_user_2)
-
         # POST FriendRequest (friend_user_2 -> friend_user_1)
         with self.login(username=friend_user_2.username, password='password'):
             data = {"requester_id": friend_user_2.id, "requestee_id": friend_user_1.id}
             response = self.post('user-friend-request-list', data=data)
             self.assertEqual(response.status_code, 201)
-
-        # PATCH (accept) FriendRequest (friend_user_1 -> friend_user_2)
-        with self.login(username=friend_user_1.username, password='password'):
-            data = {"accepted": True}
-            response = self.patch(self.reverse(
-                'user-friend-request-update', pk=friend_user_2.id), data=data)
-            self.assertEqual(response.status_code, 200)
 
         # PATCH (reject) FriendRequest (friend_user_1 -> friend_user_2)
         with self.login(username=friend_user_1.username, password='password'):
@@ -317,8 +290,110 @@ class FriendRequestAPITestCase(APITestCase):
                 'user-friend-request-update', pk=friend_user_2.id), data=data)
             self.assertEqual(response.status_code, 200)
 
-        # DELETE FriendRequest (friend_user_2 -> friend_user_1)
+        # DESTROY FriendRequest (friend_user_2 -> friend_user_1)
         with self.login(username=friend_user_2.username, password='password'):
             response = self.delete(self.reverse(
                 'user-friend-request-destroy', pk=friend_user_1.id))
             self.assertEqual(response.status_code, 204)
+
+        # POST FriendRequest (current_user -> friend_user_1)
+        with self.login(username=friend_user_2.username, password='password'):
+            data = {"requester_id": current_user.id, "requestee_id": friend_user_1.id}
+            response = self.post('user-friend-request-list', data=data)
+            self.assertEqual(response.status_code, 201)
+
+        # PATCH (accept) FriendRequest (friend_user_1 -> current_user)
+        with self.login(username=friend_user_1.username, password='password'):
+            data = {"accepted": True}
+            response = self.patch(self.reverse(
+                'user-friend-request-update', pk=current_user.id), data=data)
+            self.assertEqual(response.status_code, 200)
+
+
+class FriendshipNotisAPITestCase(APITestCase):
+
+    def test_friend_request_noti(self):
+        current_user = self.make_user(username='current_user')
+        friend_user = self.make_user(username='friend_user')
+
+        # POST FriendRequest (friend_user -> current_user)
+        with self.login(username=friend_user.username, password='password'):
+            data = {"requester_id": friend_user.id, "requestee_id": current_user.id}
+            response = self.post('user-friend-request-list', data=data)
+            self.assertEqual(response.status_code, 201)
+            self.assertEqual(FriendRequest.objects.last().accepted, None)
+
+            notification = Notification.objects.last()
+            self.assertEqual(notification.actor_id, friend_user.id)
+            self.assertEqual(notification.user_id, current_user.id)
+            self.assertEqual(notification.is_read, False)
+            self.assertEqual(notification.is_visible, True)
+            self.assertEqual(notification.redirect_url, f'/user/{friend_user.id}')
+
+        # PATCH (reject) FriendRequest (current_user -> friend_user)
+        with self.login(username=current_user.username, password='password'):
+            data = {"accepted": False}
+            response = self.patch(self.reverse(
+                'user-friend-request-update', pk=friend_user.id), data=data)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(FriendRequest.objects.last().accepted, False)
+
+            notification = Notification.objects.last()
+            self.assertEqual(notification.actor_id, friend_user.id)
+            self.assertEqual(notification.user_id, current_user.id)
+            self.assertEqual(notification.is_read, True)
+            self.assertEqual(notification.is_visible, False)
+
+        # DESTROY FriendRequest (friend_user -> current_user)
+        with self.login(username=friend_user.username, password='password'):
+            num_notis = Notification.objects.count()
+            response = self.delete(self.reverse(
+                'user-friend-request-destroy', pk=current_user.id))
+            self.assertEqual(response.status_code, 204)
+            self.assertEqual(Notification.objects.count(), num_notis - 1)
+
+    def test_friendship_noti(self):
+        current_user = self.make_user(username='current_user')
+        friend_user = self.make_user(username='friend_user')
+
+        # POST FriendRequest (friend_user -> current_user)
+        with self.login(username=friend_user.username, password='password'):
+            num_notis = Notification.objects.count()
+            data = {"requester_id": friend_user.id, "requestee_id": current_user.id}
+            response = self.post('user-friend-request-list', data=data)
+            self.assertEqual(response.status_code, 201)
+            self.assertEqual(Notification.objects.count(), num_notis + 1)
+
+        # PATCH (accept) FriendRequest (current_user -> friend_user)
+        with self.login(username=current_user.username, password='password'):
+            num_notis = Notification.objects.count()
+            data = {"accepted": True}
+            response = self.patch(self.reverse(
+                'user-friend-request-update', pk=friend_user.id), data=data)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(Notification.objects.count(), num_notis + 2)
+            self.assertEqual(FriendRequest.objects.last().accepted, True)
+
+            last_noti_id = Notification.objects.last().id
+            friend_request_noti = Notification.objects.get(id=last_noti_id - 2)
+            self.assertEqual(friend_request_noti.is_visible, False)
+            self.assertEqual(friend_request_noti.is_read, True)
+
+            current_user_friend_notis = current_user.friendship_originated_notis.filter(user=friend_user,
+                                                                                        actor=current_user)
+            friend_user_friend_notis = friend_user.friendship_originated_notis.filter(user=current_user,
+                                                                                      actor=friend_user)
+            self.assertEqual(current_user_friend_notis.count(), 1)  # friendship only
+            self.assertEqual(friend_user_friend_notis.count(), 1)  # friend request & friendship
+
+        # DELETE Friendship (current_user -> friend_user)
+        with self.login(username=current_user.username, password='password'):
+            num_notis = Notification.objects.count()
+            num_friends_current_user = User.objects.get(id=current_user.id).friends.count()
+            num_friends_friend_user = User.objects.get(id=friend_user.id).friends.count()
+            response = self.delete(self.reverse('user-friend-destroy', pk=friend_user.id))
+
+            self.assertEqual(response.status_code, 204)
+            self.assertEqual(Notification.objects.count(), num_notis - 2)
+            self.assertEqual(User.objects.get(id=current_user.id).friends.count(), num_friends_current_user - 1)
+            self.assertEqual(User.objects.get(id=friend_user.id).friends.count(), num_friends_friend_user - 1)
