@@ -133,3 +133,6 @@ def create_friend_request_noti(sender, **kwargs):
         message = f'{actor.username}님과 친구가 되었습니다.'
         Notification.objects.create(actor=actor, recipient=recipient, message=message,
                                     origin=origin, target=target)
+        message = f'{recipient.username}님과 친구가 되었습니다.'
+        Notification.objects.create(actor=recipient, recipient=actor, message=message,
+                                    origin=origin, target=target)

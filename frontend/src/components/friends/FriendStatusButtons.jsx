@@ -27,6 +27,8 @@ export default function FriendStatusButtons({
 }) {
   const dispatch = useDispatch();
   const [isRequestSubmitted, setIsRequestSubmitted] = useState(false);
+  const [isRequestAccepted, setIsRequestAccepted] = useState(false);
+
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isRequestResetted, setIsRequestResetted] = useState(false);
 
@@ -57,10 +59,12 @@ export default function FriendStatusButtons({
 
   const onClickAcceptRequestButton = () => {
     dispatch(acceptFriendRequest(friendObj.id));
+    setIsRequestAccepted(true);
   };
 
   const onClickRequestFriendButton = () => {
     dispatch(requestFriend(friendObj.id));
+    setIsRequestResetted(false);
     setIsRequestSubmitted(true);
   };
 
@@ -78,7 +82,7 @@ export default function FriendStatusButtons({
         </FriendButton>
       </div>
     );
-  if (isFriend)
+  if (isFriend || isRequestAccepted)
     return (
       <div id={friendObj.id}>
         <FriendButton
