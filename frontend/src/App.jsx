@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
+import Cookies from 'js.cookie';
 import Login from './pages/Login';
 import { GlobalStyle, MainWrapper, FeedWrapper } from './styles';
 import Header from './components/Header';
@@ -21,6 +22,7 @@ import NotificationPage from './pages/NotificationPage';
 import PostEdit from './pages/PostEdit';
 import UserPage from './pages/UserPage';
 import { getNotifications } from './modules/notification';
+import { getCurrentUser } from './modules/user';
 
 const theme = createMuiTheme({
   palette: {
@@ -33,6 +35,7 @@ const theme = createMuiTheme({
 });
 
 const App = () => {
+  const refresh_token = Cookies.get('jwt_token_refresh');
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -42,6 +45,12 @@ const App = () => {
   const signUpRedirectPath = currentUser?.question_history
     ? '/friends'
     : 'select-questions';
+
+  useEffect(() => {
+    if (refresh_token) {
+      dispatch(getCurrentUser());
+    }
+  }, []);
 
   useEffect(() => {
     // eslint-disable-next-line no-unused-vars
@@ -57,7 +66,7 @@ const App = () => {
     <MuiThemeProvider theme={theme}>
       <GlobalStyle />
       <Header />
-      {currentUser == null ||
+      {!refresh_token ||
       (!selectQuestion && currentUser?.question_history === null) ? (
         <Switch>
           <Route exact path="/login" component={Login} />
