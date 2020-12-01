@@ -444,16 +444,16 @@ class FriendshipNotisAPITestCase(APITestCase):
             self.assertEqual(FriendRequest.objects.last().accepted, True)  # friend request model modified
 
             # friend request noti modified
-            last_noti_id = Notification.objects.last().id
+            last_noti_id = Notification.objects.first().id
             friend_request_noti = Notification.objects.get(id=last_noti_id - 2)
             self.assertEqual(friend_request_noti.is_visible, False)  # should no longer be visible
             self.assertEqual(friend_request_noti.is_read, True)
 
             # friends have one newly created noti each
-            current_user_friend_notis = current_user.friendship_originated_notis.filter(user=friend_user,
-                                                                                        actor=current_user)
-            friend_user_friend_notis = friend_user.friendship_originated_notis.filter(user=current_user,
-                                                                                      actor=friend_user)
+            current_user_friend_notis = current_user.friendship_targetted_notis.filter(user=friend_user,
+                                                                                       actor=current_user)
+            friend_user_friend_notis = friend_user.friendship_targetted_notis.filter(user=current_user,
+                                                                                     actor=friend_user)
             self.assertEqual(current_user_friend_notis.count(), 1)
             self.assertEqual(friend_user_friend_notis.count(), 1)
 

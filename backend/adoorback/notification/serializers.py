@@ -10,27 +10,29 @@ User = get_user_model()
 
 class NotificationSerializer(serializers.ModelSerializer):
 
-    actor = serializers.HyperlinkedIdentityField(view_name='user-detail',
-                                                 read_only=True)
+    is_response_request = serializers.SerializerMethodField(read_only=True)
+    is_friend_request = serializers.SerializerMethodField(read_only=True)
     actor_detail = serializers.SerializerMethodField(read_only=True)
-    target_type = serializers.SerializerMethodField()
-    target_id = serializers.IntegerField()
-    origin_type = serializers.SerializerMethodField()
-    origin_id = serializers.IntegerField()
+    question_content = serializers.SerializerMethodField(read_only=True)
+
+    def get_is_response_request(self, obj):
+        return obj.target.type == 'ResponseRequest'
+
+    def get_is_friend_request(self, obj):
+        return obj.target.type == 'FriendRequest'
 
     def get_actor_detail(self, obj):
         if User.are_friends(self.context.get('request', None).user, obj.actor):
             return AuthorFriendSerializer(obj.actor).data
+        if obj.target.type == 'FriendRequest':
+            return AuthorFriendSerializer(obj.actor).data
         return AuthorAnonymousSerializer(obj.actor).data
 
-    def get_target_type(self, obj):
-        return obj.target.type
-
-    def get_origin_type(self, obj):
-        return obj.origin.type
+    def get_question_content(self, obj):
+        if obj.target.type == 'ResponseRequest' or obj.target.type == 'Response':
+            return obj.target.question.content
 
     class Meta:
         model = Notification
-        fields = ['id', 'message', 'actor', 'actor_detail',
-                  'target_type', 'target_id', 'origin_type', 'origin_id',
-                  'is_visible', 'is_read', 'created_at', 'updated_at']
+        fields = ['id', 'is_response_request', 'is_friend_request', 'actor_detail',
+                  'message', 'question_content', 'is_read', 'created_at', 'redirect_url']

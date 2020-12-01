@@ -88,8 +88,8 @@ def delete_friend_noti(action, pk_set, instance, **kwargs):
     if action == "post_remove":
         friend = User.objects.get(id=pk_set.pop())
         # remove friendship related notis from both users
-        friend.friendship_originated_notis.filter(user=instance).delete()
-        instance.friendship_originated_notis.filter(user=friend).delete()
+        friend.friendship_targetted_notis.filter(user=instance).delete()
+        instance.friendship_targetted_notis.filter(user=friend).delete()
 
 
 @receiver(post_save, sender=FriendRequest)
@@ -101,23 +101,23 @@ def create_friend_noti(created, instance, **kwargs):
 
     if created:
         Notification.objects.create(user=requestee, actor=requester,
-                                    origin=instance, target=instance,
+                                    origin=requester, target=instance,
                                     message=f'{requester.username}님이 친구 요청을 보냈습니다.',
                                     redirect_url=f'/user/{requester.id}')
         return
     elif accepted:
         Notification.objects.create(user=requestee, actor=requester,
-                                    origin=requester, target=instance,
+                                    origin=requester, target=requester,
                                     message=f'{requester.username}님과 친구가 되었습니다.',
                                     redirect_url=f'/user/{requester}')
         Notification.objects.create(user=requester, actor=requestee,
-                                    origin=requestee, target=instance,
+                                    origin=requestee, target=requestee,
                                     message=f'{requestee.username}님과 친구가 되었습니다.',
                                     redirect_url=f'/user/{requestee.id}')
         # add friendship
         requester.friends.add(requestee)
 
     # make friend request notification invisible once requestee has responded
-    instance.friend_request_originated_notis.filter(user=requestee,
-                                                    actor=requester).update(is_read=True,
-                                                                            is_visible=False)
+    instance.friend_request_targetted_notis.filter(user=requestee,
+                                                   actor=requester).update(is_read=True,
+                                                                           is_visible=False)

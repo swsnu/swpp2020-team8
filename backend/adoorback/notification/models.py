@@ -21,12 +21,14 @@ class Notification(AdoorTimestampedModel):
     user = models.ForeignKey(User, related_name='received_noti_set', on_delete=models.CASCADE)
     actor = models.ForeignKey(User, related_name='sent_noti_set', on_delete=models.CASCADE)
 
+    # target: notification을 발생시킨 직접적인 원인(?)
     target_type = models.ForeignKey(ContentType,
                                     on_delete=models.CASCADE,
                                     related_name='targetted_noti_set')
     target_id = models.IntegerField(blank=True, null=True)
     target = GenericForeignKey('target_type', 'target_id')
 
+    # origin: target의 target (target의 target이 없을 경우 target의 직접적인 발생지)
     origin_type = models.ForeignKey(ContentType,
                                     on_delete=models.CASCADE,
                                     related_name='origin_noti_set')
@@ -35,12 +37,16 @@ class Notification(AdoorTimestampedModel):
 
     message = models.CharField(max_length=100)
     # TODO: remove blank=True, null=True after fixing feed/comment/like models
+    # redirect: target의 근원지(?), origin != redirect_url의 모델일 경우가 있음 (e.g. reply)
     redirect_url = models.CharField(max_length=150, blank=True, null=True)
 
     is_visible = models.BooleanField(default=True)
     is_read = models.BooleanField(default=False)
 
     objects = NotificationManager()
+
+    class Meta:
+        ordering = ['-created_at']
 
     def __str__(self):
         return self.message
