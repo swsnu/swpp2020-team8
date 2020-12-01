@@ -252,6 +252,12 @@ export const deleteResponseRequest = (qid, rid) => async (dispatch) => {
 
 export default function questionReducer(state = initialState, action) {
   switch (action.type) {
+    case GET_DAILY_QUESTIONS_REQUEST: {
+      return {
+        ...state,
+        dailyQuestions: []
+      };
+    }
     case GET_SAMPLE_QUESTIONS_SUCCESS: {
       return {
         ...state,

@@ -220,7 +220,7 @@ export const createPost = (newPost) => async (dispatch, getState) => {
   }
 };
 
-export const createComment = (newComment) => async (dispatch) => {
+export const createComment = (newComment, postKey) => async (dispatch) => {
   dispatch({
     type: CREATE_COMMENT_REQUEST
   });
@@ -236,7 +236,8 @@ export const createComment = (newComment) => async (dispatch) => {
   }
   dispatch({
     type: CREATE_COMMENT_SUCCESS,
-    result: result.data
+    result: result.data,
+    postKey
   });
 };
 
@@ -397,9 +398,8 @@ export default function postReducer(state = initialState, action) {
       };
     }
     case CREATE_COMMENT_SUCCESS: {
-      const { target_type, target_id } = action.result;
       const newFriendPosts = state.friendPosts?.map((post) => {
-        if (post.id === target_id && post.type === target_type) {
+        if (`${post.type}-${post.id}` === action.postKey) {
           return {
             ...post,
             comments: post.comments
@@ -411,7 +411,7 @@ export default function postReducer(state = initialState, action) {
       });
 
       const newUserPosts = state.selectedUserPosts?.map((post) => {
-        if (post.id === target_id && post.type === target_type) {
+        if (`${post.type}-${post.id}` === action.postKey) {
           return {
             ...post,
             comments: post.comments
@@ -425,8 +425,7 @@ export default function postReducer(state = initialState, action) {
       const { selectedPost } = state;
       const newSelectedPost =
         selectedPost &&
-        selectedPost.id === target_id &&
-        selectedPost.type === target_type
+        `${selectedPost.type}-${selectedPost.id}` === action.postKey
           ? {
               ...selectedPost,
               comments: selectedPost.comments

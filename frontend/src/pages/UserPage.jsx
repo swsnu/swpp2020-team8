@@ -73,7 +73,7 @@ export default function UserPage() {
   const classes = useStyles();
   const selectedUser = useSelector((state) => state.userReducer.selectedUser);
   const currentUser = useSelector((state) => state.userReducer.currentUser);
-  const friendList = useSelector((state) => state.friendReducer.friendList);
+  // const friendList = useSelector((state) => state.friendReducer.friendList);
   const [value, setValue] = useState('All');
   const selectedUserPosts = useSelector(
     (state) => state.postReducer.selectedUserPosts
@@ -108,8 +108,8 @@ export default function UserPage() {
     }
   };
 
-  const friendIdList = friendList.map((friend) => friend.id);
-  const isFriend = friendIdList.includes(selectedUser?.id);
+  // const friendIdList = friendList.map((friend) => friend.id);
+  // const isFriend = friendIdList.includes(selectedUser?.id);
 
   const userResponses = selectedUserPosts?.filter(
     (post) => post.type === 'Response'
@@ -140,9 +140,9 @@ export default function UserPage() {
           {selectedUser && selectedUser.id !== currentUser.id && (
             <FriendStatusButtons
               friendObj={selectedUser}
-              isFriend={isFriend}
-              isPending={false}
-              hasSentRequest={false}
+              isFriend={selectedUser.are_friends}
+              isPending={selectedUser.received_friend_request_from}
+              hasSentRequest={selectedUser.sent_friend_request_to}
             />
           )}
         </UserPageWrapper>
@@ -156,16 +156,16 @@ export default function UserPage() {
           aria-label="user tabs"
         >
           <Tab label="전체" value="All" {...a11yProps('All')} />
-          <Tab label="나의 Q&A" value="Q&A" {...a11yProps('Q&A')} />
-          <Tab
-            label="아무말 대잔치"
-            value="Articles"
-            {...a11yProps('Articles')}
-          />
           <Tab
             label="작성한 질문"
             value="CustomQuestions"
             {...a11yProps('CustomQuestions')}
+          />
+          <Tab label="작성한 답변" value="Q&A" {...a11yProps('Q&A')} />
+          <Tab
+            label="아무말 대잔치"
+            value="Articles"
+            {...a11yProps('Articles')}
           />
         </Tabs>
       </AppBar>

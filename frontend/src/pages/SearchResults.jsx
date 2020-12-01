@@ -41,7 +41,15 @@ export default function SearchResults() {
 
   const renderSearchResults = () => {
     const userItemList = searchObj.results?.map((user) => {
-      return <FriendItem key={user.id} friendObj={user} />;
+      return (
+        <FriendItem
+          key={user.id}
+          friendObj={user}
+          isFriend={user.are_friends}
+          isPending={user.received_friend_request_from}
+          hasSentRequest={user.sent_friend_request_to}
+        />
+      );
     });
 
     if (Object.keys(searchObj.results).length && searchObj.results.length) {

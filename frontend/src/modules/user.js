@@ -62,10 +62,10 @@ export const requestSignUp = (signUpInfo) => {
   };
 };
 
-export const postSelectedQuestions = (selectedQuestions, userId) => {
+export const postSelectedQuestions = (selectedQuestions) => {
   return async (dispatch) => {
-    await axios.patch(`user/${userId}/`, {
-      question_history: JSON.stringify(selectedQuestions)
+    await axios.patch(`user/me/`, {
+      question_history: selectedQuestions.join(',')
     });
     return dispatch({
       type: UPDATE_QUESTION_SELECT,
