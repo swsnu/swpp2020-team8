@@ -21,6 +21,11 @@ import { deletePost } from '../../modules/post';
 import AlertDialog from '../common/AlertDialog';
 
 const QuestionItemWrapper = styled.div`
+  @media (max-width: 650px) {
+    border: 1px solid #e7e7e7;
+    box-shadow: 0 2px 2px rgba(154, 160, 185, 0.05),
+      0 5px 5px rgba(166, 173, 201, 0.1);
+  }
   background: #f4f4f4;
   padding: 12px;
   border-radius: 4px;

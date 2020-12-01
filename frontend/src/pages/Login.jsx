@@ -12,6 +12,9 @@ const LoginWrapper = styled.div`
   width: 500px;
   margin: 0 auto;
   margin-top: 120px;
+  @media (max-width: 650px) {
+    width: 90%;
+  }
 `;
 
 const SignUpButton = styled.button`

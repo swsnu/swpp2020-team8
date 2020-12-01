@@ -13,6 +13,16 @@ import { useDispatch } from 'react-redux';
 import { useLocation, useHistory } from 'react-router-dom';
 import { createPost, editSelectedPost } from '../../modules/post';
 
+const RespFormGroup = styled(FormGroup)`
+  @media (max-width: 650px) {
+    flex-direction: row-reverse;
+  }
+
+  button {
+    width: 30%;
+  }
+`;
+
 const ShareSettingsWrapper = styled.div`
   display: flex;
   flex-direction: row-reverse;
@@ -106,7 +116,7 @@ export default function ShareSettings({
 
   return (
     <ShareSettingsWrapper>
-      <FormGroup row width="400px">
+      <RespFormGroup row width="400px">
         <FormControlLabel
           className={`share-with-friends ${classes.label}`}
           control={controlShareWithFriends}
@@ -134,7 +144,7 @@ export default function ShareSettings({
         >
           게시
         </Button>
-      </FormGroup>
+      </RespFormGroup>
     </ShareSettingsWrapper>
   );
 }
