@@ -33,6 +33,8 @@ const theme = createMuiTheme({
 });
 
 const App = () => {
+  const isMobile = window.innerWidth < 650;
+  // todo: use hooks
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -67,7 +69,7 @@ const App = () => {
         </Switch>
       ) : (
         <MainWrapper>
-          <QuestionListWidget />
+          {!isMobile && <QuestionListWidget />}
           <FeedWrapper>
             <Switch>
               <Redirect from="/login" to="/friends" />
@@ -115,7 +117,7 @@ const App = () => {
               <Redirect exact path="/" to="/friends" />
             </Switch>
           </FeedWrapper>
-          <FriendListWidget />
+          {!isMobile && <FriendListWidget />}
         </MainWrapper>
       )}
     </MuiThemeProvider>

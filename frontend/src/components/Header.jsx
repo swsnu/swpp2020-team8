@@ -3,6 +3,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
 import Button from '@material-ui/core/Button';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -19,10 +20,18 @@ import { getNotifications } from '../modules/notification';
 import { fetchSearchResults } from '../modules/search';
 
 const useStyles = makeStyles((theme) => ({
+  hide: {
+    display: 'none'
+  },
+  right: {
+    position: 'absolute',
+    right: '16px'
+  },
   grow: {
     flexGrow: 1
   },
   header: {
+    width: '100vw',
     backgroundColor: 'white',
     boxShadow: 'rgba(0, 0, 0, 0.08) 0px 1px 12px',
     display: 'flex',
@@ -79,10 +88,12 @@ const useStyles = makeStyles((theme) => ({
 
 // eslint-disable-next-line react/prop-types
 const Header = () => {
+  const isMobile = window.innerWidth < 650 || true;
   const classes = useStyles();
   const [isNotiOpen, setIsNotiOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
   const notiRef = useRef(null);
@@ -146,7 +157,22 @@ const Header = () => {
     }
   };
 
-  const renderHeaderSignedInItems = (
+  const renderHeaderSignedInItems = isMobile ? (
+    <>
+      <IconButton
+        color="secondary"
+        aria-label="open drawer"
+        edge="end"
+        onClick={() => {
+          setIsDrawerOpen(true);
+        }}
+        style={{ display: isDrawerOpen && 'none' }}
+        className={classes.right}
+      >
+        <MenuIcon />
+      </IconButton>
+    </>
+  ) : (
     <>
       <NavLink
         className={classes.tabButton}
