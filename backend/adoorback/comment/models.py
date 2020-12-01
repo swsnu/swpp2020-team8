@@ -9,7 +9,7 @@ from django.db.models.signals import post_save
 from like.models import Like
 from notification.models import Notification
 from adoorback.models import AdoorModel
-from adoorback.utils.content_types import get_korean_type_name, get_comment_type
+from adoorback.utils.content_types import get_comment_type
 
 
 User = get_user_model()
@@ -57,13 +57,23 @@ class Comment(AdoorModel):
 
 
 @receiver(post_save, sender=Comment)
-def create_noti(sender, **kwargs):
-    instance = kwargs['instance']
-    target = instance
-    origin = instance.target
-    actor = instance.author
+def create_noti(instance, **kwargs):
     user = instance.target.author
-    origin_name = get_korean_type_name(origin.type)
-    message = f'{actor.username}님이 회원님의 {origin_name}에 댓글을 남겼습니다.'
-    Notification.objects.create(actor=actor, user=user, message=message,
-                                origin=origin, target=target)
+    actor = instance.author
+    origin = instance.target
+    target = instance
+
+    if user == actor:  # do not create notification for comment author him/herself.
+        return
+
+    if instance.target.type == 'Comment':  # if is_reply
+        message = f'{actor.username}님이 회원님의 댓글에 답글을 남겼습니다.'
+        redirect_url = f'/{origin.target.type.lower()}s/{origin.target.id}'
+    else:  # if not reply
+        origin_target_name = '게시글' if origin.type == 'Article' else '답변'
+        message = f'{actor.username}님이 회원님의 {origin_target_name}에 댓글을 남겼습니다.'
+        redirect_url = f'/{origin.type.lower()}s/{origin.id}'
+
+    Notification.objects.create(actor=actor, user=user,
+                                origin=origin, target=target,
+                                message=message, redirect_url=redirect_url)

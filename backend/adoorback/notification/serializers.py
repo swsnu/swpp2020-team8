@@ -30,7 +30,8 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     def get_question_content(self, obj):
         if obj.target.type == 'ResponseRequest' or obj.target.type == 'Response':
-            return obj.target.question.content
+            content = obj.target.question.content
+            return content if len(content) <= 30 else content[:30] + '...'
 
     class Meta:
         model = Notification

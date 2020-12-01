@@ -3,6 +3,8 @@ from test_plus.test import TestCase
 from rest_framework.test import APIClient
 
 from comment.models import Comment
+from feed.models import Response, Article
+from notification.models import Notification
 
 from adoorback.utils.seed import set_seed, fill_data
 from adoorback.utils.content_types import get_article_type, get_response_type, get_comment_type
@@ -83,11 +85,11 @@ class CommentAPITestCase(APITestCase):
 
         with self.login(username=current_user.username, password='password'):
             data = {"target_type": "Article", "target_id": 1, "content": "test_comment"}
-            response = self.post('comment-list', data=data)
+            response = self.post('comment-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
             comment_id = Comment.objects.last().id
             data = {"target_type": "Comment", "target_id": comment_id, "content": "test_reply"}
-            response = self.post('comment-list', data=data)
+            response = self.post('comment-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
 
             response = self.get('comment-list')
@@ -100,7 +102,7 @@ class CommentAPITestCase(APITestCase):
 
         with self.login(username=current_user.username, password='password'):
             data = {"target_type": "Response", "target_id": 1, "content": "test_comment"}
-            response = self.post('comment-list', data=data)
+            response = self.post('comment-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
             self.assertEqual(response.data['type'], "Comment")
             self.assertEqual(response.data['is_reply'], False)
@@ -110,7 +112,7 @@ class CommentAPITestCase(APITestCase):
 
         with self.login(username=current_user.username, password='password'):
             data = {"target_type": "Comment", "target_id": 1, "content": "test_reply"}
-            response = self.post('comment-list', data=data)
+            response = self.post('comment-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
             self.assertEqual(response.data['type'], "Comment")
             self.assertEqual(response.data['is_reply'], True)
@@ -121,7 +123,7 @@ class CommentAPITestCase(APITestCase):
 
         with self.login(username=current_user.username, password='password'):
             data = {"target_type": "Comment", "target_id": 1, "content": "test_reply"}
-            response = self.post('comment-list', data=data)
+            response = self.post('comment-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
 
         with self.login(username=current_user.username, password='password'):
@@ -131,10 +133,82 @@ class CommentAPITestCase(APITestCase):
 
         with self.login(username=current_user.username, password='password'):
             data = {"target_type": "Comment", "target_id": 1, "content": "test_reply"}
-            response = self.post('comment-list', data=data)
+            response = self.post('comment-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
 
         with self.login(username=spy_user.username, password='password'):
             pk = Comment.objects.last().id
             response = self.delete(self.reverse('comment-detail', pk=pk))
             self.assertEqual(response.status_code, 403)
+
+
+class CommentNotiAPITestCase(APITestCase):
+
+    def setUp(self):
+        set_seed(N)
+
+    def test_create_comment_noti(self):
+        current_user = self.make_user(username='current_user')
+
+        # create comment (current_user -> author of Article with id=1)
+        with self.login(username=current_user.username, password='password'):
+            num_notis_before = Notification.objects.count()
+            data = {"target_type": "Article", "target_id": 1, "content": "test_comment"}
+            response = self.post('comment-list', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 201)
+
+            num_notis_after = Notification.objects.count()
+            self.assertEqual(num_notis_before, num_notis_after - 1)
+            comment_noti = Notification.objects.first()  # notification is order_by '-updated_at'
+            self.assertEqual(comment_noti.message,
+                             "current_user님이 회원님의 게시글에 댓글을 남겼습니다.")
+            self.assertEqual(comment_noti.user, Article.objects.get(id=1).author)
+
+        # create comment (current_user -> author of Response with id=1)
+        with self.login(username=current_user.username, password='password'):
+            data = {"target_type": "Response", "target_id": 1, "content": "test_comment"}
+            response = self.post('comment-list', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 201)
+
+            self.assertEqual(Notification.objects.first().message,
+                             "current_user님이 회원님의 답변에 댓글을 남겼습니다.")  # different message
+
+        # create comment (current_user -> current_user): no new notification
+        with self.login(username=current_user.username, password='password'):
+            article = Article.objects.create(author=current_user, content="test article")
+            num_notis_before = Notification.objects.count()
+            data = {"target_type": "Article", "target_id": article.id, "content": "test_comment"}
+            response = self.post('comment-list', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 201)
+
+            num_notis_after = Notification.objects.count()
+            self.assertEqual(num_notis_before, num_notis_after)  # comment noti should not have been created
+
+    def test_create_reply_noti(self):
+        current_user = self.make_user(username='current_user')
+
+        # create comment (current_user -> author of Comment with id=1)
+        with self.login(username=current_user.username, password='password'):
+            num_notis_before = Notification.objects.count()
+            data = {"target_type": "Comment", "target_id": 1, "content": "test_reply"}
+            response = self.post('comment-list', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 201)
+
+            num_notis_after = Notification.objects.count()
+            self.assertEqual(num_notis_before, num_notis_after - 1)
+            reply_noti = Notification.objects.first()  # notification is order_by '-updated_at'
+            self.assertEqual(reply_noti.message,
+                             "current_user님이 회원님의 댓글에 답글을 남겼습니다.")
+            self.assertEqual(reply_noti.user, Comment.objects.get(id=1).author)
+
+        # create reply (current_user -> current_user): no new notification
+        with self.login(username=current_user.username, password='password'):
+            comment = Comment.objects.create(author=current_user, content="test comment",
+                                             target=Article.objects.last())
+            num_notis_before = Notification.objects.count()
+            data = {"target_type": "Comment", "target_id": comment.id, "content": "test_reply"}
+            response = self.post('comment-list', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 201)
+
+            num_notis_after = Notification.objects.count()
+            self.assertEqual(num_notis_before, num_notis_after)  # reply noti should not have been created
