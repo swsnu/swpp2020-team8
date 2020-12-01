@@ -108,6 +108,10 @@ class ResponseRequest(AdoorTimestampedModel):
     requester = models.ForeignKey(User, related_name='sent_response_request_set', on_delete=models.CASCADE)
     requestee = models.ForeignKey(User, related_name='received_response_request_set', on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    response_request_targetted_notis = GenericRelation("notification.Notification",
+        content_type_field='target_type', object_id_field='target_id')
+    response_request_originated_notis = GenericRelation("notification.Notification",
+        content_type_field='origin_type', object_id_field='origin_id')
 
     class Meta:
         constraints = [
@@ -117,6 +121,10 @@ class ResponseRequest(AdoorTimestampedModel):
 
     def __str__(self):
         return f'{self.requester} sent ({self.question}) to {self.requestee}'
+    
+    @property
+    def type(self):
+        return self.__class__.__name__
 
 
 class PostManager(models.Manager):

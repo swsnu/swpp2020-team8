@@ -48,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function NotificationPage({ tabType }) {
+  const friendList = useSelector((state) => state.friendReducer.friendList);
   const classes = useStyles();
 
   let initialTab = 0;
@@ -67,10 +68,18 @@ export default function NotificationPage({ tabType }) {
   };
 
   const notificationList = notifications.map((noti) => {
-    if (noti.target_type === 'FriendRequest') {
+    if (
+      noti.target_type === 'FriendRequest' &&
+      noti.origin_type === 'FriendRequest'
+    ) {
+      const isFriend = friendList.find(
+        (friend) => +friend.id === +noti?.actor_detail?.id
+      );
       return (
         <FriendItem
           key={`friend-request-${noti?.target_id}`}
+          isFriend={isFriend}
+          message={noti.message}
           isPending
           friendObj={noti?.actor_detail}
         />
@@ -87,13 +96,27 @@ export default function NotificationPage({ tabType }) {
 
   const friendRequestList = notifications
     .filter((noti) => noti.target_type === 'FriendRequest')
-    .map((friendRequest) => (
-      <FriendItem
-        key={`friend-request-${friendRequest?.target_id}`}
-        isPending
-        friendObj={friendRequest?.actor_detail}
-      />
-    ));
+    .map((friendRequest) => {
+      const isFriend = friendList.find(
+        (friend) => +friend.id === +friendRequest?.actor_detail?.id
+      );
+
+      return friendRequest.origin_type === 'FriendRequest' ? (
+        <FriendItem
+          key={`friend-request-${friendRequest?.target_id}`}
+          isFriend={isFriend}
+          message={friendRequest.message}
+          isPending={!isFriend}
+          friendObj={friendRequest?.actor_detail}
+        />
+      ) : (
+        <NotificationItem
+          key={`friend-request-${friendRequest?.id}`}
+          notiObj={friendRequest}
+          isNotificationPage
+        />
+      );
+    });
 
   const responseRequestList = notifications
     .filter((noti) => noti.target_type === 'ResponseRequest')

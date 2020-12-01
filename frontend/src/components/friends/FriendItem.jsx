@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
 // eslint-disable-next-line react/prop-types
 const FriendItem = ({
   friendObj,
+  message,
   isWidget = false,
   isFriend,
   hasSentRequest,
@@ -45,7 +46,7 @@ const FriendItem = ({
         <FaceIcon />
         <ListItemText
           classes={{ primary: classes.username }}
-          primary={username}
+          primary={message || username}
         />
       </FriendLink>
       {!isWidget && (
