@@ -13,6 +13,9 @@ class NotificationManager(models.Manager):
     def visible_only(self, **kwargs):
         return self.filter(is_visible=True, **kwargs)
 
+    def unread_only(self, **kwargs):
+        return self.filter(is_read=False, **kwargs)
+
 
 class Notification(AdoorTimestampedModel):
     user = models.ForeignKey(User, related_name='received_noti_set', on_delete=models.CASCADE)

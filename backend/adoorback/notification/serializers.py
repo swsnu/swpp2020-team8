@@ -10,8 +10,8 @@ User = get_user_model()
 
 class NotificationSerializer(serializers.ModelSerializer):
 
-    actor = serializers.HyperlinkedIdentityField(
-        view_name='user-detail', read_only=True)
+    actor = serializers.HyperlinkedIdentityField(view_name='user-detail',
+                                                 read_only=True)
     actor_detail = serializers.SerializerMethodField(read_only=True)
     target_type = serializers.SerializerMethodField()
     target_id = serializers.IntegerField()

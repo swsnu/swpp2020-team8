@@ -98,14 +98,21 @@ class UserAPITestCase(APITestCase):
         current_user = self.make_user(username='current_user')
 
         with self.login(username=current_user.username, password='password'):
-            response = self.get('user-search', data={'query': 'adoor'})
+            response = self.get('user-search', data={'query': 'current_user'})
             self.assertEqual(response.status_code, 200)
             self.assertGreaterEqual(response.data['count'], 1)
+            # `are_friends` for self should return null
+            self.assertEqual(response.data['results'][0]['are_friends'], None)
 
         with self.login(username=current_user.username, password='password'):
             response = self.get('user-search', data={'query': '어두워'})
             self.assertEqual(response.status_code, 200)
-            self.assertGreaterEqual(response.data['count'], 0)
+            self.assertEqual(response.data['count'], 0)
+
+        with self.login(username=current_user.username, password='password'):
+            response = self.get('user-search')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['count'], 0)  # empty query should return empty search result
 
     def test_friend_list(self):
         current_user = self.make_user(username='current_user')
@@ -254,6 +261,13 @@ class AuthAPITestCase(APITestCase):
             response = self.post('current-user', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 405)
 
+    def test_current_user_update(self):
+        self.make_user(username="test_user", password="test_pw")
+        with self.login(username="test_user", password="test_pw"):
+            data = {"question_history": True}
+            response = self.patch('current-user', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 400)
+
 
 class FriendRequestAPITestCase(APITestCase):
 
@@ -307,6 +321,12 @@ class FriendRequestAPITestCase(APITestCase):
             data = {"requester_id": current_user.id, "requestee_id": friend_user_1.id}
             response = self.post('user-friend-request-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 403)
+
+        # POST FriendRequest (current_user -> current_user): not allowed
+        with self.login(username=current_user.username, password='password'):
+            data = {"requester_id": current_user.id, "requestee_id": current_user.id}
+            response = self.post('user-friend-request-list', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 400)
 
         # PATCH (reject) FriendRequest (friend_user_1 -> friend_user_2)
         with self.login(username=friend_user_1.username, password='password'):
