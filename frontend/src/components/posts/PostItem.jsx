@@ -56,7 +56,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
 
   const commentList = postObj?.comments?.map((comment) => {
     if (!comment) return null;
-    const isCommentAuthor = comment.author_detail?.id === currentUser.id;
+    const isCommentAuthor = comment.author_detail?.id === currentUser?.id;
     if (comment.is_private && !isAuthor && !isCommentAuthor) return null;
     return (
       <CommentItem

@@ -79,7 +79,7 @@ export default function UserPage() {
   const isFriendOrMyPage =
     selectedUser &&
     (friendIdList.includes(selectedUser?.id) ||
-      selectedUser?.id === currentUser.id);
+      selectedUser?.id === currentUser?.id);
 
   const [value, setValue] = useState('All');
   const selectedUserPosts = useSelector(
@@ -141,7 +141,7 @@ export default function UserPage() {
             }}
           />
           <h3 margin-bottom="10px">{selectedUser?.username}</h3>
-          {selectedUser && selectedUser.id !== currentUser.id && (
+          {selectedUser && selectedUser.id !== currentUser?.id && (
             <FriendStatusButtons
               friendObj={selectedUser}
               isFriend={isFriend}
