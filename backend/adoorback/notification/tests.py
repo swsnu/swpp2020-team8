@@ -147,7 +147,7 @@ class NotificationAPITestCase(APITestCase):
 
         # not authenticated
         response = self.get('notification-list')
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
 
         with self.login(username=current_user.username, password='password'):
             response = self.get('notification-list')

@@ -3,6 +3,7 @@ import json
 from django.contrib.auth import get_user_model, authenticate, login
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from rest_framework import generics
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
@@ -66,12 +67,14 @@ class SignupQuestions(generics.ListAPIView):
     serializer_class = QuestionAnonymousSerializer
     model = serializer_class.Meta.model
     permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
 
 class UserList(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_queryset(self):
         queryset = User.objects.filter(id=self.request.user.id)
@@ -83,6 +86,7 @@ class UserList(generics.ListAPIView):
 class CurrentUserFriendList(generics.ListAPIView):
     serializer_class = AuthorFriendSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_queryset(self):
         return self.request.user.friends.all()
@@ -91,6 +95,7 @@ class CurrentUserFriendList(generics.ListAPIView):
 class CurrentUserProfile(generics.RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self):
         # since the obtained user object is the authenticated user,
@@ -106,11 +111,13 @@ class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserFriendshipStatusSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
 
 class UserSearch(generics.ListAPIView):
     serializer_class = UserFriendshipStatusSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_queryset(self):
         query = self.request.GET.get('query')
@@ -127,6 +134,7 @@ class UserFriendDestroy(generics.DestroyAPIView):
     """
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def perform_destroy(self, obj):
         obj.friends.remove(self.request.user)
@@ -136,6 +144,7 @@ class UserFriendRequestList(generics.ListCreateAPIView):
     queryset = FriendRequest.objects.all()
     serializer_class = UserFriendRequestCreateSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_queryset(self):
         return FriendRequest.objects.filter(requestee=self.request.user)
@@ -149,6 +158,7 @@ class UserFriendRequestList(generics.ListCreateAPIView):
 class UserFriendRequestDestroy(generics.DestroyAPIView):
     serializer_class = UserFriendRequestCreateSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self):
         # since the requester is the authenticated user, no further permission checking unnecessary
@@ -162,6 +172,7 @@ class UserFriendRequestDestroy(generics.DestroyAPIView):
 class UserFriendRequestUpdate(generics.UpdateAPIView):
     serializer_class = UserFriendRequestUpdateSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self):
         # since the requestee is the authenticated user, no further permission checking unnecessary

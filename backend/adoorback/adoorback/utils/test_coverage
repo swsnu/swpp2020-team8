@@ -25,7 +25,7 @@ coverage run --source='.' ./manage.py test notification.tests.NotificationTestCa
 
 # coverage - account (including friendship, friend requests)
 coverage run --source='.' ./manage.py test feed.tests
-coverage run --source='.' --branch ./manage.py test account.tests
+coverage run --source='.' --branch ./manage.py test notification.tests
 coverage report -m
 
 # coverage - notification
