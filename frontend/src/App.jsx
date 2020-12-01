@@ -21,6 +21,7 @@ import NotificationPage from './pages/NotificationPage';
 import PostEdit from './pages/PostEdit';
 import UserPage from './pages/UserPage';
 import { getNotifications } from './modules/notification';
+import MobileFooter from './components/MobileFooter';
 
 const theme = createMuiTheme({
   palette: {
@@ -70,8 +71,11 @@ const App = () => {
       ) : (
         <MainWrapper>
           {!isMobile && <QuestionListWidget />}
+          {isMobile && <MobileFooter />}
           <FeedWrapper>
             <Switch>
+              <Redirect from="/my-page" to={`/users/${currentUser?.id}`} />
+
               <Redirect from="/login" to="/friends" />
               <Redirect from="/signup" to={signUpRedirectPath} />
               <Route
