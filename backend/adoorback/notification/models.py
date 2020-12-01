@@ -8,6 +8,12 @@ from adoorback.models import AdoorTimestampedModel
 User = get_user_model()
 
 
+class NotificationManager(models.Manager):
+
+    def visible_only(self, **kwargs):
+        return self.filter(is_visible=True, **kwargs)
+
+
 class Notification(AdoorTimestampedModel):
     user = models.ForeignKey(User, related_name='received_noti_set', on_delete=models.CASCADE)
     actor = models.ForeignKey(User, related_name='sent_noti_set', on_delete=models.CASCADE)
@@ -30,6 +36,8 @@ class Notification(AdoorTimestampedModel):
 
     is_visible = models.BooleanField(default=True)
     is_read = models.BooleanField(default=False)
+
+    objects = NotificationManager()
 
     def __str__(self):
         return self.message

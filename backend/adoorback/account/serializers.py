@@ -1,6 +1,7 @@
 import random
 
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from django.contrib.auth import get_user_model
 
 from account.models import FriendRequest
@@ -54,26 +55,43 @@ class AuthorAnonymousSerializer(serializers.ModelSerializer):
         fields = ['color_hex']
 
 
-class UserFriendListSerializer(serializers.ModelSerializer):
-    # friend_ids = serializers.SerializerMethodField(read_only=True)
-
-    def get_friend_ids(self, obj):
-        # return self.context.get('request', None).user.friends.values_list('id', flat=True)
-        return list(obj.friends.values_list('id', flat=True))
-
-    class Meta:
-        model = User
-        fields = ['friend_ids']
-
-
-class UserFriendRequestSerializer(serializers.ModelSerializer):
+class UserFriendRequestCreateSerializer(serializers.ModelSerializer):
     requester_id = serializers.IntegerField()
     requestee_id = serializers.IntegerField()
-    accepted = serializers.BooleanField(allow_null=True)
+    accepted = serializers.BooleanField(allow_null=True, required=False)
+
+    def validate(self, data):
+        if data.get('requester_id') == data.get('requestee_id'):
+            raise serializers.ValidationError('본인과는 친구가 될 수 없어요...')
+        return data
 
     class Meta:
         model = FriendRequest
-        fields = ['id', 'requester_id', 'requestee_id', 'accepted']
+        fields = ['requester_id', 'requestee_id', 'accepted']
+        validators = [
+            UniqueTogetherValidator(
+                queryset=FriendRequest.objects.all(),
+                fields=['requester_id', 'requestee_id']
+            )
+        ]
+
+
+class UserFriendRequestUpdateSerializer(serializers.ModelSerializer):
+    requester_id = serializers.IntegerField(required=False)
+    requestee_id = serializers.IntegerField(required=False)
+    accepted = serializers.BooleanField(required=True)
+
+    def validate(self, data):
+        unknown = set(self.initial_data) - set(self.fields)
+        if unknown:
+            raise serializers.ValidationError("이 필드는 뭘까요...: {}".format(", ".join(unknown)))
+        if self.instance.accepted is not None:
+            raise serializers.ValidationError("이미 friend request에 응답하셨습니다...")
+        return data
+
+    class Meta:
+        model = FriendRequest
+        fields = UserFriendRequestCreateSerializer.Meta.fields
 
 
 class UserFriendshipStatusSerializer(AuthorFriendSerializer):

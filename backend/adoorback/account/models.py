@@ -11,7 +11,6 @@ from django.db import models
 from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 
-from adoorback.utils.content_types import get_friend_request_type, get_user_type
 from adoorback.models import AdoorTimestampedModel
 
 
@@ -85,16 +84,12 @@ class FriendRequest(AdoorTimestampedModel):
 
 
 @receiver(m2m_changed)
-def delete_friendship_noti(action, pk_set, instance, **kwargs):
-    Notification = apps.get_model('notification', 'Notification')
+def delete_friend_noti(action, pk_set, instance, **kwargs):
     if action == "post_remove":
         friend = User.objects.get(id=pk_set.pop())
-        Notification.objects.filter(user=instance, actor=friend,
-                                    origin_type=get_user_type(),
-                                    target_type=get_friend_request_type()).delete()
-        Notification.objects.filter(user=friend, actor=instance,
-                                    origin_type=get_user_type(),
-                                    target_type=get_friend_request_type()).delete()
+        # remove friendship related notis from both users
+        friend.friendship_originated_notis.filter(user=instance).delete()
+        instance.friendship_originated_notis.filter(user=friend).delete()
 
 
 @receiver(post_save, sender=FriendRequest)
@@ -122,7 +117,7 @@ def create_friend_noti(created, instance, **kwargs):
         # add friendship
         requester.friends.add(requestee)
 
-    # make friend request notification invisible if requestee has responded
-    Notification.objects.filter(user=requestee, actor=requester,
-                                origin_type=get_friend_request_type()).update(is_read=True,
-                                                                              is_visible=False)
+    # make friend request notification invisible once requestee has responded
+    instance.friend_request_originated_notis.filter(user=requestee,
+                                                    actor=requester).update(is_read=True,
+                                                                            is_visible=False)

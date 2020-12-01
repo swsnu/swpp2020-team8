@@ -17,6 +17,7 @@ class RecursiveReplyField(serializers.Serializer):
 
 
 class CommentBaseSerializer(AdoorBaseSerializer):
+    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
     is_reply = serializers.SerializerMethodField(read_only=True)
 
     def get_is_reply(self, obj):

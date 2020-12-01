@@ -3,13 +3,15 @@ import json
 from django.contrib.auth import get_user_model, authenticate, login
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from rest_framework import generics
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
 
 from account.models import FriendRequest
 from account.serializers import UserProfileSerializer, \
-    UserFriendRequestSerializer, \
+    UserFriendRequestCreateSerializer, UserFriendRequestUpdateSerializer, \
     UserFriendshipStatusSerializer, AuthorFriendSerializer
 from feed.serializers import QuestionAnonymousSerializer
 from feed.models import Question
@@ -95,6 +97,10 @@ class CurrentUserProfile(generics.RetrieveUpdateAPIView):
         # no further permission checking unnecessary
         return User.objects.get(id=self.request.user.id)
 
+    def perform_update(self, serializer):
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+
 
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
@@ -128,18 +134,20 @@ class UserFriendDestroy(generics.DestroyAPIView):
 
 class UserFriendRequestList(generics.ListCreateAPIView):
     queryset = FriendRequest.objects.all()
-    serializer_class = UserFriendRequestSerializer
+    serializer_class = UserFriendRequestCreateSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return FriendRequest.objects.filter(requestee=self.request.user)
 
     def perform_create(self, serializer):
+        if int(self.request.data.get('requester_id')) != int(self.request.user.id):
+            raise PermissionDenied("requester가 본인이 아닙니다...")
         serializer.save(accepted=None)
 
 
 class UserFriendRequestDestroy(generics.DestroyAPIView):
-    serializer_class = UserFriendRequestSerializer
+    serializer_class = UserFriendRequestCreateSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
@@ -152,10 +160,21 @@ class UserFriendRequestDestroy(generics.DestroyAPIView):
 
 
 class UserFriendRequestUpdate(generics.UpdateAPIView):
-    serializer_class = UserFriendRequestSerializer
+    serializer_class = UserFriendRequestUpdateSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
         # since the requestee is the authenticated user, no further permission checking unnecessary
         return FriendRequest.objects.get(requester_id=self.kwargs.get('pk'),
                                          requestee_id=self.request.user.id)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)  # check `accepted` field
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+    def perform_update(self, serializer):
+        return serializer.save()
