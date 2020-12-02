@@ -39,7 +39,16 @@ describe('<Header/>', () => {
     mount(
       <Provider store={store}>
         <Router history={history}>
-          <Header />
+          <Header isMobile={false} />
+        </Router>
+      </Provider>
+    );
+
+  const getMobileWrapper = () =>
+    mount(
+      <Provider store={store}>
+        <Router history={history}>
+          <Header isMobile />
         </Router>
       </Provider>
     );
@@ -116,6 +125,17 @@ describe('<Header/>', () => {
     component.unmount();
   });
 
+  it('should render and toggle drawer when mobile', () => {
+    const component = getMobileWrapper();
+    component.update();
+    const drawerButton = component.find('#drawer-open-button');
+    expect(drawerButton.length).toBeTruthy();
+    drawerButton.at(0).simulate('click');
+    component.update();
+    expect(component.find('MobileDrawer')).toBeTruthy();
+    component.find('#mask').at(0).simulate('click');
+    expect(drawerButton.length).toBeTruthy();
+  });
   it('should render and call logout when clicked', () => {
     // eslint-disable-next-line react/jsx-boolean-value
     jest.mock('react-redux', () => ({

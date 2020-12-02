@@ -18,6 +18,7 @@ import SearchDropdownList from './SearchDropdownList';
 import { logout } from '../modules/user';
 import { getNotifications } from '../modules/notification';
 import { fetchSearchResults } from '../modules/search';
+import MobileDrawer from './posts/MobileDrawer';
 
 const useStyles = makeStyles((theme) => ({
   hide: {
@@ -87,8 +88,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // eslint-disable-next-line react/prop-types
-const Header = () => {
-  const isMobile = window.innerWidth < 650 || true;
+const Header = ({ isMobile }) => {
   const classes = useStyles();
   const [isNotiOpen, setIsNotiOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -157,9 +157,14 @@ const Header = () => {
     }
   };
 
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false);
+  };
+
   const renderHeaderSignedInItems = isMobile ? (
     <>
       <IconButton
+        id="drawer-open-button"
         color="secondary"
         aria-label="open drawer"
         edge="end"
@@ -171,6 +176,13 @@ const Header = () => {
       >
         <MenuIcon />
       </IconButton>
+      {isMobile && (
+        <MobileDrawer
+          open={isDrawerOpen}
+          handleDrawerClose={handleDrawerClose}
+          onLogout={handleClickLogout}
+        />
+      )}
     </>
   ) : (
     <>

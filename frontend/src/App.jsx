@@ -59,7 +59,7 @@ const App = () => {
   return (
     <MuiThemeProvider theme={theme}>
       <GlobalStyle />
-      <Header />
+      <Header isMobile={isMobile} />
       {currentUser == null ||
       (!selectQuestion && currentUser?.question_history === null) ? (
         <Switch>

@@ -145,4 +145,19 @@ describe('<FriendStatusButtons /> unit mount test', () => {
 
     expect(requestFriendButton).toMatchObject({});
   });
+
+  it('should work with button click', () => {
+    const wrapper = getAllWrapper();
+    const deleteRequestButton = wrapper.find('#sent-request-delete-button');
+    expect(deleteRequestButton.length).toBeTruthy();
+
+    const acceptRequestButton = wrapper.find('#request-accept-button');
+    expect(acceptRequestButton.length).toBeTruthy();
+
+    deleteRequestButton.at(0).simulate('click');
+    acceptRequestButton.at(0).simulate('click');
+
+    wrapper.update();
+    expect(wrapper.find('#request-friend-button')).toBeTruthy();
+  });
 });
