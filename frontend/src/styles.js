@@ -24,6 +24,9 @@ export const GlobalStyle = createGlobalStyle`
   ::-webkit-scrollbar {
     display: none;
   }
+  .MuiBottomNavigationAction-label.Mui-selected {
+    font-size: 0.8rem !important;
+  }
 `;
 
 export const CommonInput = styled.input`

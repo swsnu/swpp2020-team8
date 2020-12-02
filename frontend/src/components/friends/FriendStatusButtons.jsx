@@ -74,7 +74,14 @@ export default function FriendStatusButtons({
     setIsRequestSubmitted(true);
   };
 
-  if (friendObj.id === currentUser?.id) return null;
+  if (friendObj.id === currentUser?.id)
+    return (
+      <ButtonsWrapper center={isUserPage && 'true'}>
+        <FriendButton variant="outlined" color="secondary">
+          Me
+        </FriendButton>
+      </ButtonsWrapper>
+    );
   if (isRequestResetted)
     return (
       <ButtonsWrapper id={friendObj.id} center={isUserPage && 'true'}>

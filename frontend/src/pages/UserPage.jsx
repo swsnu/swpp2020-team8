@@ -72,7 +72,6 @@ export default function UserPage() {
   const dispatch = useDispatch();
   const classes = useStyles();
   const selectedUser = useSelector((state) => state.userReducer.selectedUser);
-  const currentUser = useSelector((state) => state.userReducer.currentUser);
   // const friendList = useSelector((state) => state.friendReducer.friendList);
   const [value, setValue] = useState('All');
   const selectedUserPosts = useSelector(
@@ -138,7 +137,7 @@ export default function UserPage() {
           />
           <h3 margin-bottom="10px">{selectedUser?.username}</h3>
           <div>
-            {selectedUser && selectedUser.id !== currentUser.id && (
+            {selectedUser && (
               <FriendStatusButtons
                 isUserPage
                 friendObj={selectedUser}

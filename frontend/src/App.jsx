@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
@@ -36,7 +36,18 @@ const theme = createMuiTheme({
 });
 
 const App = () => {
-  const isMobile = window.innerWidth < 650;
+  const [isMobile, setIsMobile] = useState(window?.innerWidth < 650);
+
+  const handleResize = () => {
+    setIsMobile(window.innerWidth < 650);
+  };
+  useEffect(() => {
+    window.addEventListener('resize', handleResize, false);
+    return () => {
+      window.removeEventListener('resize');
+    };
+  }, []);
+
   // todo: use hooks
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const dispatch = useDispatch();

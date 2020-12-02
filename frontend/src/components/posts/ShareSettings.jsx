@@ -16,10 +16,9 @@ import { createPost, editSelectedPost } from '../../modules/post';
 const RespFormGroup = styled(FormGroup)`
   @media (max-width: 650px) {
     flex-direction: row-reverse;
-  }
-
-  button {
-    width: 30%;
+    button {
+      width: 30%;
+    }
   }
 `;
 
