@@ -97,8 +97,8 @@ const Header = () => {
     (state) => state.notiReducer.receivedNotifications
   );
 
-  const unreadNotifications = notifications.filter((noti) => !noti.is_read);
-  const notiBadgeInvisible = unreadNotifications.length === 0;
+  const unreadNotifications = notifications?.filter((noti) => !noti.is_read);
+  const notiBadgeInvisible = unreadNotifications?.length === 0;
 
   useEffect(() => {
     if (currentUser) {

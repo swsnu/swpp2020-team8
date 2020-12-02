@@ -38,7 +38,8 @@ export const mockStore = {
     currentUser: {
       id: 123,
       username: 'curious',
-      isLoggedIn: true
+      isLoggedIn: true,
+      question_history: null
     },
     selectedUser: {
       id: 1,
