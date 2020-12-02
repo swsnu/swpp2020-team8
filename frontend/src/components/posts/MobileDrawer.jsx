@@ -80,6 +80,7 @@ export default function MobileDrawer({ open, handleDrawerClose, onLogout }) {
             </ListItemIcon>
             <ListItemText
               primary="친구"
+              id="friend"
               onClick={() => {
                 history.push('/my-friends');
                 handleDrawerClose();
@@ -92,6 +93,7 @@ export default function MobileDrawer({ open, handleDrawerClose, onLogout }) {
             </ListItemIcon>
             <ListItemText
               primary="추천 질문"
+              id="question"
               onClick={() => {
                 history.push('/recommended-questions');
                 handleDrawerClose();
@@ -103,6 +105,7 @@ export default function MobileDrawer({ open, handleDrawerClose, onLogout }) {
               <SearchIcon />
             </ListItemIcon>
             <ListItemText
+              id="search"
               primary="사용자 검색"
               onClick={() => {
                 history.push('/user-search');
@@ -111,6 +114,7 @@ export default function MobileDrawer({ open, handleDrawerClose, onLogout }) {
             />
           </MarginListItem>
           <MarginListItem
+            id="logout"
             button
             onClick={() => {
               onLogout();

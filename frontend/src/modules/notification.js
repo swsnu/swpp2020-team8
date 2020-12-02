@@ -70,8 +70,8 @@ export const appendNotifications = () => async (dispatch, getState) => {
   const { data } = result;
   dispatch({
     type: APPEND_NOTIFICATIONS_SUCCESS,
-    results: data.results,
-    next: data.next
+    results: data?.results,
+    next: data?.next
   });
 };
 
@@ -131,10 +131,9 @@ export default function notiReducer(state = initialState, action) {
     case APPEND_NOTIFICATIONS_SUCCESS:
       return {
         ...state,
-        receivedNotifications: [
-          ...state.receivedNotifications,
-          ...action.results
-        ],
+        receivedNotifications: state.receivedNotifications
+          ? [...state.receivedNotifications, ...action.results]
+          : [...action.results],
         next: action.next
       };
     case READ_ALL_NOTIFICATIONS_SUCCESS:
