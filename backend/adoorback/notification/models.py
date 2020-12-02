@@ -2,8 +2,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
-from adoorback.models import AdoorTimestampedModel
 
+from adoorback.models import AdoorTimestampedModel
 
 User = get_user_model()
 
@@ -21,22 +21,30 @@ class NotificationManager(models.Manager):
         return self.filter(actor=admin, **kwargs)
 
 
+def default_user():
+    return User.objects.filter(is_superuser=True).first()
+
+
 class Notification(AdoorTimestampedModel):
-    user = models.ForeignKey(User, related_name='received_noti_set', on_delete=models.CASCADE)
-    actor = models.ForeignKey(User, related_name='sent_noti_set', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='received_noti_set',
+                             on_delete=models.SET_NULL, null=True)
+    actor = models.ForeignKey(User, related_name='sent_noti_set',
+                              on_delete=models.SET_NULL, null=True)
 
     # target: notification을 발생시킨 직접적인 원인(?)
     target_type = models.ForeignKey(ContentType,
-                                    on_delete=models.CASCADE,
+                                    on_delete=models.PROTECT,
+                                    null=True,
                                     related_name='targetted_noti_set')
-    target_id = models.IntegerField(blank=True, null=True)
+    target_id = models.IntegerField(null=True)
     target = GenericForeignKey('target_type', 'target_id')
 
     # origin: target의 target (target의 target이 없을 경우 target의 직접적인 발생지)
     origin_type = models.ForeignKey(ContentType,
-                                    on_delete=models.CASCADE,
+                                    on_delete=models.SET_NULL,
+                                    null=True,
                                     related_name='origin_noti_set')
-    origin_id = models.IntegerField(blank=True, null=True)
+    origin_id = models.IntegerField(null=True)
     origin = GenericForeignKey('origin_type', 'origin_id')
 
     # redirect: target의 근원지(?), origin != redirect_url의 모델일 경우가 있음 (e.g. reply)

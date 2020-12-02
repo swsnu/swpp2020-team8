@@ -1,6 +1,6 @@
 import datetime
 from django.db import models
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, pre_delete
 from django.dispatch import receiver
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -235,3 +235,30 @@ def delete_response_request(instance, created, **kwargs):
     except ResponseRequest.DoesNotExist:
         return
     response_requests.delete()
+
+
+@receiver(pre_delete, sender=Question)
+def protect_question_noti(instance, **kwargs):
+    # response request에 대한 response 보냈을 때 발생하는 노티, like/comment로 발생하는 노티 모두 보호
+    for noti in Notification.objects.visible_only().filter(redirect_url=f'/questions/{instance.id}'):
+        noti.target_type = None
+        noti.origin_type = None
+        noti.save()
+
+
+@receiver(pre_delete, sender=Response)
+def protect_response_noti(instance, **kwargs):
+    # comment, like로 인한 노티, response request 답변으로 인한 노티 모두 보호
+    for noti in Notification.objects.visible_only().filter(redirect_url=f'/responses/{instance.id}'):
+        noti.target_type = None
+        noti.origin_type = None
+        noti.save()
+
+
+@receiver(pre_delete, sender=Article)
+def protect_article_noti(instance, **kwargs):
+    # comment, like로 인한 노티 모두 보호
+    for noti in Notification.objects.visible_only().filter(redirect_url=f'/articles/{instance.id}'):
+        noti.target_type = None
+        noti.origin_type = None
+        noti.save()

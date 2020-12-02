@@ -38,93 +38,126 @@ class NotificationTestCase(TestCase):
         like_noti = Notification.objects.filter(target_type=get_like_type()).last()
         self.assertEqual(like_noti.target.type, 'Like')
 
+
+class DeleteActorNotificationTestCase(TestCase):
+
+    def setUp(self):
+        set_seed(N)
+
     # test on delete actor user
     def test_on_delete_actor_cascade(self):
-        fill_data()
         user = User.objects.last()
         user_id = user.id
-        sent_notis = user.sent_noti_set.all()
-        noti_acted = Notification.objects.filter(actor_id=user_id)
+        sent_notis = user.sent_noti_set.visible_only()
+        noti_acted = Notification.objects.visible_only().filter(actor_id=user_id)
         self.assertEqual(sent_notis.count(), noti_acted.count())
+        self.assertGreater(sent_notis.count(), 0)
+        self.assertGreater(noti_acted.count(), 0)
 
         user.delete()
         self.assertEqual(User.objects.filter(id=user_id).count(), 0)
-        self.assertEqual(Notification.objects.filter(actor_id=user_id).count(), 0)
+        self.assertEqual(Notification.objects.visible_only().filter(actor_id=user_id).count(), 0)
+
+
+class DeleteRecipientNotificationTestCase(TestCase):
+
+    def setUp(self):
+        set_seed(N)
 
     # test on delete recipient user
     def test_on_delete_recipient_cascade(self):
         fill_data()
         user = User.objects.first()
         user_id = user.id
-        received_notis = user.received_noti_set.all()
-        noti_received = Notification.objects.filter(user_id=user_id)
+        received_notis = user.received_noti_set.visible_only()
+        noti_received = Notification.objects.visible_only().filter(user_id=user_id)
         self.assertEqual(received_notis.count(), noti_received.count())
+        self.assertGreater(received_notis.count(), 0)
+        self.assertGreater(noti_received.count(), 0)
 
         user.delete()
         self.assertEqual(User.objects.filter(id=user_id).count(), 0)
-        self.assertEqual(Notification.objects.filter(user_id=user_id).count(), 0)
+        self.assertEqual(Notification.objects.visible_only().filter(user_id=user_id).count(), 0)
+
+
+class DeleteObjectNotificationTestCase(TestCase):
+
+    def setUp(self):
+        set_seed(N)
 
     # test on delete target
     def test_on_delete_target_cascade(self):
         # target = comment
-        fill_data()
-        noti = Notification.objects.filter(target_type=get_comment_type()).last()
+        noti = Notification.objects.visible_only().filter(target_type=get_comment_type()).last()
         target = noti.target
         target_id = target.id
         target.delete()
-        self.assertEqual(Notification.objects.filter(
+        self.assertEqual(Notification.objects.visible_only().filter(
             target_type=get_comment_type(), target_id=target_id).count(), 0)
 
         # target = like
-        noti = Notification.objects.filter(target_type=get_like_type()).last()
+        noti = Notification.objects.visible_only().filter(target_type=get_like_type()).last()
         target = noti.target
         target_id = target.id
         target.delete()
-        self.assertEqual(Notification.objects.filter(
+        self.assertEqual(Notification.objects.visible_only().filter(
             target_type=get_like_type(), target_id=target_id).count(), 0)
 
         # target = response request
-        noti = Notification.objects.filter(target_type=get_response_request_type()).last()
+        noti = Notification.objects.visible_only().filter(target_type=get_response_request_type()).last()
         target = noti.target
         target_id = target.id
         target.delete()
-        self.assertEqual(Notification.objects.filter(
+        self.assertEqual(Notification.objects.visible_only().filter(
             target_type=get_response_request_type(), target_id=target_id).count(), 0)
+
+
+class DeleteFeedNotificationTestCase(TestCase):
+
+    def setUp(self):
+        set_seed(N)
 
     # test on delete origin
     def test_on_delete_origin_cascade(self):
+        # origin = comment
+        noti = Notification.objects.visible_only().filter(origin_type=get_comment_type()).last()
+        origin = noti.origin
+        origin_id = origin.id
+        origin.delete()
+        self.assertEqual(Notification.objects.visible_only().filter(
+            origin_type=get_comment_type(), origin_id=origin_id).count(), 0)
+
         # origin = article
         fill_data()
-        noti = Notification.objects.filter(origin_type=get_article_type()).last()
+        noti = Notification.objects.visible_only().filter(origin_type=get_article_type()).last()
         origin = noti.origin
         origin_id = origin.id
         origin.delete()
-        self.assertEqual(Notification.objects.filter(
+        self.assertEqual(Notification.objects.visible_only().filter(
             origin_type=get_article_type(), origin_id=origin_id).count(), 0)
+        self.assertGreater(Notification.objects.visible_only().filter(
+            redirect_url=f'/articles/{origin_id}').count(), 0)  # 노티 자체가 안 보이지는 않아야 함
 
         # origin = response
-        noti = Notification.objects.filter(origin_type=get_response_type()).last()
+        noti = Notification.objects.visible_only().filter(origin_type=get_response_type()).last()
         origin = noti.origin
         origin_id = origin.id
         origin.delete()
-        self.assertEqual(Notification.objects.filter(
+        self.assertEqual(Notification.objects.visible_only().filter(
             origin_type=get_response_type(), origin_id=origin_id).count(), 0)
+        self.assertGreater(Notification.objects.visible_only().filter(
+            redirect_url=f'/responses/{origin_id}').count(), 0)  # 노티 자체가 안 보이지는 않아야 함
 
         # origin = question
-        noti = Notification.objects.filter(origin_type=get_question_type()).last()
+        noti = Notification.objects.visible_only().filter(target_type=get_response_request_type(),
+                                                          origin_type=get_question_type()).last()
         origin = noti.origin
         origin_id = origin.id
         origin.delete()
-        self.assertEqual(Notification.objects.filter(
-            origin_type=get_question_type(), origin_id=origin_id).count(), 0)
-
-        # origin = comment
-        noti = Notification.objects.filter(origin_type=get_comment_type()).last()
-        origin = noti.origin
-        origin_id = origin.id
-        origin.delete()
-        self.assertEqual(Notification.objects.filter(
-            origin_type=get_comment_type(), origin_id=origin_id).count(), 0)
+        self.assertEqual(Notification.objects.visible_only().filter(
+            origin_type=get_question_type(), origin_id=origin_id).count(), 0)  # origin type은 바뀌어야 함
+        self.assertGreater(Notification.objects.visible_only().filter(
+            redirect_url=f'/questions/{origin_id}').count(), 0)  # 노티 자체가 안 보이지는 않아야 함
 
 
 class APITestCase(TestCase):

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
 from notification.models import Notification
+from feed.models import Question
 from account.serializers import AuthorFriendSerializer, AuthorAnonymousSerializer
 
 
@@ -30,9 +31,15 @@ class NotificationSerializer(serializers.ModelSerializer):
         return AuthorAnonymousSerializer(obj.actor).data
 
     def get_question_content(self, obj):
+        content = None
         if obj.target.type == 'ResponseRequest' or obj.target.type == 'Response':
             content = obj.target.question.content
-            return content if len(content) <= 30 else content[:30] + '...'
+        # if question/response was deleted
+        elif obj.redirect_url[:11] == '/questions/' and obj.target.type != 'Like':
+            content = Question.objects.get(id=int(obj.redirect_url[11:]))
+        else:
+            return content
+        return content if len(content) <= 30 else content[:30] + '...'
 
     def validate(self, data):
         unknown = set(self.initial_data) - set(self.fields)
