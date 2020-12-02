@@ -110,7 +110,13 @@ export default function MobileDrawer({ open, handleDrawerClose, onLogout }) {
               }}
             />
           </MarginListItem>
-          <MarginListItem button onClick={onLogout}>
+          <MarginListItem
+            button
+            onClick={() => {
+              onLogout();
+              handleDrawerClose();
+            }}
+          >
             <ListItemIcon>
               <ExitToAppIcon />
             </ListItemIcon>

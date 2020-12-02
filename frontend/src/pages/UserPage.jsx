@@ -137,14 +137,17 @@ export default function UserPage() {
             }}
           />
           <h3 margin-bottom="10px">{selectedUser?.username}</h3>
-          {selectedUser && selectedUser.id !== currentUser.id && (
-            <FriendStatusButtons
-              friendObj={selectedUser}
-              isFriend={selectedUser.are_friends}
-              isPending={selectedUser.received_friend_request_from}
-              hasSentRequest={selectedUser.sent_friend_request_to}
-            />
-          )}
+          <div>
+            {selectedUser && selectedUser.id !== currentUser.id && (
+              <FriendStatusButtons
+                isUserPage
+                friendObj={selectedUser}
+                isFriend={selectedUser.are_friends}
+                isPending={selectedUser.received_friend_request_from}
+                hasSentRequest={selectedUser.sent_friend_request_to}
+              />
+            )}
+          </div>
         </UserPageWrapper>
       </Container>
       <AppBar position="static" className={classes.header}>
