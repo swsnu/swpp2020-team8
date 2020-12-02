@@ -19,7 +19,7 @@ const FriendButton = styled(Button)`
 const ButtonsWrapper = styled.div`
   display: flex;
   min-width: 150px;
-  justify-content: center;
+  justify-content: ${(props) => (props.center ? 'center' : 'flex-end')};
 `;
 // isFriend: 이미 친구
 // isPending: 해당 유저가 나한테 보낸 요청이 있음 => 이 때는 requestId 필수
@@ -28,7 +28,8 @@ export default function FriendStatusButtons({
   isFriend,
   isPending,
   hasSentRequest,
-  friendObj
+  friendObj,
+  isUserPage
 }) {
   const dispatch = useDispatch();
   const [isRequestSubmitted, setIsRequestSubmitted] = useState(false);
@@ -76,7 +77,7 @@ export default function FriendStatusButtons({
   if (friendObj.id === currentUser?.id) return null;
   if (isRequestResetted)
     return (
-      <ButtonsWrapper id={friendObj.id}>
+      <ButtonsWrapper id={friendObj.id} center={isUserPage && 'true'}>
         <FriendButton
           variant="outlined"
           color="primary"
@@ -89,7 +90,7 @@ export default function FriendStatusButtons({
     );
   if (isFriend || isRequestAccepted)
     return (
-      <ButtonsWrapper id={friendObj.id}>
+      <ButtonsWrapper id={friendObj.id} center={isUserPage && 'true'}>
         <FriendButton
           variant="outlined"
           color="primary"
@@ -115,7 +116,7 @@ export default function FriendStatusButtons({
     );
   if (isPending)
     return (
-      <ButtonsWrapper id={friendObj.id}>
+      <ButtonsWrapper id={friendObj.id} center={isUserPage && 'true'}>
         <FriendButton
           variant="outlined"
           color="primary"
@@ -137,7 +138,7 @@ export default function FriendStatusButtons({
 
   if (hasSentRequest || isRequestSubmitted)
     return (
-      <ButtonsWrapper id={friendObj.id}>
+      <ButtonsWrapper id={friendObj.id} center={isUserPage && 'true'}>
         <FriendButton
           variant="outlined"
           color="primary"
@@ -157,7 +158,7 @@ export default function FriendStatusButtons({
     );
 
   return (
-    <ButtonsWrapper id={friendObj.id}>
+    <ButtonsWrapper id={friendObj.id} center={isUserPage && 'true'}>
       <FriendButton
         variant="outlined"
         color="primary"

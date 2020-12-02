@@ -1,4 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { NavLink, Link, useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles } from '@material-ui/core/styles';
@@ -9,8 +12,7 @@ import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import TextField from '@material-ui/core/TextField';
-import { NavLink, Link, useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+
 import useOnClickOutside from 'use-onclickoutside';
 import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
@@ -137,13 +139,22 @@ const Header = ({ isMobile }) => {
   };
 
   useEffect(() => {
-    if (totalPages > 0 && window.location.pathname !== '/search') {
+    if (query.length) {
+      dispatch(fetchSearchResults(1, query));
+    } else setIsSearchOpen(false);
+  }, [query]);
+
+  useEffect(() => {
+    if (
+      totalPages > 0 &&
+      window.location.pathname !== '/user-search' &&
+      window.location.pathname !== '/search'
+    ) {
       setIsSearchOpen(true);
     } else {
       setIsSearchOpen(false);
     }
-    dispatch(fetchSearchResults(1, query));
-  }, [dispatch, query, totalPages]);
+  }, [dispatch, totalPages]);
 
   const handleChange = (e) => {
     const { value } = e.target;
@@ -154,6 +165,7 @@ const Header = ({ isMobile }) => {
     if (e.key === 'Enter' && query !== '') {
       setIsSearchOpen(false);
       history.push(`/search`);
+      setQuery('');
     }
   };
 
@@ -216,6 +228,9 @@ const Header = ({ isMobile }) => {
           required
           id="input-search-field"
           className={classes.textField}
+          InputProps={{
+            autoComplete: 'off'
+          }}
           size="small"
           value={query}
           label="사용자 검색"
