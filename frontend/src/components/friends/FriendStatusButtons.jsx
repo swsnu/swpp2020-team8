@@ -19,7 +19,7 @@ const FriendButton = styled(Button)`
 const ButtonsWrapper = styled.div`
   display: flex;
   min-width: 150px;
-  justify-content: flex-end;
+  justify-content: center;
 `;
 // isFriend: 이미 친구
 // isPending: 해당 유저가 나한테 보낸 요청이 있음 => 이 때는 requestId 필수
