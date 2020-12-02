@@ -12,7 +12,6 @@ from like.models import Like
 from adoorback.models import AdoorModel, AdoorTimestampedModel
 from notification.models import Notification
 
-
 User = get_user_model()
 
 
@@ -111,6 +110,10 @@ class ResponseRequest(AdoorTimestampedModel):
     requester = models.ForeignKey(User, related_name='sent_response_request_set', on_delete=models.CASCADE)
     requestee = models.ForeignKey(User, related_name='received_response_request_set', on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    response_request_targetted_notis = GenericRelation("notification.Notification",
+                                                       content_type_field='target_type', object_id_field='target_id')
+    response_request_originated_notis = GenericRelation("notification.Notification",
+                                                        content_type_field='origin_type', object_id_field='origin_id')
 
     response_request_targetted_notis = GenericRelation('notification.Notification',
                                                        content_type_field='target_type',

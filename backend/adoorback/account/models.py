@@ -60,6 +60,10 @@ class FriendRequest(AdoorTimestampedModel):
     requestee = models.ForeignKey(
         get_user_model(), related_name='received_friend_requests', on_delete=models.CASCADE)
     accepted = models.BooleanField(null=True)
+    friend_request_targetted_notis = GenericRelation("notification.Notification",
+        content_type_field='target_type', object_id_field='target_id')
+    friend_request_originated_notis = GenericRelation("notification.Notification",
+        content_type_field='origin_type', object_id_field='origin_id')
 
     friend_request_targetted_notis = GenericRelation("notification.Notification",
                                                      content_type_field='target_type',
@@ -96,6 +100,7 @@ def delete_friend_noti(action, pk_set, instance, **kwargs):
 def create_friend_noti(created, instance, **kwargs):
     accepted = instance.accepted
     Notification = apps.get_model('notification', 'Notification')
+
     requester = instance.requester
     requestee = instance.requestee
 
