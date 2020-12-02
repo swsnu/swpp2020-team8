@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_cron',
     'import_export',
+    'trackstats',
 ]
 
 SITE_ID = 1

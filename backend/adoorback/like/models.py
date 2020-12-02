@@ -8,6 +8,8 @@ from django.contrib.auth import get_user_model
 from adoorback.utils.content_types import get_comment_type
 from notification.models import Notification
 
+from adoorback.models import AdoorTimestampedModel
+
 User = get_user_model()
 
 
@@ -21,7 +23,7 @@ class LikeManager(models.Manager):
         return self.exclude(content_type=get_comment_type(), **kwargs)
 
 
-class Like(models.Model):
+class Like(AdoorTimestampedModel):
     user = models.ForeignKey(User, related_name='like_set', on_delete=models.CASCADE)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
