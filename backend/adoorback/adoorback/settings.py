@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'admin_honeypot',
     'django_celery_results',
     'django_cron',
+    'import_export',
 ]
 
 SITE_ID = 1
