@@ -1,5 +1,4 @@
 from rest_framework import generics
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -13,7 +12,6 @@ from adoorback.permissions import IsOwnerOrReadOnly
 class NotificationList(generics.ListAPIView, generics.UpdateAPIView):
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_queryset(self):
         return Notification.objects.visible_only().filter(user=self.request.user)
@@ -29,7 +27,6 @@ class NotificationDetail(generics.UpdateAPIView):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self):
         return Notification.objects.get(id=self.kwargs.get('pk'))

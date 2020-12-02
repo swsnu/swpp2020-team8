@@ -33,6 +33,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ],
 }
 
@@ -78,6 +79,8 @@ LOGIN_REDIRECT_URL = '/api/user/'
 CRON_CLASSES = [
     "feed.cron.DailyQuestionCronJob",
     "feed.cron.RankQuestionsCronJob",
+    "account.cron.SendSelectQuestionsNotiCronJob",
+    "account.cron.SendAddFriendsNotiCronJob",
 ]
 
 CELERY_RESULT_BACKEND = 'django-db'

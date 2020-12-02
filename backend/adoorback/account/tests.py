@@ -139,20 +139,16 @@ class UserAPITestCase(APITestCase):
 
 class AuthAPITestCase(APITestCase):
 
+    def setUp(self):
+        set_seed(N)
+
     def test_csrf(self):
+        self.make_user(username='username')
+
         client = Client(enforce_csrf_checks=True)
 
-        self.make_user(username="username", password="password")
-
-        signup_data = {"username": "test_username",
-                       "password": "test_password", "email": "test@email.com"}
-        response = client.post('/api/user/signup/',
-                               json.dumps(signup_data),
-                               content_type='application/json')
-        # should return 403 error w/o csrf token
-        self.assertEqual(response.status_code, 403)
-
         login_data = {"username": "username", "password": "password"}
+
         response = client.post('/api/user/token/',
                                json.dumps(login_data),
                                content_type='application/json')
@@ -375,6 +371,37 @@ class FriendRequestAPITestCase(APITestCase):
             response = self.get(self.reverse(
                 'user-friend-request-update', pk=current_user.id))
             self.assertEqual(response.status_code, 405)
+
+
+class UserNotisAPITestCase(APITestCase):
+
+    def setUp(self):
+        set_seed(N)
+
+    def test_signup_notis(self):
+        signup_data = {
+            'username': 'test_username',
+            'password': 'test_password',
+            'email': 'test@email.com',
+        }
+
+        num_admin_notis_before = Notification.objects.admin_only().count()
+        response = self.post('user-signup', data=signup_data, extra={'format': 'json'})
+        self.assertEqual(response.status_code, 201)
+
+        self.assertEqual(Notification.objects.first().message,
+                         'test_username님, 반갑습니다! :) 먼저 익명피드를 둘러볼까요?')
+
+        data = {"question_history": '1, 2, 3'}
+        with self.login(username='test_username', password='test_password'):
+            response = self.patch('current-user', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 200)
+
+            self.assertEqual(Notification.objects.first().message,
+                             'test_username님, 질문 선택을 완료해주셨네요 :) 그럼 오늘의 질문들을 둘러보러 가볼까요?')
+
+        num_admin_notis_after = Notification.objects.admin_only().count()
+        self.assertEqual(num_admin_notis_before, num_admin_notis_after - 2)
 
 
 class FriendshipNotisAPITestCase(APITestCase):

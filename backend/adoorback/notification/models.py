@@ -16,6 +16,10 @@ class NotificationManager(models.Manager):
     def unread_only(self, **kwargs):
         return self.filter(is_read=False, **kwargs)
 
+    def admin_only(self, **kwargs):
+        admin = User.objects.filter(is_superuser=True).first()
+        return self.filter(actor=admin, **kwargs)
+
 
 class Notification(AdoorTimestampedModel):
     user = models.ForeignKey(User, related_name='received_noti_set', on_delete=models.CASCADE)
