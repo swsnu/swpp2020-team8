@@ -22,6 +22,8 @@ import PostEdit from './pages/PostEdit';
 import UserPage from './pages/UserPage';
 import { getNotifications } from './modules/notification';
 import MobileFooter from './components/MobileFooter';
+import MobileQuestionPage from './pages/MobileQuestionPage';
+import MobileSearchPage from './pages/MobileSearchPage';
 
 const theme = createMuiTheme({
   palette: {
@@ -118,6 +120,17 @@ const App = () => {
 
               <PrivateRoute path="/:postType/:id" component={PostDetail} />
               <PrivateRoute exact path="/my-friends" component={FriendsPage} />
+              <PrivateRoute
+                exact
+                path="/recommended-questions"
+                component={MobileQuestionPage}
+              />
+              <PrivateRoute
+                exact
+                path="/user-search"
+                component={MobileSearchPage}
+              />
+
               <Redirect exact path="/" to="/friends" />
             </Switch>
           </FeedWrapper>

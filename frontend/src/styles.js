@@ -49,6 +49,7 @@ export const CommonInput = styled.input`
 export const MainWrapper = styled.main`
   @media (max-width: 650px) {
     width: 100vw;
+    margin-top: 70px;
   }
   width: 1280px;
   margin: 80px auto 100px auto;
@@ -67,6 +68,9 @@ export const FeedWrapper = styled.div`
 export const WidgetWrapper = styled.div`
   width: 300px;
   transform: 'translateX(-10px)';
+  @media (max-width: 650px) {
+    width: 95vw;
+  }
 `;
 
 export const WidgetTitleWrapper = styled.div`

@@ -80,20 +80,35 @@ export default function MobileDrawer({ open, handleDrawerClose, onLogout }) {
             </ListItemIcon>
             <ListItemText
               primary="친구"
-              onClick={() => history.push('/my-friends')}
+              onClick={() => {
+                history.push('/my-friends');
+                handleDrawerClose();
+              }}
             />
           </MarginListItem>
           <MarginListItem button>
             <ListItemIcon>
               <ContactSupportIcon />
             </ListItemIcon>
-            <ListItemText primary="추천 질문" />
+            <ListItemText
+              primary="추천 질문"
+              onClick={() => {
+                history.push('/recommended-questions');
+                handleDrawerClose();
+              }}
+            />
           </MarginListItem>
           <MarginListItem button>
             <ListItemIcon>
               <SearchIcon />
             </ListItemIcon>
-            <ListItemText primary="사용자 검색" />
+            <ListItemText
+              primary="사용자 검색"
+              onClick={() => {
+                history.push('/user-search');
+                handleDrawerClose();
+              }}
+            />
           </MarginListItem>
           <MarginListItem button onClick={onLogout}>
             <ListItemIcon>
