@@ -32,5 +32,5 @@ class CommentDetail(generics.DestroyAPIView):
     """
     queryset = Comment.objects.all()
     serializer_class = CommentFriendSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
     authentication_classes = [SessionAuthentication, TokenAuthentication]

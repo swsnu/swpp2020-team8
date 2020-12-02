@@ -159,7 +159,8 @@ class QuestionAnonymousResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class ResponseRequestList(generics.ListAPIView):
     """
-    Get response requests of the selected question.
+    Get response requests sent to other users on the selected question.
+    (for frontend 'send' button implementation purposes)
     """
     serializer_class = fs.ResponseRequestSerializer
     permission_classes = [IsAuthenticated]
@@ -184,6 +185,16 @@ class ResponseRequestCreate(generics.CreateAPIView):
     serializer_class = fs.ResponseRequestSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def perform_create(self, serializer):
+        current_user = self.request.user
+        requester = User.objects.get(id=self.request.data.get('requester_id'))
+        requestee = User.objects.get(id=self.request.data.get('requestee_id'))
+        if requester != current_user:
+            raise PermissionDenied("requester가 본인이 아닙니다...")
+        if not User.are_friends(requestee, current_user):
+            raise PermissionDenied("친구에게만 response request를 보낼 수 있습니다...")
+        serializer.save()
 
 
 class ResponseRequestDestroy(generics.DestroyAPIView):

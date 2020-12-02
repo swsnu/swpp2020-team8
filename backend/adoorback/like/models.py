@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
-from adoorback.utils.content_types import get_korean_type_name, get_comment_type
+from adoorback.utils.content_types import get_comment_type
 from notification.models import Notification
 
 User = get_user_model()

@@ -36,7 +36,7 @@ class User(AbstractUser, AdoorTimestampedModel):
                                                   object_id_field='origin_id')
 
     class Meta:
-        ordering = ['username']
+        ordering = ['id']
 
     @classmethod
     def are_friends(cls, user1, user2):

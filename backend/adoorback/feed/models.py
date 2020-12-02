@@ -159,23 +159,10 @@ class Post(AdoorModel):
         base_manager_name = 'objects'
 
 
-@receiver(post_save, sender=ResponseRequest)
-def create_response_request_noti(sender, **kwargs):
-    instance = kwargs['instance']
-    target = instance
-    origin = instance.question
-    requester = instance.requester
-    requestee = instance.requestee
-    message = f'{requester.username}님이 회원님에게 질문을 보냈습니다.'
-    Notification.objects.create(actor=requester, user=requestee,
-                                message=message, origin=origin, target=target)
-
-
 @receiver(post_save, sender=Question)
 @receiver(post_save, sender=Response)
 @receiver(post_save, sender=Article)
-def create_post(sender, **kwargs):
-    instance = kwargs['instance']
+def create_post(sender, instance, **kwargs):
     content_type = ContentType.objects.get_for_model(sender)
     try:
         post = Post.objects.get(content_type=content_type, object_id=instance.id)
@@ -191,29 +178,11 @@ def create_post(sender, **kwargs):
     post.save()
 
 
-@receiver(post_save, sender=Response)
-def create_request_answered_noti(sender, **kwargs):
-    instance = kwargs['instance']
-    author_id = instance.author.id
-    question_id = instance.question.id
-    target = instance
-    origin = instance
-    actor = instance.author
-    related_requests = ResponseRequest.objects.filter(
-        requestee_id=author_id).filter(question_id=question_id)
-    for request in related_requests:
-        user = request.requester
-        message = f'{actor.username}님이 회원님이 보낸 질문에 답했습니다.'
-        Notification.objects.create(actor=actor, user=user, message=message,
-                                    origin=origin, target=target)
-
-
 @receiver(post_delete, sender=User)
 @receiver(post_delete, sender=Question)
 @receiver(post_delete, sender=Response)
 @receiver(post_delete, sender=Article)
-def delete_post(sender, **kwargs):
-    instance = kwargs['instance']
+def delete_post(sender, instance, **kwargs):
     if sender == User:
         Post.objects.filter(author_id=instance.id).delete()
     else:
@@ -221,9 +190,46 @@ def delete_post(sender, **kwargs):
                          object_id=instance.id).delete()
 
 
+@receiver(post_save, sender=ResponseRequest)
+def create_response_request_noti(instance, **kwargs):
+    target = instance
+    origin = instance.question
+    requester = instance.requester
+    requestee = instance.requestee
+    message = f'{requester.username}님이 회원님에게 질문을 보냈습니다.'
+    redirect_url = f'/questions/{origin.id}'
+    Notification.objects.create(actor=requester, user=requestee,
+                                origin=origin, target=target,
+                                message=message, redirect_url=redirect_url)
+
+
 @receiver(post_save, sender=Response)
-def delete_response_request(sender, **kwargs):
-    instance = kwargs['instance']
+def create_request_answered_noti(instance, created, **kwargs):
+    if not created:  # response edit만 해준 경우
+        return
+
+    author_id = instance.author.id
+    question_id = instance.question.id
+    target = instance
+    origin = instance
+    actor = instance.author
+    related_requests = ResponseRequest.objects.filter(
+        requestee_id=author_id, question_id=question_id)
+    redirect_url = f'/questions/{question_id}'
+
+    for request in related_requests:
+        user = request.requester
+        message = f'{actor.username}님이 회원님이 보낸 질문에 답했습니다.'
+        Notification.objects.create(actor=actor, user=user,
+                                    origin=origin, target=target,
+                                    message=message, redirect_url=redirect_url)
+
+
+@receiver(post_save, sender=Response)
+def delete_response_request(instance, created, **kwargs):
+    if not created:
+        return
+
     try:
         response_requests = ResponseRequest.objects.filter(requestee_id=instance.author.id,
                                                            question=instance.question)

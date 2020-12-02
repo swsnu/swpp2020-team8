@@ -25,6 +25,7 @@ class UserTestCase(TestCase):
 
 
 class UserFriendshipCase(TestCase):
+
     def setUp(self):
         set_seed(N)
 
@@ -46,7 +47,7 @@ class FriendRequestTestCase(TestCase):
         set_seed(N)
 
     def test_friend_request_count(self):
-        self.assertEqual(FriendRequest.objects.count(), 3)
+        self.assertEqual(FriendRequest.objects.count(), 2)
 
     def test_friend_request_str(self):
         friendrequest = FriendRequest.objects.first()

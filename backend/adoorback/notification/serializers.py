@@ -14,6 +14,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     is_friend_request = serializers.SerializerMethodField(read_only=True)
     actor_detail = serializers.SerializerMethodField(read_only=True)
     question_content = serializers.SerializerMethodField(read_only=True)
+    is_read = serializers.BooleanField(required=True)
 
     def get_is_response_request(self, obj):
         return obj.target.type == 'ResponseRequest'
@@ -32,6 +33,14 @@ class NotificationSerializer(serializers.ModelSerializer):
         if obj.target.type == 'ResponseRequest' or obj.target.type == 'Response':
             content = obj.target.question.content
             return content if len(content) <= 30 else content[:30] + '...'
+
+    def validate(self, data):
+        unknown = set(self.initial_data) - set(self.fields)
+        if unknown:
+            raise serializers.ValidationError("이 필드는 뭘까요...: {}".format(", ".join(unknown)))
+        if not data.get('is_read'):
+            raise serializers.ValidationError("이미 읽은 노티를 안 읽음 표시할 수 없습니다...")
+        return data
 
     class Meta:
         model = Notification

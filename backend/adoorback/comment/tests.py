@@ -3,7 +3,7 @@ from test_plus.test import TestCase
 from rest_framework.test import APIClient
 
 from comment.models import Comment
-from feed.models import Response, Article
+from feed.models import Article
 from notification.models import Notification
 
 from adoorback.utils.seed import set_seed, fill_data

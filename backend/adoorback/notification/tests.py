@@ -8,7 +8,7 @@ from notification.models import Notification
 
 from adoorback.utils.seed import set_seed, fill_data
 from adoorback.utils.content_types import get_comment_type, get_like_type, \
-    get_article_type, get_question_type, get_response_type
+    get_article_type, get_question_type, get_response_type, get_response_request_type
 
 User = get_user_model()
 N = 10
@@ -83,6 +83,14 @@ class NotificationTestCase(TestCase):
         self.assertEqual(Notification.objects.filter(
             target_type=get_like_type(), target_id=target_id).count(), 0)
 
+        # target = response request
+        noti = Notification.objects.filter(target_type=get_response_request_type()).last()
+        target = noti.target
+        target_id = target.id
+        target.delete()
+        self.assertEqual(Notification.objects.filter(
+            target_type=get_response_request_type(), target_id=target_id).count(), 0)
+
     # test on delete origin
     def test_on_delete_origin_cascade(self):
         # origin = article
@@ -93,6 +101,7 @@ class NotificationTestCase(TestCase):
         origin.delete()
         self.assertEqual(Notification.objects.filter(
             origin_type=get_article_type(), origin_id=origin_id).count(), 0)
+
         # origin = response
         noti = Notification.objects.filter(origin_type=get_response_type()).last()
         origin = noti.origin
@@ -100,6 +109,7 @@ class NotificationTestCase(TestCase):
         origin.delete()
         self.assertEqual(Notification.objects.filter(
             origin_type=get_response_type(), origin_id=origin_id).count(), 0)
+
         # origin = question
         noti = Notification.objects.filter(origin_type=get_question_type()).last()
         origin = noti.origin
@@ -107,6 +117,7 @@ class NotificationTestCase(TestCase):
         origin.delete()
         self.assertEqual(Notification.objects.filter(
             origin_type=get_question_type(), origin_id=origin_id).count(), 0)
+
         # origin = comment
         noti = Notification.objects.filter(origin_type=get_comment_type()).last()
         origin = noti.origin
@@ -133,17 +144,17 @@ class NotificationAPITestCase(APITestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data['count'], received_notis_count)
 
-    def test_noti_author_permission(self):
+    def test_noti_author_profile(self):
         current_user = self.make_user(username='current_user')
         spy_user = self.make_user(username='spy_user')
 
         like = Like.objects.first()
         target = like
         message = 'test noti'
-        Notification.objects.create(actor = current_user, user = current_user, message = message,
-            origin = target, target= target)
-        Notification.objects.create(actor = current_user, user = spy_user, message = message,
-            origin = target, target= target)
+        Notification.objects.create(actor=current_user, user=current_user, message=message,
+                                    origin=target, target=target)
+        Notification.objects.create(actor=current_user, user=spy_user, message=message,
+                                    origin=target, target=target)
 
         # not authenticated
         response = self.get('notification-list')
@@ -161,10 +172,69 @@ class NotificationAPITestCase(APITestCase):
             noti = response.data['results'][0]
             self.assertEqual(len(noti['actor_detail']), 1)
 
+    def test_friendship_noti(self):
+        current_user = self.make_user(username='current_user')
+        spy_user = self.make_user(username='spy_user')
+
+        # Friend Request Noti Author Profile should NOT be anonymized
         with self.login(username=current_user.username, password='password'):
-            response = self.put('notification-list')
+            data = {"requester_id": current_user.id, "requestee_id": spy_user.id}
+            response = self.post('user-friend-request-list', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 201)
+
+        # friend request should not be visible after accept
+        with self.login(username=spy_user.username, password='password'):
+            response = self.get('notification-list')
+            self.assertEqual(response.status_code, 200)
+            noti = response.data['results'][0]
+            self.assertGreater(len(noti['actor_detail']), 1)  # not anonymized
+            self.assertEqual(noti['question_content'], None)  # should be null
+
+            # PATCH (accept) FriendRequest (spy_user -> current_user)
+            data = {"accepted": True}
+            response = self.patch(self.reverse(
+                'user-friend-request-update', pk=current_user.id), data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 200)
 
+            response = self.get('notification-list')
+            self.assertEqual(response.data['count'], 1)  # friend request noti is not visible
+            self.assertEqual(response.data['results'][0]['message'], 'current_user님과 친구가 되었습니다.')
+
+    def test_response_request_noti(self):
+        # Response Request/Response noti should include question content
+        current_user = self.make_user(username='current_user')
+        friend_user = self.make_user(username='friend_user')
+        current_user.friends.add(friend_user)
+
+        data = {"requester_id": current_user.id, "requestee_id": friend_user.id, "question_id": 1}
+        with self.login(username=current_user.username, password='password'):
+            response = self.post('response-request-create', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 201)
+
+        with self.login(username=friend_user.username, password='password'):
+            response = self.get('notification-list')
+            self.assertEqual(response.status_code, 200)
+            noti_1 = response.data['results'][0]
+            self.assertNotEqual(noti_1['question_content'], None)  # should not be empty
+
+            # respond to response request
+            data = {"content": "test content", "question_id": 1, "share_anonymously": True}
+            response = self.post('response-list', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 201)
+
+        with self.login(username=current_user.username, password='password'):
+            response = self.get('notification-list')
+            self.assertEqual(response.status_code, 200)
+            noti_2 = response.data['results'][0]
+            self.assertNotEqual(noti_2['question_content'], None)  # should not be empty
+
+            self.assertEqual(noti_1['question_content'], noti_2['question_content'])
+            self.assertLessEqual(len(noti_1['question_content']), 33)
+
+        # POST - not allowed
+        with self.login(username=current_user.username, password='password'):
+            response = self.post('notification-list')
+            self.assertEqual(response.status_code, 405)
 
     def test_noti_update(self):
         current_user = self.make_user(username='receiver')
@@ -174,20 +244,59 @@ class NotificationAPITestCase(APITestCase):
         origin = comment.target
         target = comment
         message = f'{actor} commented on your {origin.type}'
-        Notification.objects.create(actor=actor, user=current_user, message=message,
-            origin=origin, target= target, is_read = False, is_visible = True)
+        for _ in range(5):
+            Notification.objects.create(actor=actor, user=current_user, message=message,
+                                        origin=origin, target=target, is_read=False, is_visible=True)
 
-        received_noti = Notification.objects.filter(user=current_user).last()
-        data = {"is_read": True }
+        # update single notification - wrong body
+        received_noti = Notification.objects.filter(user=current_user).first()
+        data = {"has_read": True}
         with self.login(username=current_user.username, password='password'):
             response = self.patch(self.reverse('notification-update',
-                                               pk=received_noti.id), data=data)
+                                               pk=received_noti.id), data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 400)
+
+        # update single notification
+        received_noti = Notification.objects.filter(user=current_user).first()
+        data = {"is_read": True}
+        with self.login(username=current_user.username, password='password'):
+            response = self.patch(self.reverse('notification-update',
+                                               pk=received_noti.id), data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data['is_read'], True)
-        # test restriction
-        spy_user = self.make_user(username='spy_user')
 
-        with self.login(username=spy_user.username, password='password'):
+        # update single notification - wrong body
+        received_noti = Notification.objects.filter(user=current_user).first()
+        data = {"is_read": False}  # cannot un-read notification
+        with self.login(username=current_user.username, password='password'):
             response = self.patch(self.reverse('notification-update',
-                                               pk=received_noti.id), data=data)
+                                               pk=received_noti.id), data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 400)
+
+            # method not allowed
+            response = self.get(self.reverse('notification-update', pk=received_noti.id))
+            self.assertEqual(response.status_code, 405)
+
+        # test restriction - update single notification
+        not_allowed_noti = Notification.objects.exclude(user=current_user).first()
+        data = {"is_read": True}
+        with self.login(username=current_user.username, password='password'):
+            response = self.patch(self.reverse('notification-update',
+                                               pk=not_allowed_noti.id), data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 403)
+
+        # update all notifications
+        with self.login(username=current_user.username, password='password'):
+            response = self.get('notification-list')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['results'][0]['is_read'], True)  # first noti should be read
+
+            response = self.get('notification-list')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['results'][1]['is_read'], False)  # second noti should not be
+
+            response = self.patch('notification-list')  # update
+            self.assertEqual(response.status_code, 200)
+            response = self.get('notification-list')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['results'][1]['is_read'], True)  # all notis should be read

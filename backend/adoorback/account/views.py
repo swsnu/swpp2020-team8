@@ -125,7 +125,7 @@ class UserSearch(generics.ListAPIView):
         if query:
             queryset = User.objects.filter(
                 username__icontains=self.request.GET.get('query'))
-        return queryset
+        return queryset.order_by('username')
 
 
 class UserFriendDestroy(generics.DestroyAPIView):
@@ -150,7 +150,7 @@ class UserFriendRequestList(generics.ListCreateAPIView):
         return FriendRequest.objects.filter(requestee=self.request.user)
 
     def perform_create(self, serializer):
-        if int(self.request.data.get('requester_id')) != int(self.request.user.id):
+        if self.request.data.get('requester_id') != self.request.user.id:
             raise PermissionDenied("requester가 본인이 아닙니다...")
         serializer.save(accepted=None)
 

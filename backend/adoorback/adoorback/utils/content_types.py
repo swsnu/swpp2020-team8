@@ -37,6 +37,11 @@ def get_response_type():
     return ContentType.objects.get_for_model(Response)
 
 
+def get_response_request_type():
+    from feed.models import ResponseRequest
+    return ContentType.objects.get_for_model(ResponseRequest)
+
+
 def get_post_type():
     from feed.models import Post
     return ContentType.objects.get_for_model(Post)
@@ -53,21 +58,3 @@ def get_generic_relation_type(model):
         return get_question_type()
     else:
         return None
-
-
-def get_korean_type_name(model_name):
-    if model_name == 'Comment':
-        result = '댓글'
-    elif model_name == 'Like':
-        result = '좋아요'
-    elif model_name == 'Article':
-        result = '게시물'
-    elif model_name == 'Question':
-        result = '질문'
-    elif model_name == 'Response':
-        result = '답변'
-    elif model_name == 'Post':
-        result = '게시물'
-    else:
-        result = ''
-    return result

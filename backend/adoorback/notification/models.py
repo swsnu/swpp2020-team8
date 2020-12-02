@@ -35,10 +35,9 @@ class Notification(AdoorTimestampedModel):
     origin_id = models.IntegerField(blank=True, null=True)
     origin = GenericForeignKey('origin_type', 'origin_id')
 
-    message = models.CharField(max_length=100)
-    # TODO: remove blank=True, null=True after fixing feed/comment/like models
     # redirect: target의 근원지(?), origin != redirect_url의 모델일 경우가 있음 (e.g. reply)
-    redirect_url = models.CharField(max_length=150, blank=True, null=True)
+    redirect_url = models.CharField(max_length=150)
+    message = models.CharField(max_length=100)
 
     is_visible = models.BooleanField(default=True)
     is_read = models.BooleanField(default=False)
@@ -50,7 +49,3 @@ class Notification(AdoorTimestampedModel):
 
     def __str__(self):
         return self.message
-
-    @property
-    def type(self):
-        return self.__class__.__name__
