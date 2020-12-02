@@ -50,16 +50,30 @@ class Like(models.Model):
 
 
 @receiver(post_save, sender=Like)
-def create_like_noti(sender, **kwargs):
-    instance = kwargs['instance']
-    target = instance
-    origin = instance.target
-    origin_name = get_korean_type_name(origin.type)
-    actor = instance.user
-    actor_name = '익명의 사용자가'
+def create_like_noti(instance, **kwargs):
     user = instance.target.author
-    if User.are_friends(actor, user):
-        actor_name = f'{actor.username}님이'
-    message = f'{actor_name} 회원님의 {origin_name}을 좋아합니다.'
-    Notification.objects.create(actor=actor, user=user, message=message,
-                                origin=origin, target=target)
+    actor = instance.user
+    origin = instance.target
+    target = instance
+
+    if user == actor:  # do not create notification for liker him/herself.
+        return
+    actor_name = f'{actor.username}님이' if User.are_friends(user, actor) else '익명의 사용자가'
+
+    if instance.target.type == 'Comment':  # if is reply
+        message = f'{actor_name} 회원님의 댓글을 좋아합니다.'
+        redirect_url = f'/{origin.target.type.lower()}s/{origin.target.id}'
+    else:
+        origin_target_name = ''
+        if instance.target.type == 'Article':
+            origin_target_name = '게시글'
+        elif instance.target.type == 'Response':
+            origin_target_name = '답변'
+        elif instance.target.type == 'Question':
+            origin_target_name = '질문'
+        message = f'{actor_name} 회원님의 {origin_target_name}을 좋아합니다.'
+        redirect_url = f'/{origin.type.lower()}s/{origin.id}'
+
+    Notification.objects.create(actor=actor, user=user,
+                                origin=origin, target=target,
+                                message=message, redirect_url=redirect_url)

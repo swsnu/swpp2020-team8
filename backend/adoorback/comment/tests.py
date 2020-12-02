@@ -171,7 +171,7 @@ class CommentNotiAPITestCase(APITestCase):
             self.assertEqual(response.status_code, 201)
 
             self.assertEqual(Notification.objects.first().message,
-                             "current_user님이 회원님의 답변에 댓글을 남겼습니다.")  # different message
+                             "current_user님이 회원님의 답변에 댓글을 남겼습니다.")  # different message for response type
 
         # create comment (current_user -> current_user): no new notification
         with self.login(username=current_user.username, password='password'):

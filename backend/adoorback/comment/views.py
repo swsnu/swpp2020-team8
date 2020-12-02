@@ -1,4 +1,5 @@
 from rest_framework import generics
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from comment.models import Comment
@@ -15,6 +16,7 @@ class CommentList(generics.ListCreateAPIView):
     queryset = Comment.objects.order_by('-id')
     serializer_class = CommentFriendSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def perform_create(self, serializer):
         content_type_id = get_generic_relation_type(self.request.data['target_type']).id
@@ -30,4 +32,5 @@ class CommentDetail(generics.DestroyAPIView):
     """
     queryset = Comment.objects.all()
     serializer_class = CommentFriendSerializer
-    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
