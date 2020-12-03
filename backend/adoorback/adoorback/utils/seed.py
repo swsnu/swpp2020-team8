@@ -149,6 +149,7 @@ def set_seed(n):
     user_1.friends.add(user_2)
 
 
+
 def fill_data():
     User = get_user_model()
     faker = Faker()

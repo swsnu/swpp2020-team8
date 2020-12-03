@@ -13,16 +13,15 @@ import {
 
 export const mockStore = {
   friendReducer: {
-    friendList: mockFriendList,
-    selectedUser: {},
-    selectedUserPosts: []
+    friendList: mockFriendList
   },
   notiReducer: {
     receivedNotifications: mockNotifications
   },
   postReducer: {
     selectedPost: mockCustomQuestion,
-    selectedUserPosts: [mockResponse, mockResponse2]
+    selectedUserPosts: [mockResponse, mockResponse2],
+    selectedPostFailure: false
   },
   questionReducer: {
     dailyQuestions: mockQuestionFeed,
@@ -39,7 +38,8 @@ export const mockStore = {
     currentUser: {
       id: 123,
       username: 'curious',
-      isLoggedIn: true
+      isLoggedIn: true,
+      question_history: null
     },
     selectedUser: {
       id: 1,
@@ -103,6 +103,26 @@ export const mockStoreWithArticle = {
       username: 'mock',
       isLoggedIn: false
     }
+  }
+};
+
+export const mockStoreWithNoFriendFeed = {
+  friendReducer: {},
+  notiReducer: {},
+  postReducer: {
+    friendPosts: []
+  },
+  questionReducer: {},
+  userReducer: {
+    error: false,
+    currentUser: {
+      id: 0,
+      username: 'mock',
+      isLoggedIn: false
+    }
+  },
+  loadingReducer: {
+    'post/GET_FRIEND_POSTS': false
   }
 };
 

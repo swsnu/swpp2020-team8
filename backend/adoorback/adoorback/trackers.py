@@ -11,6 +11,7 @@ from notification.models import Notification
 
 User = get_user_model()
 
+
 Domain.objects.POSTS = Domain.objects.register(
     ref='posts',
     name='Posts')
