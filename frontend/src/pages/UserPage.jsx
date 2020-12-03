@@ -72,7 +72,14 @@ export default function UserPage() {
   const dispatch = useDispatch();
   const classes = useStyles();
   const selectedUser = useSelector((state) => state.userReducer.selectedUser);
-  // const friendList = useSelector((state) => state.friendReducer.friendList);
+  const currentUser = useSelector((state) => state.userReducer.currentUser);
+  const friendList = useSelector((state) => state.friendReducer.friendList);
+  const friendIdList = friendList.map((friend) => friend.id);
+  const isFriendOrMyPage =
+    selectedUser &&
+    (friendIdList.includes(selectedUser?.id) ||
+      selectedUser?.id === currentUser?.id);
+
   const [value, setValue] = useState('All');
   const selectedUserPosts = useSelector(
     (state) => state.postReducer.selectedUserPosts
@@ -87,8 +94,8 @@ export default function UserPage() {
 
   useEffect(() => {
     dispatch(getSelectedUser(id));
-    dispatch(getSelectedUserPosts(id));
     dispatch(getFriendList());
+    dispatch(getSelectedUserPosts(id));
     setValue('All');
   }, [dispatch, id]);
 
@@ -106,9 +113,6 @@ export default function UserPage() {
       dispatch(appendPosts('selectedUser'));
     }
   };
-
-  // const friendIdList = friendList.map((friend) => friend.id);
-  // const isFriend = friendIdList.includes(selectedUser?.id);
 
   const userResponses = selectedUserPosts?.filter(
     (post) => post.type === 'Response'
@@ -158,16 +162,16 @@ export default function UserPage() {
           aria-label="user tabs"
         >
           <Tab label="전체" value="All" {...a11yProps('All')} />
-          <Tab
-            label="작성한 질문"
-            value="CustomQuestions"
-            {...a11yProps('CustomQuestions')}
-          />
-          <Tab label="작성한 답변" value="Q&A" {...a11yProps('Q&A')} />
+          <Tab label="나의 Q&A" value="Q&A" {...a11yProps('Q&A')} />
           <Tab
             label="아무말 대잔치"
             value="Articles"
             {...a11yProps('Articles')}
+          />
+          <Tab
+            label="작성한 질문"
+            value="CustomQuestions"
+            {...a11yProps('CustomQuestions')}
           />
         </Tabs>
       </AppBar>
@@ -176,6 +180,7 @@ export default function UserPage() {
           posts={selectedUserPosts}
           isAppending={isAppending}
           isLoading={isLoading}
+          isFriendOrMyPage={isFriendOrMyPage}
         />
         <div ref={setTarget} />
       </TabPanel>
@@ -184,6 +189,7 @@ export default function UserPage() {
           posts={userResponses}
           isAppending={isAppending}
           isLoading={isLoading}
+          isFriendOrMyPage={isFriendOrMyPage}
         />
         <div ref={setTarget} />
       </TabPanel>
@@ -192,6 +198,7 @@ export default function UserPage() {
           posts={userArticles}
           isAppending={isAppending}
           isLoading={isLoading}
+          isFriendOrMyPage={isFriendOrMyPage}
         />
         <div ref={setTarget} />
       </TabPanel>
@@ -200,6 +207,7 @@ export default function UserPage() {
           posts={userQuestions}
           isAppending={isAppending}
           isLoading={isLoading}
+          isFriendOrMyPage={isFriendOrMyPage}
         />
         <div ref={setTarget} />
       </TabPanel>

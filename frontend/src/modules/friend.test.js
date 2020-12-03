@@ -134,8 +134,6 @@ describe('Friend Reducer', () => {
     const newState = friendReducer(undefined, {}); // initialize
     expect(newState).toEqual({
       friendList: [],
-      selectedUser: {},
-      selectedUserPosts: [],
       friendRequestError: false
     });
   });
@@ -144,8 +142,6 @@ describe('Friend Reducer', () => {
     const newState = friendReducer(
       {
         friendList: [],
-        selectedUser: {},
-        selectedUserPosts: [],
         friendRequestError: false
       },
       {
@@ -155,8 +151,6 @@ describe('Friend Reducer', () => {
     );
     expect(newState).toMatchObject({
       friendList: mockFriendList,
-      selectedUser: {},
-      selectedUserPosts: [],
       friendRequestError: false
     });
   });
@@ -165,8 +159,6 @@ describe('Friend Reducer', () => {
     const newState = friendReducer(
       {
         friendList: mockFriendList,
-        selectedUser: {},
-        selectedUserPosts: [],
         friendRequestError: false
       },
       {
@@ -179,8 +171,6 @@ describe('Friend Reducer', () => {
 
     expect(newState).toMatchObject({
       friendList: newFriendList,
-      selectedUser: {},
-      selectedUserPosts: [],
       friendRequestError: false
     });
   });
@@ -189,8 +179,6 @@ describe('Friend Reducer', () => {
     const newState = friendReducer(
       {
         friendList: mockFriendList,
-        selectedUser: {},
-        selectedUserPosts: [],
         friendRequestError: false
       },
       {
@@ -201,8 +189,6 @@ describe('Friend Reducer', () => {
 
     expect(newState).toMatchObject({
       friendList: mockFriendList,
-      selectedUser: {},
-      selectedUserPosts: [],
       friendRequestError: 'error'
     });
   });

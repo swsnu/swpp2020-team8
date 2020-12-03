@@ -15,6 +15,12 @@ describe('Sign up page unit test', () => {
   jest.mock('axios');
 
   // axios.get.mockResolvedValue([]);
+  jest.spyOn(axios, 'get').mockImplementation(() => {
+    return new Promise((resolve) => {
+      resolve();
+    });
+  });
+
   jest.spyOn(axios, 'post').mockImplementation(() => {
     return new Promise((resolve) => {
       const result = { data: {} };
