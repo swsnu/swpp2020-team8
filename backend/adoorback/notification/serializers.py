@@ -2,21 +2,24 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
 from notification.models import Notification
+from feed.models import Question
 from account.serializers import AuthorFriendSerializer, AuthorAnonymousSerializer
-
 
 User = get_user_model()
 
 
 class NotificationSerializer(serializers.ModelSerializer):
-
-    actor = serializers.HyperlinkedIdentityField(
-        view_name='user-detail', read_only=True)
+    is_response_request = serializers.SerializerMethodField(read_only=True)
+    is_friend_request = serializers.SerializerMethodField(read_only=True)
     actor_detail = serializers.SerializerMethodField(read_only=True)
-    target_type = serializers.SerializerMethodField()
-    target_id = serializers.IntegerField()
-    origin_type = serializers.SerializerMethodField()
-    origin_id = serializers.IntegerField()
+    question_content = serializers.SerializerMethodField(read_only=True)
+    is_read = serializers.BooleanField(required=True)
+
+    def get_is_response_request(self, obj):
+        return obj.target.type == 'ResponseRequest'
+
+    def get_is_friend_request(self, obj):
+        return obj.target.type == 'FriendRequest'
 
     def get_actor_detail(self, obj):
         if User.are_friends(self.context.get('request', None).user, obj.actor):
@@ -25,14 +28,26 @@ class NotificationSerializer(serializers.ModelSerializer):
             return AuthorFriendSerializer(obj.actor).data
         return AuthorAnonymousSerializer(obj.actor).data
 
-    def get_target_type(self, obj):
-        return obj.target.type
+    def get_question_content(self, obj):
+        content = None
+        if obj.target.type == 'ResponseRequest' or obj.target.type == 'Response':
+            content = obj.target.question.content
+        # if question/response was deleted
+        elif obj.redirect_url[:11] == '/questions/' and obj.target.type != 'Like':
+            content = Question.objects.get(id=int(obj.redirect_url[11:]))
+        else:
+            return content
+        return content if len(content) <= 30 else content[:30] + '...'
 
-    def get_origin_type(self, obj):
-        return obj.origin.type
+    def validate(self, data):
+        unknown = set(self.initial_data) - set(self.fields)
+        if unknown:
+            raise serializers.ValidationError("이 필드는 뭘까요...: {}".format(", ".join(unknown)))
+        if not data.get('is_read'):
+            raise serializers.ValidationError("이미 읽은 노티를 안 읽음 표시할 수 없습니다...")
+        return data
 
     class Meta:
         model = Notification
-        fields = ['id', 'message', 'actor', 'actor_detail',
-                  'target_type', 'target_id', 'origin_type', 'origin_id',
-                  'is_visible', 'is_read', 'created_at', 'updated_at']
+        fields = ['id', 'is_response_request', 'is_friend_request', 'actor_detail',
+                  'message', 'question_content', 'is_read', 'created_at', 'redirect_url']

@@ -4,7 +4,7 @@ import Cookies from 'js.cookie';
 // eslint-disable-next-line import/no-cycle
 
 const instance = axios.create({
-  baseURL: 'http://localhost:3000/api/',
+  baseURL: 'http://localhost:8000/api/',
   withCredentials: true
 });
 

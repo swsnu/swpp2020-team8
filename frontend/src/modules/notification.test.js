@@ -1,11 +1,38 @@
 import axios from '../apis';
 import store from '../store';
 import { mockNotifications } from '../constants';
-import * as actionCreators from './notification';
+import notiReducer, * as actionCreators from './notification';
 
 describe('notificationActions', () => {
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  it('should not modify when append notis fail', async (done) => {
+    jest.mock('axios');
+
+    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const res = {
+          data: {
+            results: mockNotifications,
+            next: 'next url'
+          }
+        };
+        resolve(res);
+      });
+    });
+
+    await store.dispatch(actionCreators.getNotifications());
+    store.dispatch(actionCreators.appendNotifications()).then(() => {
+      const newState = store.getState();
+      expect(spy).toHaveBeenCalled();
+      expect(newState.notiReducer.receivedNotifications).toMatchObject([
+        ...mockNotifications,
+        ...mockNotifications
+      ]);
+      done();
+    });
   });
 
   it(`'getNotifications' should get notification correctly`, (done) => {
@@ -120,6 +147,42 @@ describe('notificationActions', () => {
       expect(newState.notiReducer.receivedNotifications).toMatchObject(
         mockNotifications
       );
+    });
+  });
+
+  it('should add noti to notis when append success', () => {
+    const newState = notiReducer(
+      {
+        receivedNotifications: mockNotifications,
+        next: 'testurl'
+      },
+      {
+        type: actionCreators.APPEND_NOTIFICATIONS_SUCCESS,
+        results: mockNotifications,
+        next: null
+      }
+    );
+    expect(newState).toEqual({
+      receivedNotifications: [...mockNotifications, ...mockNotifications],
+      next: null
+    });
+  });
+
+  it('should not add noti to notis when append fails', () => {
+    const newState = notiReducer(
+      {
+        receivedNotifications: mockNotifications,
+        next: 'testurl'
+      },
+      {
+        type: actionCreators.APPEND_NOTIFICATIONS_FAILURE,
+        results: mockNotifications,
+        next: null
+      }
+    );
+    expect(newState).toEqual({
+      receivedNotifications: mockNotifications,
+      next: 'testurl'
     });
   });
 });

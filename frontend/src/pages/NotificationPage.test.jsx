@@ -12,6 +12,15 @@ import NotificationPage from './NotificationPage';
 import 'jest-styled-components';
 import history from '../history';
 
+const observe = jest.fn();
+const unobserve = jest.fn();
+const disconnect = jest.fn();
+window.IntersectionObserver = jest.fn(() => ({
+  observe,
+  unobserve,
+  disconnect
+}));
+
 describe('<NotificationPage /> unit mount test', () => {
   const store = createStore(
     rootReducer,

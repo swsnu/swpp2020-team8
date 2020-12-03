@@ -5,7 +5,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import ShareSettings from './ShareSettings';
 
 const NewPostWrapper = styled.div`
-  width: 100%;
+  @media (max-width: 650px) {
+    width: 100%;
+    box-shadow: 0 2px 2px rgba(154, 160, 185, 0.05),
+      0 5px 5px rgba(166, 173, 201, 0.1);
+  }
+  width: 650px;
   margin: 0 auto;
   border: 1px solid #eee;
   padding: 10px;
@@ -56,6 +61,7 @@ export default function NewPost() {
         id="new-post-input"
         name="content"
         placeholder="떠오르는 생각을 공유해주세요."
+        style={{ height: '70px' }}
         value={postInfo.content}
         onChange={onInputChange}
         className={classes.textarea}

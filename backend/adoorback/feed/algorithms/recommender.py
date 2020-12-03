@@ -206,7 +206,6 @@ def create_ranks_csv():
     print('Evaluating Popularity recommendation model...')
     pop_global_metrics, pop_detailed_results_df = model_evaluator.evaluate_model(popularity_model)
 
-
     def getNVM_lemma(text):
         tokenizer = MeCab.Tagger()
         parsed = tokenizer.parse(text)

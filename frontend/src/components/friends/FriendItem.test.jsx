@@ -1,6 +1,9 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, mount } from 'enzyme';
+import { Router } from 'react-router-dom';
+
 import FriendItem from './FriendItem';
+import history from '../../history';
 import 'jest-styled-components';
 
 const mockFriend = {
@@ -14,9 +17,17 @@ describe('<FriendItem/>', () => {
   });
 
   it('should change margin when isWidget is true', () => {
-    const component = shallow(<FriendItem friendObj={mockFriend} isWidget />);
+    // const component = shallow(<FriendItem friendObj={mockFriend} isWidget />);
+    const component = mount(
+      <Router history={history}>
+        <FriendItem friendObj={mockFriend} isWidget />
+      </Router>
+    );
     expect(component.length).toBe(1);
     const wrapper = component.find('FriendItemWrapper').at(0);
+    history.push = jest.fn();
+    wrapper.simulate('click');
+
     expect(wrapper).toHaveStyleRule('margin', '8px 16px');
   });
 

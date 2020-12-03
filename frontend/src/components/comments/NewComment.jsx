@@ -80,7 +80,7 @@ export default function NewComment({
       <Button
         onClick={handleSubmit}
         id="submit-button"
-        style={{ padding: '4px', minWidth: '50px', marginLeft: '3px' }}
+        style={{ padding: '4px', minWidth: '30px', marginLeft: '3px' }}
         color="secondary"
       >
         작성

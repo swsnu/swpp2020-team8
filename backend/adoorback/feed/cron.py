@@ -1,6 +1,6 @@
 from django_cron import CronJobBase, Schedule
 
-from feed.algorithms.data_crawler import select_daily_questions,\
+from feed.algorithms.data_crawler import select_daily_questions, \
     create_question_csv, create_user_csv
 from feed.algorithms.recommender import create_ranks_csv
 

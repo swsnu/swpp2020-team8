@@ -9,8 +9,7 @@ from feed.models import Article, Response, Question, Post, ResponseRequest
 from notification.models import Notification
 
 from adoorback.utils.seed import set_seed, fill_data
-from adoorback.utils.content_types import get_response_type
-
+from adoorback.content_types import get_response_type
 
 User = get_user_model()
 N = 10
@@ -26,7 +25,7 @@ class FeedTestCase(TestCase):
         self.assertEqual(Question.objects.custom_questions_only().count(), N)
         self.assertLessEqual(Question.objects.daily_questions().count(), 30)
         self.assertEqual(Response.objects.count(), N)
-        self.assertEqual(Post.objects.count(), N*4)
+        self.assertEqual(Post.objects.count(), N * 4)
 
     def test_feed_str(self):
         article = Article.objects.create(author_id=1, content="test_content")
@@ -64,7 +63,7 @@ class FeedTestCase(TestCase):
         response.save()
 
         self.assertEqual(Post.objects.filter(content_type=get_response_type(),
-                                                   object_id=response.id).last().content, response.content)
+                                             object_id=response.id).last().content, response.content)
 
     # post content must be removed along with target
     def test_post_delete(self):
@@ -77,6 +76,13 @@ class FeedTestCase(TestCase):
 class ResponseRequestTestCase(TestCase):
     def setUp(self):
         set_seed(N)
+
+    def test_feed_str(self):
+        response_request = ResponseRequest.objects.last()
+        self.assertEqual(response_request.__str__(),
+                         f'{response_request.requester} '
+                         f'sent ({response_request.question}) '
+                         f'to {response_request.requestee}')
 
     def test_response_request_count(self):
         self.assertGreater(ResponseRequest.objects.count(), 0)  # due to unique constraint
@@ -108,6 +114,7 @@ class ResponseRequestTestCase(TestCase):
 
         question.delete()
         self.assertEqual(ResponseRequest.objects.filter(question_id=question.id).count(), 0)
+
 
 class APITestCase(TestCase):
     client_class = APIClient
@@ -149,6 +156,12 @@ class PostAPITestCase(APITestCase):
             self.assertEqual(response.data['count'], 3)
             self.assertEqual(response.data['results'][0]['share_anonymously'], True)
 
+
+class UserFeedTestCase(APITestCase):
+
+    def setUp(self):
+        set_seed(N)
+
     def test_user_feed(self):
         current_user = self.make_user(username='current_user')
         friend_user = self.make_user(username='friend_user')
@@ -159,10 +172,17 @@ class PostAPITestCase(APITestCase):
         Article.objects.create(author_id=fid, content="test_article")
         Article.objects.create(author_id=fid, content="test_article", share_with_friends=False)
 
-        user_id = User.objects.last().id
+        # user feed of friend
+        current_user.friends.add(friend_user)
         with self.login(username=current_user.username, password='password'):
-            response = self.get(self.reverse('user-feed-post-list', pk=user_id))
+            response = self.get(self.reverse('user-feed-post-list', pk=friend_user.id))
+            self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data['count'], 3)
+
+        # user feed of non-friend
+        with self.login(username=current_user.username, password='password'):
+            response = self.get(self.reverse('user-feed-post-list', pk=1))
+            self.assertEqual(response.status_code, 403)
 
 
 class ArticleAPITestCase(APITestCase):
@@ -173,17 +193,19 @@ class ArticleAPITestCase(APITestCase):
 
         with self.login(username=current_user.username, password='password'):
             data = {"content": "test content", "share_anonymously": True}
-            response = self.post('article-list', data=data)
+            response = self.post('article-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
 
         article_id = Article.objects.last().id
         data = {"content": "modified content"}
         with self.login(username=current_user.username, password='password'):
-            response = self.patch(self.reverse('article-detail', pk=article_id), data=data)
+            response = self.patch(self.reverse('article-detail', pk=article_id),
+                                  data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 200)
 
         with self.login(username=spy_user.username, password='password'):
-            response = self.patch(self.reverse('article-detail', pk=article_id), data=data)
+            response = self.patch(self.reverse('article-detail', pk=article_id),
+                                  data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 403)
 
         # anonymous
@@ -202,19 +224,21 @@ class QuestionAPITestCase(APITestCase):
         # seed
         with self.login(username=current_user.username, password='password'):
             data = {"content": "test content", "is_admin_question": True}
-            response = self.post('question-list', data=data)
+            response = self.post('question-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
 
         question_id = Question.objects.last().id
 
         data = {"content": "modified content"}
         with self.login(username=current_user.username, password='password'):
-            response = self.patch(self.reverse('question-detail', pk=question_id), data=data)
+            response = self.patch(self.reverse('question-detail', pk=question_id),
+                                  data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 200)
 
         # not allowed
         with self.login(username=spy_user.username, password='password'):
-            response = self.patch(self.reverse('question-detail', pk=question_id), data=data)
+            response = self.patch(self.reverse('question-detail', pk=question_id),
+                                  data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 403)
 
     def test_question_detail(self):
@@ -224,22 +248,22 @@ class QuestionAPITestCase(APITestCase):
         # seed
         with self.login(username=current_user.username, password='password'):
             data = {"content": "test content", "is_admin_question": True}
-            response = self.post('question-list', data=data)
+            response = self.post('question-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
 
         question_id = Question.objects.last().id
         with self.login(username=current_user.username, password='password'):
             data = {"content": "test content", "question_id": question_id,
                     "share_with_friends": True, "share_anonymously": True}
-            response = self.post('response-list', data=data)
+            response = self.post('response-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
             data = {"content": "test content", "question_id": question_id,
                     "share_with_friends": True, "share_anonymously": False}
-            response = self.post('response-list', data=data)
+            response = self.post('response-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
             data = {"content": "test content", "question_id": question_id,
                     "share_with_friends": False, "share_anonymously": True}
-            response = self.post('response-list', data=data)
+            response = self.post('response-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
 
         # accessible question detail - anonymous
@@ -282,22 +306,24 @@ class ResponseAPITestCase(APITestCase):
         with self.login(username=current_user.username, password='password'):
             question = Question.objects.create(author_id=1, content="test_question", is_admin_question=False)
             data = {"content": "test content", "question_id": question.id, "share_anonymously": True}
-            response = self.post('response-list', data=data)
+            response = self.post('response-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
             self.assertEqual(response.data['question_id'], Response.objects.last().question_id)
 
         response_id = Response.objects.last().id
         data = {"content": "modified content"}
         with self.login(username=current_user.username, password='password'):
-            response = self.patch(self.reverse('response-detail', pk=response_id), data=data)
+            response = self.patch(self.reverse('response-detail', pk=response_id),
+                                  data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data['question_id'], Question.objects.last().id)
 
         with self.login(username=spy_user.username, password='password'):
-            response = self.patch(self.reverse('response-detail', pk=response_id), data=data)
+            response = self.patch(self.reverse('response-detail', pk=response_id),
+                                  data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 403)
 
-        # anonymous
+        # anonymous author profile in detail page
         with self.login(username=spy_user.username, password='password'):
             response = self.get(self.reverse('response-detail', pk=response_id))
             self.assertEqual(response.status_code, 200)
@@ -351,9 +377,9 @@ class ResponseRequestAPITestCase(APITestCase):
         friend_user_2 = self.make_user(username='friend_user_2')
 
         question_1 = Question.objects.create(author_id=current_user.id,
-                                            content="test_question", is_admin_question=False)
+                                             content="test_question", is_admin_question=False)
         question_2 = Question.objects.create(author_id=current_user.id,
-                                            content="test_question", is_admin_question=False)
+                                             content="test_question", is_admin_question=False)
 
         prev_noti_count = Notification.objects.count()
         ResponseRequest.objects.create(requester=current_user, requestee=friend_user_1, question=question_1)
@@ -374,18 +400,29 @@ class ResponseRequestAPITestCase(APITestCase):
         question = Question.objects.create(author_id=current_user.id, content="test_question", is_admin_question=False)
         ResponseRequest.objects.create(requester=friend_user, requestee=current_user, question=question)
         current_user.friends.add(friend_user)
-        adoor_received_response_request = ResponseRequest.objects.create(requester=current_user,
-                                                                         requestee=user_adoor, question=question)
 
-        # POST - send response request to non-friends
+        # POST - send response request to friend
         data = {"requester_id": current_user.id, "requestee_id": friend_user.id, "question_id": question.id}
         with self.login(username=current_user.username, password='password'):
-            response = self.post('response-request-create', data=data)
+            response = self.post('response-request-create', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
 
+        # POST - send response request to non-friend (not allowed)
+        data = {"requester_id": user_adoor.id, "requestee_id": current_user.id, "question_id": question.id}
+        with self.login(username=user_adoor.username, password='adoor2020:)'):
+            response = self.post('response-request-create', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 403)
+
+        # POST - send response request as someone else (not allowed)
+        data = {"requester_id": user_adoor.id, "requestee_id": current_user.id, "question_id": question.id}
+        with self.login(username=friend_user.username, password='password'):
+            response = self.post('response-request-create', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 403)
+
+        adoor_received_response_request = ResponseRequest.objects.create(requester=current_user,
+                                                                         requestee=user_adoor, question=question)
         qid = adoor_received_response_request.question.id
         rid = user_adoor.id
-        question_last_id = Question.objects.last().id
 
         # DELETE - actor
         with self.login(username=current_user.username, password='password'):
@@ -402,3 +439,81 @@ class ResponseRequestAPITestCase(APITestCase):
         with self.login(username=current_user.username, password='password'):
             response = self.patch(self.reverse('response-request-destroy', qid=qid, rid=rid))
             self.assertEqual(response.status_code, 405)
+
+
+class ResponseRequestNotiAPITestCase(APITestCase):
+
+    def setUp(self):
+        set_seed(N)
+
+    def test_response_request_noti(self):
+        current_user = self.make_user(username='current_user')
+        friend_user = self.make_user(username='friend_user')
+
+        question = Question.objects.create(author_id=current_user.id,
+                                           content="test_question", is_admin_question=False)
+
+        # POST - send response request (current_user -> friend_user)
+        data = {"requester_id": current_user.id, "requestee_id": friend_user.id, "question_id": question.id}
+        with self.login(username=current_user.username, password='password'):
+            num_noti_before = Notification.objects.count()
+            # requester - requestee must be friends
+            current_user.friends.add(friend_user)
+            response = self.post('response-request-create', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 201)
+
+            num_noti_after = Notification.objects.count()
+            self.assertEqual(num_noti_after, num_noti_before + 1)
+            response_request_noti = Notification.objects.first()
+            self.assertEqual(response_request_noti.user, friend_user)
+            self.assertEqual(response_request_noti.actor, current_user)
+            self.assertEqual(response_request_noti.message, "current_user님이 회원님에게 질문을 보냈습니다.")
+            self.assertEqual(response_request_noti.redirect_url, f'/questions/{question.id}')
+
+        # mutliple response requests to a user on a question
+        random_user_1 = self.make_user(username='random_user_1')
+        random_user_2 = self.make_user(username='random_user_2')
+        random_user_3 = self.make_user(username='random_user_3')
+        friend_user.friends.add(random_user_1, random_user_2, random_user_3)  # must be friends
+
+        data = {"requester_id": random_user_1.id, "requestee_id": friend_user.id, "question_id": question.id}
+        with self.login(username=random_user_1.username, password='password'):
+            response = self.post('response-request-create', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 201)
+
+        data = {"requester_id": random_user_2.id, "requestee_id": friend_user.id, "question_id": question.id}
+        with self.login(username=random_user_2.username, password='password'):
+            response = self.post('response-request-create', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 201)
+
+        data = {"requester_id": random_user_3.id, "requestee_id": friend_user.id, "question_id": question.id}
+        with self.login(username=random_user_3.username, password='password'):
+            response = self.post('response-request-create', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 201)
+
+        # POST - response to response request
+        # (requesters: current_user, random_user_1, random_user_2, random_user_3)
+        with self.login(username=friend_user.username, password='password'):
+            num_noti_before = Notification.objects.count()
+            data = {"content": "test content", "question_id": question.id, "share_anonymously": True}
+            response = self.post('response-list', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 201)
+
+            num_noti_after = Notification.objects.count()
+            self.assertEqual(num_noti_before, num_noti_after)  # 4개의 답변 관련 노티 생성, 4개의 요청 관련 노티 삭제 -> 변화 X
+
+            self.assertEqual(Response.objects.last().response_targetted_notis.count(), 4)  # 요청자 각각에게
+            self.assertEqual(Notification.objects.first().user, random_user_3)
+            self.assertEqual(Notification.objects.first().message, 'friend_user님이 회원님이 보낸 질문에 답했습니다.')
+
+        # PATCH - modifying response should not create a new notification
+        response_id = Response.objects.last().id
+        data = {"content": "modified content"}
+        with self.login(username=friend_user.username, password='password'):
+            num_noti_before = Notification.objects.count()
+            response = self.patch(self.reverse('response-detail', pk=response_id),
+                                  data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 200)
+
+            num_noti_after = Notification.objects.count()
+            self.assertEqual(num_noti_before, num_noti_after)

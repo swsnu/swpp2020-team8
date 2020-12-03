@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 
 from feed.models import Question
+from notification.models import Notification
+from adoorback.content_types import get_response_request_type
 
 
 def select_daily_questions():
@@ -13,7 +15,7 @@ def select_daily_questions():
     if questions.count() < 30:
         Question.objects.update(selected_date=None)
     questions |= Question.objects.filter(
-        selected_date__isnull=True).order_by('?')[:(30-questions.count())]
+        selected_date__isnull=True).order_by('?')[:(30 - questions.count())]
     for question in questions:
         question.selected_date = timezone.now()
         question.save()
@@ -62,4 +64,7 @@ def create_user_csv():
             row = "LIKED," + str(question.id) + "," + str(like_obj.user.id)
             writer.writerow([c.strip() for c in row.strip(',').split(',')])
 
-    # TODO: Add response request
+    for notification in Notification.objects.prefetch_related('origin').filter(
+            target_type=get_response_request_type()):
+        row = "REQUESTED," + str(notification.origin_id) + "," + str(notification.actor_id)
+        writer.writerow([c.strip() for c in row.strip(',').split(',')])

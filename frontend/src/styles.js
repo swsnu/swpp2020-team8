@@ -24,6 +24,17 @@ export const GlobalStyle = createGlobalStyle`
   ::-webkit-scrollbar {
     display: none;
   }
+  .MuiBottomNavigationAction-label.Mui-selected {
+    font-size: 0.8rem !important;
+  }
+  
+  .MuiDialog-paperFullWidth {
+    @media (max-width: 650px) {
+      position: fixed !important;
+      top: 20% !important;
+      width: calc(100% - 16px) !important;
+    }
+  }
 `;
 
 export const CommonInput = styled.input`
@@ -47,12 +58,20 @@ export const CommonInput = styled.input`
 `;
 
 export const MainWrapper = styled.main`
+  @media (max-width: 650px) {
+    width: 100vw;
+    margin-top: 70px;
+  }
   width: 1280px;
   margin: 80px auto 100px auto;
   display: flex;
 `;
 
 export const FeedWrapper = styled.div`
+  @media (max-width: 650px) {
+    width: 100vw;
+    margin: 0 12px;
+  }
   width: 720px;
   margin: 0 40px;
 `;
@@ -60,6 +79,9 @@ export const FeedWrapper = styled.div`
 export const WidgetWrapper = styled.div`
   width: 300px;
   transform: 'translateX(-10px)';
+  @media (max-width: 650px) {
+    width: 95vw;
+  }
 `;
 
 export const WidgetTitleWrapper = styled.div`
@@ -110,6 +132,10 @@ export const PostItemButtonsWrapper = styled.div`
 `;
 
 export const PostItemWrapper = styled.div`
+  @media (max-width: 650px) {
+    box-shadow: 0 2px 2px rgba(154, 160, 185, 0.05),
+      0 5px 5px rgba(166, 173, 201, 0.1);
+  }
   background: #fff;
   padding: 16px;
   font-size: 14px;

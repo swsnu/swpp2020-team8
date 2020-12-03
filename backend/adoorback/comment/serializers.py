@@ -6,7 +6,6 @@ from comment.models import Comment
 from adoorback.serializers import AdoorBaseSerializer
 from account.serializers import AuthorFriendSerializer, AuthorAnonymousSerializer
 
-
 User = get_user_model()
 
 
@@ -18,13 +17,17 @@ class RecursiveReplyField(serializers.Serializer):
 
 class CommentBaseSerializer(AdoorBaseSerializer):
     is_reply = serializers.SerializerMethodField(read_only=True)
+    target_id = serializers.SerializerMethodField()
 
     def get_is_reply(self, obj):
         return obj.target.type == 'Comment'
 
+    def get_target_id(self, obj):
+        return obj.object_id
+
     class Meta(AdoorBaseSerializer.Meta):
         model = Comment
-        fields = AdoorBaseSerializer.Meta.fields + ['is_reply', 'is_private']
+        fields = AdoorBaseSerializer.Meta.fields + ['is_reply', 'is_private', 'target_id']
 
 
 class CommentFriendSerializer(CommentBaseSerializer):

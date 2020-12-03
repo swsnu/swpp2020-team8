@@ -5,7 +5,7 @@ from comment.models import Comment
 from comment.serializers import CommentFriendSerializer
 
 from adoorback.permissions import IsAuthorOrReadOnly
-from adoorback.utils.content_types import get_generic_relation_type
+from adoorback.content_types import get_generic_relation_type
 
 
 class CommentList(generics.ListCreateAPIView):

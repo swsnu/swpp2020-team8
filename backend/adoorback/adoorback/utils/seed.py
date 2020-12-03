@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from faker import Faker
 
-from adoorback.utils.content_types import get_comment_type
+from adoorback.content_types import get_comment_type
 from account.models import FriendRequest
 from feed.models import Article, Response, Question, ResponseRequest
 from comment.models import Comment
@@ -86,15 +86,10 @@ def set_seed(n):
 
     # Seed Response Request
     for i in range(n):
-        question = Question.objects.get(id=i+1)
-        random_actor_id = random.choice([1, 2, 3])
-
-        random_recipient_id = random.choice(
-            [i for i in range(1, 3) if i not in [random_actor_id]])
-        requester = User.objects.get(id=random_actor_id)
-        requestee = User.objects.get(id=random_recipient_id)
-        ResponseRequest.objects.create(
-            requester=requester, requestee=requestee, question=question)
+        question = random.choice(questions)
+        requester = random.choice(users)
+        requestee = random.choice(users.exclude(id=requester.id))
+        ResponseRequest.objects.get_or_create(requester=requester, requestee=requestee, question=question)
     logging.info(
         f"{ResponseRequest.objects.count()} ResponseRequest(s) created!") if DEBUG else None
 
@@ -142,18 +137,17 @@ def set_seed(n):
     logging.info(
         f"{Like.objects.count()} Like(s) created!") if DEBUG else None
 
-    # Seed Friendship
+    # Seed Friend Request
     user_1 = User.objects.get(id=1)
     user_2 = User.objects.get(id=2)
     user_3 = User.objects.get(id=3)
 
-    # Seed Friend Request
-    FriendRequest.objects.create(requester=user_2, requestee=user_1)
     FriendRequest.objects.create(requester=user_3, requestee=user_1)
     FriendRequest.objects.create(requester=user_3, requestee=user_2)
-    accepted_friend_request = FriendRequest.objects.first()
-    accepted_friend_request.accepted = True
-    accepted_friend_request.save()
+
+    # Seed Friendship
+    user_1.friends.add(user_2)
+
 
 
 def fill_data():
@@ -167,13 +161,16 @@ def fill_data():
     comments = Comment.objects.all()
     responses = Response.objects.all()
     posts = random.choice([articles, questions, responses])
-    for user in User.objects.all():
+    for user in users:
         Article.objects.create(author=user, content=faker.catch_phrase()) \
             if user.article_set.count() == 0 else None
         Question.objects.create(author=user, content=faker.catch_phrase(), is_admin_question=False) \
             if user.question_set.count() == 0 else None
         Response.objects.create(author=user, content=faker.catch_phrase(), question=random.choice(questions)) \
             if user.response_set.count() == 0 else None
+        ResponseRequest.objects.create(requester=random.choice(users.exclude(id=user.id)),
+                                       requestee=user, question=random.choice(questions)) \
+            if user.received_response_request_set.count() == 0 else None
         Comment.objects.create(author=user, content=faker.catch_phrase(), target=random.choice(articles)) \
             if Comment.objects.comments_only().filter(author=user).count() == 0 else None
         Comment.objects.create(author=user, content=faker.catch_phrase(), target=random.choice(comments)) \

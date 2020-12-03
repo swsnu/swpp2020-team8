@@ -44,12 +44,28 @@ function a11yProps(index) {
   };
 }
 
+const MobileTabPanel = styled(TabPanel)`
+  @media (max-width: 650px) {
+    padding: 0 !important;
+
+    .MuiBox-root {
+      padding: 0 !important;
+    }
+  }
+`;
+
 const UserPageWrapper = styled.div`
   background: #ffffff;
   height: 120px;
   text-align: center;
   padding-top: 50px;
   margin-bottom: 20px;
+`;
+
+const MobileWrapper = styled.div`
+  @media (max-width: 650px) {
+    border: none !important;
+  }
 `;
 
 const useStyles = makeStyles((theme) => ({
@@ -131,7 +147,7 @@ export default function UserPage() {
   };
 
   return (
-    <div className={classes.root}>
+    <MobileWrapper className={classes.root}>
       <Container fixed>
         <UserPageWrapper>
           <FaceIcon
@@ -140,14 +156,17 @@ export default function UserPage() {
             }}
           />
           <h3 margin-bottom="10px">{selectedUser?.username}</h3>
-          {selectedUser && selectedUser.id !== currentUser?.id && (
-            <FriendStatusButtons
-              friendObj={selectedUser}
-              isFriend={selectedUser.are_friends}
-              isPending={selectedUser.received_friend_request_from}
-              hasSentRequest={selectedUser.sent_friend_request_to}
-            />
-          )}
+          <div>
+            {selectedUser && (
+              <FriendStatusButtons
+                isUserPage
+                friendObj={selectedUser}
+                isFriend={selectedUser.are_friends}
+                isPending={selectedUser.received_friend_request_from}
+                hasSentRequest={selectedUser.sent_friend_request_to}
+              />
+            )}
+          </div>
         </UserPageWrapper>
       </Container>
       <AppBar position="static" className={classes.header}>
@@ -172,7 +191,7 @@ export default function UserPage() {
           />
         </Tabs>
       </AppBar>
-      <TabPanel value={value} index="All">
+      <MobileTabPanel value={value} index="All">
         <UserPostList
           posts={selectedUserPosts}
           isAppending={isAppending}
@@ -180,8 +199,8 @@ export default function UserPage() {
           isFriendOrMyPage={isFriendOrMyPage}
         />
         <div ref={setTarget} />
-      </TabPanel>
-      <TabPanel value={value} index="Q&A">
+      </MobileTabPanel>
+      <MobileTabPanel value={value} index="Q&A">
         <UserPostList
           posts={userResponses}
           isAppending={isAppending}
@@ -189,8 +208,8 @@ export default function UserPage() {
           isFriendOrMyPage={isFriendOrMyPage}
         />
         <div ref={setTarget} />
-      </TabPanel>
-      <TabPanel value={value} index="Articles">
+      </MobileTabPanel>
+      <MobileTabPanel value={value} index="Articles">
         <UserPostList
           posts={userArticles}
           isAppending={isAppending}
@@ -198,8 +217,8 @@ export default function UserPage() {
           isFriendOrMyPage={isFriendOrMyPage}
         />
         <div ref={setTarget} />
-      </TabPanel>
-      <TabPanel value={value} index="CustomQuestions">
+      </MobileTabPanel>
+      <MobileTabPanel value={value} index="CustomQuestions">
         <UserPostList
           posts={userQuestions}
           isAppending={isAppending}
@@ -207,7 +226,7 @@ export default function UserPage() {
           isFriendOrMyPage={isFriendOrMyPage}
         />
         <div ref={setTarget} />
-      </TabPanel>
-    </div>
+      </MobileTabPanel>
+    </MobileWrapper>
   );
 }

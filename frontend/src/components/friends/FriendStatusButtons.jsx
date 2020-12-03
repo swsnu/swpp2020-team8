@@ -16,6 +16,11 @@ const FriendButton = styled(Button)`
   margin: 0 4px;
 `;
 
+const ButtonsWrapper = styled.div`
+  display: flex;
+  min-width: 150px;
+  justify-content: ${(props) => (props.center ? 'center' : 'flex-end')};
+`;
 // isFriend: 이미 친구
 // isPending: 해당 유저가 나한테 보낸 요청이 있음 => 이 때는 requestId 필수
 // hasSentRequest: 내가 유저한테 보낸 요청이 있음 => 이 때는 requestId 필수
@@ -23,7 +28,8 @@ export default function FriendStatusButtons({
   isFriend,
   isPending,
   hasSentRequest,
-  friendObj
+  friendObj,
+  isUserPage
 }) {
   const dispatch = useDispatch();
   const [isRequestSubmitted, setIsRequestSubmitted] = useState(false);
@@ -68,10 +74,17 @@ export default function FriendStatusButtons({
     setIsRequestSubmitted(true);
   };
 
-  if (friendObj.id === currentUser?.id) return null;
+  if (friendObj.id === currentUser?.id)
+    return (
+      <ButtonsWrapper center={isUserPage && 'true'}>
+        <FriendButton variant="outlined" color="secondary">
+          Me
+        </FriendButton>
+      </ButtonsWrapper>
+    );
   if (isRequestResetted)
     return (
-      <div id={friendObj.id}>
+      <ButtonsWrapper id={friendObj.id} center={isUserPage && 'true'}>
         <FriendButton
           variant="outlined"
           color="primary"
@@ -80,11 +93,11 @@ export default function FriendStatusButtons({
         >
           친구 요청
         </FriendButton>
-      </div>
+      </ButtonsWrapper>
     );
   if (isFriend || isRequestAccepted)
     return (
-      <div id={friendObj.id}>
+      <ButtonsWrapper id={friendObj.id} center={isUserPage && 'true'}>
         <FriendButton
           variant="outlined"
           color="primary"
@@ -106,11 +119,11 @@ export default function FriendStatusButtons({
           onClose={onCancelDeleteFriend}
           isOpen={isDeleteDialogOpen}
         />
-      </div>
+      </ButtonsWrapper>
     );
   if (isPending)
     return (
-      <div id={friendObj.id}>
+      <ButtonsWrapper id={friendObj.id} center={isUserPage && 'true'}>
         <FriendButton
           variant="outlined"
           color="primary"
@@ -127,12 +140,12 @@ export default function FriendStatusButtons({
         >
           거절
         </FriendButton>
-      </div>
+      </ButtonsWrapper>
     );
 
   if (hasSentRequest || isRequestSubmitted)
     return (
-      <div id={friendObj.id}>
+      <ButtonsWrapper id={friendObj.id} center={isUserPage && 'true'}>
         <FriendButton
           variant="outlined"
           color="primary"
@@ -148,11 +161,11 @@ export default function FriendStatusButtons({
         >
           취소
         </FriendButton>
-      </div>
+      </ButtonsWrapper>
     );
 
   return (
-    <div id={friendObj.id}>
+    <ButtonsWrapper id={friendObj.id} center={isUserPage && 'true'}>
       <FriendButton
         variant="outlined"
         color="primary"
@@ -161,6 +174,6 @@ export default function FriendStatusButtons({
       >
         친구 요청
       </FriendButton>
-    </div>
+    </ButtonsWrapper>
   );
 }
