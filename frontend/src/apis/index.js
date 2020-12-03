@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import axios from 'axios';
-import Cookie from 'js.cookie';
+import Cookies from 'js.cookie';
 // eslint-disable-next-line import/no-cycle
 
 const instance = axios.create({
@@ -11,11 +11,40 @@ const instance = axios.create({
 instance.defaults.headers.common['Content-Type'] = 'application/json';
 
 instance.interceptors.request.use((config) => {
-  const token = Cookie.get('csrftoken');
-  config.headers.Authorization = token;
-  config.headers['X-CSRFToken'] = token;
+  const csrf_token = Cookies.get('csrftoken');
+  const jwt_token = Cookies.get('jwt_token_access');
+
+  config.headers.Authorization = jwt_token;
+  config.headers['X-CSRFToken'] = csrf_token;
 
   return config;
 });
 
+instance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const originalRequest = error.config;
+
+    const refresh_token = Cookies.get('jwt_token_refresh');
+    if (error.response.status === 401 && refresh_token) {
+      return instance
+        .post('user/token/refresh/', { refresh: refresh_token })
+        .then((response) => {
+          Cookies.set('jwt_token_refresh', response.data.refresh);
+          Cookies.set('jwt_token_access', response.data.access);
+
+          instance.defaults.headers.Authorization = `${response.data.access}`;
+          originalRequest.headers.Authorization = `${response.data.access}`;
+
+          instance.get('user/me/');
+
+          return instance(originalRequest);
+        })
+        .catch((err, dispatch) => {
+          dispatch({ type: 'user/LOGIN_FAILURE', err });
+        });
+    }
+    return Promise.reject(error);
+  }
+);
 export default instance;

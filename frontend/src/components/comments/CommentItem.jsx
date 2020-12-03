@@ -7,6 +7,7 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import AuthorProfile from '../posts/AuthorProfile';
 import NewComment from './NewComment';
 import { createReply, deleteComment } from '../../modules/post';
+import AlertDialog from '../common/AlertDialog';
 
 const CommentItemWrapper = styled.div`
   display: flex;
@@ -45,6 +46,7 @@ export default function CommentItem({
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const isCommentAuthor = currentUser?.id === commentObj?.author_detail?.id;
   const [isReplyInputOpen, setIsReplyInputOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const dispatch = useDispatch();
   const replyItems = commentObj?.replies?.map((reply) => {
     const isReplyAuthor = currentUser?.id === reply.author_detail?.id;
@@ -74,8 +76,14 @@ export default function CommentItem({
 
   const handleDeleteComment = () => {
     dispatch(deleteComment(commentObj.id, postKey, isReply));
+    setIsDeleteDialogOpen(false);
   };
   const toggleReplyInputOpen = () => setIsReplyInputOpen((prev) => !prev);
+
+  const onCancelDelete = () => {
+    setIsDeleteDialogOpen(false);
+  };
+
   return (
     <>
       <CommentItemWrapper id={commentObj.id}>
@@ -93,7 +101,7 @@ export default function CommentItem({
 
         {isCommentAuthor && (
           <DeleteForeverIcon
-            onClick={handleDeleteComment}
+            onClick={() => setIsDeleteDialogOpen(true)}
             id="delete-comment-icon"
             style={{ margin: '3px', fontSize: '17px', color: '#999' }}
           />
@@ -108,6 +116,12 @@ export default function CommentItem({
             forcePrivate={commentObj.is_private}
           />
         )}
+        <AlertDialog
+          message="정말 삭제하시겠습니까?"
+          onConfirm={handleDeleteComment}
+          onClose={onCancelDelete}
+          isOpen={isDeleteDialogOpen}
+        />
       </div>
     </>
   );
