@@ -1,4 +1,4 @@
-import Cookie from 'js.cookie';
+import Cookies from 'js.cookie';
 import axios from '../apis';
 
 export const GET_CURRENT_USER_REQUEST = 'user/GET_CURRENT_USER_REQUEST';
@@ -40,6 +40,7 @@ export const requestSignUp = (signUpInfo) => {
   return async (dispatch) => {
     dispatch({ type: SIGN_UP_REQUEST });
     try {
+      await axios.get('user/token/anonymous/');
       const { data } = await axios.post('user/signup/', signUpInfo);
       if (data.id) {
         dispatch({
@@ -82,54 +83,49 @@ export const requestLogin = (loginInfo) => {
     try {
       // set jwt token set
       const res = await axios.post('user/token/', loginInfo);
-      Cookie.set('jwt_token_refresh', res.data.refresh);
-      Cookie.set('jwt_token_access', res.data.access);
+      Cookies.set('jwt_token_refresh', res.data.refresh);
+      Cookies.set('jwt_token_access', res.data.access);
 
       // try login
       await axios.post('user/login/', loginInfo);
       // set user info
-      currentUser = await getCurrentUser();
-      dispatch(loginSuccess(currentUser));
-    } catch (err) {
-      dispatch(loginFailure(err));
-      return;
+      const userInfoRes = await axios.get('/user/me/');
+      currentUser = userInfoRes.data;
+      dispatch({ type: 'user/LOGIN_SUCCESS', currentUser });
+    } catch (error) {
+      dispatch({ type: 'user/LOGIN_FAILURE', error });
     }
-    dispatch(loginSuccess(currentUser));
-  };
-};
-
-export const loginSuccess = (currentUser) => {
-  return {
-    type: LOGIN_SUCCESS,
-    currentUser
-  };
-};
-
-export const loginFailure = (error) => {
-  return {
-    type: LOGIN_FAILURE,
-    error
   };
 };
 
 export const logout = () => async (dispatch) => {
-  // localStorage.setItem('user', null);
   dispatch({ type: 'user/LOGOUT_REQUEST' });
   try {
     await axios.get('user/logout');
+    Cookies.remove('jwt_token_refresh');
   } catch (err) {
     dispatch({ type: 'user/LOGOUT_FAILURE', error: err });
   }
-
   dispatch({
     type: 'user/LOGOUT_SUCCESS'
   });
 };
 
-async function getCurrentUser() {
-  const userInfo = await axios.get('/user/me/');
-  return userInfo.data;
-}
+export const getCurrentUser = () => async (dispatch) => {
+  let result;
+  dispatch({ type: 'user/GET_CURRENT_USER_REQUEST' });
+  try {
+    result = await axios.get('/user/me/');
+  } catch (err) {
+    dispatch({ type: 'user/GET_CURRENT_USER_FAILURE', error: err });
+  }
+  if (result) {
+    dispatch({
+      type: 'user/GET_CURRENT_USER_SUCCESS',
+      currentUser: result?.data
+    });
+  }
+};
 
 export const getSelectedUser = (id) => async (dispatch) => {
   let result;
@@ -220,7 +216,6 @@ export default function userReducer(state = initialState, action) {
         selectQuestion: true
       };
     }
-    case GET_CURRENT_USER_REQUEST:
     case GET_CURRENT_USER_SUCCESS: {
       return {
         ...state,
