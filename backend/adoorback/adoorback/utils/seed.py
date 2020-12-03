@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from faker import Faker
 
-from adoorback.utils.content_types import get_comment_type
+from adoorback.content_types import get_comment_type
 from account.models import FriendRequest
 from feed.models import Article, Response, Question, ResponseRequest
 from comment.models import Comment
@@ -86,15 +86,10 @@ def set_seed(n):
 
     # Seed Response Request
     for i in range(n):
-        question = Question.objects.get(id=i+1)
-        random_actor_id = random.choice([1, 2, 3])
-
-        random_recipient_id = random.choice(
-            [i for i in range(1, 3) if i not in [random_actor_id]])
-        requester = User.objects.get(id=random_actor_id)
-        requestee = User.objects.get(id=random_recipient_id)
-        ResponseRequest.objects.create(
-            requester=requester, requestee=requestee, question=question)
+        question = random.choice(questions)
+        requester = random.choice(users)
+        requestee = random.choice(users.exclude(id=requester.id))
+        ResponseRequest.objects.get_or_create(requester=requester, requestee=requestee, question=question)
     logging.info(
         f"{ResponseRequest.objects.count()} ResponseRequest(s) created!") if DEBUG else None
 

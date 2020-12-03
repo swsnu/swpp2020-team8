@@ -43,4 +43,7 @@ node_modules
 
 # db
 /backend/adoorback/db.sqlite3
-/backend/adoorback/feed/algorithms/*.csv
+/backend/adoorback/adoorback/db.sqlite3
+/backend/adoorback/feed/algorithms/question_contents.csv
+/backend/adoorback/feed/algorithms/user_contents.csv
+/backend/adoorback/feed/algorithms/recommendations.csv

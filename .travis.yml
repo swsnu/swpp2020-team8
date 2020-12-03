@@ -65,8 +65,8 @@ matrix:
       install:
         - pip install -r requirements.txt
       script:
-        - coverage run --source='.' --omit='*/migrations/*','manage.py','*/wsgi.py','*/asgi.py','*/utils/' ./manage.py test
-        - coverage run --branch --source='.' --omit='*/migrations/*','manage.py','*/wsgi.py','*/asgi.py','*/utils/' ./manage.py test
+        - coverage run --source='.' --omit='*/migrations/*','adoorback/*','feed/algorithms/*','feed/cron.py','account/cron.py','locust.py','manage.py','*/wsgi.py','*/asgi.py','*/utils/*' ./manage.py test
+        - coverage run --source='.' --branch --omit='*/migrations/*','adoorback/*','feed/algorithms/*','feed/cron.py','account/cron.py','locust.py','manage.py','*/wsgi.py','*/asgi.py','*/utils/*' ./manage.py test
         - coverage report -m
         - rm -r */migrations
         - pylint **/*.py --load-plugins pylint_django

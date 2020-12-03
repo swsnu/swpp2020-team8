@@ -5,7 +5,7 @@ from like.models import Like
 from like.serializers import LikeSerializer
 
 from adoorback.permissions import IsOwnerOrReadOnly
-from adoorback.utils.content_types import get_generic_relation_type
+from adoorback.content_types import get_generic_relation_type
 
 
 class LikeList(generics.ListCreateAPIView):

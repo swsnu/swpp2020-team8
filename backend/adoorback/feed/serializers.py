@@ -5,7 +5,7 @@ from rest_framework.validators import UniqueTogetherValidator
 
 from feed.models import Article, Response, Question, Post, ResponseRequest
 from adoorback.serializers import AdoorBaseSerializer
-from adoorback.settings import BASE_URL
+from adoorback.settings.base import BASE_URL
 from comment.serializers import CommentFriendSerializer
 from account.serializers import AuthorFriendSerializer, AuthorAnonymousSerializer
 
@@ -79,7 +79,7 @@ class QuestionBaseSerializer(AdoorBaseSerializer):
     class Meta(AdoorBaseSerializer.Meta):
         model = Question
         fields = AdoorBaseSerializer.Meta.fields + \
-            ['selected_date', 'is_admin_question']
+                 ['selected_date', 'is_admin_question']
 
 
 class ResponseBaseSerializer(AdoorBaseSerializer):
@@ -102,7 +102,7 @@ class ResponseFriendSerializer(ResponseBaseSerializer):
     class Meta(ResponseBaseSerializer.Meta):
         model = Response
         fields = ResponseBaseSerializer.Meta.fields + \
-            ['author', 'author_detail', 'comments']
+                 ['author', 'author_detail', 'comments']
 
 
 class ResponseAnonymousSerializer(ResponseBaseSerializer):
@@ -131,7 +131,7 @@ class ResponseResponsiveSerializer(ResponseBaseSerializer):
     class Meta(ResponseBaseSerializer.Meta):
         model = Article
         fields = ResponseBaseSerializer.Meta.fields + \
-            ['author', 'author_detail']
+                 ['author', 'author_detail']
 
 
 class QuestionResponsiveSerializer(QuestionBaseSerializer):
@@ -155,7 +155,7 @@ class QuestionResponsiveSerializer(QuestionBaseSerializer):
     class Meta(QuestionBaseSerializer.Meta):
         model = Question
         fields = QuestionBaseSerializer.Meta.fields + \
-            ['author', 'author_detail']
+                 ['author', 'author_detail']
 
 
 class QuestionFriendSerializer(QuestionBaseSerializer):
@@ -172,7 +172,7 @@ class QuestionFriendSerializer(QuestionBaseSerializer):
     class Meta(QuestionBaseSerializer.Meta):
         model = Question
         fields = QuestionBaseSerializer.Meta.fields + \
-            ['author', 'author_detail']
+                 ['author', 'author_detail']
 
 
 class QuestionAnonymousSerializer(QuestionBaseSerializer):
