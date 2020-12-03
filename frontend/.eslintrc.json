@@ -30,7 +30,8 @@
     "react/jsx-filename-extension": [1, { "extensions": [".jsx"] }],
     "react/jsx-props-no-spreading": "off",
     "react/prop-types": "off",
-    "no-case-declarations": "off"
+    "no-case-declarations": "off",
+    "camelcase": "off"
   },
   "globals": {
     "shallow": true,

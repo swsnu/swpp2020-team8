@@ -2,6 +2,7 @@ import json
 
 from django.contrib.auth import get_user_model, authenticate, login
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
+from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import generics
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
@@ -26,6 +27,14 @@ class JSONResponse(HttpResponse):
         content = JSONRenderer().render(data)
         kwargs['content_type'] = 'application/json'
         super().__init__(content, **kwargs)
+
+
+@ensure_csrf_cookie
+def token_anonymous(request):
+    if request.method == 'GET':
+        return HttpResponse(status=204)
+    else:
+        return HttpResponseNotAllowed(['GET'])
 
 
 def user_signup(request):

@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ShareSettings from './ShareSettings';
 
 const NewPostWrapper = styled.div`
-  width: 650px;
+  width: 100%;
   margin: 0 auto;
   border: 1px solid #eee;
   padding: 10px;
