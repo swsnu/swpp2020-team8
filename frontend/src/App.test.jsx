@@ -64,7 +64,7 @@ describe('App unit mount test', () => {
       username: 'aa',
       email: 'aa@aa.aa',
       profile_pic: '#30FE0A',
-      question_history: '[4,6,8]',
+      question_history: '4,6,8',
       url: 'http://localhost:8000/api/user/4/'
     };
     const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
@@ -132,11 +132,11 @@ describe('App unit mount test', () => {
       });
     });
 
-    store.dispatch(actionCreators.postSelectedQuestions('[1]')).then(() => {
+    store.dispatch(actionCreators.postSelectedQuestions([1])).then(() => {
       const newState = store.getState();
       expect(spy).toHaveBeenCalled();
 
-      expect(newState.userReducer.currentUser.question_history).toEqual('[1]');
+      expect(newState.userReducer.currentUser.question_history).toEqual([1]);
 
       history.push('/signup');
       wrapper.update();

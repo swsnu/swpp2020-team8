@@ -42,12 +42,16 @@ describe('user Actions', () => {
 
   it('should dispatch user/SIGNUP_FAILURE when api returns error', async () => {
     jest.mock('axios');
+    const spyToken = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return Promise((resolve) => resolve());
+    });
     const spy = jest.spyOn(axios, 'post').mockImplementation(() => {
       return Promise.reject(new Error('error'));
     });
 
     store.dispatch(actionCreators.requestSignUp()).then(() => {
       const newState = store.getState();
+      expect(spyToken).toHaveBeenCalled();
       expect(spy).toHaveBeenCalled();
       expect(newState.userReducer.currentUser).toMatchObject({
         loginError: false,
@@ -115,7 +119,7 @@ describe('user Actions', () => {
     store.dispatch(actionCreators.logout()).then(() => {
       const newState = store.getState();
       expect(spy).toHaveBeenCalled();
-      expect(newState.userReducer.currentUser).toMatchObject(null);
+      expect(newState.userReducer.currentUser).toEqual(null);
     });
   });
 
@@ -146,7 +150,7 @@ describe('user Actions', () => {
   it(`should make patch call & update user question history when select questions`, (done) => {
     jest.mock('axios');
 
-    const questionSelection = '[1]';
+    const questionSelection = [1];
     const spy = jest.spyOn(axios, 'patch').mockImplementation(() => {
       return new Promise((resolve) => {
         const result = { data: questionSelection };
@@ -259,10 +263,10 @@ describe('User Reducer', () => {
       },
       {
         type: actionCreators.UPDATE_QUESTION_SELECT,
-        selectedQuestions: '[1, 2, 3]'
+        selectedQuestions: '1, 2, 3'
       }
     );
-    expect(newState.currentUser.question_history).toEqual('[1, 2, 3]');
+    expect(newState.currentUser.question_history).toEqual('1, 2, 3');
   });
 
   it('should not update user info while waiting on login api response', () => {

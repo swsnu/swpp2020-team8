@@ -31,7 +31,7 @@ describe('interceptor', () => {
 
     if (Cookies.get('jwt_token_refresh')) {
       const tokenRes = await axios.get('/user/token');
-      expect(tokenRes?.data.access.toEqual('test_token'));
+      expect(tokenRes?.data.access).toEqual('test_token');
 
       expect(spy).toHaveBeenCalled();
     } else {
