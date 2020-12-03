@@ -85,7 +85,11 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   iconButton: {
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
+    '&:hover': {
+      color: primaryColor,
+      backgroundColor: 'white'
+    }
   }
 }));
 
@@ -264,7 +268,7 @@ const Header = ({ isMobile }) => {
           style={{ marginTop: '4px' }}
         >
           <Link to={`/users/${currentUser?.id}`}>
-            <AccountCircle />
+            <AccountCircle className={classes.iconButton} />
           </Link>
         </IconButton>
         <Button
@@ -273,7 +277,8 @@ const Header = ({ isMobile }) => {
           className={classes.logoutButton}
           style={{
             marginTop: '10px',
-            height: '40px'
+            height: '40px',
+            marginLeft: '8px'
           }}
           id="logout-button"
           onClick={(e) => {
