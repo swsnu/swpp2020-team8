@@ -4,9 +4,13 @@ import { useParams } from 'react-router';
 import { getSelectedPost } from '../modules/post';
 import PostItem from '../components/posts/PostItem';
 import QuestionItem from '../components/posts/QuestionItem';
+import Message from '../components/Message';
 
 export default function PostDetail() {
   const selectedPost = useSelector((state) => state.postReducer.selectedPost);
+  const selectedPostFailure = useSelector(
+    (state) => state.postReducer.selectedPostFailure
+  );
   const { postType, id } = useParams();
   const dispatch = useDispatch();
 
@@ -14,6 +18,14 @@ export default function PostDetail() {
     dispatch(getSelectedPost(postType, id));
   }, [postType, id, dispatch]);
 
+  if (selectedPostFailure) {
+    return (
+      <Message
+        message="접근할 수 없는 게시물입니다"
+        messageDetail="읽기 권한이 없는 게시물입니다"
+      />
+    );
+  }
   if (
     selectedPost?.type === 'Question' ||
     selectedPost?.['content-type'] === 'Question'

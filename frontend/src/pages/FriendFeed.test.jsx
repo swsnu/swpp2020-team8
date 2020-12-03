@@ -5,11 +5,13 @@ import { Router } from 'react-router-dom';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
-import { mockStore } from '../mockStore';
+import { mockStore, mockStoreWithNoFriendFeed } from '../mockStore';
 import rootReducer from '../modules';
 import FriendFeed from './FriendFeed';
 import 'jest-styled-components';
 import history from '../history';
+import { getPostsByType } from '../modules/post';
+import axios from '../apis';
 
 jest.mock('../components/posts/PostList', () => {
   return jest.fn(() => {
@@ -51,5 +53,44 @@ describe('<FriendFeed /> unit mount test', () => {
     expect(postList.length).toBe(1);
     // expect(img).toHaveStyleRule('width', '30px');
     expect(observe.mock.calls).toBeTruthy();
+  });
+
+  it('should render message when no friends', async (done) => {
+    const storeWithNoFriend = createStore(
+      rootReducer,
+      mockStoreWithNoFriendFeed,
+      composeWithDevTools(applyMiddleware(thunk))
+    );
+
+    const wrapper = mount(
+      <Provider store={storeWithNoFriend}>
+        <Router history={history}>
+          <FriendFeed />
+        </Router>
+      </Provider>
+    );
+
+    jest.mock('axios');
+    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const res = {
+          data: {
+            results: []
+          }
+        };
+        resolve(res);
+      });
+    });
+
+    storeWithNoFriend.dispatch(getPostsByType('friend')).then(() => {
+      const newState = storeWithNoFriend.getState();
+      expect(spy).toHaveBeenCalled();
+      expect(newState.postReducer.friendPosts).toMatchObject([]);
+      done();
+
+      wrapper.update();
+      const message = wrapper.find('Message');
+      expect(message.length).toBe(1);
+    });
   });
 });
