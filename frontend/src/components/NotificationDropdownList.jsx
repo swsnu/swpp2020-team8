@@ -36,6 +36,12 @@ const useStyles = makeStyles({
     '&:hover': {
       color: '#F12C56'
     }
+  },
+  message: {
+    color: 'grey',
+    fontSize: '14px',
+    padding: '8px',
+    cursor: 'default'
   }
 });
 
@@ -61,6 +67,26 @@ const NotificationDropdownList = ({ notifications, setIsNotiOpen }) => {
   };
   return (
     <Card variant="outlined" className={classes.notificationDropdown}>
+      <ButtonWrapper>
+        <button
+          className={`all-notifications ${classes.notiButtons}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsNotiOpen(false);
+            history.push('/notifications');
+          }}
+        >
+          알림 전체 보기
+        </button>
+        {notifications?.length !== 0 && (
+          <button
+            className={`read-all-notifications ${classes.notiButtons}`}
+            onClick={handleReadAllNotification}
+          >
+            모두 읽음
+          </button>
+        )}
+      </ButtonWrapper>
       {notifications?.length === 0 ? (
         <ListItem>
           <ListItemText
@@ -69,29 +95,9 @@ const NotificationDropdownList = ({ notifications, setIsNotiOpen }) => {
           />
         </ListItem>
       ) : (
-        <>
-          <ButtonWrapper>
-            <button
-              className={`all-notifications ${classes.notiButtons}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsNotiOpen(false);
-                history.push('/notifications');
-              }}
-            >
-              알림 전체 보기
-            </button>
-            <button
-              className={`read-all-notifications ${classes.notiButtons}`}
-              onClick={handleReadAllNotification}
-            >
-              모두 읽음
-            </button>
-          </ButtonWrapper>
-          <CardContent className={classes.notificationDropdownContent}>
-            <List>{notificationList}</List>
-          </CardContent>
-        </>
+        <CardContent className={classes.notificationDropdownContent}>
+          <List>{notificationList}</List>
+        </CardContent>
       )}
     </Card>
   );
