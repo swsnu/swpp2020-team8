@@ -127,17 +127,24 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       <CreateTime createdTime={postObj.created_at} />
       <PostItemFooterWrapper>
         <ShareSettingsWrapper>
-          <ShareSettingInfo>공개범위:</ShareSettingInfo>
-          {isAuthor && postObj.share_with_friends && (
-            <ShareSettingInfo>친구</ShareSettingInfo>
-          )}
-          {isAuthor &&
-            postObj.share_with_friends &&
-            postObj.share_anonymously && <ShareSettingInfo>|</ShareSettingInfo>}
-          {isAuthor && postObj.share_anonymously && (
-            <ShareSettingInfo>익명</ShareSettingInfo>
+          {isAuthor && (
+            <>
+              {(postObj.share_with_friends || postObj.share_anonymously) && (
+                <ShareSettingInfo>공개범위:</ShareSettingInfo>
+              )}
+              {postObj.share_with_friends && (
+                <ShareSettingInfo>친구</ShareSettingInfo>
+              )}
+              {postObj.share_with_friends && postObj.share_anonymously && (
+                <ShareSettingInfo>|</ShareSettingInfo>
+              )}
+              {postObj.share_anonymously && (
+                <ShareSettingInfo>익명</ShareSettingInfo>
+              )}
+            </>
           )}
         </ShareSettingsWrapper>
+
         <PostItemButtonsWrapper>
           {liked ? (
             <IconButton color="primary" size="small" onClick={toggleLike}>
