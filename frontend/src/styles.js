@@ -27,6 +27,14 @@ export const GlobalStyle = createGlobalStyle`
   .MuiBottomNavigationAction-label.Mui-selected {
     font-size: 0.8rem !important;
   }
+  
+  .MuiDialog-paperFullWidth {
+    @media (max-width: 650px) {
+      position: fixed !important;
+      top: 20% !important;
+      width: calc(100% - 16px) !important;
+    }
+  }
 `;
 
 export const CommonInput = styled.input`

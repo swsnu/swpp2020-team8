@@ -291,7 +291,7 @@ const Header = ({ isMobile }) => {
       <div className={classes.grow}>
         <AppBar position="static" className={classes.header}>
           <Toolbar>
-            <Link to="/friends" className={classes.logo} />
+            <Link to="/" className={classes.logo} />
             {currentUser !== null ? (
               renderHeaderSignedInItems
             ) : (
