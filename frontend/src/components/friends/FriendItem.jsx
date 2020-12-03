@@ -43,11 +43,8 @@ const FriendItem = ({
   const history = useHistory();
   const { username } = friendObj;
   return (
-    <FriendItemWrapper
-      iswidget={isWidget.toString()}
-      onClick={() => history.push(`/users/${friendObj.id}`)}
-    >
-      <FriendLink>
+    <FriendItemWrapper iswidget={isWidget.toString()}>
+      <FriendLink onClick={() => history.push(`/users/${friendObj.id}`)}>
         <FaceIcon />
         <ListItemText
           classes={{ primary: classes.username }}
