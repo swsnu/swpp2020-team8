@@ -6,7 +6,8 @@ import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles({
   card: {
     width: '100%',
-    borderColor: '#eee'
+    borderColor: '#eee',
+    boxSizing: 'border-box'
   },
   nonBorderCard: {
     width: '100%',
@@ -25,12 +26,13 @@ const useStyles = makeStyles({
   }
 });
 
-const Message = ({ message, messageDetail, noBorder }) => {
+const Message = ({ margin, message, messageDetail, noBorder }) => {
   const classes = useStyles();
   return (
     <Card
       className={noBorder ? classes.nonBorderCard : classes.card}
       variant="outlined"
+      style={{ margin }}
     >
       <CardContent className={classes.cardContent}>
         {message && <h2 className={classes.title}>{message}</h2>}

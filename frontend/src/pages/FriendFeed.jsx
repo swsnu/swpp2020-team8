@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import PostList from '../components/posts/PostList';
 import { appendPosts, getPostsByType } from '../modules/post';
 import Message from '../components/Message';
+import NewPost from '../components/posts/NewPost';
 
 const FriendFeed = () => {
   const [target, setTarget] = useState(false);
@@ -34,21 +35,24 @@ const FriendFeed = () => {
     dispatch(getPostsByType('friend'));
   }, [dispatch]);
 
-  if (friendPosts?.length === 0 && !isLoading) {
-    return (
-      <Message
-        message="표시할 게시물이 없습니다"
-        messageDetail="다른 사용자들과 친구를 맺어보세요!"
-      />
-    );
-  }
   return (
     <>
-      <PostList
-        posts={friendPosts}
-        isAppending={isAppending}
-        isLoading={isLoading}
-      />
+      {friendPosts?.length === 0 && !isLoading ? (
+        <>
+          <NewPost />
+          <Message
+            margin="16px 0"
+            message="표시할 게시물이 없습니다"
+            messageDetail="다른 사용자들과 친구를 맺어보세요!"
+          />
+        </>
+      ) : (
+        <PostList
+          posts={friendPosts}
+          isAppending={isAppending}
+          isLoading={isLoading}
+        />
+      )}
       <div ref={setTarget} />
     </>
   );
