@@ -1,10 +1,10 @@
 python manage.py shell
 
 from account.models import FriendRequest
-from feed.models import Question, Article, Response, Post
+from feed.models import Question, Article, Response, Post, ResponseRequest
 from comment.models import Comment
 from like.models import Like
-from django.contrib.contenttypes.models import ContentType
+from notification.models import Notification
 from adoorback.utils.seed import set_seed
 from django.contrib.auth import get_user_model
 User = get_user_model()
