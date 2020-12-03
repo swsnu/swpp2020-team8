@@ -6,6 +6,7 @@ from like.serializers import LikeSerializer
 
 from adoorback.permissions import IsOwnerOrReadOnly
 from adoorback.content_types import get_generic_relation_type
+from adoorback.validators import adoor_exception_handler
 
 
 class LikeList(generics.ListCreateAPIView):
@@ -15,6 +16,9 @@ class LikeList(generics.ListCreateAPIView):
     queryset = Like.objects.order_by('-id')
     serializer_class = LikeSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_exception_handler(self):
+        return adoor_exception_handler
 
     def perform_create(self, serializer):
         content_type_id = get_generic_relation_type(self.request.data['target_type']).id
@@ -30,3 +34,6 @@ class LikeDestroy(generics.DestroyAPIView):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    def get_exception_handler(self):
+        return adoor_exception_handler

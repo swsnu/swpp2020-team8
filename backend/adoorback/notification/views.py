@@ -7,11 +7,15 @@ from notification.models import Notification
 from notification.serializers import NotificationSerializer
 
 from adoorback.permissions import IsOwnerOrReadOnly
+from adoorback.validators import adoor_exception_handler
 
 
 class NotificationList(generics.ListAPIView, generics.UpdateAPIView):
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    def get_exception_handler(self):
+        return adoor_exception_handler
 
     def get_queryset(self):
         return Notification.objects.visible_only().filter(user=self.request.user)
@@ -27,6 +31,9 @@ class NotificationDetail(generics.UpdateAPIView):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    def get_exception_handler(self):
+        return adoor_exception_handler
 
     def get_object(self):
         return Notification.objects.get(id=self.kwargs.get('pk'))
