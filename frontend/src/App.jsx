@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
@@ -22,6 +22,9 @@ import NotificationPage from './pages/NotificationPage';
 import PostEdit from './pages/PostEdit';
 import UserPage from './pages/UserPage';
 import { getNotifications } from './modules/notification';
+import MobileFooter from './components/MobileFooter';
+import MobileQuestionPage from './pages/MobileQuestionPage';
+import MobileSearchPage from './pages/MobileSearchPage';
 import { getCurrentUser } from './modules/user';
 
 const theme = createMuiTheme({
@@ -35,6 +38,19 @@ const theme = createMuiTheme({
 });
 
 const App = () => {
+  const [isMobile, setIsMobile] = useState(window?.innerWidth < 650);
+
+  const handleResize = () => {
+    setIsMobile(window.innerWidth < 650);
+  };
+  useEffect(() => {
+    window.addEventListener('resize', handleResize, false);
+    return () => {
+      window.removeEventListener('resize');
+    };
+  }, []);
+
+  // todo: use hooks
   const refresh_token = Cookies.get('jwt_token_refresh');
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const dispatch = useDispatch();
@@ -65,7 +81,7 @@ const App = () => {
   return (
     <MuiThemeProvider theme={theme}>
       <GlobalStyle />
-      <Header />
+      <Header isMobile={isMobile} />
       {!refresh_token ||
       (!selectQuestion && currentUser?.question_history === null) ? (
         <Switch>
@@ -76,9 +92,12 @@ const App = () => {
         </Switch>
       ) : (
         <MainWrapper>
-          <QuestionListWidget />
+          {!isMobile && <QuestionListWidget />}
+          {isMobile && <MobileFooter />}
           <FeedWrapper>
             <Switch>
+              <Redirect from="/my-page" to={`/users/${currentUser?.id}`} />
+
               <Redirect from="/login" to="/friends" />
               <Redirect from="/signup" to={signUpRedirectPath} />
               <Route
@@ -121,10 +140,21 @@ const App = () => {
 
               <PrivateRoute path="/:postType/:id" component={PostDetail} />
               <PrivateRoute exact path="/my-friends" component={FriendsPage} />
+              <PrivateRoute
+                exact
+                path="/recommended-questions"
+                component={MobileQuestionPage}
+              />
+              <PrivateRoute
+                exact
+                path="/user-search"
+                component={MobileSearchPage}
+              />
+
               <Redirect exact path="/" to="/friends" />
             </Switch>
           </FeedWrapper>
-          <FriendListWidget />
+          {!isMobile && <FriendListWidget />}
         </MainWrapper>
       )}
     </MuiThemeProvider>

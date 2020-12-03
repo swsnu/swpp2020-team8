@@ -12,6 +12,13 @@ export const GET_NOTIFICATIONS_SUCCESS =
 export const GET_NOTIFICATIONS_FAILURE =
   'notification/GET_NOTIFICATION_FAILURE';
 
+export const APPEND_NOTIFICATIONS_REQUEST =
+  'notification/APPEND_NOTIFICATION_REQUEST';
+export const APPEND_NOTIFICATIONS_SUCCESS =
+  'notification/APPEND_NOTIFICATION_SUCCESS';
+export const APPEND_NOTIFICATIONS_FAILURE =
+  'notification/APPEND_NOTIFICATION_FAILURE';
+
 export const READ_NOTIFICATION_REQUEST =
   'notification/READ_NOTIFICATION_REQUEST';
 export const READ_NOTIFICATION_SUCCESS =
@@ -47,6 +54,25 @@ export const getNotifications = () => async (dispatch) => {
       next: res.data.next
     });
   }
+};
+
+export const appendNotifications = () => async (dispatch, getState) => {
+  const { next } = getState().notiReducer;
+  if (!next) return;
+  const nextUrl = next.replace('localhost:8000', 'localhost:3000');
+  let result;
+  dispatch({ type: APPEND_NOTIFICATIONS_REQUEST });
+  try {
+    result = await axios.get(nextUrl);
+  } catch (err) {
+    dispatch({ type: APPEND_NOTIFICATIONS_FAILURE, error: err });
+  }
+  const { data } = result;
+  dispatch({
+    type: APPEND_NOTIFICATIONS_SUCCESS,
+    results: data?.results,
+    next: data?.next
+  });
 };
 
 export const readNotification = (id) => async (dispatch) => {
@@ -101,6 +127,14 @@ export default function notiReducer(state = initialState, action) {
           updatedNotification,
           ...state.receivedNotifications.slice(updatedNotificationIndex + 1)
         ]
+      };
+    case APPEND_NOTIFICATIONS_SUCCESS:
+      return {
+        ...state,
+        receivedNotifications: state.receivedNotifications
+          ? [...state.receivedNotifications, ...action.results]
+          : [...action.results],
+        next: action.next
       };
     case READ_ALL_NOTIFICATIONS_SUCCESS:
       return {
