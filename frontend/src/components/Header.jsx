@@ -1,15 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { NavLink, Link, useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
 import Button from '@material-ui/core/Button';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import TextField from '@material-ui/core/TextField';
-import { NavLink, Link, useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+
 import useOnClickOutside from 'use-onclickoutside';
 import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
@@ -17,12 +20,21 @@ import SearchDropdownList from './SearchDropdownList';
 import { logout } from '../modules/user';
 import { getNotifications } from '../modules/notification';
 import { fetchSearchResults } from '../modules/search';
+import MobileDrawer from './posts/MobileDrawer';
 
 const useStyles = makeStyles((theme) => ({
+  hide: {
+    display: 'none'
+  },
+  right: {
+    position: 'absolute',
+    right: '16px'
+  },
   grow: {
     flexGrow: 1
   },
   header: {
+    width: '100vw',
     backgroundColor: 'white',
     boxShadow: 'rgba(0, 0, 0, 0.08) 0px 1px 12px',
     display: 'flex',
@@ -78,11 +90,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // eslint-disable-next-line react/prop-types
-const Header = () => {
+const Header = ({ isMobile }) => {
   const classes = useStyles();
   const [isNotiOpen, setIsNotiOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
   const notiRef = useRef(null);
@@ -126,13 +139,27 @@ const Header = () => {
   };
 
   useEffect(() => {
-    if (totalPages > 0 && window.location.pathname !== '/search') {
+    dispatch(fetchSearchResults(1, ''));
+    // reset search results when mounted
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (query.length) {
+      dispatch(fetchSearchResults(1, query));
+    } else setIsSearchOpen(false);
+  }, [query]);
+
+  useEffect(() => {
+    if (
+      totalPages > 0 &&
+      window.location.pathname !== '/user-search' &&
+      window.location.pathname !== '/search'
+    ) {
       setIsSearchOpen(true);
     } else {
       setIsSearchOpen(false);
     }
-    dispatch(fetchSearchResults(1, query));
-  }, [dispatch, query, totalPages]);
+  }, [dispatch, totalPages]);
 
   const handleChange = (e) => {
     const { value } = e.target;
@@ -143,10 +170,38 @@ const Header = () => {
     if (e.key === 'Enter' && query !== '') {
       setIsSearchOpen(false);
       history.push(`/search`);
+      setQuery('');
     }
   };
 
-  const renderHeaderSignedInItems = (
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false);
+  };
+
+  const renderHeaderSignedInItems = isMobile ? (
+    <>
+      <IconButton
+        id="drawer-open-button"
+        color="secondary"
+        aria-label="open drawer"
+        edge="end"
+        onClick={() => {
+          setIsDrawerOpen(true);
+        }}
+        style={{ display: isDrawerOpen && 'none' }}
+        className={classes.right}
+      >
+        <MenuIcon />
+      </IconButton>
+      {isMobile && (
+        <MobileDrawer
+          open={isDrawerOpen}
+          handleDrawerClose={handleDrawerClose}
+          onLogout={handleClickLogout}
+        />
+      )}
+    </>
+  ) : (
     <>
       <NavLink
         className={classes.tabButton}
@@ -178,6 +233,9 @@ const Header = () => {
           required
           id="input-search-field"
           className={classes.textField}
+          InputProps={{
+            autoComplete: 'off'
+          }}
           size="small"
           value={query}
           label="사용자 검색"
@@ -233,7 +291,7 @@ const Header = () => {
       <div className={classes.grow}>
         <AppBar position="static" className={classes.header}>
           <Toolbar>
-            <Link to="/friends" className={classes.logo} />
+            <Link to="/" className={classes.logo} />
             {currentUser !== null ? (
               renderHeaderSignedInItems
             ) : (

@@ -15,3 +15,12 @@ DATABASES = {
         'POST': '',
     },
 }
+
+sentry_sdk.init(
+    dsn="https://examplePublicKey@o0.ingest.sentry.io/0",
+    integrations=[DjangoIntegration()],
+
+    traces_sample_rate=0.2,
+
+    send_default_pii=True
+)

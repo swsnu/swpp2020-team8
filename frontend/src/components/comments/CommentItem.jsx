@@ -22,17 +22,24 @@ const CommentContent = styled.div`
 `;
 
 const ReplyWrapper = styled.div`
+  min-width: 24px;
   cursor: pointer;
   display: flex;
   align-items: center;
   font-size: 10px;
   color: #999;
+  @media (max-width: 650px) {
+    margin: 0;
+  }
   margin-right: 12px;
 `;
 
 ReplyWrapper.displayName = 'ReplyWrapper';
 
 const ReplyIcon = styled(SubdirectoryArrowRightIcon)`
+  @media (max-width: 650px) {
+    margin: 0;
+  }
   margin-right: 3px;
   color: #777;
 `;
