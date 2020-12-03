@@ -33,6 +33,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ],
 }
 
@@ -43,6 +44,11 @@ JWT_AUTH = {
 }
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+
+CORS_ORIGIN_WHITELIST = [
+    "https://develop.d3t1tnno5uz3sa.amplifyapp.com"
+]
 
 BASE_URL = 'http://localhost:8000'
 
@@ -67,6 +73,9 @@ INSTALLED_APPS = [
     'admin_honeypot',
     'django_celery_results',
     'django_cron',
+    'corsheaders',
+    'import_export',
+    'trackstats',
 ]
 
 SITE_ID = 1
@@ -78,6 +87,8 @@ LOGIN_REDIRECT_URL = '/api/user/'
 CRON_CLASSES = [
     "feed.cron.DailyQuestionCronJob",
     "feed.cron.RankQuestionsCronJob",
+    "account.cron.SendSelectQuestionsNotiCronJob",
+    "account.cron.SendAddFriendsNotiCronJob",
 ]
 
 CELERY_RESULT_BACKEND = 'django-db'
@@ -103,6 +114,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'adoorback.urls'

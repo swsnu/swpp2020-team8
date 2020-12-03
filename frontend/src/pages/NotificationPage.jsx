@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -9,7 +9,10 @@ import styled from 'styled-components';
 import { Button } from '@material-ui/core';
 import NotificationItem from '../components/NotificationItem';
 import FriendItem from '../components/friends/FriendItem';
-import { readAllNotification } from '../modules/notification';
+import {
+  readAllNotification,
+  appendNotifications
+} from '../modules/notification';
 
 Tabs.displayName = 'Tabs';
 function TabPanel(props) {
@@ -59,9 +62,25 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function NotificationPage({ tabType }) {
+  const dispatch = useDispatch();
   const friendList = useSelector((state) => state.friendReducer.friendList);
   const classes = useStyles();
-  const dispatch = useDispatch();
+  const [target, setTarget] = useState(null);
+
+  useEffect(() => {
+    let observer;
+    if (target) {
+      observer = new IntersectionObserver(onIntersect, { threshold: 1 });
+      observer.observe(target);
+    }
+    return () => observer && observer.disconnect();
+  }, [target]);
+
+  const onIntersect = ([entry]) => {
+    if (entry.isIntersecting) {
+      dispatch(appendNotifications());
+    }
+  };
 
   let initialTab = 0;
   if (tabType === 'FriendRequest') {
@@ -171,12 +190,15 @@ export default function NotificationPage({ tabType }) {
       </ButtonWrapper>
       <TabPanel value={tab} index={0} className={classes.tabPanel}>
         {notificationList}
+        <div ref={setTarget} />
       </TabPanel>
       <TabPanel value={tab} index={1} className={classes.tabPanel}>
         {friendRequestList}
+        <div ref={setTarget} />
       </TabPanel>
       <TabPanel value={tab} index={2} className={classes.tabPanel}>
         {responseRequestList}
+        <div ref={setTarget} />
       </TabPanel>
     </div>
   );
