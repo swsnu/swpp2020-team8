@@ -121,7 +121,7 @@ class ResponseRequest(AdoorTimestampedModel):
 
     def __str__(self):
         return f'{self.requester} sent ({self.question}) to {self.requestee}'
-    
+
     @property
     def type(self):
         return self.__class__.__name__
