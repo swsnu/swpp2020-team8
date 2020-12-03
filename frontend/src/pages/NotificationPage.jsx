@@ -1,12 +1,15 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
+import styled from 'styled-components';
+import { Button } from '@material-ui/core';
 import NotificationItem from '../components/NotificationItem';
 import FriendItem from '../components/friends/FriendItem';
+import { readAllNotification } from '../modules/notification';
 
 Tabs.displayName = 'Tabs';
 function TabPanel(props) {
@@ -32,6 +35,11 @@ function a11yProps(index) {
   };
 }
 
+const ButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: row-reverse;
+`;
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -43,13 +51,17 @@ const useStyles = makeStyles((theme) => ({
       '0 5px 10px rgba(154, 160, 185, 0.05), 0 5px 10px rgba(166, 173, 201, 0.2)'
   },
   tabPanel: {
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing(1)
+  },
+  readAllButton: {
+    margin: '8px 0'
   }
 }));
 
 export default function NotificationPage({ tabType }) {
   const friendList = useSelector((state) => state.friendReducer.friendList);
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   let initialTab = 0;
   if (tabType === 'FriendRequest') {
@@ -65,6 +77,10 @@ export default function NotificationPage({ tabType }) {
 
   const handleTabChange = (event, newValue) => {
     setTab(newValue);
+  };
+
+  const handleReadAllNotification = () => {
+    dispatch(readAllNotification());
   };
 
   const notificationList = notifications.map((noti) => {
@@ -143,6 +159,16 @@ export default function NotificationPage({ tabType }) {
           <Tab label="받은 질문" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
+      <ButtonWrapper>
+        <Button
+          size="medium"
+          className={`read-all-notifications ${classes.readAllButton}`}
+          onClick={handleReadAllNotification}
+          color="primary"
+        >
+          모두 읽음
+        </Button>
+      </ButtonWrapper>
       <TabPanel value={tab} index={0} className={classes.tabPanel}>
         {notificationList}
       </TabPanel>
