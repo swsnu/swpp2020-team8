@@ -139,6 +139,11 @@ const Header = ({ isMobile }) => {
   };
 
   useEffect(() => {
+    dispatch(fetchSearchResults(1, ''));
+    // reset search results when mounted
+  }, [dispatch]);
+
+  useEffect(() => {
     if (query.length) {
       dispatch(fetchSearchResults(1, query));
     } else setIsSearchOpen(false);

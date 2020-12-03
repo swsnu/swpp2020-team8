@@ -31,6 +31,10 @@ export default function MobileSearchPage() {
     (state) => state.searchReducer.searchObj?.totalPages
   );
 
+  useEffect(() => {
+    dispatch(fetchSearchResults(1, ''));
+  }, [dispatch]);
+
   const handleSearchClose = () => {
     setIsSearchOpen(false);
   };
