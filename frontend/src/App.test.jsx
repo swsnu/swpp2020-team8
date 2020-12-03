@@ -64,7 +64,7 @@ describe('App unit mount test', () => {
       username: 'aa',
       email: 'aa@aa.aa',
       profile_pic: '#30FE0A',
-      question_history: '[4,6,8]',
+      question_history: '4,6,8',
       url: 'http://localhost:8000/api/user/4/'
     };
     const spy = jest.spyOn(axios, 'get').mockImplementation(() => {

@@ -259,10 +259,10 @@ describe('User Reducer', () => {
       },
       {
         type: actionCreators.UPDATE_QUESTION_SELECT,
-        selectedQuestions: '[1, 2, 3]'
+        selectedQuestions: '1, 2, 3'
       }
     );
-    expect(newState.currentUser.question_history).toEqual('[1, 2, 3]');
+    expect(newState.currentUser.question_history).toEqual('1, 2, 3');
   });
 
   it('should not update user info while waiting on login api response', () => {
