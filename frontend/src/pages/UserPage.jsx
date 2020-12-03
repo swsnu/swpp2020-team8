@@ -48,7 +48,7 @@ const MobileTabPanel = styled(TabPanel)`
   @media (max-width: 650px) {
     padding: 0 !important;
 
-    .MuiBox-root-20 {
+    .MuiBox-root {
       padding: 0 !important;
     }
   }
