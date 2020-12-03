@@ -34,10 +34,6 @@ class ArticleAdmin(ImportExportModelAdmin):
     resource_class = ArticleResource
 
 
-class ArticleAdmin(ImportExportModelAdmin):
-    resource_class = ArticleResource
-
-
 class ResponseAdmin(ImportExportModelAdmin):
     resource_class = ResponseResource
 

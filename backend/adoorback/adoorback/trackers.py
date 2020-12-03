@@ -1,8 +1,7 @@
-from trackstats.models import Domain, Metric, Period, StatisticByDateAndObject, StatisticByDate
-from trackstats.trackers import CountObjectsByDateTracker, CountObjectsByDateAndObjectTracker
-
 from django.contrib.auth import get_user_model
-User = get_user_model()
+
+from trackstats.models import Domain, Metric, Period
+from trackstats.trackers import CountObjectsByDateTracker, CountObjectsByDateAndObjectTracker
 
 from account.models import FriendRequest
 from feed.models import Article, Response, Question, ResponseRequest
@@ -10,7 +9,7 @@ from comment.models import Comment
 from like.models import Like
 from notification.models import Notification
 
-from datetime import date
+User = get_user_model()
 
 
 Domain.objects.POSTS = Domain.objects.register(
@@ -37,9 +36,6 @@ CountObjectsByDateTracker(
     period=Period.DAY,
     metric=Metric.objects.ARTICLES_COUNT,
     date_field='created_at').track(Article.objects.all())
-stats = StatisticByDateAndObject.objects.narrow(
-    metric=Metric.objects.ARTICLES_COUNT,
-    period=Period.DAY)
 Metric.objects.ARTICLES_BY_USER_COUNT = Metric.objects.register(
     domain=Domain.objects.POSTS,
     ref='article_count_by_user',
