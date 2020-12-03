@@ -141,14 +141,12 @@ def set_seed(n):
     user_1 = User.objects.get(id=1)
     user_2 = User.objects.get(id=2)
     user_3 = User.objects.get(id=3)
-    FriendRequest.objects.create(requester=user_2, requestee=user_1)
+
     FriendRequest.objects.create(requester=user_3, requestee=user_1)
     FriendRequest.objects.create(requester=user_3, requestee=user_2)
 
-    # Seed Friendship (user_1 and user_2 are friends)
-    accepted_friend_request = FriendRequest.objects.first()
-    accepted_friend_request.accepted = True
-    accepted_friend_request.save()
+    # Seed Friendship
+    user_1.friends.add(user_2)
 
 
 def fill_data():
@@ -162,13 +160,16 @@ def fill_data():
     comments = Comment.objects.all()
     responses = Response.objects.all()
     posts = random.choice([articles, questions, responses])
-    for user in User.objects.all():
+    for user in users:
         Article.objects.create(author=user, content=faker.catch_phrase()) \
             if user.article_set.count() == 0 else None
         Question.objects.create(author=user, content=faker.catch_phrase(), is_admin_question=False) \
             if user.question_set.count() == 0 else None
         Response.objects.create(author=user, content=faker.catch_phrase(), question=random.choice(questions)) \
             if user.response_set.count() == 0 else None
+        ResponseRequest.objects.create(requester=random.choice(users.exclude(id=user.id)),
+                                       requestee=user, question=random.choice(questions)) \
+            if user.received_response_request_set.count() == 0 else None
         Comment.objects.create(author=user, content=faker.catch_phrase(), target=random.choice(articles)) \
             if Comment.objects.comments_only().filter(author=user).count() == 0 else None
         Comment.objects.create(author=user, content=faker.catch_phrase(), target=random.choice(comments)) \

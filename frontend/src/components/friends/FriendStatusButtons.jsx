@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@material-ui/core';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   acceptFriendRequest,
   deleteFriend,
@@ -27,8 +27,12 @@ export default function FriendStatusButtons({
 }) {
   const dispatch = useDispatch();
   const [isRequestSubmitted, setIsRequestSubmitted] = useState(false);
+  const [isRequestAccepted, setIsRequestAccepted] = useState(false);
+
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isRequestResetted, setIsRequestResetted] = useState(false);
+
+  const currentUser = useSelector((state) => state.userReducer.currentUser);
 
   const onClickDeleteFriendButton = () => {
     setIsDeleteDialogOpen(true);
@@ -55,13 +59,16 @@ export default function FriendStatusButtons({
 
   const onClickAcceptRequestButton = () => {
     dispatch(acceptFriendRequest(friendObj.id));
+    setIsRequestAccepted(true);
   };
 
   const onClickRequestFriendButton = () => {
     dispatch(requestFriend(friendObj.id));
+    setIsRequestResetted(false);
     setIsRequestSubmitted(true);
   };
 
+  if (friendObj.id === currentUser?.id) return null;
   if (isRequestResetted)
     return (
       <div id={friendObj.id}>
@@ -75,7 +82,7 @@ export default function FriendStatusButtons({
         </FriendButton>
       </div>
     );
-  if (isFriend)
+  if (isFriend || isRequestAccepted)
     return (
       <div id={friendObj.id}>
         <FriendButton

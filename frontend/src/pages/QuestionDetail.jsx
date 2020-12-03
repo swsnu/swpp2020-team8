@@ -58,7 +58,11 @@ const QuestionDetail = (props) => {
   };
 
   const responseList = responses.map((post) => (
-    <PostItem key={`${post.type}-${post.id}`} postObj={post} />
+    <PostItem
+      PostKey={`${post.type}-${post.id}`}
+      key={`${post.type}-${post.id}`}
+      postObj={post}
+    />
   ));
 
   return (

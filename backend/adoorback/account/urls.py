@@ -12,7 +12,7 @@ urlpatterns = [
 
     # Auth related
     path('login/', views.user_login, name='user-login'),
-    path('signup/', views.user_signup, name='user-signup'),
+    path('signup/', views.UserSignup.as_view(), name='user-signup'),
     path('select-questions/', views.SignupQuestions.as_view(),
          name='signup-questions'),
 

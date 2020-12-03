@@ -203,8 +203,9 @@ const Header = () => {
         <IconButton
           aria-label="account of current user"
           className={classes.iconButton}
+          style={{ marginTop: '4px' }}
         >
-          <Link to="/my-friends">
+          <Link to={`/users/${currentUser?.id}`}>
             <AccountCircle />
           </Link>
         </IconButton>
@@ -212,6 +213,10 @@ const Header = () => {
           variant="outlined"
           size="medium"
           className={classes.logoutButton}
+          style={{
+            marginTop: '10px',
+            height: '40px'
+          }}
           id="logout-button"
           onClick={(e) => {
             e.stopPropagation();
@@ -249,7 +254,14 @@ const Header = () => {
           </Toolbar>
         </AppBar>
       </div>
-      <div ref={notiRef}>{isNotiOpen && <NotificationDropdownList />}</div>
+      <div ref={notiRef}>
+        {isNotiOpen && (
+          <NotificationDropdownList
+            notifications={notifications}
+            setIsNotiOpen={setIsNotiOpen}
+          />
+        )}
+      </div>
       <div ref={searchRef}>{isSearchOpen && <SearchDropdownList />}</div>
     </>
   );

@@ -73,7 +73,7 @@ const initialState = {
   recommendedQuestions: [],
   selectedQuestion: null,
   selectedQuestionResponses: [],
-  responseRequests: [],
+  selectedQuestionResponseRequests: [],
   next: null
 };
 
@@ -125,15 +125,14 @@ export const getDailyQuestions = () => async (dispatch) => {
   } catch (err) {
     dispatch({ type: 'question/GET_DAILY_QUESTIONS_FAILURE', error: err });
   }
-  const { data } = res;
   dispatch({
     type: 'question/GET_DAILY_QUESTIONS_SUCCESS',
-    res: data.results,
-    next: data.next
+    res: res?.data.results,
+    next: res?.data.next
   });
 };
 
-export const appendDailyQuestions = (origin) => async (dispatch, getState) => {
+export const appendDailyQuestions = () => async (dispatch, getState) => {
   const { next } = getState().questionReducer;
   if (!next) return;
   const nextUrl = next.replace('localhost:8000', 'localhost:3000');
@@ -144,12 +143,10 @@ export const appendDailyQuestions = (origin) => async (dispatch, getState) => {
   } catch (err) {
     dispatch({ type: APPEND_QUESTIONS_FAILURE, error: err });
   }
-  const { data } = result;
   dispatch({
     type: APPEND_QUESTIONS_SUCCESS,
-    questions: data.results,
-    next: data.next,
-    origin
+    questions: result?.data.results,
+    next: result?.data.next
   });
 };
 
@@ -199,7 +196,7 @@ export const getResponseRequestsByQuestion = (id) => async (dispatch) => {
   let res;
   dispatch({ type: 'question/GET_RESPONSE_REQUESTS_REQUEST' });
   try {
-    res = await axios.get(`/feed/questions/${id}/request-response/`);
+    res = await axios.get(`/feed/questions/${id}/response-request/`);
   } catch (err) {
     dispatch({
       type: 'question/GET_RESPONSE_REQUESTS_FAILURE',
@@ -212,11 +209,16 @@ export const getResponseRequestsByQuestion = (id) => async (dispatch) => {
   });
 };
 
-export const createResponseRequest = (qid, rid) => async (dispatch) => {
+export const createResponseRequest = (responseRequestObj) => async (
+  dispatch
+) => {
   let res;
   dispatch({ type: 'question/CREATE_RESPONSE_REQUESTS_REQUEST' });
   try {
-    res = await axios.post(`/feed/questions/${qid}/request-response/${rid}/`);
+    res = await axios.post(
+      `/feed/questions/response-request/`,
+      responseRequestObj
+    );
   } catch (err) {
     dispatch({
       type: 'question/CREATE_RESPONSE_REQUESTS_FAILURE',
@@ -227,14 +229,14 @@ export const createResponseRequest = (qid, rid) => async (dispatch) => {
     type: 'question/CREATE_RESPONSE_REQUESTS_SUCCESS',
     res: res?.data
   });
-  dispatch(getResponseRequestsByQuestion(qid));
+  dispatch(getResponseRequestsByQuestion(responseRequestObj.question_id));
 };
 
 export const deleteResponseRequest = (qid, rid) => async (dispatch) => {
   let res;
   dispatch({ type: 'question/DELETE_RESPONSE_REQUESTS_REQUEST' });
   try {
-    res = await axios.delete(`/feed/questions/${qid}/request-response/${rid}/`);
+    res = await axios.delete(`/feed/questions/${qid}/response-request/${rid}/`);
   } catch (err) {
     dispatch({
       type: 'question/DELETE_RESPONSE_REQUESTS_FAILURE',
@@ -250,6 +252,12 @@ export const deleteResponseRequest = (qid, rid) => async (dispatch) => {
 
 export default function questionReducer(state = initialState, action) {
   switch (action.type) {
+    case GET_DAILY_QUESTIONS_REQUEST: {
+      return {
+        ...state,
+        dailyQuestions: []
+      };
+    }
     case GET_SAMPLE_QUESTIONS_SUCCESS: {
       return {
         ...state,
@@ -307,7 +315,7 @@ export default function questionReducer(state = initialState, action) {
     case GET_RESPONSE_REQUESTS_SUCCESS:
       return {
         ...state,
-        responseRequests: action.res
+        selectedQuestionResponseRequests: action.res
       };
     default:
       return state;

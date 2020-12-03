@@ -3,7 +3,7 @@ from rest_framework import permissions
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
     """
-    Custom permission to only allow authors of an object to edit it.
+    Custom permission to only allow authors of an article/comment to edit/delete it.
     """
 
     def has_object_permission(self, request, view, obj):
@@ -14,7 +14,7 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
-    Custom permission to only allow recipients of noti to update.
+    Custom permission to only allow owners of objects to update/destroy.
     """
 
     def has_object_permission(self, request, view, obj):
