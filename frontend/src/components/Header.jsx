@@ -203,6 +203,7 @@ const Header = () => {
         <IconButton
           aria-label="account of current user"
           className={classes.iconButton}
+          style={{ marginTop: '4px' }}
         >
           <Link to={`/users/${currentUser?.id}`}>
             <AccountCircle />
@@ -212,6 +213,10 @@ const Header = () => {
           variant="outlined"
           size="medium"
           className={classes.logoutButton}
+          style={{
+            marginTop: '10px',
+            height: '40px'
+          }}
           id="logout-button"
           onClick={(e) => {
             e.stopPropagation();

@@ -17,6 +17,8 @@ import ShareSettings from './ShareSettings';
 import QuestionSendModal from '../QuestionSendModal';
 import { mockFriendList } from '../../constants';
 import { likePost, unlikePost } from '../../modules/like';
+import { deletePost } from '../../modules/post';
+import AlertDialog from '../common/AlertDialog';
 
 const QuestionItemWrapper = styled.div`
   background: #f4f4f4;
@@ -56,6 +58,7 @@ export default function QuestionItem({ questionObj, onResetContent }) {
   const isAuthor = currentUser?.id === questionObj.author_detail.id;
 
   const classes = useStyles();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [liked, setLiked] = useState(questionObj.current_user_liked);
   const [likeCount, setLikeCount] = useState(questionObj.like_count);
   const [isWriting, setIsWriting] = useState(false);
@@ -101,21 +104,32 @@ export default function QuestionItem({ questionObj, onResetContent }) {
     setQuestionSendModalOpen(false);
   };
 
-  const handleDelete = () => {};
+  const handleDelete = () => {
+    dispatch(deletePost(questionObj.id, questionObj.type));
+  };
 
   const resetContent = () => {
     setNewPost((prev) => ({ ...prev, content: '' }));
-    onResetContent();
+    if (onResetContent) onResetContent();
   };
 
   return (
     <QuestionItemWrapper>
+      <AlertDialog
+        message="정말 삭제하시겠습니까?"
+        onConfirm={handleDelete}
+        onClose={() => setIsDeleteDialogOpen(true)}
+        isOpen={isDeleteDialogOpen}
+      />
       <PostItemHeaderWrapper>
         {!questionObj.is_admin_question && (
           <AuthorProfile author={questionObj.author_detail} />
         )}
         {!questionObj.is_admin_question && isAuthor && (
-          <PostAuthorButtons isQuestion onClickDelete={handleDelete} />
+          <PostAuthorButtons
+            isQuestion
+            onClickDelete={() => setIsDeleteDialogOpen(true)}
+          />
         )}
       </PostItemHeaderWrapper>
       <Question>

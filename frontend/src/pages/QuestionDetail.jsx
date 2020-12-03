@@ -58,8 +58,12 @@ const QuestionDetail = (props) => {
     else dispatch(getFriendResponsesByQuestion(questionId));
   };
 
-  const responseList = responses?.map((post) => (
-    <PostItem key={`${post.type}-${post.id}`} postObj={post} />
+  const responseList = responses.map((post) => (
+    <PostItem
+      postKey={`${post.type}-${post.id}`}
+      key={`${post.type}-${post.id}`}
+      postObj={post}
+    />
   ));
 
   return (

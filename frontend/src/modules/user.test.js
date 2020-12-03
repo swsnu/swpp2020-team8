@@ -150,7 +150,7 @@ describe('user Actions', () => {
   it(`should make patch call & update user question history when select questions`, (done) => {
     jest.mock('axios');
 
-    const questionSelection = [1];
+    const questionSelection = [1, 2, 3];
     const spy = jest.spyOn(axios, 'patch').mockImplementation(() => {
       return new Promise((resolve) => {
         const result = { data: questionSelection };

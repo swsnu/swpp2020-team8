@@ -75,7 +75,6 @@ export default function UserPage() {
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const friendList = useSelector((state) => state.friendReducer.friendList);
   const friendIdList = friendList.map((friend) => friend.id);
-  const isFriend = friendIdList.includes(selectedUser?.id);
   const isFriendOrMyPage =
     selectedUser &&
     (friendIdList.includes(selectedUser?.id) ||
@@ -144,76 +143,71 @@ export default function UserPage() {
           {selectedUser && selectedUser.id !== currentUser?.id && (
             <FriendStatusButtons
               friendObj={selectedUser}
-              isFriend={isFriend}
-              isPending={false}
-              hasSentRequest={false}
+              isFriend={selectedUser.are_friends}
+              isPending={selectedUser.received_friend_request_from}
+              hasSentRequest={selectedUser.sent_friend_request_to}
             />
           )}
         </UserPageWrapper>
       </Container>
-      <>
-        <AppBar position="static" className={classes.header}>
-          <Tabs
-            value={value}
-            indicatorColor="primary"
-            textColor="primary"
-            onChange={handleChange}
-            aria-label="user tabs"
-          >
-            <Tab label="전체" value="All" {...a11yProps('All')} />
-            <Tab label="나의 Q&A" value="Q&A" {...a11yProps('Q&A')} />
-            <Tab
-              label="아무말 대잔치"
-              value="Articles"
-              {...a11yProps('Articles')}
-            />
-            <Tab
-              label="작성한 질문"
-              value="CustomQuestions"
-              {...a11yProps('CustomQuestions')}
-            />
-          </Tabs>
-        </AppBar>
-
-        <>
-          <TabPanel value={value} index="All">
-            <UserPostList
-              posts={selectedUserPosts}
-              isAppending={isAppending}
-              isLoading={isLoading}
-              isFriendOrMyPage={isFriendOrMyPage}
-            />
-            <div ref={setTarget} />
-          </TabPanel>
-          <TabPanel value={value} index="Q&A">
-            <UserPostList
-              posts={userResponses}
-              isAppending={isAppending}
-              isLoading={isLoading}
-              isFriendOrMyPage={isFriendOrMyPage}
-            />
-            <div ref={setTarget} />
-          </TabPanel>
-          <TabPanel value={value} index="Articles">
-            <UserPostList
-              posts={userArticles}
-              isAppending={isAppending}
-              isLoading={isLoading}
-              isFriendOrMyPage={isFriendOrMyPage}
-            />
-            <div ref={setTarget} />
-          </TabPanel>
-          <TabPanel value={value} index="CustomQuestions">
-            <UserPostList
-              posts={userQuestions}
-              isAppending={isAppending}
-              isLoading={isLoading}
-              isFriendOrMyPage={isFriendOrMyPage}
-            />
-            <div ref={setTarget} />
-          </TabPanel>
-        </>
-      </>
+      <AppBar position="static" className={classes.header}>
+        <Tabs
+          value={value}
+          indicatorColor="primary"
+          textColor="primary"
+          onChange={handleChange}
+          aria-label="user tabs"
+        >
+          <Tab label="전체" value="All" {...a11yProps('All')} />
+          <Tab label="나의 Q&A" value="Q&A" {...a11yProps('Q&A')} />
+          <Tab
+            label="아무말 대잔치"
+            value="Articles"
+            {...a11yProps('Articles')}
+          />
+          <Tab
+            label="작성한 질문"
+            value="CustomQuestions"
+            {...a11yProps('CustomQuestions')}
+          />
+        </Tabs>
+      </AppBar>
+      <TabPanel value={value} index="All">
+        <UserPostList
+          posts={selectedUserPosts}
+          isAppending={isAppending}
+          isLoading={isLoading}
+          isFriendOrMyPage={isFriendOrMyPage}
+        />
+        <div ref={setTarget} />
+      </TabPanel>
+      <TabPanel value={value} index="Q&A">
+        <UserPostList
+          posts={userResponses}
+          isAppending={isAppending}
+          isLoading={isLoading}
+          isFriendOrMyPage={isFriendOrMyPage}
+        />
+        <div ref={setTarget} />
+      </TabPanel>
+      <TabPanel value={value} index="Articles">
+        <UserPostList
+          posts={userArticles}
+          isAppending={isAppending}
+          isLoading={isLoading}
+          isFriendOrMyPage={isFriendOrMyPage}
+        />
+        <div ref={setTarget} />
+      </TabPanel>
+      <TabPanel value={value} index="CustomQuestions">
+        <UserPostList
+          posts={userQuestions}
+          isAppending={isAppending}
+          isLoading={isLoading}
+          isFriendOrMyPage={isFriendOrMyPage}
+        />
+        <div ref={setTarget} />
+      </TabPanel>
     </div>
   );
 }

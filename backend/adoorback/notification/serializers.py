@@ -13,9 +13,6 @@ class NotificationSerializer(serializers.ModelSerializer):
     actor = serializers.HyperlinkedIdentityField(
         view_name='user-detail', read_only=True)
     actor_detail = serializers.SerializerMethodField(read_only=True)
-    recipient = serializers.HyperlinkedIdentityField(
-        view_name='user-detail', read_only=True)
-    recipient_detail = serializers.SerializerMethodField(read_only=True)
     target_type = serializers.SerializerMethodField()
     target_id = serializers.IntegerField()
     origin_type = serializers.SerializerMethodField()
@@ -24,10 +21,9 @@ class NotificationSerializer(serializers.ModelSerializer):
     def get_actor_detail(self, obj):
         if User.are_friends(self.context.get('request', None).user, obj.actor):
             return AuthorFriendSerializer(obj.actor).data
+        if obj.target.type == 'FriendRequest':
+            return AuthorFriendSerializer(obj.actor).data
         return AuthorAnonymousSerializer(obj.actor).data
-
-    def get_recipient_detail(self, obj):
-        return AuthorFriendSerializer(obj.recipient).data
 
     def get_target_type(self, obj):
         return obj.target.type
@@ -37,6 +33,6 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notification
-        fields = ['id', 'message', 'actor', 'actor_detail', 'recipient', 'recipient_detail',
+        fields = ['id', 'message', 'actor', 'actor_detail',
                   'target_type', 'target_id', 'origin_type', 'origin_id',
                   'is_visible', 'is_read', 'created_at', 'updated_at']

@@ -12,8 +12,8 @@ import 'jest-styled-components';
 import FriendStatusButtons from './FriendStatusButtons';
 
 const userObj = {
-  id: 123,
-  username: 'curious',
+  id: 13,
+  username: 'curie',
   profile_pic:
     'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg'
 };

@@ -4,21 +4,22 @@ import pandas as pd
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseBadRequest
 from rest_framework import generics
-from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated
 
 import feed.serializers as fs
 from feed.models import Article, Response, Question, Post, ResponseRequest
 from feed.algorithms.data_crawler import select_daily_questions
-from adoorback.permissions import IsOwnerOrReadOnly, IsShared
+from adoorback.permissions import IsAuthorOrReadOnly, IsShared
 
 User = get_user_model()
+
 
 class FriendFeedPostList(generics.ListAPIView):
     """
     List friend feed posts
     """
     serializer_class = fs.PostFriendSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         current_user = self.request.user
@@ -33,7 +34,7 @@ class AnonymousFeedPostList(generics.ListAPIView):
     """
     queryset = Post.objects.anonymous_posts_only()
     serializer_class = fs.PostAnonymousSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 
 class UserFeedPostList(generics.ListAPIView):
@@ -41,7 +42,7 @@ class UserFeedPostList(generics.ListAPIView):
     List feed posts for user page
     """
     serializer_class = fs.PostFriendSerializer
-    permissions_classes = [permissions.IsAuthenticated]
+    permissions_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Post.objects.friend_posts_only().filter(author_id=self.kwargs.get('pk'))
@@ -53,16 +54,7 @@ class ArticleList(generics.CreateAPIView):
     """
     queryset = Article.objects.all()
     serializer_class = fs.ArticleFriendSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    # # for get list only
-    # def get_queryset(self):
-    #     current_user = self.request.user
-    #     friend_ids = current_user.friends.values_list('friend_id', flat=True)
-    #     queryset = Article.objects.filter(author_id__in=friend_ids) | \
-    #                Article.objects.filter(share_anonymously=True) | \
-    #                Article.objects.filter(author_id=current_user.id)
-    #     return queryset
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -73,7 +65,7 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
     Retrieve, update, or destroy an article.
     """
     queryset = Article.objects.all()
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly, IsShared]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly, IsShared]
 
     def get_serializer_class(self):
         article = Article.objects.get(id=self.kwargs.get('pk'))
@@ -88,16 +80,7 @@ class ResponseList(generics.ListCreateAPIView):
     """
     queryset = Response.objects.all()
     serializer_class = fs.ResponseFriendSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    # # for get list only
-    # def get_queryset(self):
-    #     current_user = self.request.user
-    #     friend_ids = current_user.friends.values_list('friend_id', flat=True)
-    #     queryset = Response.objects.filter(author_id__in=friend_ids) | \
-    #                Response.objects.response_set.filter(share_anonymously=True) | \
-    #                Response.objects.filter(author_id=current_user.id)
-    #     return queryset
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -108,7 +91,7 @@ class ResponseDetail(generics.RetrieveUpdateDestroyAPIView):
     Retrieve, update, or destroy a response.
     """
     queryset = Response.objects.all()
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly, IsShared]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly, IsShared]
 
     def get_serializer_class(self):
         response = Response.objects.get(id=self.kwargs.get('pk'))
@@ -123,7 +106,7 @@ class QuestionList(generics.ListCreateAPIView):
     """
     queryset = Question.objects.all()
     serializer_class = fs.QuestionResponsiveSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -135,7 +118,7 @@ class QuestionAllResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Question.objects.all()
     serializer_class = fs.QuestionDetailAllResponsesSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly, IsShared]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly, IsShared]
 
 
 class QuestionFriendResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -144,7 +127,7 @@ class QuestionFriendResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Question.objects.all()
     serializer_class = fs.QuestionDetailFriendResponsesSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly, IsShared]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly, IsShared]
 
 
 class QuestionAnonymousResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -153,7 +136,7 @@ class QuestionAnonymousResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Question.objects.all()
     serializer_class = fs.QuestionDetailAnonymousResponsesSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly, IsShared]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly, IsShared]
 
 
 class ResponseRequestList(generics.ListAPIView):
@@ -161,7 +144,7 @@ class ResponseRequestList(generics.ListAPIView):
     Get response requests of the selected question.
     """
     serializer_class = fs.ResponseRequestSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     pagination_class = None
 
     def get_queryset(self):
@@ -180,14 +163,15 @@ class ResponseRequestCreate(generics.CreateAPIView):
     """
     queryset = ResponseRequest.objects.all()
     serializer_class = fs.ResponseRequestSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 
 class ResponseRequestDestroy(generics.DestroyAPIView):
     serializer_class = fs.ResponseRequestSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
+        # since the requester is the authenticated user, no further permission checking unnecessary
         return ResponseRequest.objects.get(requester_id=self.request.user.id,
                                            requestee_id=self.kwargs.get('rid'),
                                            question_id=self.kwargs.get('qid'))
@@ -195,7 +179,7 @@ class ResponseRequestDestroy(generics.DestroyAPIView):
 
 class DailyQuestionList(generics.ListAPIView):
     serializer_class = fs.QuestionResponsiveSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         if Question.objects.daily_questions().count() == 0:
@@ -205,7 +189,7 @@ class DailyQuestionList(generics.ListAPIView):
 
 class RecommendedQuestionList(generics.ListAPIView):
     serializer_class = fs.QuestionBaseSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         dir_name = os.path.dirname(os.path.abspath(__file__))

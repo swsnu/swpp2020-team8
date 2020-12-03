@@ -4,7 +4,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import IconButton from '@material-ui/core/IconButton';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import AuthorProfile from './AuthorProfile';
 import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
@@ -36,12 +36,15 @@ const ShareSettingInfo = styled.span`
 `;
 
 export default function PostItem({ postObj, postKey, isDetailPage }) {
+  const { pathname } = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const isAuthor =
     postObj?.author && currentUser?.id === postObj.author_detail?.id;
-  const isAnon = postObj?.author && !postObj?.author_detail?.id;
+  const isAnon =
+    (postObj?.author && !postObj?.author_detail?.id) ||
+    pathname.includes('anonymous');
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -79,7 +82,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       content,
       is_private: isPrivate
     };
-    dispatch(createComment(newCommentObj));
+    dispatch(createComment(newCommentObj, postKey));
   };
 
   const toggleLike = () => {
