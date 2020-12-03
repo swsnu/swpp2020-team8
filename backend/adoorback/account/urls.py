@@ -21,6 +21,7 @@ urlpatterns = [
     path('me/friends/', views.CurrentUserFriendList.as_view(), name='current-user-friends'),
 
     # Token related
+    path('token/anonymous/', views.token_anonymous, name="token-anonymous"),
     path('token/', ensure_csrf_cookie(TokenObtainPairView.as_view()),
          name='token-obtain-pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),

@@ -44,7 +44,7 @@ const QuestionSendFriendItem = ({ questionObj, friendObj, sended }) => {
 
   const handleSendResponseRequest = (questionId, requesteeId) => {
     const responseRequestObj = {
-      requester_id: currentUser.id,
+      requester_id: currentUser?.id,
       requestee_id: requesteeId,
       question_id: questionId
     };

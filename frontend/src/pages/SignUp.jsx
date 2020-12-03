@@ -43,7 +43,7 @@ export default function SignUp() {
   const [isEmailValid, setIsEmailValid] = useState(true);
 
   useEffect(() => {
-    if (currentUser && currentUser.id) {
+    if (currentUser && currentUser?.id) {
       history.push('/select-questions');
     }
   }, [currentUser, history]);

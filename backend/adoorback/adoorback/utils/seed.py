@@ -88,10 +88,13 @@ def set_seed(n):
     for i in range(n):
         question = Question.objects.get(id=i+1)
         random_actor_id = random.choice([1, 2, 3])
-        random_recipient_id = random.choice([i for i in range(1, 3) if i not in [random_actor_id]])
+
+        random_recipient_id = random.choice(
+            [i for i in range(1, 3) if i not in [random_actor_id]])
         requester = User.objects.get(id=random_actor_id)
         requestee = User.objects.get(id=random_recipient_id)
-        ResponseRequest.objects.create(requester=requester, requestee=requestee, question=question)
+        ResponseRequest.objects.create(
+            requester=requester, requestee=requestee, question=question)
     logging.info(
         f"{ResponseRequest.objects.count()} ResponseRequest(s) created!") if DEBUG else None
 
@@ -149,6 +152,7 @@ def set_seed(n):
 
     # Seed Friendship
     user_1.friends.add(user_2)
+
 
 
 def fill_data():
