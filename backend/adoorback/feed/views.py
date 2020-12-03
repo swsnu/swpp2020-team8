@@ -3,13 +3,15 @@ import pandas as pd
 
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseBadRequest
+
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 
-import feed.serializers as fs
-from feed.models import Article, Response, Question, Post, ResponseRequest
-from feed.algorithms.data_crawler import select_daily_questions
 from adoorback.permissions import IsAuthorOrReadOnly, IsShared
+import feed.serializers as fs
+from feed.algorithms.data_crawler import select_daily_questions
+from feed.models import Article, Response, Question, Post, ResponseRequest
 
 User = get_user_model()
 
@@ -42,10 +44,14 @@ class UserFeedPostList(generics.ListAPIView):
     List feed posts for user page
     """
     serializer_class = fs.PostFriendSerializer
-    permissions_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Post.objects.friend_posts_only().filter(author_id=self.kwargs.get('pk'))
+        selected_user_id = self.kwargs.get('pk')
+        current_user = self.request.user
+        if selected_user_id in current_user.friend_ids or current_user.id == selected_user_id:
+            return Post.objects.friend_posts_only().filter(author_id=self.kwargs.get('pk'))
+        raise PermissionDenied("you're not his/her friend...")
 
 
 class ArticleList(generics.CreateAPIView):
@@ -141,7 +147,8 @@ class QuestionAnonymousResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class ResponseRequestList(generics.ListAPIView):
     """
-    Get response requests of the selected question.
+    Get response requests sent to other users on the selected question.
+    (for frontend 'send' button implementation purposes)
     """
     serializer_class = fs.ResponseRequestSerializer
     permission_classes = [IsAuthenticated]
@@ -164,6 +171,16 @@ class ResponseRequestCreate(generics.CreateAPIView):
     queryset = ResponseRequest.objects.all()
     serializer_class = fs.ResponseRequestSerializer
     permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        current_user = self.request.user
+        requester = User.objects.get(id=self.request.data.get('requester_id'))
+        requestee = User.objects.get(id=self.request.data.get('requestee_id'))
+        if requester != current_user:
+            raise PermissionDenied("requester가 본인이 아닙니다...")
+        if not User.are_friends(requestee, current_user):
+            raise PermissionDenied("친구에게만 response request를 보낼 수 있습니다...")
+        serializer.save()
 
 
 class ResponseRequestDestroy(generics.DestroyAPIView):

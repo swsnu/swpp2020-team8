@@ -1,16 +1,18 @@
 import json
 
+from django.apps import apps
 from django.contrib.auth import get_user_model, authenticate, login
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import generics
-from rest_framework.parsers import JSONParser
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
 
 from account.models import FriendRequest
 from account.serializers import UserProfileSerializer, \
-    UserFriendRequestSerializer, \
+    UserFriendRequestCreateSerializer, UserFriendRequestUpdateSerializer, \
     UserFriendshipStatusSerializer, AuthorFriendSerializer
 from feed.serializers import QuestionAnonymousSerializer
 from feed.models import Question
@@ -37,17 +39,28 @@ def token_anonymous(request):
         return HttpResponseNotAllowed(['GET'])
 
 
-def user_signup(request):
-    if request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = UserProfileSerializer(data=data,
-                                           context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return JSONResponse(serializer.data, status=201)
-        return JSONResponse(serializer.errors, status=400)
+class UserSignup(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserProfileSerializer
 
-    return HttpResponseNotAllowed(['POST'])
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=201, headers=headers)
+
+    def perform_create(self, serializer):
+        obj = serializer.save()
+        Notification = apps.get_model('notification', 'Notification')
+        admin = User.objects.filter(is_superuser=True).first()
+
+        Notification.objects.create(user=obj,
+                                    actor=admin,
+                                    target=admin,
+                                    origin=admin,
+                                    message=f"{obj.username}님, 반갑습니다! :) 먼저 익명피드를 둘러볼까요?",
+                                    redirect_url='/anonymous')
 
 
 def user_login(request):
@@ -104,6 +117,22 @@ class CurrentUserProfile(generics.RetrieveUpdateAPIView):
         # no further permission checking unnecessary
         return User.objects.get(id=self.request.user.id)
 
+    def perform_update(self, serializer):
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+        updating_data = list(self.request.data.keys())
+        if len(updating_data) == 1 and updating_data[0] == 'question_history':
+            obj = serializer.save()
+            Notification = apps.get_model('notification', 'Notification')
+            admin = User.objects.filter(is_superuser=True).first()
+
+            Notification.objects.create(user=obj,
+                                        actor=admin,
+                                        target=admin,
+                                        origin=admin,
+                                        message=f"{obj.username}님, 질문 선택을 완료해주셨네요 :) 그럼 오늘의 질문들을 둘러보러 가볼까요?",
+                                        redirect_url='/questions')
+
 
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
@@ -121,7 +150,7 @@ class UserSearch(generics.ListAPIView):
         if query:
             queryset = User.objects.filter(
                 username__icontains=self.request.GET.get('query'))
-        return queryset
+        return queryset.order_by('username')
 
 
 class UserFriendDestroy(generics.DestroyAPIView):
@@ -137,18 +166,20 @@ class UserFriendDestroy(generics.DestroyAPIView):
 
 class UserFriendRequestList(generics.ListCreateAPIView):
     queryset = FriendRequest.objects.all()
-    serializer_class = UserFriendRequestSerializer
+    serializer_class = UserFriendRequestCreateSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return FriendRequest.objects.filter(requestee=self.request.user)
 
     def perform_create(self, serializer):
+        if self.request.data.get('requester_id') != self.request.user.id:
+            raise PermissionDenied("requester가 본인이 아닙니다...")
         serializer.save(accepted=None)
 
 
 class UserFriendRequestDestroy(generics.DestroyAPIView):
-    serializer_class = UserFriendRequestSerializer
+    serializer_class = UserFriendRequestCreateSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
@@ -156,12 +187,26 @@ class UserFriendRequestDestroy(generics.DestroyAPIView):
         return FriendRequest.objects.get(requester_id=self.request.user.id,
                                          requestee_id=self.kwargs.get('pk'))
 
+    def perform_destroy(self, obj):
+        obj.delete()
+
 
 class UserFriendRequestUpdate(generics.UpdateAPIView):
-    serializer_class = UserFriendRequestSerializer
+    serializer_class = UserFriendRequestUpdateSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
         # since the requestee is the authenticated user, no further permission checking unnecessary
         return FriendRequest.objects.get(requester_id=self.kwargs.get('pk'),
                                          requestee_id=self.request.user.id)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)  # check `accepted` field
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+    def perform_update(self, serializer):
+        return serializer.save()
