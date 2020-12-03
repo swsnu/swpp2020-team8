@@ -11,14 +11,28 @@ import rootReducer from '../modules';
 import 'jest-styled-components';
 import history from '../history';
 import axios from '../apis';
-import Header from './Header';
-import NotificationDropdownList from './NotificationDropdownList';
+import MobileSearchPage from './MobileSearchPage';
 
 jest.mock('../components/CustomQuestionModal', () => {
   return jest.fn(() => {
     return <div className="custom-question-modal" />;
   });
 });
+
+const mockEmptyStore = {
+  ...mockStore,
+  searchReducer: {
+    searchObj: {
+      searchError: false,
+      results: [],
+      loading: false,
+      message: '',
+      totalPages: 0,
+      currentPageNo: 0,
+      numResults: 0
+    }
+  }
+};
 
 jest.mock('../apis');
 
@@ -28,10 +42,16 @@ jest.spyOn(axios, 'get').mockImplementation(() => {
   });
 });
 
-describe('<Header/>', () => {
+describe('<MobileSearchPage/>', () => {
   const store = createStore(
     rootReducer,
     mockStore,
+    composeWithDevTools(applyMiddleware(thunk))
+  );
+
+  const emptyStore = createStore(
+    rootReducer,
+    mockEmptyStore,
     composeWithDevTools(applyMiddleware(thunk))
   );
 
@@ -39,44 +59,18 @@ describe('<Header/>', () => {
     mount(
       <Provider store={store}>
         <Router history={history}>
-          <Header isMobile={false} />
+          <MobileSearchPage />
         </Router>
       </Provider>
     );
 
-  const getMobileWrapper = () =>
-    mount(
-      <Provider store={store}>
-        <Router history={history}>
-          <Header isMobile />
-        </Router>
-      </Provider>
-    );
-
-  it('should mount Header', async () => {
+  it('should mount MobileSearchPage', async () => {
     jest.mock('react-redux', () => ({
       useDispatch: () => jest.fn()
     }));
     const wrapper = getWrapper();
-    const header = wrapper.find('Header');
-    expect(header.length).toBe(1);
-  });
-
-  it('should render <NotificationDropdownList/> when clicking notification button', () => {
-    // eslint-disable-next-line react/jsx-boolean-value
-    jest.mock('react-redux', () => ({
-      useDispatch: () => jest.fn()
-    }));
-    const component = getWrapper();
-    const notiButton = component.find('.noti-button');
-    notiButton.at(0).simulate('click', { stopPropagation: () => undefined });
-    expect(component.find(NotificationDropdownList)).toHaveLength(1);
-
-    component
-      .find('div')
-      .at(0)
-      .simulate('click', { stopPropagation: () => undefined });
-    expect(component.find(NotificationDropdownList)).toMatchObject({});
+    const component = wrapper.find('MobileSearchPage');
+    expect(component.length).toBe(1);
   });
 
   it(`should set state properly on query input`, () => {
@@ -90,6 +84,20 @@ describe('<Header/>', () => {
       target: { value: query }
     };
     textField.simulate('change', event);
+
+    component.update();
+    // expect(component.find('SearchDropdownList').length).toBeFalsy();
+  });
+
+  it('should not render result when no exists', () => {
+    const component = mount(
+      <Provider store={emptyStore}>
+        <Router history={history}>
+          <MobileSearchPage />
+        </Router>
+      </Provider>
+    );
+    expect(component.find('SearchDropdownList').length).toBe(0);
   });
 
   it('should render search text field and dispatch when query changes', async () => {
@@ -112,6 +120,12 @@ describe('<Header/>', () => {
       searchField.at(index).simulate('change', changeEvent);
     });
     component.update();
+    searchField.at(0).simulate('keydown', {
+      key: 'Enter',
+      preventDefault: jest.fn(),
+      stopPropagation: jest.fn()
+    });
+    history.push = jest.fn();
 
     await new Promise((resolve) => setTimeout(resolve, 500));
     expect(mockDispatch.mock.calls).toBeTruthy();
@@ -119,40 +133,12 @@ describe('<Header/>', () => {
     searchField.at(0).simulate('keyDown', { key: 13, keyCode: 13 });
     history.push = jest.fn();
 
+    const searchIcon = component.find('#search-icon');
+    searchIcon.at(0).simulate('click');
+
     component.update();
     expect(component.find('SearchDropdownList')).toBeTruthy();
 
-    component.unmount();
-  });
-
-  it('should render and toggle drawer when mobile', () => {
-    const component = getMobileWrapper();
-    component.update();
-    const drawerButton = component.find('#drawer-open-button');
-    expect(drawerButton.length).toBeTruthy();
-    drawerButton.at(0).simulate('click');
-    component.update();
-    expect(component.find('MobileDrawer')).toBeTruthy();
-    component.find('#mask').at(0).simulate('click');
-    expect(drawerButton.length).toBeTruthy();
-  });
-  it('should render and call logout when clicked', () => {
-    // eslint-disable-next-line react/jsx-boolean-value
-    jest.mock('react-redux', () => ({
-      useDispatch: () => jest.fn()
-    }));
-    const mockDispatch = jest.fn();
-    jest.spyOn(reactRedux, 'useDispatch');
-    const component = getWrapper();
-    const logout = component.find('#logout-button');
-    expect(logout.exists()).toBeTruthy();
-    logout.forEach((button) => {
-      button.simulate('click');
-    });
-
-    setTimeout(() => {
-      expect(mockDispatch).toBeCalled();
-    }, 500);
     component.unmount();
   });
 });
