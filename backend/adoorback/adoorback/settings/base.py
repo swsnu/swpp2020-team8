@@ -178,3 +178,12 @@ STATICFILES_DIRS = (
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CORS_ALLOW_CREDENTIALS = True
+SESSION_COOKIE_SAMESITE = None
+CSRF_COOKIE_SAMESITE = None
+
+CSRF_TRUSTED_ORIGINS = [
+    "develop.d3t1tnno5uz3sa.amplifyapp.com",
+    "localhost"
+]
