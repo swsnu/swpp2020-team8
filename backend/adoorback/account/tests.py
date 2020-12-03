@@ -265,7 +265,7 @@ class FriendRequestAPITestCase(APITestCase):
         FriendRequest.objects.create(
             requester=friend_user_1, requestee=friend_user_2)
         curr_noti_count = Notification.objects.count()
-        self.assertEqual(curr_noti_count, prev_noti_count + 3) 
+        self.assertEqual(curr_noti_count, prev_noti_count + 3)
 
         with self.login(username=current_user.username, password='password'):
             response = self.get('user-friend-request-list')
