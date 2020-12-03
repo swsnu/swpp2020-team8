@@ -93,6 +93,5 @@
       "!src/styles.js",
       "!src/Friend.jsx"
     ]
-  },
-  "proxy": "http://localhost:8000"
+  }
 }
