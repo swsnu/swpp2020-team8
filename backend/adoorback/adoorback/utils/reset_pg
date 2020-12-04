@@ -9,4 +9,4 @@ python manage.py flush
 yes
 rm -r */migrations
 python manage.py makemigrations account feed comment like notification
-python manage.py migrate --database test
+python manage.py migrate
