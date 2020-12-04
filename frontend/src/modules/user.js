@@ -105,6 +105,7 @@ export const logout = () => async (dispatch) => {
     Cookies.remove('jwt_token_refresh');
   } catch (err) {
     dispatch({ type: 'user/LOGOUT_FAILURE', error: err });
+    return;
   }
   dispatch({
     type: 'user/LOGOUT_SUCCESS'
@@ -118,6 +119,7 @@ export const getCurrentUser = () => async (dispatch) => {
     result = await axios.get('/user/me/');
   } catch (err) {
     dispatch({ type: 'user/GET_CURRENT_USER_FAILURE', error: err });
+    return;
   }
   if (result) {
     dispatch({
@@ -134,6 +136,7 @@ export const getSelectedUser = (id) => async (dispatch) => {
     result = await axios.get(`user/${id}/`);
   } catch (err) {
     dispatch({ type: `user/GET_SELECTED_USER_FAILURE`, error: err });
+    return;
   }
   dispatch({
     type: `user/GET_SELECTED_USER_SUCCESS`,

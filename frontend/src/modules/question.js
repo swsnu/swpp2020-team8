@@ -124,6 +124,7 @@ export const getDailyQuestions = () => async (dispatch) => {
     res = await axios.get('/feed/questions/daily/');
   } catch (err) {
     dispatch({ type: 'question/GET_DAILY_QUESTIONS_FAILURE', error: err });
+    return;
   }
   dispatch({
     type: 'question/GET_DAILY_QUESTIONS_SUCCESS',
@@ -142,6 +143,7 @@ export const appendDailyQuestions = () => async (dispatch, getState) => {
     result = await axios.get(nextUrl);
   } catch (err) {
     dispatch({ type: APPEND_QUESTIONS_FAILURE, error: err });
+    return;
   }
   dispatch({
     type: APPEND_QUESTIONS_SUCCESS,
@@ -166,6 +168,7 @@ export const getResponsesByQuestion = (id) => async (dispatch) => {
       type: 'question/GET_SELECTED_QUESTION_RESPONSES_FAILURE',
       error: err
     });
+    return;
   }
   dispatch({
     type: 'question/GET_SELECTED_QUESTION_RESPONSES_SUCCESS',
@@ -184,6 +187,7 @@ export const getFriendResponsesByQuestion = (id) => async (dispatch) => {
       type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_FAILURE',
       error: err
     });
+    return;
   }
   dispatch({
     type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS',
@@ -202,6 +206,7 @@ export const getResponseRequestsByQuestion = (id) => async (dispatch) => {
       type: 'question/GET_RESPONSE_REQUESTS_FAILURE',
       error: err
     });
+    return;
   }
   dispatch({
     type: 'question/GET_RESPONSE_REQUESTS_SUCCESS',
@@ -224,6 +229,7 @@ export const createResponseRequest = (responseRequestObj) => async (
       type: 'question/CREATE_RESPONSE_REQUESTS_FAILURE',
       error: err
     });
+    return;
   }
   dispatch({
     type: 'question/CREATE_RESPONSE_REQUESTS_SUCCESS',
@@ -242,6 +248,7 @@ export const deleteResponseRequest = (qid, rid) => async (dispatch) => {
       type: 'question/DELETE_RESPONSE_REQUESTS_FAILURE',
       error: err
     });
+    return;
   }
   dispatch({
     type: 'question/DELETE_RESPONSE_REQUESTS_SUCCESS',
