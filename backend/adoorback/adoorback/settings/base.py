@@ -45,8 +45,6 @@ JWT_AUTH = {
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
 
 CORS_ORIGIN_WHITELIST = [
     "https://develop.d3t1tnno5uz3sa.amplifyapp.com",
@@ -177,17 +175,3 @@ STATICFILES_DIRS = (
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-#
-# CORS_ALLOW_CREDENTIALS = True
-#
-# SESSION_COOKIE_SECURE = True
-# SESSION_COOKIE_SAMESITE = 'None'
-#
-# CSRF_COOKIE_SECURE = True
-# CSRF_COOKIE_SAMESITE = 'None'
-#
-# CSRF_TRUSTED_ORIGINS = [
-#     "develop.d3t1tnno5uz3sa.amplifyapp.com",
-#     "localhost",
-#     "127.0.0.1:8000",
-# ]
