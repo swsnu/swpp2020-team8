@@ -47,7 +47,7 @@ JWT_AUTH = {
 
 
 CORS_ORIGIN_WHITELIST = [
-    "https://develop.d3t1tnno5uz3sa.amplifyapp.com"
+    "https://develop.d3t1tnno5uz3sa.amplifyapp.com",
 ]
 
 BASE_URL = 'http://localhost:8000'
@@ -89,10 +89,6 @@ CRON_CLASSES = [
     "account.cron.SendSelectQuestionsNotiCronJob",
     "account.cron.SendAddFriendsNotiCronJob",
 ]
-
-CELERY_RESULT_BACKEND = 'django-db'
-
-CELERY_CACHE_BACKEND = 'django-cache'
 
 # reference: https://github.com/jazzband/django-redis
 CACHES = {
