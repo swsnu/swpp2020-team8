@@ -12,6 +12,9 @@ const LoginWrapper = styled.div`
   width: 500px;
   margin: 0 auto;
   margin-top: 120px;
+  @media (max-width: 650px) {
+    width: 90%;
+  }
 `;
 
 const SignUpButton = styled.button`
@@ -51,7 +54,7 @@ export default function Login() {
   };
 
   const onKeySubmit = (e) => {
-    if (e.keyCode === 13) {
+    if (e.key === 'Enter') {
       dispatch(requestLogin(loginInfo));
     }
   };

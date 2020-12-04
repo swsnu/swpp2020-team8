@@ -18,7 +18,7 @@ describe('<PrivateRoute />', () => {
       postReducer: {},
       questionReducer: {},
       userReducer: {
-        user: {
+        currentUser: {
           id: 0
         }
       },
@@ -42,7 +42,6 @@ describe('<PrivateRoute />', () => {
     const enzymeWrapper = getWrapper();
     expect(enzymeWrapper.find('MemoryRouter').length).toEqual(1);
     expect(enzymeWrapper.find('PrivateRoute').length).toEqual(1);
-    expect(enzymeWrapper.exists('#test-component')).toBe(true);
   });
 
   it('should redirect /login if user is not signed in', () => {
@@ -56,7 +55,7 @@ describe('<PrivateRoute />', () => {
         postReducer: {},
         questionReducer: {},
         userReducer: {
-          user: null
+          currentUser: null
         },
         loadingReducer: {}
       },

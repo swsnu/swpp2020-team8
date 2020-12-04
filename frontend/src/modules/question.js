@@ -1,10 +1,14 @@
 // eslint-disable-next-line no-unused-vars
+import axios from '../apis';
 import {
   mockQuestions,
   // mockQuestionFeed,
   mockRecommendQuestions
 } from '../constants';
-import axios from '../apis';
+
+export const APPEND_QUESTIONS_REQUEST = 'post/APPEND_QUESTIONS_REQUEST';
+export const APPEND_QUESTIONS_SUCCESS = 'post/APPEND_QUESTIONS_SUCCESS';
+export const APPEND_QUESTIONS_FAILURE = 'post/APPEND_QUESTIONS_FAILURE';
 
 export const GET_SAMPLE_QUESTIONS = 'question/GET_SAMPLE_QUESTIONS';
 export const GET_SAMPLE_QUESTIONS_SUCCESS =
@@ -41,13 +45,36 @@ export const GET_SELECTED_QUESTION_RESPONSES_SUCCESS =
 export const GET_SELECTED_QUESTION_RESPONSES_FAILURE =
   'question/GET_SELECTED_QUESTION_RESPONSES_FAILURE';
 
+export const GET_RESPONSE_REQUESTS_REQUEST =
+  'question/GET_RESPONSE_REQUESTS_REQUEST';
+export const GET_RESPONSE_REQUESTS_SUCCESS =
+  'question/GET_RESPONSE_REQUESTS_SUCCESS';
+export const GET_RESPONSE_REQUESTS_FAILURE =
+  'question/GET_RESPONSE_REQUESTS_FAILURE';
+
+export const CREATE_RESPONSE_REQUEST_REQUEST =
+  'question/CREATE_RESPONSE_REQUEST_REQUEST';
+export const CREATE_RESPONSE_REQUEST_SUCCESS =
+  'question/CREATE_RESPONSE_REQUEST_SUCCESS';
+export const CREATE_RESPONSE_REQUEST_FAILURE =
+  'question/CREATE_RESPONSE_REQUEST_FAILURE';
+
+export const DELETE_RESPONSE_REQUEST_REQUEST =
+  'question/DELETE_RESPONSE_REQUEST_REQUEST';
+export const DELETE_RESPONSE_REQUEST_SUCCESS =
+  'question/DELETE_RESPONSE_REQUEST_SUCCESS';
+export const DELETE_RESPONSE_REQUEST_FAILURE =
+  'question/DELETE_RESPONSE_REQUEST_FAILURE';
+
 const initialState = {
   dailyQuestions: [],
   sampleQuestions: [],
   randomQuestions: [],
   recommendedQuestions: [],
   selectedQuestion: null,
-  selectedQuestionResponses: []
+  selectedQuestionResponses: [],
+  selectedQuestionResponseRequests: [],
+  next: null
 };
 
 export const getSampleQuestions = () => {
@@ -97,10 +124,31 @@ export const getDailyQuestions = () => async (dispatch) => {
     res = await axios.get('/feed/questions/daily/');
   } catch (err) {
     dispatch({ type: 'question/GET_DAILY_QUESTIONS_FAILURE', error: err });
+    return;
   }
   dispatch({
     type: 'question/GET_DAILY_QUESTIONS_SUCCESS',
-    res: res.data.results
+    res: res?.data.results,
+    next: res?.data.next
+  });
+};
+
+export const appendDailyQuestions = () => async (dispatch, getState) => {
+  const { next } = getState().questionReducer;
+  if (!next) return;
+  const nextUrl = next.replace('localhost:8000', 'localhost:3000');
+  let result;
+  dispatch({ type: APPEND_QUESTIONS_REQUEST });
+  try {
+    result = await axios.get(nextUrl);
+  } catch (err) {
+    dispatch({ type: APPEND_QUESTIONS_FAILURE, error: err });
+    return;
+  }
+  dispatch({
+    type: APPEND_QUESTIONS_SUCCESS,
+    questions: result?.data.results,
+    next: result?.data.next
   });
 };
 
@@ -120,11 +168,12 @@ export const getResponsesByQuestion = (id) => async (dispatch) => {
       type: 'question/GET_SELECTED_QUESTION_RESPONSES_FAILURE',
       error: err
     });
+    return;
   }
   dispatch({
     type: 'question/GET_SELECTED_QUESTION_RESPONSES_SUCCESS',
-    res: res.data.response_set,
-    question: res.data
+    res: res?.data?.response_set,
+    question: res?.data
   });
 };
 
@@ -138,16 +187,84 @@ export const getFriendResponsesByQuestion = (id) => async (dispatch) => {
       type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_FAILURE',
       error: err
     });
+    return;
   }
   dispatch({
     type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS',
-    res: res.data.response_set,
-    question: res.data
+    res: res?.data?.response_set,
+    question: res?.data
   });
+};
+
+export const getResponseRequestsByQuestion = (id) => async (dispatch) => {
+  let res;
+  dispatch({ type: 'question/GET_RESPONSE_REQUESTS_REQUEST' });
+  try {
+    res = await axios.get(`/feed/questions/${id}/response-request/`);
+  } catch (err) {
+    dispatch({
+      type: 'question/GET_RESPONSE_REQUESTS_FAILURE',
+      error: err
+    });
+    return;
+  }
+  dispatch({
+    type: 'question/GET_RESPONSE_REQUESTS_SUCCESS',
+    res: res?.data
+  });
+};
+
+export const createResponseRequest = (responseRequestObj) => async (
+  dispatch
+) => {
+  let res;
+  dispatch({ type: 'question/CREATE_RESPONSE_REQUESTS_REQUEST' });
+  try {
+    res = await axios.post(
+      `/feed/questions/response-request/`,
+      responseRequestObj
+    );
+  } catch (err) {
+    dispatch({
+      type: 'question/CREATE_RESPONSE_REQUESTS_FAILURE',
+      error: err
+    });
+    return;
+  }
+  dispatch({
+    type: 'question/CREATE_RESPONSE_REQUESTS_SUCCESS',
+    res: res?.data
+  });
+  dispatch(getResponseRequestsByQuestion(responseRequestObj.question_id));
+};
+
+export const deleteResponseRequest = (qid, rid) => async (dispatch) => {
+  let res;
+  dispatch({ type: 'question/DELETE_RESPONSE_REQUESTS_REQUEST' });
+  try {
+    res = await axios.delete(`/feed/questions/${qid}/response-request/${rid}/`);
+  } catch (err) {
+    dispatch({
+      type: 'question/DELETE_RESPONSE_REQUESTS_FAILURE',
+      error: err
+    });
+    return;
+  }
+  dispatch({
+    type: 'question/DELETE_RESPONSE_REQUESTS_SUCCESS',
+    res: res?.data
+  });
+  dispatch(getResponseRequestsByQuestion(qid));
 };
 
 export default function questionReducer(state = initialState, action) {
   switch (action.type) {
+    case GET_DAILY_QUESTIONS_REQUEST: {
+      return {
+        ...state,
+        dailyQuestions: []
+      };
+    }
     case GET_SAMPLE_QUESTIONS_SUCCESS: {
       return {
         ...state,
@@ -167,7 +284,19 @@ export default function questionReducer(state = initialState, action) {
     case GET_DAILY_QUESTIONS_SUCCESS:
       return {
         ...state,
-        dailyQuestions: action.res
+        dailyQuestions: action.res,
+        next: action.next
+      };
+    case APPEND_QUESTIONS_REQUEST:
+      return {
+        ...state,
+        next: null
+      };
+    case APPEND_QUESTIONS_SUCCESS:
+      return {
+        ...state,
+        dailyQuestions: [...state.dailyQuestions, ...action.questions],
+        next: action.next
       };
     case GET_RANDOM_QUESTIONS:
       const { dailyQuestions } = state;
@@ -189,6 +318,11 @@ export default function questionReducer(state = initialState, action) {
         ...state,
         selectedQuestionResponses: action.res,
         selectedQuestion: action.question
+      };
+    case GET_RESPONSE_REQUESTS_SUCCESS:
+      return {
+        ...state,
+        selectedQuestionResponseRequests: action.res
       };
     default:
       return state;

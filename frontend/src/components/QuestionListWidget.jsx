@@ -28,10 +28,21 @@ import CustomQuestionModal from './CustomQuestionModal';
 const NewQuestionButton = styled(CommonButton)`
   width: 275px;
   box-shadow: '0 5px 10px rgba(154, 160, 185, 0.05), 0 5px 10px rgba(166, 173, 201, 0.2)';
+  @media (max-width: 650px) {
+    padding-right: 10px;
+    width: 93vw;
+  }
 `;
 
 const QuestionWidgetWrapper = styled.div`
   position: fixed;
+`;
+
+const WidgetCard = styled(Card)`
+  @media (max-width: 650px) {
+    padding-right: 10px;
+    width: 90vw;
+  }
 `;
 
 NewQuestionButton.displayName = 'NewQuestionButton';
@@ -127,7 +138,7 @@ const QuestionListWidget = ({
   return (
     <WidgetWrapper>
       <QuestionWidgetWrapper>
-        <Card variant="outlined" className={classes.card}>
+        <WidgetCard variant="outlined" className={classes.card}>
           <CardContent className={classes.cardContent}>
             <WidgetTitleWrapper>
               <Typography variant="h6" className={classes.title}>
@@ -185,7 +196,7 @@ const QuestionListWidget = ({
               </List>
             )}
           </CardContent>
-        </Card>
+        </WidgetCard>
         <NewQuestionButton margin="16px 0" onClick={handleModalOpen}>
           새로운 질문 만들기
         </NewQuestionButton>

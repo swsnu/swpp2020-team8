@@ -6,12 +6,11 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from faker import Faker
 
-from adoorback.utils.content_types import get_content_type
-from account.models import Friendship, FriendRequest
-from feed.models import Article, Response, Question, Post, ResponseRequest
+from adoorback.content_types import get_comment_type
+from account.models import FriendRequest
+from feed.models import Article, Response, Question, ResponseRequest
 from comment.models import Comment
 from like.models import Like
-from notification.models import Notification
 
 DEBUG = False
 
@@ -73,7 +72,9 @@ def set_seed(n):
     questions = Question.objects.all()
     for _ in range(n):
         question = random.choice(questions)
-        response = Response.objects.create(author=user, content=faker.text(max_nb_chars=50), question=question,
+        response = Response.objects.create(author=user,
+                                           content=faker.text(max_nb_chars=50),
+                                           question=question,
                                            share_with_friends=random.choice(
                                                [True, False]),
                                            share_anonymously=random.choice([True, False]))
@@ -86,12 +87,11 @@ def set_seed(n):
     # Seed Response Request
     for _ in range(n):
         question = random.choice(questions)
-        actor = User.objects.get(id=random.choice([1, 2, 3]))
-        recipient = User.objects.get(id=random.choice([1, 2, 3]))
-        ResponseRequest.objects.create(
-            actor=actor, recipient=recipient, question=question)
+        requester = random.choice(users)
+        requestee = random.choice(users.exclude(id=requester.id))
+        ResponseRequest.objects.get_or_create(requester=requester, requestee=requestee, question=question)
     logging.info(
-        f"{ResponseRequest.objects.all().count()} ResponseRequest(s) created!") if DEBUG else None
+        f"{ResponseRequest.objects.count()} ResponseRequest(s) created!") if DEBUG else None
 
     # Seed Comment (target=Feed)
     articles = Article.objects.all()
@@ -108,7 +108,7 @@ def set_seed(n):
         f"{Comment.objects.count()} Comment(s) created!") if DEBUG else None
 
     # Seed Reply Comment (target=Comment)
-    comment_model = get_content_type("Comment")
+    comment_model = get_comment_type()
     comments = Comment.objects.all()
     for _ in range(n):
         user = random.choice(users)
@@ -124,9 +124,9 @@ def set_seed(n):
     # Seed Like
     for i in range(n):
         user = random.choice(users)
-        article = Article.objects.get(id=i+1)
-        question = Question.objects.get(id=i+1)
-        response = Response.objects.get(id=i+1)
+        article = Article.objects.get(id=i + 1)
+        question = Question.objects.get(id=i + 1)
+        response = Response.objects.get(id=i + 1)
         comment = Comment.objects.comments_only()[i]
         reply = Comment.objects.replies_only()[i]
         Like.objects.create(user=user, target=article)
@@ -137,44 +137,17 @@ def set_seed(n):
     logging.info(
         f"{Like.objects.count()} Like(s) created!") if DEBUG else None
 
-    # # Seed Notification for likes
-    # likes = Like.objects.all()
-    # for like in likes[:n]:
-    #     actor = like.user
-    #     origin = like.target
-    #     recipient = origin.author
-    #     target = like
-    #     message = f'{actor} likes your {origin.type}'
-    #     Notification.objects.create(actor=actor, recipient=recipient, message=message,
-    #                                 origin=origin, target=target, is_read=False, is_visible=True)
-
-    # # Seed Notification for comments
-    # for comment in comments[:n]:
-    #     actor = comment.author
-    #     origin = comment.target
-    #     recipient = origin.author
-    #     target = comment
-    #     message = f'{actor} commented on your {origin.type}'
-    #     Notification.objects.create(actor=actor, recipient=recipient, message=message,
-    #                                 origin=origin, target=target, is_read=False, is_visible=True)
-    # # TODO: noti for friendship & response requests
-    # logging.info(
-    #     f"{Notification.objects.all().count()} Notification(s) created!") if DEBUG else None
-
-    # Seed Friendship
+    # Seed Friend Request
     user_1 = User.objects.get(id=1)
     user_2 = User.objects.get(id=2)
     user_3 = User.objects.get(id=3)
-    Friendship.objects.create(user=user_1, friend=user_2)
-    Friendship.objects.create(user=user_2, friend=user_3)
 
-    # Seed Friend Request
-    FriendRequest.objects.create(
-        requester=user_1, responder=user_3, responded=False)
-    # FriendRequest.objects.create(
-    #     requester=user_1, responder=user_3, responded=False)
-    # FriendRequest.objects.create(
-    #     requester=user_2, responder=user_3, responded=False)
+    FriendRequest.objects.create(requester=user_3, requestee=user_1)
+    FriendRequest.objects.create(requester=user_3, requestee=user_2)
+
+    # Seed Friendship
+    user_1.friends.add(user_2)
+
 
 
 def fill_data():
@@ -188,13 +161,16 @@ def fill_data():
     comments = Comment.objects.all()
     responses = Response.objects.all()
     posts = random.choice([articles, questions, responses])
-    for user in User.objects.all():
+    for user in users:
         Article.objects.create(author=user, content=faker.catch_phrase()) \
             if user.article_set.count() == 0 else None
         Question.objects.create(author=user, content=faker.catch_phrase(), is_admin_question=False) \
             if user.question_set.count() == 0 else None
         Response.objects.create(author=user, content=faker.catch_phrase(), question=random.choice(questions)) \
             if user.response_set.count() == 0 else None
+        ResponseRequest.objects.create(requester=random.choice(users.exclude(id=user.id)),
+                                       requestee=user, question=random.choice(questions)) \
+            if user.received_response_request_set.count() == 0 else None
         Comment.objects.create(author=user, content=faker.catch_phrase(), target=random.choice(articles)) \
             if Comment.objects.comments_only().filter(author=user).count() == 0 else None
         Comment.objects.create(author=user, content=faker.catch_phrase(), target=random.choice(comments)) \

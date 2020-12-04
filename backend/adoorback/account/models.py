@@ -3,10 +3,12 @@ Define Models for account APIs
 """
 import random
 
+from django.apps import apps
 from django.contrib.auth import get_user_model
-from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.db.models.signals import post_save, post_delete
+from django.contrib.contenttypes.fields import GenericRelation
+from django.db import models
+from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 
 from adoorback.models import AdoorTimestampedModel
@@ -17,55 +19,36 @@ def random_profile_color():
     return '#{0:06X}'.format(random.randint(0, 16777216))
 
 
-class User(AbstractUser):
+class User(AbstractUser, AdoorTimestampedModel):
     """User Model
     This model extends the Django Abstract User model
     """
     email = models.EmailField(unique=True)
-    question_history = models.CharField(null=True,
-                                        # validators=[int_list_validator(sep=',',
-                                        #                                allow_negative=True)])
-                                        max_length=500)
+    question_history = models.CharField(null=True, max_length=500)
     profile_pic = models.CharField(default=random_profile_color, max_length=7)
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(auto_now=True)
+    friends = models.ManyToManyField('self', symmetrical=True, blank=True)
+
+    friendship_targetted_notis = GenericRelation("notification.Notification",
+                                                 content_type_field='target_type',
+                                                 object_id_field='target_id')
+    friendship_originated_notis = GenericRelation("notification.Notification",
+                                                  content_type_field='origin_type',
+                                                  object_id_field='origin_id')
 
     class Meta:
-        ordering = ['username']
+        ordering = ['id']
 
     @classmethod
     def are_friends(cls, user1, user2):
-        return Friendship.objects.filter(user_id=user1.id, friend_id=user2.id).exists() | (user1 == user2)
+        return user2.id in user1.friend_ids or user1 == user2
 
     @property
     def type(self):
         return self.__class__.__name__
 
-
-class Friendship(models.Model):
-    """Friendship Model
-    This model describes Friendship between users
-    """
-    user = models.ForeignKey(
-        get_user_model(), related_name='friends', on_delete=models.CASCADE)
-    friend = models.ForeignKey(
-        get_user_model(), on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
-
-    objects = models.Manager()
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'friend', ], name='unique_friendship'),
-        ]
-
-    def __str__(self):
-        return f'{self.user} & {self.friend}'
-
     @property
-    def type(self):
-        return self.__class__.__name__
+    def friend_ids(self):
+        return list(self.friends.values_list('id', flat=True))
 
 
 class FriendRequest(AdoorTimestampedModel):
@@ -74,54 +57,67 @@ class FriendRequest(AdoorTimestampedModel):
     """
     requester = models.ForeignKey(
         get_user_model(), related_name='sent_friend_requests', on_delete=models.CASCADE)
-    responder = models.ForeignKey(
+    requestee = models.ForeignKey(
         get_user_model(), related_name='received_friend_requests', on_delete=models.CASCADE)
-    responded = models.BooleanField(default=False)
+    accepted = models.BooleanField(null=True)
+
+    friend_request_targetted_notis = GenericRelation("notification.Notification",
+                                                     content_type_field='target_type',
+                                                     object_id_field='target_id')
+    friend_request_originated_notis = GenericRelation("notification.Notification",
+                                                      content_type_field='target_type',
+                                                      object_id_field='target_id')
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['requester', 'responder', ], name='unique_friend_request'),
+                fields=['requester', 'requestee', ], name='unique_friend_request'),
         ]
-        ordering = ['-created_at']
+        ordering = ['-updated_at']
 
     def __str__(self):
-        return f'{self.requester} sent to {self.responder} ({self.responded})'
+        return f'{self.requester} sent to {self.requestee} ({self.accepted})'
 
     @property
     def type(self):
         return self.__class__.__name__
 
 
+@receiver(m2m_changed)
+def delete_friend_noti(action, pk_set, instance, **kwargs):
+    if action == "post_remove":
+        friend = User.objects.get(id=pk_set.pop())
+        # remove friendship related notis from both users
+        friend.friendship_targetted_notis.filter(user=instance).delete()
+        instance.friendship_targetted_notis.filter(user=friend).delete()
+
+
 @receiver(post_save, sender=FriendRequest)
-def create_friendship(sender, **kwargs):
-    instance = kwargs['instance']
-    requester_id = instance.requester_id
-    responder_id = instance.responder_id
-    responded = instance.responded
-    if responded:
-        Friendship.objects.create(user_id=requester_id, friend_id=responder_id)
-    else:
+def create_friend_noti(created, instance, **kwargs):
+    accepted = instance.accepted
+    Notification = apps.get_model('notification', 'Notification')
+    requester = instance.requester
+    requestee = instance.requestee
+
+    if created:
+        Notification.objects.create(user=requestee, actor=requester,
+                                    origin=requester, target=instance,
+                                    message=f'{requester.username}님이 친구 요청을 보냈습니다.',
+                                    redirect_url=f'/user/{requester.id}')
         return
+    elif accepted:
+        Notification.objects.create(user=requestee, actor=requester,
+                                    origin=requester, target=requester,
+                                    message=f'{requester.username}님과 친구가 되었습니다.',
+                                    redirect_url=f'/user/{requester}')
+        Notification.objects.create(user=requester, actor=requestee,
+                                    origin=requestee, target=requestee,
+                                    message=f'{requestee.username}님과 친구가 되었습니다.',
+                                    redirect_url=f'/user/{requestee.id}')
+        # add friendship
+        requester.friends.add(requestee)
 
-
-@receiver(post_save, sender=Friendship)
-def create_reverse_friendship(sender, **kwargs):
-    instance = kwargs['instance']
-    user_id = instance.user_id
-    friend_id = instance.friend_id
-    try:
-        sender.objects.get(user_id=friend_id, friend_id=user_id)
-    except sender.DoesNotExist:
-        sender.objects.create(user_id=friend_id, friend_id=user_id)
-
-
-@receiver(post_delete, sender=Friendship)
-def delete_reverse_friendship(sender, **kwargs):
-    instance = kwargs['instance']
-    user_id = instance.user_id
-    friend_id = instance.friend_id
-    try:
-        sender.objects.get(user_id=friend_id, friend_id=user_id).delete()
-    except sender.DoesNotExist:
-        return
+    # make friend request notification invisible once requestee has responded
+    instance.friend_request_targetted_notis.filter(user=requestee,
+                                                   actor=requester).update(is_read=True,
+                                                                           is_visible=False)

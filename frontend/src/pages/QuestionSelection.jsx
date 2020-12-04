@@ -8,6 +8,7 @@ import { CommonButton } from '../styles';
 
 const QuestionsWrapper = styled.div`
   margin: 80px auto;
+  margin-top: 120px;
   width: 500px;
   @media (max-width: 650px) {
     width: 90%;
@@ -46,7 +47,6 @@ export default function QuestionSelection() {
     (state) => state.questionReducer.sampleQuestions
   );
 
-  const userId = useSelector((state) => state.userReducer.user?.id);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -75,7 +75,7 @@ export default function QuestionSelection() {
   ));
 
   const onClickSubmitButton = async () => {
-    await dispatch(postSelectedQuestions(selectedQuestions, userId));
+    await dispatch(postSelectedQuestions(selectedQuestions));
     history.push('/');
   };
 
@@ -86,10 +86,14 @@ export default function QuestionSelection() {
 
   return (
     <QuestionsWrapper>
-      <h1 id="question-selection-title">마음에 드는 질문을 골라주세요.</h1>
+      <h3 id="question-selection-title">
+        adoor는 매일 새로운 질문을 추천해드립니다!
+        <br />
+        질문 추천을 위해 마음에 드는 질문을 3개 이상 골라주세요 &#128522;
+      </h3>
       <div>{sampleQuestionList}</div>
       <CommonButton
-        disabled={!selectedQuestions.length}
+        disabled={selectedQuestions.length < 3}
         margin="40px 0"
         onClick={onClickSubmitButton}
         id="complete-button"

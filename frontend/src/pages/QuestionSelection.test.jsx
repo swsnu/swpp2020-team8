@@ -46,7 +46,7 @@ describe('<QuestionSelection /> unit test', () => {
 
   it('should dispatch `postSelectedQuestions` when click submit button', async () => {
     const submitButton = wrapper.find('CommonButton');
-    const questionItem = wrapper.find('QuestionItem').at(0);
+    const questionItem = wrapper.find('QuestionItem');
     const postSelectedQuestions = jest
       .spyOn(actionCreators, 'postSelectedQuestions')
       .mockImplementation(() => {
@@ -54,7 +54,13 @@ describe('<QuestionSelection /> unit test', () => {
       });
 
     await act(async () => {
-      questionItem.simulate('click');
+      questionItem.at(0).simulate('click');
+    });
+    await act(async () => {
+      questionItem.at(1).simulate('click');
+    });
+    await act(async () => {
+      questionItem.at(2).simulate('click');
     });
     await act(async () => {
       submitButton.simulate('click');

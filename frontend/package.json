@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -32,7 +33,8 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "styled-components": "^5.2.0"
+    "styled-components": "^5.2.0",
+    "use-onclickoutside": "^0.3.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -56,6 +58,7 @@
     ]
   },
   "devDependencies": {
+    "babel-eslint": "^10.1.0",
     "enzyme-to-json": "^3.6.1",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-config-prettier": "^6.14.0",
@@ -87,8 +90,8 @@
       "!src/store/index.js",
       "!src/serviceWorker.js",
       "!src/utils/dateTimeHelpers.js",
-      "!src/styles.js"
+      "!src/styles.js",
+      "!src/Friend.jsx"
     ]
-  },
-  "proxy": "http://localhost:8000"
+  }
 }

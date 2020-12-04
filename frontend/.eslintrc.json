@@ -10,6 +10,7 @@
     "plugin:prettier/recommended",
     "plugin:react/recommended"
   ],
+  "parser": "babel-eslint",
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -29,7 +30,8 @@
     "react/jsx-filename-extension": [1, { "extensions": [".jsx"] }],
     "react/jsx-props-no-spreading": "off",
     "react/prop-types": "off",
-    "no-case-declarations": "off"
+    "no-case-declarations": "off",
+    "camelcase": "off"
   },
   "globals": {
     "shallow": true,

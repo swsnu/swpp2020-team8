@@ -1,6 +1,8 @@
-import Cookie from 'js.cookie';
+import Cookies from 'js.cookie';
 import axios from '../apis';
-// import axios from 'axios';
+
+export const GET_CURRENT_USER_REQUEST = 'user/GET_CURRENT_USER_REQUEST';
+export const GET_CURRENT_USER_SUCCESS = 'user/GET_CURRENT_USER_SUCCESS';
 
 export const SIGN_UP_REQUEST = 'user/SIGN_UP_REQUEST';
 export const SIGN_UP_SUCCESS = 'user/SIGN_UP_SUCCESS';
@@ -10,18 +12,21 @@ export const LOGIN_REQUEST = 'user/LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
 export const LOGIN_FAILURE = 'user/LOGIN_FAILURE';
 
-export const LOGOUT_REQUEST = 'user/LOGOUT_REQUEST';
 export const LOGOUT_SUCCESS = 'user/LOGOUT_SUCCESS';
-export const LOGOUT_FAILURE = 'user/LOGOUT_FAILURE';
 
 export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
 
 export const SKIP_SELECT_QUESTIONS = 'user/SKIP_SELECT_QUESTIONS';
 
+export const GET_SELECTED_USER_REQUEST = 'user/GET_SELECTED_USER_REQUEST';
+export const GET_SELECTED_USER_SUCCESS = 'user/GET_SELECTED_USER_SUCCESS';
+export const GET_SELECTED_USER_FAILURE = 'user/GET_SELECTED_USER_FAILURE';
+
 const initialState = {
   loginError: false,
   signUpError: {},
-  user: null,
+  currentUser: null,
+  selectedUser: null,
   selectQuestion: true
 };
 
@@ -35,11 +40,12 @@ export const requestSignUp = (signUpInfo) => {
   return async (dispatch) => {
     dispatch({ type: SIGN_UP_REQUEST });
     try {
+      await axios.get('user/token/anonymous/');
       const { data } = await axios.post('user/signup/', signUpInfo);
       if (data.id) {
         dispatch({
           type: SIGN_UP_SUCCESS,
-          user: data
+          currentUser: data
         });
         dispatch(requestLogin(signUpInfo));
       } else {
@@ -57,10 +63,10 @@ export const requestSignUp = (signUpInfo) => {
   };
 };
 
-export const postSelectedQuestions = (selectedQuestions, userId) => {
+export const postSelectedQuestions = (selectedQuestions) => {
   return async (dispatch) => {
-    await axios.patch(`user/${userId}/`, {
-      question_history: JSON.stringify(selectedQuestions)
+    await axios.patch(`user/me/`, {
+      question_history: selectedQuestions.join(',')
     });
     return dispatch({
       type: UPDATE_QUESTION_SELECT,
@@ -68,11 +74,6 @@ export const postSelectedQuestions = (selectedQuestions, userId) => {
     });
   };
 };
-
-async function getUser() {
-  const userInfo = await axios.get('/user/me/');
-  return userInfo.data;
-}
 
 export const requestLogin = (loginInfo) => {
   return async (dispatch) => {
@@ -82,80 +83,112 @@ export const requestLogin = (loginInfo) => {
     try {
       // set jwt token set
       const res = await axios.post('user/token/', loginInfo);
-      Cookie.set('jwt_token_refresh', res.data.refresh);
-      Cookie.set('jwt_token_access', res.data.access);
+      Cookies.set('jwt_token_refresh', res.data.refresh);
+      Cookies.set('jwt_token_access', res.data.access);
 
       // try login
       await axios.post('user/login/', loginInfo);
       // set user info
-      currentUser = await getUser();
-      dispatch(loginSuccess(currentUser));
-    } catch (err) {
-      dispatch(loginFailure(err));
-      return;
+      const userInfoRes = await axios.get('/user/me/');
+      currentUser = userInfoRes.data;
+      dispatch({ type: 'user/LOGIN_SUCCESS', currentUser });
+    } catch (error) {
+      dispatch({ type: 'user/LOGIN_FAILURE', error });
     }
-    dispatch(loginSuccess(currentUser));
-  };
-};
-
-export const loginSuccess = (user) => {
-  return {
-    type: LOGIN_SUCCESS,
-    user
-  };
-};
-
-export const loginFailure = (error) => {
-  return {
-    type: LOGIN_FAILURE,
-    error
   };
 };
 
 export const logout = () => async (dispatch) => {
-  // localStorage.setItem('user', null);
   dispatch({ type: 'user/LOGOUT_REQUEST' });
   try {
     await axios.get('user/logout');
+    Cookies.remove('jwt_token_refresh');
   } catch (err) {
     dispatch({ type: 'user/LOGOUT_FAILURE', error: err });
+    return;
   }
-
   dispatch({
     type: 'user/LOGOUT_SUCCESS'
   });
 };
 
+export const getCurrentUser = () => async (dispatch) => {
+  let result;
+  dispatch({ type: 'user/GET_CURRENT_USER_REQUEST' });
+  try {
+    result = await axios.get('/user/me/');
+  } catch (err) {
+    dispatch({ type: 'user/GET_CURRENT_USER_FAILURE', error: err });
+    return;
+  }
+  if (result) {
+    dispatch({
+      type: 'user/GET_CURRENT_USER_SUCCESS',
+      currentUser: result?.data
+    });
+  }
+};
+
+export const getSelectedUser = (id) => async (dispatch) => {
+  let result;
+  dispatch({ type: `user/GET_SELECTED_USER_REQUEST` });
+  try {
+    result = await axios.get(`user/${id}/`);
+  } catch (err) {
+    dispatch({ type: `user/GET_SELECTED_USER_FAILURE`, error: err });
+    return;
+  }
+  dispatch({
+    type: `user/GET_SELECTED_USER_SUCCESS`,
+    selectedUser: result?.data
+  });
+};
+
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
+    case GET_SELECTED_USER_REQUEST:
+      return {
+        ...state,
+        selectedUser: null
+      };
+    case GET_SELECTED_USER_SUCCESS:
+      return {
+        ...state,
+        selectedUser: action.selectedUser
+      };
+    case GET_SELECTED_USER_FAILURE:
+      return {
+        ...state,
+        selectedUser: null
+      };
     case SIGN_UP_REQUEST:
       return {
         ...state,
-        user: null,
+        currentUser: null,
         signUpError: false
       };
     case LOGIN_REQUEST:
       return {
         ...state,
-        user: null,
+        currentUser: null,
         loginError: false
       };
     case LOGIN_SUCCESS:
       return {
         ...state,
-        user: action.user,
+        currentUser: action.currentUser,
         loginError: false
       };
     case LOGIN_FAILURE:
       return {
         ...state,
-        user: null,
+        currentUser: null,
         loginError: action.error
       };
     case LOGOUT_SUCCESS:
       return {
         ...state,
-        user: null,
+        currentUser: null,
         loginError: false,
         selectQuestion: true
       };
@@ -177,13 +210,19 @@ export default function userReducer(state = initialState, action) {
       };
     case UPDATE_QUESTION_SELECT: {
       const newUser = {
-        ...state.user,
+        ...state.currentUser,
         question_history: action.selectedQuestions
       };
       return {
         ...state,
-        user: newUser,
+        currentUser: newUser,
         selectQuestion: true
+      };
+    }
+    case GET_CURRENT_USER_SUCCESS: {
+      return {
+        ...state,
+        currentUser: action.currentUser
       };
     }
     default:

@@ -1,5 +1,10 @@
 /* eslint-disable camelcase */
 import axios from '../apis';
+import { getFriendResponsesByQuestion } from './question';
+
+export const APPEND_POSTS_REQUEST = 'post/APPEND_POSTS_REQUEST';
+export const APPEND_POSTS_SUCCESS = 'post/APPEND_POSTS_SUCCESS';
+export const APPEND_POSTS_FAILURE = 'post/APPEND_POSTS_FAILURE';
 
 export const GET_SELECTED_ARTICLE_REQUEST = 'post/GET_SELECTED_ARTICLE';
 export const GET_SELECTED_ARTICLE_SUCCESS = 'post/GET_SELECTED_ARTICLE_SUCCESS';
@@ -24,12 +29,6 @@ export const EDIT_SELECTED_ARTICLE_SUCCESS =
   'post/EDIT_SELECTED_ARTICLE_SUCCESS';
 export const EDIT_SELECTED_ARTICLE_FAILURE =
   'post/EDIT_SELECTED_ARTICLE_FAILURE';
-
-export const GET_SELECTED_QUESTION_REQUEST = 'post/GET_SELECTED_QUESTION';
-export const GET_SELECTED_QUESTION_SUCCESS =
-  'post/GET_SELECTED_QUESTION_SUCCESS';
-export const GET_SELECTED_QUESTION_FAILURE =
-  'post/GET_SELECTED_QUESTION_FAILURE';
 
 export const GET_FRIEND_POSTS_REQUEST = 'post/GET_FRIEND_POSTS_REQUEST';
 export const GET_FRIEND_POSTS_SUCCESS = 'post/GET_FRIEND_POSTS_SUCCESS';
@@ -68,7 +67,29 @@ const initialState = {
   friendPosts: [],
   selectedUserPosts: [],
   selectedPost: null,
+  selectedPostFailure: false,
   next: null
+};
+
+export const appendPosts = (origin) => async (dispatch, getState) => {
+  const { next } = getState().postReducer;
+  if (!next) return;
+  const nextUrl = next.replace('localhost:8000', 'localhost:3000');
+  let result;
+  dispatch({ type: APPEND_POSTS_REQUEST });
+  try {
+    result = await axios.get(nextUrl);
+  } catch (err) {
+    dispatch({ type: APPEND_POSTS_FAILURE, error: err });
+    return;
+  }
+  const { data } = result;
+  dispatch({
+    type: APPEND_POSTS_SUCCESS,
+    posts: data.results,
+    next: data.next,
+    origin
+  });
 };
 
 export const getSelectedPost = (postType, id) => async (dispatch) => {
@@ -79,7 +100,10 @@ export const getSelectedPost = (postType, id) => async (dispatch) => {
   try {
     result = await axios.get(`feed/${apiType}/${id}/`);
   } catch (err) {
-    dispatch({ type: `post/GET_SELECTED_${type}_FAILURE`, error: err });
+    dispatch({
+      type: `post/GET_SELECTED_${type}_FAILURE`,
+      error: err.response.status
+    });
     return;
   }
   dispatch({
@@ -103,6 +127,7 @@ export const editSelectedPost = (postObj) => async (dispatch) => {
     });
   } catch (err) {
     dispatch({ type: `post/EDIT_SELECTED_${actionType}_FAILURE`, error: err });
+    return;
   }
   dispatch({
     type: `post/EDIT_SELECTED_${actionType}_SUCCESS`,
@@ -125,6 +150,7 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
     }
   } catch (err) {
     dispatch({ type: `post/GET_${postType}_POSTS_FAILURE`, error: err });
+    return;
   }
   const { data } = result;
   dispatch({
@@ -134,7 +160,24 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
   });
 };
 
-export const createPost = (newPost) => async (dispatch) => {
+export const getSelectedUserPosts = (userId) => async (dispatch) => {
+  let result;
+  dispatch({ type: `post/GET_USER_POSTS_REQUEST` });
+  try {
+    result = await axios.get(`feed/user/${userId}/`);
+  } catch (err) {
+    dispatch({ type: `post/GET_USER_POSTS_FAILURE`, error: err });
+    return;
+  }
+  const { data } = result;
+  dispatch({
+    type: `post/GET_USER_POSTS_SUCCESS`,
+    result: data.results,
+    next: data.next ?? null
+  });
+};
+
+export const createPost = (newPost) => async (dispatch, getState) => {
   dispatch({
     type: CREATE_POST_REQUEST,
     newPost
@@ -154,6 +197,7 @@ export const createPost = (newPost) => async (dispatch) => {
       type: CREATE_POST_FAILURE,
       error
     });
+    return;
   }
   let resultPost = result.data;
   if (resultPost.type === 'Question') {
@@ -167,9 +211,17 @@ export const createPost = (newPost) => async (dispatch) => {
     type: CREATE_POST_SUCCESS,
     newPost: resultPost
   });
+
+  const { selectedQuestion } = getState().questionReducer;
+  if (
+    resultPost.type === 'Response' &&
+    selectedQuestion?.id === resultPost.question_id
+  ) {
+    dispatch(getFriendResponsesByQuestion(selectedQuestion?.id));
+  }
 };
 
-export const createComment = (newComment) => async (dispatch) => {
+export const createComment = (newComment, postKey) => async (dispatch) => {
   dispatch({
     type: CREATE_COMMENT_REQUEST
   });
@@ -182,10 +234,12 @@ export const createComment = (newComment) => async (dispatch) => {
       type: CREATE_COMMENT_FAILURE,
       error
     });
+    return;
   }
   dispatch({
     type: CREATE_COMMENT_SUCCESS,
-    result: result.data
+    result: result.data,
+    postKey
   });
 };
 
@@ -202,6 +256,7 @@ export const createReply = (newReply, postKey) => async (dispatch) => {
       type: CREATE_REPLY_FAILURE,
       error
     });
+    return;
   }
   dispatch({
     type: CREATE_REPLY_SUCCESS,
@@ -224,6 +279,7 @@ export const deleteComment = (commentId, postKey, isReply) => async (
       type: DELETE_COMMENT_FAILURE,
       error
     });
+    return;
   }
   dispatch({
     type: DELETE_COMMENT_SUCCESS,
@@ -262,20 +318,40 @@ export default function postReducer(state = initialState, action) {
   switch (action.type) {
     case GET_SELECTED_ARTICLE_REQUEST:
     case GET_SELECTED_RESPONSE_REQUEST:
-    case GET_SELECTED_QUESTION_REQUEST:
-      return { ...initialState };
+      return { ...initialState, selectedPostFailure: false };
     case GET_SELECTED_ARTICLE_SUCCESS:
     case GET_SELECTED_RESPONSE_SUCCESS:
-    case GET_SELECTED_QUESTION_SUCCESS: {
       return {
         ...state,
-        selectedPost: action.selectedPost
+        selectedPost: action.selectedPost,
+        selectedPostFailure: false
       };
-    }
+    case GET_SELECTED_ARTICLE_FAILURE:
+    case GET_SELECTED_RESPONSE_FAILURE:
+      return {
+        ...state,
+        selectedPost: null,
+        selectedPostFailure: true
+      };
     case GET_ANON_POSTS_REQUEST:
     case GET_FRIEND_POSTS_REQUEST:
     case GET_USER_POSTS_REQUEST:
       return { ...initialState };
+    case APPEND_POSTS_REQUEST:
+      return {
+        ...state,
+        next: null
+      };
+    case APPEND_POSTS_SUCCESS:
+      const appendedResult = [
+        ...state[`${action.origin}Posts`],
+        ...action.posts
+      ];
+      return {
+        ...state,
+        [`${action.origin}Posts`]: appendedResult,
+        next: action.next
+      };
     case GET_ANON_POSTS_SUCCESS:
       return {
         ...state,
@@ -331,9 +407,8 @@ export default function postReducer(state = initialState, action) {
       };
     }
     case CREATE_COMMENT_SUCCESS: {
-      const { target_type, target_id } = action.result;
       const newFriendPosts = state.friendPosts?.map((post) => {
-        if (post.id === target_id && post.type === target_type) {
+        if (`${post.type}-${post.id}` === action.postKey) {
           return {
             ...post,
             comments: post.comments
@@ -345,7 +420,7 @@ export default function postReducer(state = initialState, action) {
       });
 
       const newUserPosts = state.selectedUserPosts?.map((post) => {
-        if (post.id === target_id && post.type === target_type) {
+        if (`${post.type}-${post.id}` === action.postKey) {
           return {
             ...post,
             comments: post.comments
@@ -359,8 +434,7 @@ export default function postReducer(state = initialState, action) {
       const { selectedPost } = state;
       const newSelectedPost =
         selectedPost &&
-        selectedPost.id === target_id &&
-        selectedPost.type === target_type
+        `${selectedPost.type}-${selectedPost.id}` === action.postKey
           ? {
               ...selectedPost,
               comments: selectedPost.comments

@@ -44,6 +44,7 @@ export const mockPost = {
     profile_pic: null
   },
   content: '사람들의 무리한 부탁을 잘 거절하는 편',
+  comments: [],
   created_at: '2020-11-05T14:16:13.801119+08:00',
   updated_at: null
 };
@@ -609,3 +610,407 @@ export const mockFriendList = [
     username: 'curie.yoo'
   }
 ];
+
+export const mockFriendRequestList = [
+  {
+    id: 1,
+    profile_pic:
+      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg',
+    username: 'byeongon.chun'
+  },
+  {
+    id: 2,
+    profile_pic:
+      'https://www.publicdomainpictures.net/pictures/260000/velka/dog-face-cartoon-illustration.jpg',
+    username: 'yunmo.koo'
+  }
+];
+
+export const mockNotifications = [
+  {
+    count: 25,
+    next: 'http://localhost:8000/api/notifications/?page=2',
+    previous: null,
+    results: [
+      {
+        id: 84,
+        message: '익명의 사용자가 회원님의 댓글을 좋아합니다.',
+        actor: 'http://localhost:8000/api/user/84/',
+        actor_detail: {
+          color_hex: '#FA698A'
+        },
+        recipient: 'http://localhost:8000/api/user/84/',
+        recipient_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        target_type: 'Like',
+        target_id: 49,
+        origin_type: 'Comment',
+        origin_id: 10,
+        is_visible: true,
+        is_read: false,
+        created_at: '2020-11-27T01:30:38.038238+09:00',
+        updated_at: '2020-11-27T01:30:38.038265+09:00'
+      },
+      {
+        id: 82,
+        message: '익명의 사용자가 회원님의 질문을 좋아합니다.',
+        actor: 'http://localhost:8000/api/user/82/',
+        actor_detail: {
+          color_hex: '#5C9469'
+        },
+        recipient: 'http://localhost:8000/api/user/82/',
+        recipient_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        target_type: 'Like',
+        target_id: 47,
+        origin_type: 'Question',
+        origin_id: 10,
+        is_visible: true,
+        is_read: false,
+        created_at: '2020-11-27T01:30:38.028161+09:00',
+        updated_at: '2020-11-27T01:30:38.028187+09:00'
+      },
+      {
+        id: 79,
+        message: 'adoor님이 회원님의 댓글을 좋아합니다.',
+        actor: 'http://localhost:8000/api/user/79/',
+        actor_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        recipient: 'http://localhost:8000/api/user/79/',
+        recipient_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        target_type: 'Like',
+        target_id: 44,
+        origin_type: 'Comment',
+        origin_id: 9,
+        is_visible: true,
+        is_read: false,
+        created_at: '2020-11-27T01:30:38.008712+09:00',
+        updated_at: '2020-11-27T01:30:38.008739+09:00'
+      },
+      {
+        id: 77,
+        message: 'adoor님이 회원님의 질문을 좋아합니다.',
+        actor: 'http://localhost:8000/api/user/77/',
+        actor_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        recipient: 'http://localhost:8000/api/user/77/',
+        recipient_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        target_type: 'Like',
+        target_id: 42,
+        origin_type: 'Question',
+        origin_id: 9,
+        is_visible: true,
+        is_read: false,
+        created_at: '2020-11-27T01:30:37.998900+09:00',
+        updated_at: '2020-11-27T01:30:37.998926+09:00'
+      },
+      {
+        id: 76,
+        message: 'adoor님이 회원님의 게시물을 좋아합니다.',
+        actor: 'http://localhost:8000/api/user/76/',
+        actor_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        recipient: 'http://localhost:8000/api/user/76/',
+        recipient_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        target_type: 'Like',
+        target_id: 41,
+        origin_type: 'Article',
+        origin_id: 9,
+        is_visible: true,
+        is_read: false,
+        created_at: '2020-11-27T01:30:37.993789+09:00',
+        updated_at: '2020-11-27T01:30:37.993815+09:00'
+      },
+      {
+        id: 74,
+        message: '익명의 사용자가 회원님의 댓글을 좋아합니다.',
+        actor: 'http://localhost:8000/api/user/74/',
+        actor_detail: {
+          color_hex: '#338C79'
+        },
+        recipient: 'http://localhost:8000/api/user/74/',
+        recipient_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        target_type: 'Like',
+        target_id: 39,
+        origin_type: 'Comment',
+        origin_id: 8,
+        is_visible: true,
+        is_read: false,
+        created_at: '2020-11-27T01:30:37.979199+09:00',
+        updated_at: '2020-11-27T01:30:37.979225+09:00'
+      },
+      {
+        id: 72,
+        message: '익명의 사용자가 회원님의 질문을 좋아합니다.',
+        actor: 'http://localhost:8000/api/user/72/',
+        actor_detail: {
+          color_hex: '#66A0FA'
+        },
+        recipient: 'http://localhost:8000/api/user/72/',
+        recipient_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        target_type: 'Like',
+        target_id: 37,
+        origin_type: 'Question',
+        origin_id: 8,
+        is_visible: true,
+        is_read: false,
+        created_at: '2020-11-27T01:30:37.968519+09:00',
+        updated_at: '2020-11-27T01:30:37.968549+09:00'
+      },
+      {
+        id: 69,
+        message: '익명의 사용자가 회원님의 댓글을 좋아합니다.',
+        actor: 'http://localhost:8000/api/user/69/',
+        actor_detail: {
+          color_hex: '#A02D59'
+        },
+        recipient: 'http://localhost:8000/api/user/69/',
+        recipient_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        target_type: 'Like',
+        target_id: 34,
+        origin_type: 'Comment',
+        origin_id: 7,
+        is_visible: true,
+        is_read: false,
+        created_at: '2020-11-27T01:30:37.946757+09:00',
+        updated_at: '2020-11-27T01:30:37.946783+09:00'
+      },
+      {
+        id: 67,
+        message: '익명의 사용자가 회원님의 질문을 좋아합니다.',
+        actor: 'http://localhost:8000/api/user/67/',
+        actor_detail: {
+          color_hex: '#F4F526'
+        },
+        recipient: 'http://localhost:8000/api/user/67/',
+        recipient_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        target_type: 'Like',
+        target_id: 32,
+        origin_type: 'Question',
+        origin_id: 7,
+        is_visible: true,
+        is_read: false,
+        created_at: '2020-11-27T01:30:37.936342+09:00',
+        updated_at: '2020-11-27T01:30:37.936371+09:00'
+      },
+      {
+        id: 57,
+        message: '익명의 사용자가 회원님의 질문을 좋아합니다.',
+        actor: 'http://localhost:8000/api/user/57/',
+        actor_detail: {
+          color_hex: '#55B770'
+        },
+        recipient: 'http://localhost:8000/api/user/57/',
+        recipient_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        target_type: 'Like',
+        target_id: 22,
+        origin_type: 'Question',
+        origin_id: 5,
+        is_visible: true,
+        is_read: false,
+        created_at: '2020-11-27T01:30:37.876656+09:00',
+        updated_at: '2020-11-27T01:30:37.876680+09:00'
+      },
+      {
+        id: 56,
+        message: '익명의 사용자가 회원님의 게시물을 좋아합니다.',
+        actor: 'http://localhost:8000/api/user/56/',
+        actor_detail: {
+          color_hex: '#012AE5'
+        },
+        recipient: 'http://localhost:8000/api/user/56/',
+        recipient_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        target_type: 'Like',
+        target_id: 21,
+        origin_type: 'Article',
+        origin_id: 5,
+        is_visible: true,
+        is_read: false,
+        created_at: '2020-11-27T01:30:37.871425+09:00',
+        updated_at: '2020-11-27T01:30:37.871449+09:00'
+      },
+      {
+        id: 55,
+        message: '익명의 사용자가 회원님의 댓글을 좋아합니다.',
+        actor: 'http://localhost:8000/api/user/55/',
+        actor_detail: {
+          color_hex: '#D69ABE'
+        },
+        recipient: 'http://localhost:8000/api/user/55/',
+        recipient_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        target_type: 'Like',
+        target_id: 20,
+        origin_type: 'Comment',
+        origin_id: 24,
+        is_visible: true,
+        is_read: false,
+        created_at: '2020-11-27T01:30:37.862794+09:00',
+        updated_at: '2020-11-27T01:30:37.862820+09:00'
+      },
+      {
+        id: 52,
+        message: '익명의 사용자가 회원님의 질문을 좋아합니다.',
+        actor: 'http://localhost:8000/api/user/52/',
+        actor_detail: {
+          color_hex: '#1F2243'
+        },
+        recipient: 'http://localhost:8000/api/user/52/',
+        recipient_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        target_type: 'Like',
+        target_id: 17,
+        origin_type: 'Question',
+        origin_id: 4,
+        is_visible: true,
+        is_read: false,
+        created_at: '2020-11-27T01:30:37.847300+09:00',
+        updated_at: '2020-11-27T01:30:37.847327+09:00'
+      },
+      {
+        id: 51,
+        message: '익명의 사용자가 회원님의 게시물을 좋아합니다.',
+        actor: 'http://localhost:8000/api/user/51/',
+        actor_detail: {
+          color_hex: '#D1B1A0'
+        },
+        recipient: 'http://localhost:8000/api/user/51/',
+        recipient_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        target_type: 'ResponseRequest',
+        target_id: 16,
+        origin_type: 'Question',
+        origin_id: 4,
+        is_visible: true,
+        is_read: false,
+        created_at: '2020-11-27T01:30:37.841983+09:00',
+        updated_at: '2020-11-27T01:30:37.842009+09:00'
+      },
+      {
+        id: 47,
+        message: '익명의 사용자가 회원님의 질문을 좋아합니다.',
+        actor: 'http://localhost:8000/api/user/47/',
+        actor_detail: {
+          color_hex: '#1E9AE3'
+        },
+        recipient: 'http://localhost:8000/api/user/47/',
+        recipient_detail: {
+          id: 3,
+          username: 'adoor',
+          profile_pic: '#D088DF',
+          url: 'http://localhost:8000/api/user/3/'
+        },
+        target_type: 'FriendRequest',
+        target_id: 12,
+        origin_type: 'User',
+        origin_id: 3,
+        is_visible: true,
+        is_read: false,
+        created_at: '2020-11-27T01:30:37.812678+09:00',
+        updated_at: '2020-11-27T01:30:37.812704+09:00'
+      }
+    ]
+  }
+];
+export const mockResponseRequests = [
+  {
+    id: 18,
+    actor_id: 3,
+    recipient_id: 1,
+    question_id: 20
+  },
+  {
+    id: 18,
+    actor_id: 3,
+    recipient_id: 2,
+    question_id: 20
+  }
+];
+export const mockLike = {
+  id: 2,
+  type: 'Like',
+  target_type: 'Article',
+  target_id: 13,
+  user: 'http://localhost:8000/api/user/10/',
+  user_detail: {
+    id: 1,
+    username: 'hawkinscameron'
+  }
+};

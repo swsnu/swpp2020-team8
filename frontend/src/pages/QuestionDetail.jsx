@@ -12,6 +12,7 @@ import {
   getFriendResponsesByQuestion
 } from '../modules/question';
 import PostItem from '../components/posts/PostItem';
+import Message from '../components/Message';
 
 const SwitchWrapper = styled.div`
   display: flex;
@@ -46,6 +47,9 @@ const QuestionDetail = (props) => {
 
   useEffect(() => {
     dispatch(getFriendResponsesByQuestion(questionId));
+    return () => {
+      setViewAnonymousResponses(false);
+    };
   }, [dispatch, questionId]);
 
   const handleChangeViewAnonymousResponses = (event) => {
@@ -55,27 +59,46 @@ const QuestionDetail = (props) => {
   };
 
   const responseList = responses.map((post) => (
-    <PostItem key={`${post.type}-${post.id}`} postObj={post} />
+    <PostItem
+      postKey={`${post.type}-${post.id}`}
+      key={`${post.type}-${post.id}`}
+      postObj={post}
+    />
   ));
 
   return (
     <div>
-      {question && <QuestionItem questionObj={question} />}
-      <SwitchWrapper>
-        <span className={classes.switchLabel}>익명의 답변 보기</span>
-        <FormControlLabel
-          className={classes.switch}
-          control={
-            <Switch
-              checked={viewAnonymousResponses}
-              onChange={handleChangeViewAnonymousResponses}
-              name="view-anonymous-responses"
-              color="primary"
-            />
-          }
-        />
-      </SwitchWrapper>
-      {responseList}
+      {question ? (
+        <>
+          <QuestionItem
+            questionObj={question}
+            onResetContent={() => setViewAnonymousResponses(false)}
+          />
+          {responses?.length !== 0 ? (
+            <>
+              <SwitchWrapper>
+                <span className={classes.switchLabel}>익명의 답변 보기</span>
+                <FormControlLabel
+                  className={classes.switch}
+                  control={
+                    <Switch
+                      checked={viewAnonymousResponses}
+                      onChange={handleChangeViewAnonymousResponses}
+                      name="view-anonymous-responses"
+                      color="primary"
+                    />
+                  }
+                />
+              </SwitchWrapper>
+              {responseList}
+            </>
+          ) : (
+            <Message message="표시할 게시물이 없습니다" />
+          )}
+        </>
+      ) : (
+        <Message message="존재하지 않는 질문입니다" />
+      )}
     </div>
   );
 };

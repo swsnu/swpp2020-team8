@@ -4,7 +4,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import IconButton from '@material-ui/core/IconButton';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import AuthorProfile from './AuthorProfile';
 import CreateTime from './CreateTime';
 import PostAuthorButtons from './PostAuthorButtons';
@@ -17,6 +17,7 @@ import {
 } from '../../styles';
 import CommentItem from '../comments/CommentItem';
 import NewComment from '../comments/NewComment';
+import { likePost, unlikePost } from '../../modules/like';
 import { createComment, deletePost } from '../../modules/post';
 import AlertDialog from '../common/AlertDialog';
 
@@ -29,16 +30,21 @@ const ContentWrapper = styled.div`
 const CommentWrapper = styled.div``;
 const ShareSettingsWrapper = styled.div``;
 const ShareSettingInfo = styled.span`
-  margin-right: 8px;
+  margin-right: 4px;
   color: #777;
+  font-size: 12px;
 `;
 
 export default function PostItem({ postObj, postKey, isDetailPage }) {
+  const { pathname } = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.userReducer.user);
-  const isAuthor = postObj?.author && user?.id === postObj.author_detail?.id;
-  const isAnon = !postObj?.author_detail?.id;
+  const currentUser = useSelector((state) => state.userReducer.currentUser);
+  const isAuthor =
+    postObj?.author && currentUser?.id === postObj.author_detail?.id;
+  const isAnon =
+    (postObj?.author && !postObj?.author_detail?.id) ||
+    pathname.includes('anonymous');
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -53,7 +59,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
 
   const commentList = postObj?.comments?.map((comment) => {
     if (!comment) return null;
-    const isCommentAuthor = comment.author_detail?.id === user.id;
+    const isCommentAuthor = comment.author_detail?.id === currentUser?.id;
     if (comment.is_private && !isAuthor && !isCommentAuthor) return null;
     return (
       <CommentItem
@@ -76,14 +82,20 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       content,
       is_private: isPrivate
     };
-    dispatch(createComment(newCommentObj));
+    dispatch(createComment(newCommentObj, postKey));
   };
 
   const toggleLike = () => {
+    const postInfo = {
+      target_type: postObj.type,
+      target_id: postObj.id
+    };
     if (liked) {
       setLikeCount((prev) => prev - 1);
+      dispatch(unlikePost(postInfo));
     } else {
       setLikeCount((prev) => prev + 1);
+      dispatch(likePost(postInfo));
     }
     setLiked((prev) => !prev);
   };
@@ -115,11 +127,15 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       <CreateTime createdTime={postObj.created_at} />
       <PostItemFooterWrapper>
         <ShareSettingsWrapper>
+          <ShareSettingInfo>공개범위:</ShareSettingInfo>
           {isAuthor && postObj.share_with_friends && (
-            <ShareSettingInfo>친구공개</ShareSettingInfo>
+            <ShareSettingInfo>친구</ShareSettingInfo>
           )}
+          {isAuthor &&
+            postObj.share_with_friends &&
+            postObj.share_anonymously && <ShareSettingInfo>|</ShareSettingInfo>}
           {isAuthor && postObj.share_anonymously && (
-            <ShareSettingInfo>익명공개</ShareSettingInfo>
+            <ShareSettingInfo>익명</ShareSettingInfo>
           )}
         </ShareSettingsWrapper>
         <PostItemButtonsWrapper>

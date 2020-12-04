@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model
 from like.models import Like
 from adoorback.serializers import AdoorBaseSerializer
 
-
 User = get_user_model()
 
 
@@ -30,4 +29,4 @@ class LikeSerializer(serializers.ModelSerializer):
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Like
-        fields = ['id', 'type', 'target_type', 'target_id', 'user', 'user_detail']
+        fields = ['id', 'type', 'user', 'user_detail', 'target_type', 'target_id']

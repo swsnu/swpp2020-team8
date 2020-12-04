@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -16,12 +16,20 @@ import { PostItemHeaderWrapper, PostItemButtonsWrapper } from '../../styles';
 import ShareSettings from './ShareSettings';
 import QuestionSendModal from '../QuestionSendModal';
 import { mockFriendList } from '../../constants';
+import { likePost, unlikePost } from '../../modules/like';
+import { deletePost } from '../../modules/post';
+import AlertDialog from '../common/AlertDialog';
 
 const QuestionItemWrapper = styled.div`
+  @media (max-width: 650px) {
+    border: 1px solid #e7e7e7;
+    box-shadow: 0 2px 2px rgba(154, 160, 185, 0.05),
+      0 5px 5px rgba(166, 173, 201, 0.1);
+  }
   background: #f4f4f4;
   padding: 12px;
   border-radius: 4px;
-  margin: 8px 0;
+  margin: 16px 0;
   position: relative;
 `;
 
@@ -49,11 +57,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function QuestionItem({ questionObj }) {
-  const user = useSelector((state) => state.userReducer.user);
-  const isAuthor = user.id === questionObj.author_detail.id;
+export default function QuestionItem({ questionObj, onResetContent }) {
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.userReducer.currentUser);
+  const isAuthor = currentUser?.id === questionObj.author_detail.id;
 
   const classes = useStyles();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [liked, setLiked] = useState(questionObj.current_user_liked);
   const [likeCount, setLikeCount] = useState(questionObj.like_count);
   const [isWriting, setIsWriting] = useState(false);
@@ -73,10 +83,16 @@ export default function QuestionItem({ questionObj }) {
   };
 
   const toggleLike = () => {
+    const postInfo = {
+      target_type: questionObj.type,
+      target_id: questionObj.id
+    };
     if (liked) {
       setLikeCount((prev) => prev - 1);
+      dispatch(unlikePost(postInfo));
     } else {
       setLikeCount((prev) => prev + 1);
+      dispatch(likePost(postInfo));
     }
     setLiked((prev) => !prev);
   };
@@ -93,21 +109,32 @@ export default function QuestionItem({ questionObj }) {
     setQuestionSendModalOpen(false);
   };
 
-  const handleEdit = () => {};
-  const handleDelete = () => {};
+  const handleDelete = () => {
+    dispatch(deletePost(questionObj.id, questionObj.type));
+  };
 
   const resetContent = () => {
     setNewPost((prev) => ({ ...prev, content: '' }));
+    if (onResetContent) onResetContent();
   };
 
   return (
     <QuestionItemWrapper>
+      <AlertDialog
+        message="정말 삭제하시겠습니까?"
+        onConfirm={handleDelete}
+        onClose={() => setIsDeleteDialogOpen(true)}
+        isOpen={isDeleteDialogOpen}
+      />
       <PostItemHeaderWrapper>
         {!questionObj.is_admin_question && (
           <AuthorProfile author={questionObj.author_detail} />
         )}
         {!questionObj.is_admin_question && isAuthor && (
-          <PostAuthorButtons isQuestion onClickDelete={handleDelete} />
+          <PostAuthorButtons
+            isQuestion
+            onClickDelete={() => setIsDeleteDialogOpen(true)}
+          />
         )}
       </PostItemHeaderWrapper>
       <Question>

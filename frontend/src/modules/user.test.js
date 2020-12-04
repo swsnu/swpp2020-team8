@@ -42,17 +42,21 @@ describe('user Actions', () => {
 
   it('should dispatch user/SIGNUP_FAILURE when api returns error', async () => {
     jest.mock('axios');
+    const spyToken = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return Promise((resolve) => resolve());
+    });
     const spy = jest.spyOn(axios, 'post').mockImplementation(() => {
       return Promise.reject(new Error('error'));
     });
 
     store.dispatch(actionCreators.requestSignUp()).then(() => {
       const newState = store.getState();
+      expect(spyToken).toHaveBeenCalled();
       expect(spy).toHaveBeenCalled();
-      expect(newState.userReducer.user).toMatchObject({
+      expect(newState.userReducer.currentUser).toMatchObject({
         loginError: false,
         signUpError: 'error',
-        user: null,
+        currentUser: null,
         selectQuestion: true
       });
     });
@@ -83,7 +87,7 @@ describe('user Actions', () => {
       })
       .catch(() => {
         const newState = store.getState();
-        expect(newState.userReducer.user).toBeFalsy();
+        expect(newState.userReducer.currentUser).toBeFalsy();
         expect(newState.userReducer.signUpError).toBeTruthy();
       });
   });
@@ -101,7 +105,7 @@ describe('user Actions', () => {
     store.dispatch(actionCreators.logout()).then(() => {
       const newState = store.getState();
       expect(spy).toHaveBeenCalled();
-      expect(newState.userReducer.user).toBeFalsy();
+      expect(newState.userReducer.currentUser).toBeFalsy();
       done();
     });
   });
@@ -115,7 +119,7 @@ describe('user Actions', () => {
     store.dispatch(actionCreators.logout()).then(() => {
       const newState = store.getState();
       expect(spy).toHaveBeenCalled();
-      expect(newState.userReducer.user).toMatchObject(null);
+      expect(newState.userReducer.currentUser).toEqual(null);
     });
   });
 
@@ -138,7 +142,7 @@ describe('user Actions', () => {
       })
       .catch(() => {
         const newState = store.getState();
-        expect(newState.userReducer.user).toBeFalsy();
+        expect(newState.userReducer.currentUser).toBeFalsy();
         expect(newState.userReducer.loginError).toBeTruthy();
       });
   });
@@ -146,7 +150,7 @@ describe('user Actions', () => {
   it(`should make patch call & update user question history when select questions`, (done) => {
     jest.mock('axios');
 
-    const questionSelection = '[1]';
+    const questionSelection = [1, 2, 3];
     const spy = jest.spyOn(axios, 'patch').mockImplementation(() => {
       return new Promise((resolve) => {
         const result = { data: questionSelection };
@@ -159,7 +163,7 @@ describe('user Actions', () => {
       .then(() => {
         const newState = store.getState();
         expect(spy).toHaveBeenCalled();
-        expect(newState.userReducer.user.question_history).toEqual(
+        expect(newState.userReducer.currentUser.question_history).toEqual(
           questionSelection
         );
         done();
@@ -194,7 +198,7 @@ describe('user Actions', () => {
       const newState = store.getState();
       expect(spy).toHaveBeenCalled();
       expect(getSpy).toHaveBeenCalled();
-      expect(newState.userReducer.user).toMatchObject(userInfo);
+      expect(newState.userReducer.currentUser).toMatchObject(userInfo);
       done();
     });
   });
@@ -207,7 +211,8 @@ describe('User Reducer', () => {
       loginError: false,
       selectQuestion: true,
       signUpError: {},
-      user: null
+      currentUser: null,
+      selectedUser: null
     });
   });
 
@@ -239,13 +244,13 @@ describe('User Reducer', () => {
       {
         loginError: false,
         signUpError: {},
-        user: { id: 1 }
+        currentUser: { id: 1 }
       },
       {
         type: actionCreators.LOGOUT_SUCCESS
       }
     );
-    expect(newState.user).toEqual(null);
+    expect(newState.currentUser).toEqual(null);
   });
 
   it('should update user info question after selecting question', () => {
@@ -253,15 +258,15 @@ describe('User Reducer', () => {
       {
         loginError: false,
         signUpError: {},
-        user: { id: 1 },
+        currentUser: { id: 1 },
         selectQuestion: true
       },
       {
         type: actionCreators.UPDATE_QUESTION_SELECT,
-        selectedQuestions: '[1, 2, 3]'
+        selectedQuestions: '1, 2, 3'
       }
     );
-    expect(newState.user.question_history).toEqual('[1, 2, 3]');
+    expect(newState.currentUser.question_history).toEqual('1, 2, 3');
   });
 
   it('should not update user info while waiting on login api response', () => {
@@ -269,13 +274,13 @@ describe('User Reducer', () => {
       {
         loginError: false,
         signUpError: {},
-        user: { id: 1 }
+        currentUser: { id: 1 }
       },
       {
         type: actionCreators.LOGIN_REQUEST
       }
     );
-    expect(newState.user).toBeFalsy();
+    expect(newState.currentUser).toBeFalsy();
     expect(newState.loginError).toBeFalsy();
   });
 
@@ -284,14 +289,45 @@ describe('User Reducer', () => {
       {
         loginError: false,
         signUpError: {},
-        user: { id: 1 }
+        currentUser: { id: 1 }
       },
       {
         type: actionCreators.SIGN_UP_REQUEST
       }
     );
-    expect(newState.user).toBeFalsy();
+    expect(newState.currentUser).toBeFalsy();
     expect(newState.signUpError).toBeFalsy();
+  });
+
+  it(`'getSelectedUser' should get responses of selected user correctly`, (done) => {
+    jest.mock('axios');
+    const selectedUser = { id: 1, username: 'selectedUser' };
+    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const res = {
+          data: selectedUser
+        };
+        resolve(res);
+      });
+    });
+
+    store.dispatch(actionCreators.getSelectedUser()).then(() => {
+      const newState = store.getState();
+      expect(spy).toHaveBeenCalled();
+      expect(newState.userReducer.selectedUser).toMatchObject(selectedUser);
+      done();
+    });
+  });
+
+  it('should dispatch question/GET_SELECTED_USER_FAILURE when api returns error', async () => {
+    jest.mock('axios');
+    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return Promise.reject(new Error('error'));
+    });
+
+    store.dispatch(actionCreators.getSelectedUser()).then(() => {
+      expect(spy).toHaveBeenCalled();
+    });
   });
 
   // it('should add post to feed when create success', () => {

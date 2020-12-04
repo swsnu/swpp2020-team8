@@ -34,17 +34,19 @@ export default function SignUp() {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const { user, signUpError } = useSelector((state) => state.userReducer);
+  const { currentUser, signUpError } = useSelector(
+    (state) => state.userReducer
+  );
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isUsernameValid, setIsUsernameValid] = useState(true);
   const [isEmailValid, setIsEmailValid] = useState(true);
 
   useEffect(() => {
-    if (user && user.id) {
+    if (currentUser && currentUser?.id) {
       history.push('/select-questions');
     }
-  }, [user, history]);
+  }, [currentUser, history]);
 
   useEffect(() => {
     if (!isSubmitted) return;
@@ -79,17 +81,6 @@ export default function SignUp() {
     <SignUpWrapper>
       <h1 id="signup-title">회원가입</h1>
       <CommonInput
-        id="email-input"
-        name="email"
-        value={signUpInfo.email}
-        placeholder="이메일"
-        onChange={onInputChange}
-        invalid={isSubmitted && !isEmailValid}
-      />
-      {isSubmitted && !isEmailValid && (
-        <WarningMessage>이메일이 유효하지 않습니다 :(</WarningMessage>
-      )}
-      <CommonInput
         name="username"
         id="username-input"
         value={signUpInfo.username}
@@ -99,6 +90,17 @@ export default function SignUp() {
       />
       {isSubmitted && !isUsernameValid && (
         <WarningMessage>닉네임이 유효하지 않습니다 :(</WarningMessage>
+      )}
+      <CommonInput
+        id="email-input"
+        name="email"
+        value={signUpInfo.email}
+        placeholder="이메일"
+        onChange={onInputChange}
+        invalid={isSubmitted && !isEmailValid}
+      />
+      {isSubmitted && !isEmailValid && (
+        <WarningMessage>이메일이 유효하지 않습니다 :(</WarningMessage>
       )}
       <CommonInput
         name="password"
