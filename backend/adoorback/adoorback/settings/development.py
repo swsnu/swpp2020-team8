@@ -33,5 +33,5 @@ sentry_sdk.init(
 
 CORS_ALLOWED_ORIGINS = [
     "https://develop.d3t1tnno5uz3sa.amplifyapp.com",
-    "http://localhost:3000"
+    "http://localhost:3000",
 ]
