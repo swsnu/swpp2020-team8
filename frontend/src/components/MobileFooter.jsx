@@ -7,7 +7,7 @@ import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
 import HomeIcon from '@material-ui/icons/Home';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import { useHistory, useLocation } from 'react-router';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles({
   root: {
@@ -27,7 +27,7 @@ export default function MobileFooter() {
   const classes = useStyles();
   const history = useHistory();
   const [value, setValue] = React.useState('/');
-  const { pathname } = useLocation();
+  const { pathname } = window.location;
 
   useEffect(() => {
     if (
