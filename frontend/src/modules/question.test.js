@@ -156,7 +156,7 @@ describe('questionActions', () => {
       const newState = store.getState();
       expect(spy).toHaveBeenCalled();
       expect(newState.questionReducer.selectedQuestionResponseRequests).toEqual(
-        undefined
+        mockResponseRequests
       );
       done();
     });
@@ -190,7 +190,7 @@ describe('questionActions', () => {
       const newState = store.getState();
       expect(spy).toHaveBeenCalled();
       expect(newState.questionReducer.selectedQuestionResponseRequests).toEqual(
-        undefined
+        mockResponseRequests
       );
       done();
     });
@@ -224,7 +224,7 @@ describe('questionActions', () => {
       const newState = store.getState();
       expect(spy).toHaveBeenCalled();
       expect(newState.questionReducer.selectedQuestionResponseRequests).toEqual(
-        undefined
+        mockResponseRequests
       );
       done();
     });
