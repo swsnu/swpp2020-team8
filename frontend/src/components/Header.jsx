@@ -135,7 +135,7 @@ const Header = ({ isMobile }) => {
   };
 
   const toggleNotiOpen = () => {
-    setIsNotiOpen(!isNotiOpen);
+    setIsNotiOpen((prev) => !prev);
   };
 
   useEffect(() => {
