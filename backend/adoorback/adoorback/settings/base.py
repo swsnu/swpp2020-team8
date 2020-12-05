@@ -14,9 +14,6 @@ from pathlib import Path
 import datetime
 import os.path
 
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -45,11 +42,9 @@ JWT_AUTH = {
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
 
 CORS_ORIGIN_WHITELIST = [
-    "https://develop.d3t1tnno5uz3sa.amplifyapp.com"
+    "https://develop.d3t1tnno5uz3sa.amplifyapp.com",
 ]
 
 BASE_URL = 'http://localhost:8000'
@@ -72,7 +67,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'polymorphic',
     'admin_honeypot',
-    'django_celery_results',
     'django_cron',
     'corsheaders',
     'import_export',
@@ -91,10 +85,6 @@ CRON_CLASSES = [
     "account.cron.SendSelectQuestionsNotiCronJob",
     "account.cron.SendAddFriendsNotiCronJob",
 ]
-
-CELERY_RESULT_BACKEND = 'django-db'
-
-CELERY_CACHE_BACKEND = 'django-cache'
 
 # reference: https://github.com/jazzband/django-redis
 CACHES = {
@@ -181,16 +171,3 @@ STATICFILES_DIRS = (
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-CORS_ALLOW_CREDENTIALS = True
-
-SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_SAMESITE = 'None'
-
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'None'
-
-CSRF_TRUSTED_ORIGINS = [
-    "develop.d3t1tnno5uz3sa.amplifyapp.com",
-    "localhost"
-]

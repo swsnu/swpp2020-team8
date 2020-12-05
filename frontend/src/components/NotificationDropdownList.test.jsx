@@ -67,6 +67,6 @@ describe('<NotificationDropdownList/>', () => {
 
     const component = emptyNotiWrapper.find('NotificationDropdownList');
     const buttons = component.find('button');
-    expect(buttons.length).toBe(0);
+    expect(buttons.length).toBe(1);
   });
 });
