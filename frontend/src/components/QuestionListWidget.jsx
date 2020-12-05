@@ -108,9 +108,9 @@ const QuestionListWidget = ({
     dispatch(getRecommendedQuestions());
   }, [dispatch]);
 
-  const recommendedQuestionList = recommendedQuestions
-    .slice(0, 5)
-    .map((question) => (
+  const recommendedQuestionList =
+    recommendedQuestions &&
+    recommendedQuestions.slice(0, 5).map((question) => (
       <ListItemLink key={question.id} to={`/questions/${question.id}`}>
         <ListItemText
           classes={{ primary: classes.question }}
