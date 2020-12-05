@@ -103,13 +103,10 @@ export default function NotificationPage({ tabType }) {
   };
 
   const notificationList = notifications.map((noti) => {
-    if (
-      noti.target_type === 'FriendRequest' &&
-      noti.origin_type === 'FriendRequest'
-    ) {
-      const isFriend = friendList.find(
-        (friend) => +friend.id === +noti?.actor_detail?.id
-      );
+    if (noti.is_friend_request) {
+      const isFriend =
+        friendList.find((friend) => +friend.id === +noti?.actor_detail?.id) !==
+        undefined;
       return (
         <FriendItem
           key={`friend-request-${noti?.target_id}`}
@@ -130,31 +127,20 @@ export default function NotificationPage({ tabType }) {
   });
 
   const friendRequestList = notifications
-    .filter((noti) => noti.target_type === 'FriendRequest')
-    .map((friendRequest) => {
-      const isFriend = friendList.find(
-        (friend) => +friend.id === +friendRequest?.actor_detail?.id
-      );
-
-      return friendRequest.origin_type === 'FriendRequest' ? (
+    .filter((noti) => noti.is_friend_request)
+    .map((friendRequestNoti) => {
+      return (
         <FriendItem
-          key={`friend-request-${friendRequest?.target_id}`}
-          isFriend={isFriend}
-          message={friendRequest.message}
-          isPending={!isFriend}
-          friendObj={friendRequest?.actor_detail}
-        />
-      ) : (
-        <NotificationItem
-          key={`friend-request-${friendRequest?.id}`}
-          notiObj={friendRequest}
-          isNotificationPage
+          key={`friend-request-${friendRequestNoti?.id}`}
+          message={friendRequestNoti.message}
+          isPending
+          friendObj={friendRequestNoti?.actor_detail}
         />
       );
     });
 
   const responseRequestList = notifications
-    .filter((noti) => noti.target_type === 'ResponseRequest')
+    .filter((noti) => noti.is_response_request)
     .map((responseRequest) => (
       <NotificationItem
         key={`response-request-${responseRequest?.id}`}
