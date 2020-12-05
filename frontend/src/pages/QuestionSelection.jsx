@@ -7,12 +7,18 @@ import { postSelectedQuestions, skipSelectQuestions } from '../modules/user';
 import { CommonButton } from '../styles';
 
 const QuestionsWrapper = styled.div`
-  margin: 80px auto;
-  margin-top: 120px;
+  margin: 30px auto;
+  margin-top: 80px;
   width: 500px;
   @media (max-width: 650px) {
     width: 90%;
+    margin-top: 0;
   }
+`;
+
+const TitleWrapper = styled.div`
+  margin: 16px auto;
+  word-break: keep-all;
 `;
 
 const QuestionItem = styled.div`
@@ -86,11 +92,19 @@ export default function QuestionSelection() {
 
   return (
     <QuestionsWrapper>
-      <h3 id="question-selection-title">
+      <TitleWrapper id="question-selection-title">
         adoor는 매일 새로운 질문을 추천해드립니다!
         <br />
-        질문 추천을 위해 마음에 드는 질문을 3개 이상 골라주세요 &#128522;
-      </h3>
+        <div style={{ fontSize: '18px', fontWeight: 500 }}>
+          질문 추천을 위해 마음에 드는 질문을
+          <span
+            style={{ margin: '0 4px', fontWeight: 'bold', color: '#F12C56' }}
+          >
+            3개 이상
+          </span>
+          골라주세요 &#128522;
+        </div>
+      </TitleWrapper>
       <div>{sampleQuestionList}</div>
       <CommonButton
         disabled={selectedQuestions.length < 3}
