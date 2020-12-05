@@ -8,6 +8,7 @@ import { CommonButton } from '../styles';
 
 const QuestionsWrapper = styled.div`
   margin: 30px auto;
+  margin-top: 80px;
   width: 500px;
   @media (max-width: 650px) {
     width: 90%;
