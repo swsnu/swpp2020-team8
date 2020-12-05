@@ -1,10 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import axios from '../apis';
-import {
-  mockQuestions,
-  // mockQuestionFeed,
-  mockRecommendQuestions
-} from '../constants';
+import { mockQuestions } from '../constants';
 
 export const APPEND_QUESTIONS_REQUEST = 'post/APPEND_QUESTIONS_REQUEST';
 export const APPEND_QUESTIONS_SUCCESS = 'post/APPEND_QUESTIONS_SUCCESS';
@@ -100,20 +96,20 @@ export const getSampleQuestionsSuccess = (sampleQuestions) => {
 // TODO: recommendation api 개발 후 주석 제거 및 테스팅 코드 작성 필요
 // eslint-disable-next-line no-unused-vars
 export const getRecommendedQuestions = (userId) => async (dispatch) => {
-  // let res;
+  let res;
   dispatch({ type: 'question/GET_RECOMMENDED_QUESTIONS_REQUEST' });
-  // try {
-  //   // res = await axios.get(`questions/${userId}`)
-  // } catch (err) {
-  //   dispatch({
-  //     type: 'question/GET_RECOMMENDED_QUESTIONS_FAILURE',
-  //     error: err
-  //   });
-  // }
+  try {
+    res = await axios.get(`feed/questions/daily/recommended/`);
+  } catch (err) {
+    dispatch({
+      type: 'question/GET_RECOMMENDED_QUESTIONS_FAILURE',
+      error: err
+    });
+  }
+  const { data } = res;
   dispatch({
     type: 'question/GET_RECOMMENDED_QUESTIONS_SUCCESS',
-    // recommendedQuestions: res
-    res: [...mockRecommendQuestions]
+    res: data.results
   });
 };
 
