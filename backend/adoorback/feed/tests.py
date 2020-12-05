@@ -391,7 +391,7 @@ class ResponseRequestAPITestCase(APITestCase):
         with self.login(username=current_user.username, password='password'):
             response = self.get(self.reverse('response-request-list', qid=question_1.id))
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.data['count'], 1)
+            self.assertEqual(len(response.data), 1)
 
     def test_response_request_detail(self):
         current_user = self.make_user(username='current_user')
@@ -468,7 +468,7 @@ class ResponseRequestNotiAPITestCase(APITestCase):
             response_request_noti = Notification.objects.first()
             self.assertEqual(response_request_noti.user, friend_user)
             self.assertEqual(response_request_noti.actor, current_user)
-            self.assertEqual(response_request_noti.message, "current_user님이 회원님에게 질문을 보냈습니다.")
+            self.assertEqual(response_request_noti.message, "똑똑똑~ current_user님으로부터 질문이 왔어요!")
             self.assertEqual(response_request_noti.redirect_url, f'/questions/{question.id}')
 
         # mutliple response requests to a user on a question

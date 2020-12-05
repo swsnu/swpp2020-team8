@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
-from django.db.models.signals import post_save, m2m_changed
+from django.db.models.signals import post_save, m2m_changed, pre_delete
 from django.dispatch import receiver
 
 from adoorback.models import AdoorTimestampedModel
@@ -90,6 +90,8 @@ def delete_friend_noti(action, pk_set, instance, **kwargs):
         # remove friendship related notis from both users
         friend.friendship_targetted_notis.filter(user=instance).delete()
         instance.friendship_targetted_notis.filter(user=friend).delete()
+        FriendRequest.objects.filter(requester=instance, requestee=friend).delete()
+        FriendRequest.objects.filter(requester=friend, requestee=instance).delete()
 
 
 @receiver(post_save, sender=FriendRequest)
