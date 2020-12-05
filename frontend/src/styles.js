@@ -17,6 +17,11 @@ export const GlobalStyle = createGlobalStyle`
     font-size: 24px;
     color: rgb(50, 50, 50);
   }
+
+  h2 {
+    font-weight: 400;
+    font-size: 20px;
+  }
   button {
     outline: none;
     cursor: pointer;
