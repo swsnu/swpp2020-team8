@@ -8,7 +8,7 @@ from feed.models import Article
 from notification.models import Notification
 
 from adoorback.utils.seed import set_seed, fill_data
-from adoorback.utils.content_types import get_article_type, get_question_type, get_comment_type
+from adoorback.content_types import get_article_type, get_question_type, get_comment_type
 
 User = get_user_model()
 N = 10
@@ -19,7 +19,7 @@ class LikeTestCase(TestCase):
         set_seed(N)
 
     def test_like_count(self):
-        self.assertEqual(Like.objects.count(), N*5)
+        self.assertEqual(Like.objects.count(), N * 5)
 
     def test_like_str(self):
         like = Like.objects.last()
@@ -77,7 +77,7 @@ class LikeAPITestCase(APITestCase):
         with self.login(username=current_user.username, password='password'):
             response = self.get('like-list')
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.data['count'], N*5)
+            self.assertEqual(response.data['count'], N * 5)
 
     def test_like_create(self):
         current_user = self.make_user(username='current_user')

@@ -1,10 +1,14 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-param-reassign */
 import axios from 'axios';
 import Cookies from 'js.cookie';
 // eslint-disable-next-line import/no-cycle
 
+const developBaseUrl = 'http://localhost:8000/api/';
+const prodBaseUrl = 'https://adoor.world/api/';
+
 const instance = axios.create({
-  baseURL: 'http://localhost:3000/api/',
+  baseURL: prodBaseUrl,
   withCredentials: true
 });
 

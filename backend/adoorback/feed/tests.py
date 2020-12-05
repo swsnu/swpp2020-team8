@@ -9,8 +9,7 @@ from feed.models import Article, Response, Question, Post, ResponseRequest
 from notification.models import Notification
 
 from adoorback.utils.seed import set_seed, fill_data
-from adoorback.utils.content_types import get_response_type
-
+from adoorback.content_types import get_response_type
 
 User = get_user_model()
 N = 10
@@ -26,7 +25,7 @@ class FeedTestCase(TestCase):
         self.assertEqual(Question.objects.custom_questions_only().count(), N)
         self.assertLessEqual(Question.objects.daily_questions().count(), 30)
         self.assertEqual(Response.objects.count(), N)
-        self.assertEqual(Post.objects.count(), N*4)
+        self.assertEqual(Post.objects.count(), N * 4)
 
     def test_feed_str(self):
         article = Article.objects.create(author_id=1, content="test_content")
@@ -64,7 +63,7 @@ class FeedTestCase(TestCase):
         response.save()
 
         self.assertEqual(Post.objects.filter(content_type=get_response_type(),
-                                                   object_id=response.id).last().content, response.content)
+                                             object_id=response.id).last().content, response.content)
 
     # post content must be removed along with target
     def test_post_delete(self):
@@ -115,6 +114,7 @@ class ResponseRequestTestCase(TestCase):
 
         question.delete()
         self.assertEqual(ResponseRequest.objects.filter(question_id=question.id).count(), 0)
+
 
 class APITestCase(TestCase):
     client_class = APIClient
@@ -377,9 +377,9 @@ class ResponseRequestAPITestCase(APITestCase):
         friend_user_2 = self.make_user(username='friend_user_2')
 
         question_1 = Question.objects.create(author_id=current_user.id,
-                                            content="test_question", is_admin_question=False)
+                                             content="test_question", is_admin_question=False)
         question_2 = Question.objects.create(author_id=current_user.id,
-                                            content="test_question", is_admin_question=False)
+                                             content="test_question", is_admin_question=False)
 
         prev_noti_count = Notification.objects.count()
         ResponseRequest.objects.create(requester=current_user, requestee=friend_user_1, question=question_1)

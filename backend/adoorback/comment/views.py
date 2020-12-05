@@ -5,7 +5,8 @@ from comment.models import Comment
 from comment.serializers import CommentFriendSerializer
 
 from adoorback.permissions import IsAuthorOrReadOnly
-from adoorback.utils.content_types import get_generic_relation_type
+from adoorback.content_types import get_generic_relation_type
+from adoorback.validators import adoor_exception_handler
 
 
 class CommentList(generics.ListCreateAPIView):
@@ -15,6 +16,9 @@ class CommentList(generics.ListCreateAPIView):
     queryset = Comment.objects.order_by('-id')
     serializer_class = CommentFriendSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_exception_handler(self):
+        return adoor_exception_handler
 
     def perform_create(self, serializer):
         content_type_id = get_generic_relation_type(self.request.data['target_type']).id
@@ -31,3 +35,6 @@ class CommentDetail(generics.DestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentFriendSerializer
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
+
+    def get_exception_handler(self):
+        return adoor_exception_handler

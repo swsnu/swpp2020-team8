@@ -81,6 +81,7 @@ export const appendPosts = (origin) => async (dispatch, getState) => {
     result = await axios.get(nextUrl);
   } catch (err) {
     dispatch({ type: APPEND_POSTS_FAILURE, error: err });
+    return;
   }
   const { data } = result;
   dispatch({
@@ -126,6 +127,7 @@ export const editSelectedPost = (postObj) => async (dispatch) => {
     });
   } catch (err) {
     dispatch({ type: `post/EDIT_SELECTED_${actionType}_FAILURE`, error: err });
+    return;
   }
   dispatch({
     type: `post/EDIT_SELECTED_${actionType}_SUCCESS`,
@@ -148,6 +150,7 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
     }
   } catch (err) {
     dispatch({ type: `post/GET_${postType}_POSTS_FAILURE`, error: err });
+    return;
   }
   const { data } = result;
   dispatch({
@@ -194,6 +197,7 @@ export const createPost = (newPost) => async (dispatch, getState) => {
       type: CREATE_POST_FAILURE,
       error
     });
+    return;
   }
   let resultPost = result.data;
   if (resultPost.type === 'Question') {
@@ -230,6 +234,7 @@ export const createComment = (newComment, postKey) => async (dispatch) => {
       type: CREATE_COMMENT_FAILURE,
       error
     });
+    return;
   }
   dispatch({
     type: CREATE_COMMENT_SUCCESS,
@@ -251,6 +256,7 @@ export const createReply = (newReply, postKey) => async (dispatch) => {
       type: CREATE_REPLY_FAILURE,
       error
     });
+    return;
   }
   dispatch({
     type: CREATE_REPLY_SUCCESS,
@@ -273,6 +279,7 @@ export const deleteComment = (commentId, postKey, isReply) => async (
       type: DELETE_COMMENT_FAILURE,
       error
     });
+    return;
   }
   dispatch({
     type: DELETE_COMMENT_SUCCESS,
