@@ -195,7 +195,7 @@ def create_response_request_noti(instance, **kwargs):
     origin = instance.question
     requester = instance.requester
     requestee = instance.requestee
-    message = f'{requester.username}님이 회원님에게 질문을 보냈습니다.'
+    message = f'똑똑똑~ {requester.username}님으로부터 질문이 왔어요!'
     redirect_url = f'/questions/{origin.id}'
     Notification.objects.create(actor=requester, user=requestee,
                                 origin=origin, target=target,

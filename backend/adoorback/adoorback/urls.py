@@ -19,10 +19,6 @@ from django.conf.urls.static import static
 from django.urls import include, path
 
 
-def trigger_error(request):
-    division_by_zero = 1 / 0
-
-
 urlpatterns = [
     path('api/likes/', include('like.urls')),
     path('api/comments/', include('comment.urls')),
@@ -32,6 +28,5 @@ urlpatterns = [
     path('api/admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
     path('api/secret/', admin.site.urls),
     path('api/user/', include('rest_framework.urls', namespace='rest_framework')),
-    path('sentry-debug/', trigger_error),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
