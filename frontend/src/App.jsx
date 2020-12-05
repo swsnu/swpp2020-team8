@@ -60,7 +60,7 @@ const App = () => {
     (state) => state.userReducer.selectQuestion
   );
   const signUpRedirectPath = currentUser?.question_history
-    ? '/friends'
+    ? '/home'
     : 'select-questions';
 
   useEffect(() => {
@@ -101,14 +101,14 @@ const App = () => {
             <Switch>
               <Redirect from="/my-page" to={`/users/${currentUser?.id}`} />
 
-              <Redirect from="/login" to="/friends" />
+              <Redirect from="/login" to="/home" />
               <Redirect from="/signup" to={signUpRedirectPath} />
               <Route
                 exact
                 path="/select-questions"
                 component={QuestionSelection}
               />
-              <PrivateRoute exact path="/friends" component={FriendFeed} />
+              <PrivateRoute exact path="/home" component={FriendFeed} />
               <PrivateRoute exact path="/anonymous" component={AnonymousFeed} />
               <PrivateRoute exact path="/questions" component={QuestionFeed} />
               <PrivateRoute exact path="/users/:id" component={UserPage} />
@@ -154,7 +154,7 @@ const App = () => {
                 component={MobileSearchPage}
               />
 
-              <Redirect exact path="/" to="/friends" />
+              <Redirect exact path="/" to="/home" />
             </Switch>
           </FeedWrapper>
           {!isMobile && <FriendListWidget />}
