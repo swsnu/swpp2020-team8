@@ -214,7 +214,7 @@ export const createResponseRequest = (responseRequestObj) => async (
   dispatch
 ) => {
   let res;
-  dispatch({ type: 'question/CREATE_RESPONSE_REQUESTS_REQUEST' });
+  dispatch({ type: 'question/CREATE_RESPONSE_REQUEST_REQUEST' });
   try {
     res = await axios.post(
       `/feed/questions/response-request/`,
@@ -222,13 +222,13 @@ export const createResponseRequest = (responseRequestObj) => async (
     );
   } catch (err) {
     dispatch({
-      type: 'question/CREATE_RESPONSE_REQUESTS_FAILURE',
+      type: 'question/CREATE_RESPONSE_REQUEST_FAILURE',
       error: err
     });
     return;
   }
   dispatch({
-    type: 'question/CREATE_RESPONSE_REQUESTS_SUCCESS',
+    type: 'question/CREATE_RESPONSE_REQUEST_SUCCESS',
     res: res?.data
   });
   dispatch(getResponseRequestsByQuestion(responseRequestObj.question_id));
@@ -319,6 +319,11 @@ export default function questionReducer(state = initialState, action) {
       return {
         ...state,
         selectedQuestionResponseRequests: action.res
+      };
+    case GET_RESPONSE_REQUESTS_FAILURE:
+      return {
+        ...state,
+        selectedQuestionResponseRequests: []
       };
     default:
       return state;

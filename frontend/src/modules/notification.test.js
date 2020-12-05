@@ -87,9 +87,7 @@ describe('notificationActions', () => {
     const spy = jest.spyOn(axios, 'put').mockImplementation(() => {
       return new Promise((resolve) => {
         const res = {
-          data: {
-            results: mockNotifications
-          }
+          data: mockNotifications
         };
         resolve(res);
       });

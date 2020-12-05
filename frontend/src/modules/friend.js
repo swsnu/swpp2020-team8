@@ -1,4 +1,5 @@
 import axios from '../apis';
+import { getNotifications } from './notification';
 
 const initialState = {
   friendList: [],
@@ -52,6 +53,7 @@ export const deleteFriend = (friendId) => async (dispatch, getState) => {
     type: DELETE_FRIEND_SUCCESS,
     friendId
   });
+  dispatch(getNotifications());
 };
 
 export const deleteFriendRequest = (friendId) => async (dispatch) => {
@@ -66,6 +68,7 @@ export const deleteFriendRequest = (friendId) => async (dispatch) => {
     type: DELETE_REQUEST_SUCCESS,
     friendId
   });
+  dispatch(getNotifications());
 };
 
 export const requestFriend = (responderId) => async (dispatch, getState) => {
@@ -93,6 +96,7 @@ export const acceptFriendRequest = (friendId) => async (dispatch) => {
     accepted: true
   });
   dispatch(getFriendList());
+  dispatch(getNotifications());
 };
 
 export const rejectFriendRequest = (friendId) => async (dispatch) => {
