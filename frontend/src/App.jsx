@@ -26,6 +26,7 @@ import MobileFooter from './components/MobileFooter';
 import MobileQuestionPage from './pages/MobileQuestionPage';
 import MobileSearchPage from './pages/MobileSearchPage';
 import { getCurrentUser } from './modules/user';
+import { initGA, trackPage } from './ga';
 
 const theme = createMuiTheme({
   palette: {
@@ -63,6 +64,7 @@ const App = () => {
     : 'select-questions';
 
   useEffect(() => {
+    initGA();
     if (refresh_token) {
       dispatch(getCurrentUser());
     }
@@ -75,6 +77,7 @@ const App = () => {
       if (currentUser) {
         dispatch(getNotifications());
       }
+      trackPage(location.pathname);
     });
   }, [history, dispatch, currentUser]);
 
