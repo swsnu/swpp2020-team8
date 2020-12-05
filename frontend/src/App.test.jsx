@@ -15,6 +15,11 @@ import * as actionCreators from './modules/user';
 
 import { mockNotifications } from './constants';
 
+jest.mock('react-ga', () => ({
+  pageview: jest.fn(),
+  initialize: jest.fn()
+}));
+
 describe('App unit mount test', () => {
   const setState = jest.fn();
   const useStateSpy = jest.spyOn(React, 'useState');

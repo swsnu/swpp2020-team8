@@ -115,7 +115,16 @@ const QuestionListWidget = ({
     dispatch(getRecommendedQuestions());
   }, [dispatch]);
 
-  const recommendedQuestionList = recommendedQuestions
+  const randomQuestionList = randomQuestions?.slice(0, 5).map((question) => (
+    <QuestionListItemLink key={question.id} to={`/questions/${question.id}`}>
+      <ListItemText
+        classes={{ primary: classes.question }}
+        primary={question.content}
+      />
+    </QuestionListItemLink>
+  ));
+
+  const recommendedQuestionList = (recommendedQuestions || randomQuestions)
     .slice(0, 5)
     .map((question) => (
       <QuestionListItemLink key={question.id} to={`/questions/${question.id}`}>
@@ -125,15 +134,6 @@ const QuestionListWidget = ({
         />
       </QuestionListItemLink>
     ));
-
-  const randomQuestionList = randomQuestions.slice(0, 5).map((question) => (
-    <QuestionListItemLink key={question.id} to={`/questions/${question.id}`}>
-      <ListItemText
-        classes={{ primary: classes.question }}
-        primary={question.content}
-      />
-    </QuestionListItemLink>
-  ));
 
   const handleClickRefreshButton = () => {
     if (!isRandomQuestions) {

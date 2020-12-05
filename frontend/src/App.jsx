@@ -47,7 +47,7 @@ const App = () => {
   useEffect(() => {
     window.addEventListener('resize', handleResize, false);
     return () => {
-      window.removeEventListener('resize');
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
