@@ -31,11 +31,7 @@ instance.interceptors.response.use(
 
     const refresh_token = Cookies.get('jwt_token_refresh');
     if (error.response.status === 404) window.location.href = '/';
-    else if (error.response.status === 403) {
-      Cookies.remove('csrftoken');
-      Cookies.remove('jwt_token_refresh');
-      window.location.href = '/login';
-    } else if (error.response.status === 401 && refresh_token) {
+    else if (error.response.status === 401 && refresh_token) {
       return instance
         .post('user/token/refresh/', { refresh: refresh_token })
         .then((response) => {

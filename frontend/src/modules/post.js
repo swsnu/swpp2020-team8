@@ -66,6 +66,7 @@ const initialState = {
   anonymousPosts: [],
   friendPosts: [],
   selectedUserPosts: [],
+  selectedUserId: null,
   selectedPost: null,
   selectedPostFailure: false,
   next: null
@@ -162,7 +163,7 @@ export const getPostsByType = (type, userId = null) => async (dispatch) => {
 
 export const getSelectedUserPosts = (userId) => async (dispatch) => {
   let result;
-  dispatch({ type: `post/GET_USER_POSTS_REQUEST` });
+  dispatch({ type: `post/GET_USER_POSTS_REQUEST`, userId });
   try {
     result = await axios.get(`feed/user/${userId}/`);
   } catch (err) {
@@ -212,12 +213,18 @@ export const createPost = (newPost) => async (dispatch, getState) => {
     newPost: resultPost
   });
 
+  window.scrollTo(0, 0);
+
   const { selectedQuestion } = getState().questionReducer;
   if (
     resultPost.type === 'Response' &&
     selectedQuestion?.id === resultPost.question_id
   ) {
     dispatch(getFriendResponsesByQuestion(selectedQuestion?.id));
+  }
+  const { selectedUserId } = getState().postReducer;
+  if (+selectedUserId === +resultPost.author_detail?.id) {
+    dispatch(getSelectedUserPosts(selectedUserId));
   }
 };
 
@@ -336,7 +343,7 @@ export default function postReducer(state = initialState, action) {
     case GET_ANON_POSTS_REQUEST:
     case GET_FRIEND_POSTS_REQUEST:
     case GET_USER_POSTS_REQUEST:
-      return { ...initialState };
+      return { ...initialState, selectedUserId: action.userId };
     case APPEND_POSTS_REQUEST:
       return {
         ...state,

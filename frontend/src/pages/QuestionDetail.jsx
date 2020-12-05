@@ -93,7 +93,7 @@ const QuestionDetail = (props) => {
               {responseList}
             </>
           ) : (
-            <Message message="표시할 게시물이 없습니다" />
+            <Message message="표시할 게시물이 없습니다 :(" />
           )}
         </>
       ) : (
