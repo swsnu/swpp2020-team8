@@ -27,7 +27,7 @@ class DailyQuestionCronJob(CronJobBase):
                                         actor=admin,
                                         target=admin,
                                         origin=admin,
-                                        message=f"딩동! 오늘의 질문 배달 왔습니다~ 지금 구경하러 가볼까요?",
+                                        message="딩동! 오늘의 질문 배달 왔습니다~ 지금 구경하러 가볼까요?",
                                         redirect_url='/questions')
         print('=========================')
         print("Cron job complete...............")
