@@ -5,7 +5,7 @@ from rest_framework.validators import UniqueTogetherValidator
 from django.contrib.auth import get_user_model
 
 from account.models import FriendRequest
-from adoorback.settings import BASE_URL
+from adoorback.settings.base import BASE_URL
 
 User = get_user_model()
 
@@ -47,7 +47,7 @@ class AuthorAnonymousSerializer(serializers.ModelSerializer):
 
     def get_color_hex(self, obj):
         author_hash = obj.id * \
-            random.randint(4343, 54897) * random.randint(100, 938574)
+                      random.randint(4343, 54897) * random.randint(100, 938574)
         # mod max color HEX
         return '#{0:06X}'.format(author_hash % 16777215)
 

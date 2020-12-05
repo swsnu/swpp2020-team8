@@ -45,15 +45,13 @@ export const getNotifications = () => async (dispatch) => {
       type: 'notification/GET_NOTIFICATION_FAILURE',
       error: err
     });
+    return;
   }
-
-  if (res?.data) {
-    dispatch({
-      type: 'notification/GET_NOTIFICATION_SUCCESS',
-      res: res.data.results,
-      next: res.data.next
-    });
-  }
+  dispatch({
+    type: 'notification/GET_NOTIFICATION_SUCCESS',
+    res: res?.data.results,
+    next: res?.data.next
+  });
 };
 
 export const appendNotifications = () => async (dispatch, getState) => {
@@ -66,6 +64,7 @@ export const appendNotifications = () => async (dispatch, getState) => {
     result = await axios.get(nextUrl);
   } catch (err) {
     dispatch({ type: APPEND_NOTIFICATIONS_FAILURE, error: err });
+    return;
   }
   const { data } = result;
   dispatch({
@@ -82,6 +81,7 @@ export const readNotification = (id) => async (dispatch) => {
     res = await axios.patch(`/notifications/${id}/`, { is_read: true });
   } catch (err) {
     dispatch({ type: 'notification/READ_NOTIFICATION_FAILURE', error: err });
+    return;
   }
   dispatch({
     type: 'notification/READ_NOTIFICATION_SUCCESS',
@@ -99,11 +99,11 @@ export const readAllNotification = () => async (dispatch) => {
       type: 'notification/READ_ALL_NOTIFICATIONS_FAILURE',
       error: err
     });
+    return;
   }
   dispatch({
     type: 'notification/READ_ALL_NOTIFICATIONS_SUCCESS',
-    res: res.data.results,
-    next: res.data.next
+    res: res.data
   });
 };
 

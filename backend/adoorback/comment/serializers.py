@@ -6,7 +6,6 @@ from comment.models import Comment
 from adoorback.serializers import AdoorBaseSerializer
 from account.serializers import AuthorFriendSerializer, AuthorAnonymousSerializer
 
-
 User = get_user_model()
 
 

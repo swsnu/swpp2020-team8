@@ -17,7 +17,6 @@ import os.path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -43,10 +42,12 @@ JWT_AUTH = {
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+CORS_ORIGIN_WHITELIST = [
+    "https://develop.d3t1tnno5uz3sa.amplifyapp.com",
+]
 
 BASE_URL = 'http://localhost:8000'
-
 
 # Application definition
 
@@ -66,8 +67,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'polymorphic',
     'admin_honeypot',
-    'django_celery_results',
     'django_cron',
+    'corsheaders',
     'import_export',
     'trackstats',
 ]
@@ -84,10 +85,6 @@ CRON_CLASSES = [
     "account.cron.SendSelectQuestionsNotiCronJob",
     "account.cron.SendAddFriendsNotiCronJob",
 ]
-
-CELERY_RESULT_BACKEND = 'django-db'
-
-CELERY_CACHE_BACKEND = 'django-cache'
 
 # reference: https://github.com/jazzband/django-redis
 CACHES = {
@@ -108,6 +105,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'adoorback.urls'
@@ -130,18 +129,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'adoorback.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -160,7 +147,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -173,7 +159,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/

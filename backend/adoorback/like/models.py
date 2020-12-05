@@ -6,7 +6,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 
-from adoorback.utils.content_types import get_comment_type
+from adoorback.content_types import get_comment_type
 from adoorback.models import AdoorTimestampedModel
 from notification.models import Notification
 

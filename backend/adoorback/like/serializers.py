@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model
 from like.models import Like
 from adoorback.serializers import AdoorBaseSerializer
 
-
 User = get_user_model()
 
 

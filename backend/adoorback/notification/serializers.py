@@ -5,12 +5,10 @@ from notification.models import Notification
 from feed.models import Question
 from account.serializers import AuthorFriendSerializer, AuthorAnonymousSerializer
 
-
 User = get_user_model()
 
 
 class NotificationSerializer(serializers.ModelSerializer):
-
     is_response_request = serializers.SerializerMethodField(read_only=True)
     is_friend_request = serializers.SerializerMethodField(read_only=True)
     actor_detail = serializers.SerializerMethodField(read_only=True)

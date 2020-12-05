@@ -35,6 +35,5 @@ describe('Friend List Widget unit mount test', () => {
     const wrapper = getWrapper();
     const widget = wrapper.find('#friend-list-widget');
     expect(widget).toBeTruthy();
-    expect(wrapper.find('FriendItem')).toBeTruthy();
   });
 });

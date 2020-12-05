@@ -1,4 +1,5 @@
 import json
+import sentry_sdk
 
 from django.apps import apps
 from django.contrib.auth import get_user_model, authenticate, login
@@ -16,6 +17,7 @@ from account.serializers import UserProfileSerializer, \
     UserFriendshipStatusSerializer, AuthorFriendSerializer
 from feed.serializers import QuestionAnonymousSerializer
 from feed.models import Question
+from adoorback.validators import adoor_exception_handler
 
 User = get_user_model()
 
@@ -43,6 +45,9 @@ class UserSignup(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
 
+    def get_exception_handler(self):
+        return adoor_exception_handler
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -69,7 +74,8 @@ def user_login(request):
             req_data = json.loads(request.body)
             username = str(req_data['username'])
             password = str(req_data['password'])
-        except (KeyError, TypeError, json.JSONDecodeError):
+        except (KeyError, TypeError, json.JSONDecodeError) as e:
+            sentry_sdk.capture_exception(e)
             return HttpResponseBadRequest()
 
         user = authenticate(username=username, password=password)
@@ -87,11 +93,17 @@ class SignupQuestions(generics.ListAPIView):
     model = serializer_class.Meta.model
     permission_classes = [IsAuthenticated]
 
+    def get_exception_handler(self):
+        return adoor_exception_handler
+
 
 class UserList(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_exception_handler(self):
+        return adoor_exception_handler
 
     def get_queryset(self):
         queryset = User.objects.filter(id=self.request.user.id)
@@ -104,6 +116,9 @@ class CurrentUserFriendList(generics.ListAPIView):
     serializer_class = AuthorFriendSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_exception_handler(self):
+        return adoor_exception_handler
+
     def get_queryset(self):
         return self.request.user.friends.all()
 
@@ -111,6 +126,9 @@ class CurrentUserFriendList(generics.ListAPIView):
 class CurrentUserProfile(generics.RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_exception_handler(self):
+        return adoor_exception_handler
 
     def get_object(self):
         # since the obtained user object is the authenticated user,
@@ -139,10 +157,16 @@ class UserDetail(generics.RetrieveAPIView):
     serializer_class = UserFriendshipStatusSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_exception_handler(self):
+        return adoor_exception_handler
+
 
 class UserSearch(generics.ListAPIView):
     serializer_class = UserFriendshipStatusSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_exception_handler(self):
+        return adoor_exception_handler
 
     def get_queryset(self):
         query = self.request.GET.get('query')
@@ -160,6 +184,9 @@ class UserFriendDestroy(generics.DestroyAPIView):
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated]
 
+    def get_exception_handler(self):
+        return adoor_exception_handler
+
     def perform_destroy(self, obj):
         obj.friends.remove(self.request.user)
 
@@ -168,6 +195,9 @@ class UserFriendRequestList(generics.ListCreateAPIView):
     queryset = FriendRequest.objects.all()
     serializer_class = UserFriendRequestCreateSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_exception_handler(self):
+        return adoor_exception_handler
 
     def get_queryset(self):
         return FriendRequest.objects.filter(requestee=self.request.user)
@@ -182,6 +212,9 @@ class UserFriendRequestDestroy(generics.DestroyAPIView):
     serializer_class = UserFriendRequestCreateSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_exception_handler(self):
+        return adoor_exception_handler
+
     def get_object(self):
         # since the requester is the authenticated user, no further permission checking unnecessary
         return FriendRequest.objects.get(requester_id=self.request.user.id,
@@ -194,6 +227,9 @@ class UserFriendRequestDestroy(generics.DestroyAPIView):
 class UserFriendRequestUpdate(generics.UpdateAPIView):
     serializer_class = UserFriendRequestUpdateSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_exception_handler(self):
+        return adoor_exception_handler
 
     def get_object(self):
         # since the requestee is the authenticated user, no further permission checking unnecessary

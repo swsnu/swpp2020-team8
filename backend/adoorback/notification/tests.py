@@ -7,7 +7,7 @@ from like.models import Like
 from notification.models import Notification
 
 from adoorback.utils.seed import set_seed, fill_data
-from adoorback.utils.content_types import get_comment_type, get_like_type, \
+from adoorback.content_types import get_comment_type, get_like_type, \
     get_article_type, get_question_type, get_response_type, get_response_request_type
 
 User = get_user_model()
@@ -277,6 +277,7 @@ class NotificationAPITestCase(APITestCase):
         origin = comment.target
         target = comment
         message = f'{actor} commented on your {origin.type}'
+
         for _ in range(5):
             Notification.objects.create(actor=actor, user=current_user, message=message,
                                         origin=origin, target=target, is_read=False, is_visible=True)

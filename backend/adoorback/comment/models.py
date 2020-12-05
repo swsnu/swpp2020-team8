@@ -9,8 +9,7 @@ from django.db.models.signals import post_save
 from like.models import Like
 from notification.models import Notification
 from adoorback.models import AdoorModel
-from adoorback.utils.content_types import get_comment_type
-
+from adoorback.content_types import get_comment_type
 
 User = get_user_model()
 
