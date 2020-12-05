@@ -85,7 +85,7 @@ def set_seed(n):
         f"{Response.objects.count()} Response(s) created!") if DEBUG else None
 
     # Seed Response Request
-    for i in range(n):
+    for _ in range(n):
         question = random.choice(questions)
         requester = random.choice(users)
         requestee = random.choice(users.exclude(id=requester.id))

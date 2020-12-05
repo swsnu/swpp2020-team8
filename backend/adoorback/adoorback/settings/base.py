@@ -14,9 +14,6 @@ from pathlib import Path
 import datetime
 import os.path
 
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -70,7 +67,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'polymorphic',
     'admin_honeypot',
-    'django_celery_results',
     'django_cron',
     'corsheaders',
     'import_export',

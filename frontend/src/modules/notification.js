@@ -47,14 +47,11 @@ export const getNotifications = () => async (dispatch) => {
     });
     return;
   }
-
-  if (res?.data) {
-    dispatch({
-      type: 'notification/GET_NOTIFICATION_SUCCESS',
-      res: res.data.results,
-      next: res.data.next
-    });
-  }
+  dispatch({
+    type: 'notification/GET_NOTIFICATION_SUCCESS',
+    res: res?.data.results,
+    next: res?.data.next
+  });
 };
 
 export const appendNotifications = () => async (dispatch, getState) => {
@@ -106,8 +103,7 @@ export const readAllNotification = () => async (dispatch) => {
   }
   dispatch({
     type: 'notification/READ_ALL_NOTIFICATIONS_SUCCESS',
-    res: res.data.results,
-    next: res.data.next
+    res: res.data
   });
 };
 

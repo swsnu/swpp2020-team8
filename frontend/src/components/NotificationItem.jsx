@@ -42,18 +42,9 @@ const NotificationItem = ({ notiObj, isNotificationPage }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  let link;
-  if (notiObj.target_type === 'FriendRequest') {
-    link = '/notifications/friend-request';
-  } else if (notiObj.target_type === 'ResponseRequest') {
-    link = '/notifications/response-request';
-  } else {
-    link = `/${notiObj?.feed_type?.toLowerCase()}s/${notiObj.feed_id}`;
-  }
-
   const handleClickNotiItem = () => {
     dispatch(readNotification(notiObj.id));
-    history.push(link);
+    history.push(notiObj.redirect_url);
   };
 
   return (
@@ -66,7 +57,11 @@ const NotificationItem = ({ notiObj, isNotificationPage }) => {
       <FaceIcon />
       <ListItemText
         classes={{ primary: classes.message }}
-        primary={notiObj.message}
+        primary={
+          notiObj.is_response_request
+            ? `${notiObj.message} - ${notiObj.question_content}`
+            : notiObj.message
+        }
       />
     </ListItem>
   );
