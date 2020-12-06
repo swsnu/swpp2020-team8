@@ -37,6 +37,9 @@ const Question = styled.div`
   text-align: center;
   font-weight: 500;
   font-size: 15px;
+  @media (max-width: 650px) {
+    padding: 16px;
+  }
 `;
 
 QuestionItemWrapper.displayName = 'QuestionItemWrapper';
@@ -127,9 +130,7 @@ export default function QuestionItem({ questionObj, onResetContent }) {
         isOpen={isDeleteDialogOpen}
       />
       <PostItemHeaderWrapper>
-        {!questionObj.is_admin_question && (
-          <AuthorProfile author={questionObj.author_detail} />
-        )}
+        <AuthorProfile author={questionObj.author_detail} />
         {!questionObj.is_admin_question && isAuthor && (
           <PostAuthorButtons
             isQuestion

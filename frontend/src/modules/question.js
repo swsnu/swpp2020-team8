@@ -105,6 +105,7 @@ export const getRecommendedQuestions = (userId) => async (dispatch) => {
       type: 'question/GET_RECOMMENDED_QUESTIONS_FAILURE',
       error: err
     });
+    return;
   }
   const { data } = res;
   dispatch({

@@ -9,12 +9,12 @@ const FriendFeed = () => {
   const [target, setTarget] = useState(false);
   const dispatch = useDispatch();
   const friendPosts = useSelector((state) => state.postReducer.friendPosts);
-  const isAppending = useSelector(
-    (state) => state.loadingReducer['post/APPEND_POSTS']
-  );
-  const isLoading = useSelector(
-    (state) => state.loadingReducer['post/GET_FRIEND_POSTS']
-  );
+  const isAppending =
+    useSelector((state) => state.loadingReducer['post/APPEND_POSTS']) ===
+    'REQUEST';
+  const isLoading =
+    useSelector((state) => state.loadingReducer['post/GET_FRIEND_POSTS']) ===
+    'REQUEST';
 
   useEffect(() => {
     let observer;
@@ -42,7 +42,7 @@ const FriendFeed = () => {
           <NewPost />
           <Message
             margin="16px 0"
-            message="표시할 게시물이 없습니다"
+            message="표시할 게시물이 없습니다 :("
             messageDetail="다른 사용자들과 친구를 맺어보세요!"
           />
         </>

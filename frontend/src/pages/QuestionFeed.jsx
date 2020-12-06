@@ -15,12 +15,14 @@ export default function QuestionFeed() {
 
   const [target, setTarget] = useState(null);
 
-  const isAppending = useSelector(
-    (state) => state.loadingReducer['question/APPEND_QUESTIONS']
-  );
-  const isLoading = useSelector(
-    (state) => state.loadingReducer['question/GET_DAILY_QUESTIONS']
-  );
+  const isAppending =
+    useSelector(
+      (state) => state.loadingReducer['question/APPEND_QUESTIONS']
+    ) === 'REQUEST';
+  const isLoading =
+    useSelector(
+      (state) => state.loadingReducer['question/GET_DAILY_QUESTIONS']
+    ) === 'REQUEST';
 
   useEffect(() => {
     let observer;

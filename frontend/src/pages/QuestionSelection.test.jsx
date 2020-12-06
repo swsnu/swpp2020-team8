@@ -69,11 +69,11 @@ describe('<QuestionSelection /> unit test', () => {
     expect(postSelectedQuestions).toHaveBeenCalledTimes(1);
   });
 
-  it('should dispatch `skipSelectQuestions` when click submit button', async () => {
+  it('should dispatch `skipOrCompleteSelectQuestions` when click submit button', async () => {
     const skipButton = wrapper.find('CustomLink');
 
-    const skipSelectQuestions = jest
-      .spyOn(actionCreators, 'skipSelectQuestions')
+    const skipOrCompleteSelectQuestions = jest
+      .spyOn(actionCreators, 'skipOrCompleteSelectQuestions')
       .mockImplementation(() => {
         return (dispatch) => {};
       });
@@ -82,6 +82,6 @@ describe('<QuestionSelection /> unit test', () => {
       skipButton.simulate('click');
     });
 
-    expect(skipSelectQuestions).toHaveBeenCalledTimes(1);
+    expect(skipOrCompleteSelectQuestions).toHaveBeenCalledTimes(1);
   });
 });

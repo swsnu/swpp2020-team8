@@ -33,7 +33,7 @@ describe('<PrivateRoute />', () => {
 
     const getWrapper = () =>
       mount(
-        <MemoryRouter initialEntries={['/friends']}>
+        <MemoryRouter initialEntries={['/home']}>
           <Provider store={signedInStore}>
             <PrivateRoute component={component} />
           </Provider>
@@ -64,7 +64,7 @@ describe('<PrivateRoute />', () => {
 
     const getWrapper = () =>
       mount(
-        <MemoryRouter initialEntries={['/friends']}>
+        <MemoryRouter initialEntries={['/home']}>
           <Provider store={notSignedInStore}>
             <PrivateRoute component={component} />
           </Provider>
