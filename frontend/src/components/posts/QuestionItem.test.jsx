@@ -69,7 +69,7 @@ describe('<QuestionItem/>', () => {
     const authorProfile = component.find('AuthorProfile');
     expect(authorProfile.length).toBeTruthy();
     const postAuthorButtons = component.find('PostAuthorButtons');
-    expect(postAuthorButtons.length).toBeTruthy();
+    expect(postAuthorButtons.length).toBeFalsy();
   });
 
   it('should proper like icon according to the user likes', () => {

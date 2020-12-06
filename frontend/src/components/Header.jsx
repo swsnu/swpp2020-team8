@@ -23,11 +23,10 @@ import { fetchSearchResults } from '../modules/search';
 import MobileDrawer from './posts/MobileDrawer';
 
 const HelloUsername = styled.div`
-  font-size: 14px;
+  font-size: 16px;
   margin-bottom: 7px;
-  margin-left: 3px;
+  margin-left: 12px;
   color: #777;
-  margin-right: 24px;
 `;
 const useStyles = makeStyles((theme) => ({
   hide: {
