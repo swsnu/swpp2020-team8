@@ -24,7 +24,7 @@ describe('interceptor', () => {
           status: 401
         },
         config: {
-          url: '/friends'
+          url: '/home'
         }
       });
     });

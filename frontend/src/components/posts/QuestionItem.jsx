@@ -127,9 +127,7 @@ export default function QuestionItem({ questionObj, onResetContent }) {
         isOpen={isDeleteDialogOpen}
       />
       <PostItemHeaderWrapper>
-        {!questionObj.is_admin_question && (
-          <AuthorProfile author={questionObj.author_detail} />
-        )}
+        <AuthorProfile author={questionObj.author_detail} />
         {!questionObj.is_admin_question && isAuthor && (
           <PostAuthorButtons
             isQuestion

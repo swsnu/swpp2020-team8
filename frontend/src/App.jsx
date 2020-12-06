@@ -26,6 +26,7 @@ import MobileFooter from './components/MobileFooter';
 import MobileQuestionPage from './pages/MobileQuestionPage';
 import MobileSearchPage from './pages/MobileSearchPage';
 import { getCurrentUser } from './modules/user';
+import { initGA, trackPage } from './ga';
 
 const theme = createMuiTheme({
   palette: {
@@ -46,7 +47,7 @@ const App = () => {
   useEffect(() => {
     window.addEventListener('resize', handleResize, false);
     return () => {
-      window.removeEventListener('resize');
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -59,10 +60,11 @@ const App = () => {
     (state) => state.userReducer.selectQuestion
   );
   const signUpRedirectPath = currentUser?.question_history
-    ? '/friends'
+    ? '/home'
     : 'select-questions';
 
   useEffect(() => {
+    initGA();
     if (refresh_token) {
       dispatch(getCurrentUser());
     }
@@ -75,6 +77,7 @@ const App = () => {
       if (currentUser) {
         dispatch(getNotifications());
       }
+      trackPage(location.pathname);
     });
   }, [history, dispatch, currentUser]);
 
@@ -98,14 +101,14 @@ const App = () => {
             <Switch>
               <Redirect from="/my-page" to={`/users/${currentUser?.id}`} />
 
-              <Redirect from="/login" to="/friends" />
+              <Redirect from="/login" to="/home" />
               <Redirect from="/signup" to={signUpRedirectPath} />
               <Route
                 exact
                 path="/select-questions"
                 component={QuestionSelection}
               />
-              <PrivateRoute exact path="/friends" component={FriendFeed} />
+              <PrivateRoute exact path="/home" component={FriendFeed} />
               <PrivateRoute exact path="/anonymous" component={AnonymousFeed} />
               <PrivateRoute exact path="/questions" component={QuestionFeed} />
               <PrivateRoute exact path="/users/:id" component={UserPage} />
@@ -151,7 +154,7 @@ const App = () => {
                 component={MobileSearchPage}
               />
 
-              <Redirect exact path="/" to="/friends" />
+              <Redirect exact path="/" to="/home" />
             </Switch>
           </FeedWrapper>
           {!isMobile && <FriendListWidget />}

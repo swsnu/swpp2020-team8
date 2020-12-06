@@ -72,7 +72,7 @@ describe('<ShareSettings />', () => {
   });
 
   it('should handle with location pathname /friends', async () => {
-    history.push('/friends');
+    history.push('/home');
     const wrapper = mount(
       <Provider store={store}>
         <Router history={history}>
@@ -108,7 +108,7 @@ describe('<ShareSettings />', () => {
   });
 
   it('should handle with submit button /friends', async () => {
-    history.push('/friends');
+    history.push('/home');
     const wrapper = mount(
       <Provider store={store}>
         <Router history={history}>
