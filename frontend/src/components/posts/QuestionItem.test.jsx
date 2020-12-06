@@ -61,15 +61,15 @@ describe('<QuestionItem/>', () => {
     expect(questionItem.length).toBe(2);
   });
 
-  it('should not render <AuthorProfile/>, <PostAuthorButtons/> for admin questions', () => {
+  it('should render <AuthorProfile/>, <PostAuthorButtons/> for admin questions', () => {
     wrapper = getWrapper();
 
     const component = wrapper.find('#admin-question');
     expect(component.length).toBe(1);
     const authorProfile = component.find('AuthorProfile');
-    expect(authorProfile.length).toBe(0);
+    expect(authorProfile.length).toBeTruthy();
     const postAuthorButtons = component.find('PostAuthorButtons');
-    expect(postAuthorButtons.length).toBe(0);
+    expect(postAuthorButtons.length).toBeTruthy();
   });
 
   it('should proper like icon according to the user likes', () => {
