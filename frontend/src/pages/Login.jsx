@@ -57,7 +57,6 @@ export default function Login({ setRefreshToken }) {
   };
 
   useEffect(() => {
-    console.log('success!', loginSuccess, Cookies.get('jwt_token_refresh'));
     if (loginSuccess) {
       setRefreshToken(Cookies.get('jwt_token_refresh'));
     }
