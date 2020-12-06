@@ -1,0 +1,15 @@
+[Unit]
+Description=uWSGI Emperor service
+After=syslog.target
+
+[Service]
+ExecStart=/home/ubuntu/adoor_env/bin/uwsgi --ini /home/ubuntu/swpp2020-team8/backend/adoorback/.config/uwsgi.ini
+
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
