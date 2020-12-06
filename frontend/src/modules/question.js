@@ -133,7 +133,7 @@ export const getDailyQuestions = () => async (dispatch) => {
 export const appendDailyQuestions = () => async (dispatch, getState) => {
   const { next } = getState().questionReducer;
   if (!next) return;
-  const nextUrl = next.replace('localhost:8000', 'localhost:3000');
+  const nextUrl = next.replace('localhost:8000/api/', '');
   let result;
   dispatch({ type: APPEND_QUESTIONS_REQUEST });
   try {
