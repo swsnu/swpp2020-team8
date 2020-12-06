@@ -15,6 +15,7 @@ export const FriendItemWrapper = styled.div`
   padding: 6px;
   border: 1px solid #e7e7e7;
   border-radius: 4px;
+  cursor: pointer !important;
 `;
 
 FriendItemWrapper.displayName = 'FriendItemWrapper';
