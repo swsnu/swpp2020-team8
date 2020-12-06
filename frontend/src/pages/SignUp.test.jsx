@@ -28,6 +28,8 @@ describe('Sign up page unit test', () => {
     });
   });
 
+  const setRefreshToken = jest.fn();
+
   const store = createStore(
     rootReducer,
     mockStore,
@@ -38,7 +40,7 @@ describe('Sign up page unit test', () => {
     mount(
       <Provider store={store}>
         <Router history={history}>
-          <SignUp />
+          <SignUp setRefreshToken={setRefreshToken} />
         </Router>
       </Provider>
     );

@@ -94,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // eslint-disable-next-line react/prop-types
-const Header = ({ isMobile }) => {
+const Header = ({ isMobile, setRefreshToken }) => {
   const classes = useStyles();
   const [isNotiOpen, setIsNotiOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -136,6 +136,8 @@ const Header = ({ isMobile }) => {
 
   const handleClickLogout = () => {
     dispatch(logout());
+    setRefreshToken(null);
+    history.push('/login');
   };
 
   const toggleNotiOpen = () => {

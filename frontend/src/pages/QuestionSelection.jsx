@@ -3,7 +3,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { getSampleQuestions } from '../modules/question';
-import { postSelectedQuestions, skipSelectQuestions } from '../modules/user';
+import {
+  postSelectedQuestions,
+  skipOrCompleteSelectQuestions
+} from '../modules/user';
 import { CommonButton } from '../styles';
 
 const QuestionsWrapper = styled.div`
@@ -81,12 +84,13 @@ export default function QuestionSelection() {
   ));
 
   const onClickSubmitButton = async () => {
+    dispatch(skipOrCompleteSelectQuestions());
     await dispatch(postSelectedQuestions(selectedQuestions));
     history.push('/');
   };
 
   const onClickSkipButton = async () => {
-    await dispatch(skipSelectQuestions());
+    dispatch(skipOrCompleteSelectQuestions());
     history.push('/');
   };
 

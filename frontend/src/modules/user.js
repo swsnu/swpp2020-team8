@@ -14,9 +14,15 @@ export const LOGIN_FAILURE = 'user/LOGIN_FAILURE';
 
 export const LOGOUT_SUCCESS = 'user/LOGOUT_SUCCESS';
 
-export const UPDATE_QUESTION_SELECT = 'user/UPDATE_QUESTION_SELECT';
+export const UPDATE_QUESTION_SELECT_REQUEST =
+  'user/UPDATE_QUESTION_SELECT_REQUEST';
+export const UPDATE_QUESTION_SELECT_SUCCESS =
+  'user/UPDATE_QUESTION_SELECT_SUCCESS';
+export const UPDATE_QUESTION_SELECT_FAILURE =
+  'user/UPDATE_QUESTION_SELECT_FAILURE';
 
-export const SKIP_SELECT_QUESTIONS = 'user/SKIP_SELECT_QUESTIONS';
+export const SKIP_OR_COMPLETE_SELECT_QUESTIONS =
+  'user/SKIP_OR_COMPLETE_SELECT_QUESTIONS';
 
 export const GET_SELECTED_USER_REQUEST = 'user/GET_SELECTED_USER_REQUEST';
 export const GET_SELECTED_USER_SUCCESS = 'user/GET_SELECTED_USER_SUCCESS';
@@ -30,9 +36,9 @@ const initialState = {
   selectQuestion: true
 };
 
-export const skipSelectQuestions = () => {
+export const skipOrCompleteSelectQuestions = () => {
   return (dispatch) => {
-    dispatch({ type: SKIP_SELECT_QUESTIONS });
+    dispatch({ type: SKIP_OR_COMPLETE_SELECT_QUESTIONS });
   };
 };
 
@@ -65,11 +71,17 @@ export const requestSignUp = (signUpInfo) => {
 
 export const postSelectedQuestions = (selectedQuestions) => {
   return async (dispatch) => {
-    await axios.patch(`user/me/`, {
-      question_history: selectedQuestions.join(',')
-    });
-    return dispatch({
-      type: UPDATE_QUESTION_SELECT,
+    dispatch({ type: UPDATE_QUESTION_SELECT_REQUEST });
+    try {
+      await axios.patch(`user/me/`, {
+        question_history: selectedQuestions.join(',')
+      });
+    } catch (err) {
+      dispatch({ type: UPDATE_QUESTION_SELECT_FAILURE });
+      return;
+    }
+    dispatch({
+      type: UPDATE_QUESTION_SELECT_SUCCESS,
       selectedQuestions
     });
   };
@@ -203,12 +215,12 @@ export default function userReducer(state = initialState, action) {
         ...state,
         signUpError: action.error
       };
-    case SKIP_SELECT_QUESTIONS:
+    case SKIP_OR_COMPLETE_SELECT_QUESTIONS:
       return {
         ...state,
         selectQuestion: true
       };
-    case UPDATE_QUESTION_SELECT: {
+    case UPDATE_QUESTION_SELECT_SUCCESS: {
       const newUser = {
         ...state.currentUser,
         question_history: action.selectedQuestions
