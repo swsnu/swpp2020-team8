@@ -62,8 +62,8 @@ describe('user Actions', () => {
     });
   });
 
-  it('`skipSelectQuestions` should skip select question properly', async () => {
-    await store.dispatch(actionCreators.skipSelectQuestions());
+  it('`skipOrCompleteSelectQuestions` should skip select question properly', async () => {
+    await store.dispatch(actionCreators.skipOrCompleteSelectQuestions());
     const newState = store.getState();
     expect(newState.userReducer.selectQuestion).toBeTruthy();
   });
@@ -262,7 +262,7 @@ describe('User Reducer', () => {
         selectQuestion: true
       },
       {
-        type: actionCreators.UPDATE_QUESTION_SELECT,
+        type: actionCreators.UPDATE_QUESTION_SELECT_SUCCESS,
         selectedQuestions: '1, 2, 3'
       }
     );

@@ -9,12 +9,12 @@ const AnonymousFeed = () => {
   const anonymousPosts = useSelector(
     (state) => state.postReducer.anonymousPosts
   );
-  const isAppending = useSelector(
-    (state) => state.loadingReducer['post/APPEND_POSTS']
-  );
-  const isLoading = useSelector(
-    (state) => state.loadingReducer['post/GET_ANON_POSTS']
-  );
+  const isAppending =
+    useSelector((state) => state.loadingReducer['post/APPEND_POSTS']) ===
+    'REQUEST';
+  const isLoading =
+    useSelector((state) => state.loadingReducer['post/GET_ANON_POSTS']) ===
+    'REQUEST';
 
   useEffect(() => {
     dispatch(getPostsByType('anon'));

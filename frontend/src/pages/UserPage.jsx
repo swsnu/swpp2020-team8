@@ -101,12 +101,12 @@ export default function UserPage() {
     (state) => state.postReducer.selectedUserPosts
   );
 
-  const isAppending = useSelector(
-    (state) => state.loadingReducer['post/APPEND_POSTS']
-  );
-  const isLoading = useSelector(
-    (state) => state.loadingReducer['post/GET_USER_POSTS']
-  );
+  const isAppending =
+    useSelector((state) => state.loadingReducer['post/APPEND_POSTS']) ===
+    'REQUEST';
+  const isLoading =
+    useSelector((state) => state.loadingReducer['post/GET_USER_POSTS']) ===
+    'REQUEST';
 
   useEffect(() => {
     dispatch(getSelectedUser(id));
