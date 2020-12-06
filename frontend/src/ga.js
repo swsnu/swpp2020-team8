@@ -1,7 +1,9 @@
 import ReactGA from 'react-ga';
 
 export const initGA = () => {
-  ReactGA.initialize('G-WYLPK7NZVE');
+  ReactGA.initialize('UA-184794346-1', {
+    debug: true
+  });
 };
 
 export const trackPage = (path) => {
