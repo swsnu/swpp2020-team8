@@ -68,12 +68,13 @@ export const fetchSearchResults = (updatedPageNo = '', query) => async (
         loading: false,
         searchError: false
       });
-    } catch (err) {
+    } catch (error) {
       dispatch({
         type: 'search/GET_SEARCH_RESULTS_FAILURE',
         loading: false,
         searchError: true,
-        message: '검색 결과를 찾을 수 없습니다.'
+        message: '검색 결과를 찾을 수 없습니다.',
+        error
       });
     }
   }

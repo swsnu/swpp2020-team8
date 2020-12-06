@@ -76,8 +76,8 @@ export const postSelectedQuestions = (selectedQuestions) => {
       await axios.patch(`user/me/`, {
         question_history: selectedQuestions.join(',')
       });
-    } catch (err) {
-      dispatch({ type: UPDATE_QUESTION_SELECT_FAILURE });
+    } catch (error) {
+      dispatch({ type: UPDATE_QUESTION_SELECT_FAILURE, error });
       return;
     }
     dispatch({
@@ -115,8 +115,8 @@ export const logout = () => async (dispatch) => {
   try {
     await axios.get('user/logout');
     Cookies.remove('jwt_token_refresh');
-  } catch (err) {
-    dispatch({ type: 'user/LOGOUT_FAILURE', error: err });
+  } catch (error) {
+    dispatch({ type: 'user/LOGOUT_FAILURE', error });
     return;
   }
   dispatch({
@@ -129,8 +129,8 @@ export const getCurrentUser = () => async (dispatch) => {
   dispatch({ type: 'user/GET_CURRENT_USER_REQUEST' });
   try {
     result = await axios.get('/user/me/');
-  } catch (err) {
-    dispatch({ type: 'user/GET_CURRENT_USER_FAILURE', error: err });
+  } catch (error) {
+    dispatch({ type: 'user/GET_CURRENT_USER_FAILURE', error });
     return;
   }
   if (result) {
@@ -146,8 +146,8 @@ export const getSelectedUser = (id) => async (dispatch) => {
   dispatch({ type: `user/GET_SELECTED_USER_REQUEST` });
   try {
     result = await axios.get(`user/${id}/`);
-  } catch (err) {
-    dispatch({ type: `user/GET_SELECTED_USER_FAILURE`, error: err });
+  } catch (error) {
+    dispatch({ type: `user/GET_SELECTED_USER_FAILURE`, error });
     return;
   }
   dispatch({

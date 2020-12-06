@@ -30,8 +30,8 @@ export const getFriendList = () => async (dispatch) => {
   let result;
   try {
     result = await axios.get(`user/me/friends/`);
-  } catch (err) {
-    dispatch({ type: GET_FRIEND_LIST_FAILURE, error: err });
+  } catch (error) {
+    dispatch({ type: GET_FRIEND_LIST_FAILURE, error });
     return;
   }
   dispatch({
@@ -45,8 +45,8 @@ export const deleteFriend = (friendId) => async (dispatch, getState) => {
   dispatch({ type: DELETE_FRIEND_REQUEST, userId });
   try {
     await axios.delete(`user/friend/${friendId}/`);
-  } catch (err) {
-    dispatch({ type: DELETE_FRIEND_FAILURE, error: err });
+  } catch (error) {
+    dispatch({ type: DELETE_FRIEND_FAILURE, error });
     return;
   }
   dispatch({
@@ -60,8 +60,8 @@ export const deleteFriendRequest = (friendId) => async (dispatch) => {
   dispatch({ type: DELETE_REQUEST_REQUEST });
   try {
     await axios.delete(`user/friend-requests/${friendId}/`);
-  } catch (err) {
-    dispatch({ type: DELETE_REQUEST_FAILURE, error: err });
+  } catch (error) {
+    dispatch({ type: DELETE_REQUEST_FAILURE, error });
     return;
   }
   dispatch({
@@ -76,12 +76,19 @@ export const requestFriend = (responderId) => async (dispatch, getState) => {
   dispatch({
     type: REQUEST_FRIEND_REQUEST
   });
-  await axios.post('user/friend-requests/', {
-    requestee_id: responderId,
-    requester_id: userId,
-    accepted: null
-  });
-
+  try {
+    await axios.post('user/friend-requests/', {
+      requestee_id: responderId,
+      requester_id: userId,
+      accepted: null
+    });
+  } catch (error) {
+    dispatch({
+      type: REQUEST_FRIEND_FAILURE,
+      error
+    });
+    return;
+  }
   dispatch({
     type: REQUEST_FRIEND_SUCCESS,
     responderId

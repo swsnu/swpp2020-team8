@@ -19,12 +19,7 @@ export default function PostDetail() {
   }, [postType, id, dispatch]);
 
   if (selectedPostFailure) {
-    return (
-      <Message
-        message="접근할 수 없는 게시물입니다"
-        messageDetail="읽기 권한이 없는 게시물입니다"
-      />
-    );
+    return <Message message="이 게시물에 접근할 수 없습니다." />;
   }
   if (
     selectedPost?.type === 'Question' ||
