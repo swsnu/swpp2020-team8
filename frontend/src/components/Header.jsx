@@ -303,7 +303,8 @@ const Header = ({ isMobile }) => {
           className={classes.logoutButton}
           style={{
             marginTop: '10px',
-            height: '40px'
+            height: '40px',
+            marginLeft: '8px'
           }}
           id="logout-button"
           onClick={(e) => {
