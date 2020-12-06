@@ -1,0 +1,25 @@
+sten 80;
+  
+  location / {
+    root /home/ubuntu/swpp2020-team8/frontend/build;
+    index index.html index.htm;
+    try_files $uri $uri/ /index.html;
+  }
+  location /api {
+    proxy_pass http://localhost:8000/api;
+  }
+}
+
+server {
+  listen 80;
+
+  location = /favicon.ico { access_log off; log_not_found off; }
+  location /static/ {
+    root /home/ubuntu/swpp2020-team8/backend/adoorback;
+  }
+
+  location / {
+    uwsgi_pass 127.0.0.1:8000;
+    include uwsgi_params;
+  }
+}

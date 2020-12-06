@@ -100,10 +100,10 @@ export const getRecommendedQuestions = (userId) => async (dispatch) => {
   dispatch({ type: 'question/GET_RECOMMENDED_QUESTIONS_REQUEST' });
   try {
     res = await axios.get(`feed/questions/daily/recommended/`);
-  } catch (err) {
+  } catch (error) {
     dispatch({
       type: 'question/GET_RECOMMENDED_QUESTIONS_FAILURE',
-      error: err
+      error
     });
     return;
   }
@@ -119,8 +119,8 @@ export const getDailyQuestions = () => async (dispatch) => {
   dispatch({ type: 'question/GET_DAILY_QUESTIONS_REQUEST' });
   try {
     res = await axios.get('/feed/questions/daily/');
-  } catch (err) {
-    dispatch({ type: 'question/GET_DAILY_QUESTIONS_FAILURE', error: err });
+  } catch (error) {
+    dispatch({ type: 'question/GET_DAILY_QUESTIONS_FAILURE', error });
     return;
   }
   dispatch({
@@ -138,8 +138,8 @@ export const appendDailyQuestions = () => async (dispatch, getState) => {
   dispatch({ type: APPEND_QUESTIONS_REQUEST });
   try {
     result = await axios.get(nextUrl);
-  } catch (err) {
-    dispatch({ type: APPEND_QUESTIONS_FAILURE, error: err });
+  } catch (error) {
+    dispatch({ type: APPEND_QUESTIONS_FAILURE, error });
     return;
   }
   dispatch({
@@ -160,10 +160,10 @@ export const getResponsesByQuestion = (id) => async (dispatch) => {
   dispatch({ type: 'question/GET_SELECTED_QUESTION_RESPONSES_REQUEST' });
   try {
     res = await axios.get(`/feed/questions/${id}/`);
-  } catch (err) {
+  } catch (error) {
     dispatch({
       type: 'question/GET_SELECTED_QUESTION_RESPONSES_FAILURE',
-      error: err
+      error
     });
     return;
   }
@@ -179,10 +179,10 @@ export const getFriendResponsesByQuestion = (id) => async (dispatch) => {
   dispatch({ type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_REQUEST' });
   try {
     res = await axios.get(`/feed/questions/${id}/friend/`);
-  } catch (err) {
+  } catch (error) {
     dispatch({
       type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_FAILURE',
-      error: err
+      error
     });
     return;
   }
@@ -198,10 +198,10 @@ export const getResponseRequestsByQuestion = (id) => async (dispatch) => {
   dispatch({ type: 'question/GET_RESPONSE_REQUESTS_REQUEST' });
   try {
     res = await axios.get(`/feed/questions/${id}/response-request/`);
-  } catch (err) {
+  } catch (error) {
     dispatch({
       type: 'question/GET_RESPONSE_REQUESTS_FAILURE',
-      error: err
+      error
     });
     return;
   }
@@ -221,10 +221,10 @@ export const createResponseRequest = (responseRequestObj) => async (
       `/feed/questions/response-request/`,
       responseRequestObj
     );
-  } catch (err) {
+  } catch (error) {
     dispatch({
       type: 'question/CREATE_RESPONSE_REQUEST_FAILURE',
-      error: err
+      error
     });
     return;
   }
@@ -240,10 +240,10 @@ export const deleteResponseRequest = (qid, rid) => async (dispatch) => {
   dispatch({ type: 'question/DELETE_RESPONSE_REQUESTS_REQUEST' });
   try {
     res = await axios.delete(`/feed/questions/${qid}/response-request/${rid}/`);
-  } catch (err) {
+  } catch (error) {
     dispatch({
       type: 'question/DELETE_RESPONSE_REQUESTS_FAILURE',
-      error: err
+      error
     });
     return;
   }

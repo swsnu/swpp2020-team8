@@ -8,7 +8,7 @@ const developBaseUrl = 'http://localhost:3000/api/';
 const prodBaseUrl = 'https://adoor.world/api/';
 
 const instance = axios.create({
-  baseURL: developBaseUrl,
+  baseURL: '/api/',
   withCredentials: true
 });
 
@@ -30,8 +30,10 @@ instance.interceptors.response.use(
     const originalRequest = error.config;
 
     const refresh_token = Cookies.get('jwt_token_refresh');
-    if (error.response.status === 404) window.location.href = '/';
-    else if (error.response.status === 401 && refresh_token) {
+    // TODO: 404 error handling
+    // if (error.response.status === 404) window.location.href = '/';
+    // else if (error.response.status === 401 && refresh_token) {
+    if (error.response.status === 401 && refresh_token) {
       return instance
         .post('user/token/refresh/', { refresh: refresh_token })
         .then((response) => {
@@ -46,7 +48,7 @@ instance.interceptors.response.use(
           return instance(originalRequest);
         })
         .catch((err, dispatch) => {
-          dispatch({ type: 'user/LOGIN_FAILURE', err });
+          dispatch({ type: 'user/LOGIN_FAILURE', error: err });
         });
     }
     return Promise.reject(error);
