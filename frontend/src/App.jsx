@@ -22,7 +22,6 @@ import NotificationPage from './pages/NotificationPage';
 import PostEdit from './pages/PostEdit';
 import UserPage from './pages/UserPage';
 import { getNotifications } from './modules/notification';
-import MobileFooter from './components/MobileFooter';
 import MobileQuestionPage from './pages/MobileQuestionPage';
 import MobileSearchPage from './pages/MobileSearchPage';
 import { getCurrentUser } from './modules/user';
@@ -87,7 +86,6 @@ const App = () => {
   useEffect(() => {
     // eslint-disable-next-line no-unused-vars
     return history.listen((location) => {
-      // console.log(`You changed the page to: ${location.pathname}`);
       if (currentUser) {
         dispatch(getNotifications());
       }
@@ -118,7 +116,6 @@ const App = () => {
       ) : (
         <MainWrapper>
           {!isMobile && <QuestionListWidget />}
-          {isMobile && <MobileFooter />}
           <FeedWrapper>
             <Switch>
               <Redirect from="/my-page" to={`/users/${currentUser?.id}`} />

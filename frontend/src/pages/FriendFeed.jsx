@@ -33,7 +33,6 @@ const FriendFeed = () => {
 
   useEffect(() => {
     dispatch(getPostsByType('friend'));
-    console.log('here freind feed');
   }, [dispatch]);
 
   return (

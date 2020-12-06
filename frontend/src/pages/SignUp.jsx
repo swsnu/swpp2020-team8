@@ -58,7 +58,6 @@ export default function SignUp({ setRefreshToken }) {
   }, [isSubmitted, signUpError]);
 
   useEffect(() => {
-    console.log('success!', loginSuccess, Cookies.get('jwt_token_refresh'));
     setRefreshToken(Cookies.get('jwt_token_refresh'));
   }, [loginSuccess]);
 
