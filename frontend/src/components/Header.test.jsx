@@ -28,6 +28,8 @@ jest.spyOn(axios, 'get').mockImplementation(() => {
   });
 });
 
+const setRefreshToken = jest.fn();
+
 describe('<Header/>', () => {
   const store = createStore(
     rootReducer,
@@ -39,7 +41,7 @@ describe('<Header/>', () => {
     mount(
       <Provider store={store}>
         <Router history={history}>
-          <Header isMobile={false} />
+          <Header isMobile={false} setRefreshToken={setRefreshToken} />
         </Router>
       </Provider>
     );

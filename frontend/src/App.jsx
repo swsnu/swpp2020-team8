@@ -22,7 +22,6 @@ import NotificationPage from './pages/NotificationPage';
 import PostEdit from './pages/PostEdit';
 import UserPage from './pages/UserPage';
 import { getNotifications } from './modules/notification';
-import MobileFooter from './components/MobileFooter';
 import MobileQuestionPage from './pages/MobileQuestionPage';
 import MobileSearchPage from './pages/MobileSearchPage';
 import { getCurrentUser } from './modules/user';
@@ -44,7 +43,9 @@ const App = () => {
   const handleResize = () => {
     setIsMobile(window.innerWidth < 650);
   };
+
   useEffect(() => {
+    initGA();
     window.addEventListener('resize', handleResize, false);
     return () => {
       window.removeEventListener('resize', handleResize);
@@ -52,28 +53,39 @@ const App = () => {
   }, []);
 
   // todo: use hooks
-  const refresh_token = Cookies.get('jwt_token_refresh');
+  const [refreshToken, setRefreshToken] = useState(
+    Cookies.get('jwt_token_refresh')
+  );
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const dispatch = useDispatch();
   const history = useHistory();
   const selectQuestion = useSelector(
     (state) => state.userReducer.selectQuestion
   );
+
+  const loginFailure =
+    useSelector((state) => state.loadingReducer['user/GET_CURRENT_USER']) ===
+    'FAILURE';
+
   const signUpRedirectPath = currentUser?.question_history
     ? '/home'
     : 'select-questions';
 
   useEffect(() => {
-    initGA();
-    if (refresh_token) {
+    if (refreshToken) {
       dispatch(getCurrentUser());
     }
-  }, []);
+  }, [refreshToken]);
+
+  useEffect(() => {
+    if (loginFailure) {
+      setRefreshToken(null);
+    }
+  }, [loginFailure]);
 
   useEffect(() => {
     // eslint-disable-next-line no-unused-vars
     return history.listen((location) => {
-      // console.log(`You changed the page to: ${location.pathname}`);
       if (currentUser) {
         dispatch(getNotifications());
       }
@@ -84,19 +96,26 @@ const App = () => {
   return (
     <MuiThemeProvider theme={theme}>
       <GlobalStyle />
-      <Header isMobile={isMobile} />
-      {!refresh_token ||
+      <Header isMobile={isMobile} setRefreshToken={setRefreshToken} />
+      {!refreshToken ||
       (!selectQuestion && currentUser?.question_history === null) ? (
         <Switch>
-          <Route exact path="/login" component={Login} />
-          <Route exact path="/signup" component={SignUp} />
+          <Route
+            exact
+            path="/login"
+            render={() => <Login setRefreshToken={setRefreshToken} />}
+          />
+          <Route
+            exact
+            path="/signup"
+            render={() => <SignUp setRefreshToken={setRefreshToken} />}
+          />
           <Route exact path="/select-questions" component={QuestionSelection} />
           <Redirect from="/" to="/login" />
         </Switch>
       ) : (
         <MainWrapper>
           {!isMobile && <QuestionListWidget />}
-          {isMobile && <MobileFooter />}
           <FeedWrapper>
             <Switch>
               <Redirect from="/my-page" to={`/users/${currentUser?.id}`} />

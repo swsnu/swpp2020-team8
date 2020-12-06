@@ -141,7 +141,6 @@ describe('<SearchResults /> unit test', () => {
         </Router>
       </Provider>
     );
-    console.log(wrapper.debug());
     expect(wrapper.find('.message')).toBeTruthy();
   });
 });

@@ -21,6 +21,7 @@ import { logout } from '../modules/user';
 import { getNotifications } from '../modules/notification';
 import { fetchSearchResults } from '../modules/search';
 import MobileDrawer from './posts/MobileDrawer';
+import MobileFooter from './MobileFooter';
 
 const HelloUsername = styled.div`
   font-size: 16px;
@@ -101,7 +102,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // eslint-disable-next-line react/prop-types
-const Header = ({ isMobile }) => {
+const Header = ({ isMobile, setRefreshToken }) => {
   const classes = useStyles();
   const [isNotiOpen, setIsNotiOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -145,6 +146,8 @@ const Header = ({ isMobile }) => {
 
   const handleClickLogout = () => {
     dispatch(logout());
+    setRefreshToken(null);
+    history.push('/login');
   };
 
   const toggleNotiOpen = () => {
@@ -316,8 +319,12 @@ const Header = ({ isMobile }) => {
       </div>
     </>
   );
+
   return (
     <>
+      {isMobile && currentUser !== null && (
+        <MobileFooter notiBadgeInvisible={notiBadgeInvisible} />
+      )}
       <div className={classes.grow}>
         <AppBar position="static" className={classes.header}>
           <Toolbar>
