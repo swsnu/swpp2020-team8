@@ -17,12 +17,12 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     def get_is_response_request(self, obj):
         if obj.target is None:
-            return None
+            return False
         return obj.target.type == 'ResponseRequest'
 
     def get_is_friend_request(self, obj):
         if obj.target is None:
-            return None
+            return False
         return obj.target.type == 'FriendRequest'
 
     def get_actor_detail(self, obj):
