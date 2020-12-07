@@ -105,17 +105,17 @@ def create_friend_noti(created, instance, **kwargs):
         Notification.objects.create(user=requestee, actor=requester,
                                     origin=requester, target=instance,
                                     message=f'{requester.username}님이 친구 요청을 보냈습니다.',
-                                    redirect_url=f'/user/{requester.id}')
+                                    redirect_url=f'/users/{requester.id}')
         return
     elif accepted:
         Notification.objects.create(user=requestee, actor=requester,
                                     origin=requester, target=requester,
                                     message=f'{requester.username}님과 친구가 되었습니다.',
-                                    redirect_url=f'/user/{requester}')
+                                    redirect_url=f'/users/{requester.id}')
         Notification.objects.create(user=requester, actor=requestee,
                                     origin=requestee, target=requestee,
                                     message=f'{requestee.username}님과 친구가 되었습니다.',
-                                    redirect_url=f'/user/{requestee.id}')
+                                    redirect_url=f'/users/{requestee.id}')
         # add friendship
         requester.friends.add(requestee)
 

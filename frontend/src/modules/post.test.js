@@ -332,6 +332,7 @@ describe('Post Reducer', () => {
       friendPosts: [],
       selectedUserPosts: [],
       selectedPostFailure: false,
+      selectedUserId: null,
       next: null,
       selectedPost: null
     });
@@ -367,6 +368,7 @@ describe('Post Reducer', () => {
         friendPosts: [],
         selectedUserPosts: [],
         selectedPost: {},
+        selectedUserId: null,
         next: null
       },
       {
@@ -380,6 +382,7 @@ describe('Post Reducer', () => {
       friendPosts: mockFriendFeed,
       selectedUserPosts: [],
       selectedPost: {},
+      selectedUserId: null,
       next: undefined
     });
   });
@@ -391,6 +394,7 @@ describe('Post Reducer', () => {
         friendPosts: [],
         selectedUserPosts: [],
         selectedPost: {},
+        selectedUserId: null,
         next: null
       },
       {
@@ -404,6 +408,7 @@ describe('Post Reducer', () => {
       friendPosts: [],
       selectedUserPosts: [],
       selectedPost: {},
+      selectedUserId: null,
       next: undefined
     });
   });
@@ -414,6 +419,7 @@ describe('Post Reducer', () => {
       friendPosts: [],
       selectedUserPosts: [],
       selectedPost: {},
+      selectedUserId: null,
       next: null
     };
     let newState = postReducer(
@@ -469,6 +475,7 @@ describe('Post Reducer', () => {
         friendPosts: [],
         selectedUserPosts: [],
         selectedPost: {},
+        selectedUserId: null,
         next: null
       },
       {
@@ -487,6 +494,7 @@ describe('Post Reducer', () => {
         friendPosts: [],
         selectedUserPosts: [],
         selectedPost: {},
+        selectedUserId: null,
         next: null
       },
       {
@@ -516,6 +524,7 @@ describe('Post Reducer', () => {
         friendPosts: [mockPost],
         selectedUserPosts: [mockPost],
         selectedPost: mockPost,
+        selectedUserId: null,
         next: null
       },
       {
@@ -552,6 +561,7 @@ describe('Post Reducer', () => {
         friendPosts: [mockResponse, mockPost],
         selectedUserPosts: [mockResponse, mockPost],
         selectedPost: mockResponse,
+        selectedUserId: null,
         next: null
       },
       {
@@ -584,6 +594,7 @@ describe('Post Reducer', () => {
         friendPosts: [mockArticle, mockPost],
         selectedUserPosts: [mockArticle, mockPost],
         selectedPost: mockArticle,
+        selectedUserId: null,
         next: null
       },
       {

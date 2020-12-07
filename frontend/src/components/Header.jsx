@@ -12,7 +12,7 @@ import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import TextField from '@material-ui/core/TextField';
-
+import styled from 'styled-components';
 import useOnClickOutside from 'use-onclickoutside';
 import { primaryColor, borderColor } from '../constants/colors';
 import NotificationDropdownList from './NotificationDropdownList';
@@ -21,7 +21,14 @@ import { logout } from '../modules/user';
 import { getNotifications } from '../modules/notification';
 import { fetchSearchResults } from '../modules/search';
 import MobileDrawer from './posts/MobileDrawer';
+import MobileFooter from './MobileFooter';
 
+const HelloUsername = styled.div`
+  font-size: 16px;
+  margin-bottom: 7px;
+  margin-left: 12px;
+  color: #777;
+`;
 const useStyles = makeStyles((theme) => ({
   hide: {
     display: 'none'
@@ -85,12 +92,17 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   iconButton: {
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
+    '&:hover': {
+      // you want this to be the same as the backgroundColor above
+      backgroundColor: 'transparent',
+      color: '#000'
+    }
   }
 }));
 
 // eslint-disable-next-line react/prop-types
-const Header = ({ isMobile }) => {
+const Header = ({ isMobile, setRefreshToken }) => {
   const classes = useStyles();
   const [isNotiOpen, setIsNotiOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -99,6 +111,8 @@ const Header = ({ isMobile }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const notiRef = useRef(null);
+  const notiIconRef = useRef(null);
+
   const searchRef = useRef(null);
 
   const currentUser = useSelector((state) => state.userReducer.currentUser);
@@ -127,15 +141,17 @@ const Header = ({ isMobile }) => {
     setIsSearchOpen(false);
   };
 
-  useOnClickOutside(notiRef, handleNotiClose);
+  useOnClickOutside([notiRef, notiIconRef], handleNotiClose);
   useOnClickOutside(searchRef, handleSearchClose);
 
   const handleClickLogout = () => {
     dispatch(logout());
+    setRefreshToken(null);
+    history.push('/login');
   };
 
   const toggleNotiOpen = () => {
-    setIsNotiOpen(!isNotiOpen);
+    setIsNotiOpen((prev) => !prev);
   };
 
   useEffect(() => {
@@ -205,11 +221,11 @@ const Header = ({ isMobile }) => {
     <>
       <NavLink
         className={classes.tabButton}
-        to="/friends"
+        to="/home"
         size="large"
         activeClassName={classes.tabActive}
       >
-        친구들의 글
+        Home
       </NavLink>
       <NavLink
         className={classes.tabButton}
@@ -245,13 +261,20 @@ const Header = ({ isMobile }) => {
           onChange={handleChange}
           onKeyDown={onKeySubmit}
         />
+        {/* <HelloUsername>
+          {currentUser?.username}
+          님, 안녕하세요!
+        </HelloUsername> */}
         <IconButton
+          ref={notiIconRef}
           aria-label="show new notifications"
           className={`${classes.iconButton} noti-button`}
           onClick={(e) => {
             e.stopPropagation();
             toggleNotiOpen();
           }}
+          disableRipple
+          color="secondary"
         >
           <Badge variant="dot" invisible={notiBadgeInvisible} color="primary">
             <NotificationsIcon />
@@ -262,18 +285,28 @@ const Header = ({ isMobile }) => {
           aria-label="account of current user"
           className={classes.iconButton}
           style={{ marginTop: '4px' }}
+          disableRipple
+          color="secondary"
         >
           <Link to={`/users/${currentUser?.id}`}>
-            <AccountCircle />
+            <AccountCircle color="secondary" />
+          </Link>
+          <Link to={`/users/${currentUser?.id}`}>
+            <HelloUsername>
+              {currentUser?.username}
+              {/* 님, 안녕하세요! */}
+            </HelloUsername>
           </Link>
         </IconButton>
+
         <Button
           variant="outlined"
           size="medium"
           className={classes.logoutButton}
           style={{
             marginTop: '10px',
-            height: '40px'
+            height: '40px',
+            marginLeft: '8px'
           }}
           id="logout-button"
           onClick={(e) => {
@@ -286,8 +319,12 @@ const Header = ({ isMobile }) => {
       </div>
     </>
   );
+
   return (
     <>
+      {isMobile && currentUser !== null && (
+        <MobileFooter notiBadgeInvisible={notiBadgeInvisible} />
+      )}
       <div className={classes.grow}>
         <AppBar position="static" className={classes.header}>
           <Toolbar>

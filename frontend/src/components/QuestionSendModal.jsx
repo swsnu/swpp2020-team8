@@ -38,6 +38,14 @@ const Question = styled.div`
   font-size: 15px;
 `;
 
+const NoFriend = styled.div`
+  padding: 16px;
+  border: none;
+  border-radius: 4px;
+  text-align: center;
+  background: whitesmoke;
+`;
+
 const QuestionSendModal = ({ questionObj, open, handleClose }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -81,7 +89,11 @@ const QuestionSendModal = ({ questionObj, open, handleClose }) => {
           <h3>{questionObj.content}</h3>
         </Question>
         <List className={classes.list} aria-label="friend list">
-          {friendItemList}
+          {friendList.length ? (
+            friendItemList
+          ) : (
+            <NoFriend>친구를 추가해야 사용 가능한 기능입니다.</NoFriend>
+          )}
         </List>
       </DialogContent>
     </Dialog>

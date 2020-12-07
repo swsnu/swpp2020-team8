@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-wrap-multilines */
 import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
@@ -6,6 +7,7 @@ import LiveHelpIcon from '@material-ui/icons/LiveHelp';
 import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
 import HomeIcon from '@material-ui/icons/Home';
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import Badge from '@material-ui/core/Badge';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import { useHistory } from 'react-router';
 
@@ -23,7 +25,7 @@ const useStyles = makeStyles({
   }
 });
 
-export default function MobileFooter() {
+export default function MobileFooter({ notiBadgeInvisible }) {
   const classes = useStyles();
   const history = useHistory();
   const [value, setValue] = React.useState('/');
@@ -71,7 +73,11 @@ export default function MobileFooter() {
       <BottomNavigationAction
         value="/notifications"
         label="알림"
-        icon={<NotificationsIcon />}
+        icon={
+          <Badge variant="dot" invisible={notiBadgeInvisible} color="primary">
+            <NotificationsIcon />
+          </Badge>
+        }
         className={`${classes.icon} link`}
       />
       <BottomNavigationAction

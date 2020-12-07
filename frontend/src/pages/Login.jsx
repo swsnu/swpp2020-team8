@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
+import Cookies from 'js.cookie';
 import { CommonInput, CommonButton } from '../styles';
 
 import { requestLogin } from '../modules/user';
@@ -33,12 +34,14 @@ const WarningMessage = styled.div`
 
 WarningMessage.displayName = 'WarningMessage';
 
-export default function Login() {
+export default function Login({ setRefreshToken }) {
   const history = useHistory();
   const dispatch = useDispatch();
   const [loginInfo, setLoginInfo] = useState({ username: '', password: '' });
   const loginError = useSelector((state) => state.userReducer.loginError);
   const [loginWarning, setLoginWarning] = useState(false);
+  const loginSuccess =
+    useSelector((state) => state.loadingReducer['user/LOGIN']) === 'SUCCESS';
 
   useEffect(() => {
     if (loginError) setLoginWarning(true);
@@ -52,6 +55,12 @@ export default function Login() {
   const onClickSubmitButton = () => {
     dispatch(requestLogin(loginInfo));
   };
+
+  useEffect(() => {
+    if (loginSuccess) {
+      setRefreshToken(Cookies.get('jwt_token_refresh'));
+    }
+  }, [loginSuccess]);
 
   const onKeySubmit = (e) => {
     if (e.key === 'Enter') {

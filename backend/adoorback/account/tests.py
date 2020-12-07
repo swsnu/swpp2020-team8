@@ -431,7 +431,7 @@ class FriendshipNotisAPITestCase(APITestCase):
             self.assertEqual(notification.user_id, current_user.id)
             self.assertEqual(notification.is_read, False)
             self.assertEqual(notification.is_visible, True)
-            self.assertEqual(notification.redirect_url, f'/user/{friend_user.id}')
+            self.assertEqual(notification.redirect_url, f'/users/{friend_user.id}')
 
         # PATCH (reject) FriendRequest (current_user -> friend_user)
         with self.login(username=current_user.username, password='password'):

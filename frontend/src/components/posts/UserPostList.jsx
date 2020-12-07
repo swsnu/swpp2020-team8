@@ -24,14 +24,14 @@ export default function UserPostList({
     return (
       <Message
         message="친구가 아닌 사용자의 게시물은 볼 수 없습니다"
-        messageDetail="친구 신청을 해보세요"
+        messageDetail="친구 신청을 해보세요 :)"
         noBorder
       />
     );
   }
 
   if (posts.length === 0 && !isLoading) {
-    return <Message message="표시할 게시물이 없습니다" noBorder />;
+    return <Message message="표시할 게시물이 없습니다 :(" noBorder />;
   }
 
   return (

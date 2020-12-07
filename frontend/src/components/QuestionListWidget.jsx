@@ -45,6 +45,13 @@ const WidgetCard = styled(Card)`
   }
 `;
 
+const QuestionListItemLink = styled(ListItemLink)`
+  border: 1px solid #e7e7e7;
+  margin: 8px;
+  width: calc(100% - 16px);
+  border-radius: 4px;
+`;
+
 NewQuestionButton.displayName = 'NewQuestionButton';
 
 const useStyles = makeStyles((theme) => ({
@@ -108,25 +115,25 @@ const QuestionListWidget = ({
     dispatch(getRecommendedQuestions());
   }, [dispatch]);
 
-  const recommendedQuestionList = recommendedQuestions
-    .slice(0, 5)
-    .map((question) => (
-      <ListItemLink key={question.id} to={`/questions/${question.id}`}>
-        <ListItemText
-          classes={{ primary: classes.question }}
-          primary={question.content}
-        />
-      </ListItemLink>
-    ));
-
-  const randomQuestionList = randomQuestions.slice(0, 5).map((question) => (
-    <ListItemLink key={question.id} to={`/questions/${question.id}`}>
+  const randomQuestionList = randomQuestions?.slice(0, 5).map((question) => (
+    <QuestionListItemLink key={question.id} to={`/questions/${question.id}`}>
       <ListItemText
         classes={{ primary: classes.question }}
         primary={question.content}
       />
-    </ListItemLink>
+    </QuestionListItemLink>
   ));
+
+  const recommendedQuestionList = (recommendedQuestions || randomQuestions)
+    .slice(0, 5)
+    .map((question) => (
+      <QuestionListItemLink key={question.id} to={`/questions/${question.id}`}>
+        <ListItemText
+          classes={{ primary: classes.question }}
+          primary={question.content}
+        />
+      </QuestionListItemLink>
+    ));
 
   const handleClickRefreshButton = () => {
     if (!isRandomQuestions) {

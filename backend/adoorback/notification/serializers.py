@@ -28,16 +28,16 @@ class NotificationSerializer(serializers.ModelSerializer):
     def get_actor_detail(self, obj):
         if User.are_friends(self.context.get('request', None).user, obj.actor):
             return AuthorFriendSerializer(obj.actor).data
-        if obj.target.type == 'FriendRequest':
+        if obj.target and obj.target.type == 'FriendRequest':
             return AuthorFriendSerializer(obj.actor).data
         return AuthorAnonymousSerializer(obj.actor).data
 
     def get_question_content(self, obj):
         content = None
-        if obj.target.type == 'ResponseRequest' or obj.target.type == 'Response':
+        if obj.target and (obj.target.type == 'ResponseRequest' or obj.target.type == 'Response'):
             content = obj.target.question.content
         # if question/response was deleted
-        elif obj.redirect_url[:11] == '/questions/' and obj.target.type != 'Like':
+        elif obj.target and obj.redirect_url[:11] == '/questions/' and obj.target.type != 'Like':
             content = Question.objects.get(id=int(obj.redirect_url[11:]))
         else:
             return content
