@@ -392,6 +392,14 @@ class UserNotisAPITestCase(APITestCase):
         self.assertEqual(Notification.objects.first().message,
                          'test_username님, 반갑습니다! :) 먼저 익명피드를 둘러볼까요?')
 
+        data = {"my_bad": '1, 2, 3'}
+        with self.login(username='test_username', password='test_password'):
+            response = self.patch('current-user', data=data, extra={'format': 'json'})
+            self.assertEqual(response.status_code, 200)
+
+            self.assertNotEqual(Notification.objects.first().message,
+                                'test_username님, 질문 선택을 완료해주셨네요 :) 그럼 오늘의 질문들을 둘러보러 가볼까요?')
+
         data = {"question_history": '1, 2, 3'}
         with self.login(username='test_username', password='test_password'):
             response = self.patch('current-user', data=data, extra={'format': 'json'})
@@ -402,14 +410,6 @@ class UserNotisAPITestCase(APITestCase):
 
         num_admin_notis_after = Notification.objects.admin_only().count()
         self.assertEqual(num_admin_notis_before, num_admin_notis_after - 2)
-
-        data = {"my_bad": '1, 2, 3'}
-        with self.login(username='test_username', password='test_password'):
-            response = self.patch('current-user', data=data, extra={'format': 'json'})
-            self.assertEqual(response.status_code, 200)
-
-            self.assertNotEqual(Notification.objects.first().message,
-                                'test_username님, 질문 선택을 완료해주셨네요 :) 그럼 오늘의 질문들을 둘러보러 가볼까요?')
 
 
 class FriendshipNotisAPITestCase(APITestCase):
