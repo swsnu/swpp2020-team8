@@ -51,9 +51,10 @@ def create_user_csv():
             writer.writerow([c.strip() for c in row.strip(',').split(',')])
 
     for user in User.objects.all():
-        for selected_id in user.question_history.split(','):
-            row = "SELECTED," + selected_id + "," + str(user.id)
-            writer.writerow([c.strip() for c in row.strip(',').split(',')])
+        if user.question_history is not None:
+            for selected_id in user.question_history.split(','):
+                row = "SELECTED," + selected_id + "," + str(user.id)
+                writer.writerow([c.strip() for c in row.strip(',').split(',')])
 
     for question in Question.objects.all():
         row = "CREATED," + str(question.id) + "," + str(question.author.id)

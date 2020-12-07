@@ -20,10 +20,10 @@ def validate_notification_message(message):
 
 def adoor_exception_handler(e, context):
     response = exception_handler(e, context)
-    if response.status_code in [status.HTTP_400_BAD_REQUEST,
-                                status.HTTP_401_UNAUTHORIZED,
-                                status.HTTP_405_METHOD_NOT_ALLOWED,
-                                status.HTTP_404_NOT_FOUND,
-                                status.HTTP_403_FORBIDDEN]:
-        sentry_sdk.capture_exception(e)
+    # if response.status_code in [status.HTTP_400_BAD_REQUEST,
+    #                             status.HTTP_401_UNAUTHORIZED,
+    #                             status.HTTP_405_METHOD_NOT_ALLOWED,
+    #                             status.HTTP_404_NOT_FOUND,
+    #                             status.HTTP_403_FORBIDDEN]:
+    sentry_sdk.capture_exception(e)
     return response
