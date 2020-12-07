@@ -15,7 +15,6 @@ const QuestionsWrapper = styled.div`
   width: 500px;
   @media (max-width: 650px) {
     width: 90%;
-    margin-top: 0;
   }
 `;
 

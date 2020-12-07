@@ -75,7 +75,7 @@ const initialState = {
 export const appendPosts = (origin) => async (dispatch, getState) => {
   const { next } = getState().postReducer;
   if (!next) return;
-  const nextUrl = next.replace('localhost:8000', 'localhost:3000');
+  const nextUrl = next.replace('localhost:8000/api/', '');
   let result;
   dispatch({ type: APPEND_POSTS_REQUEST });
   try {
@@ -212,6 +212,13 @@ export const createPost = (newPost) => async (dispatch, getState) => {
     type: CREATE_POST_SUCCESS,
     newPost: resultPost
   });
+
+  if (
+    resultPost.type === 'Question' &&
+    !window.location.pathname.includes('home')
+  ) {
+    window.location = '/home';
+  }
 
   window.scrollTo(0, 0);
 
