@@ -16,9 +16,13 @@ class NotificationSerializer(serializers.ModelSerializer):
     is_read = serializers.BooleanField(required=True)
 
     def get_is_response_request(self, obj):
+        if obj.target is None:
+            return None
         return obj.target.type == 'ResponseRequest'
 
     def get_is_friend_request(self, obj):
+        if obj.target is None:
+            return None
         return obj.target.type == 'FriendRequest'
 
     def get_actor_detail(self, obj):
