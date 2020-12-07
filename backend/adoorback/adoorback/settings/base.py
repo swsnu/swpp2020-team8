@@ -70,7 +70,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'polymorphic',
     'admin_honeypot',
-    'django_celery_results',
     'django_cron',
     'corsheaders',
     'import_export',
