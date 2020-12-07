@@ -8,8 +8,8 @@ const developBaseUrl = 'http://localhost:3000/api/';
 const prodBaseUrl = 'https://adoor.world/api/';
 
 const instance = axios.create({
-  // baseURL: '/api/',
-  baseURL: developBaseUrl,
+  baseURL: '/api/',
+  // baseURL: developBaseUrl,
   withCredentials: true
 });
 
