@@ -44,7 +44,9 @@ export default function Login({ setRefreshToken }) {
     useSelector((state) => state.loadingReducer['user/LOGIN']) === 'SUCCESS';
 
   useEffect(() => {
-    if (loginError) setLoginWarning(true);
+    if (loginError) {
+      setLoginWarning(true);
+    }
   }, [loginError]);
 
   const handleChange = (e) => {

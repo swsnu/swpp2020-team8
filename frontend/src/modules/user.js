@@ -28,6 +28,8 @@ export const GET_SELECTED_USER_REQUEST = 'user/GET_SELECTED_USER_REQUEST';
 export const GET_SELECTED_USER_SUCCESS = 'user/GET_SELECTED_USER_SUCCESS';
 export const GET_SELECTED_USER_FAILURE = 'user/GET_SELECTED_USER_FAILURE';
 
+export const REMOVE_ERROR = 'user/REMOVE_ERROR';
+
 const initialState = {
   loginError: false,
   signUpError: {},
@@ -106,6 +108,7 @@ export const requestLogin = (loginInfo) => {
       dispatch({ type: 'user/LOGIN_SUCCESS', currentUser });
     } catch (error) {
       dispatch({ type: 'user/LOGIN_FAILURE', error });
+      dispatch({ type: 'user/REMOVE_ERROR', error });
     }
   };
 };
@@ -177,7 +180,8 @@ export default function userReducer(state = initialState, action) {
       return {
         ...state,
         currentUser: null,
-        signUpError: false
+        signUpError: false,
+        loginError: false
       };
     case LOGIN_REQUEST:
       return {
@@ -235,6 +239,12 @@ export default function userReducer(state = initialState, action) {
       return {
         ...state,
         currentUser: action.currentUser
+      };
+    }
+    case REMOVE_ERROR: {
+      return {
+        ...state,
+        loginError: false
       };
     }
     default:
