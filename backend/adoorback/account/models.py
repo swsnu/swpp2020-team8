@@ -90,6 +90,8 @@ def delete_friend_noti(action, pk_set, instance, **kwargs):
         # remove friendship related notis from both users
         friend.friendship_targetted_notis.filter(user=instance).delete()
         instance.friendship_targetted_notis.filter(user=friend).delete()
+        FriendRequest.objects.filter(requester=instance, requestee=friend).delete()
+        FriendRequest.objects.filter(requester=friend, requestee=instance).delete()
 
 
 @receiver(post_save, sender=FriendRequest)
