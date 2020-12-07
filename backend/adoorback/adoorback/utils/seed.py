@@ -24,8 +24,9 @@ def set_seed(n):
 
     # Seed User
     for _ in range(2):
-        User.objects.create_user(username=faker.user_name(
-        ), email=faker.email(), password=faker.password(length=12))
+        User.objects.create_user(username="adoor_" + str(_+1),
+                                 email=faker.email(),
+                                 password="adoor2020:)")
     logging.info(
         f"{User.objects.count()} User(s) created!") if DEBUG else None
 
