@@ -42,6 +42,8 @@ def create_ranks_csv():
                                                                 left_on='personId',
                                                                 right_on='personId')
 
+    topn = questions_df.shape[0]
+
     def smooth_user_preference(x):
         return math.log(1 + x, 2)
 
@@ -100,7 +102,7 @@ def create_ranks_csv():
                                                    items_to_ignore=
                                                    get_items_interacted(person_id,
                                                                         interactions_train_indexed_df),
-                                                   topn=10000000000)
+                                                   topn=topn)
 
             hits_at_5_count = 0
             hits_at_10_count = 0
@@ -182,7 +184,7 @@ def create_ranks_csv():
         def get_model_name(self):
             return self.MODEL_NAME
 
-        def recommend_items(self, user_id, items_to_ignore=None, topn=10, verbose=False):
+        def recommend_items(self, user_id, items_to_ignore=None, topn=topn, verbose=False):
             # Recommend the more popular items that the user hasn't seen yet.
             if items_to_ignore is None:
                 items_to_ignore = []
@@ -287,7 +289,7 @@ def create_ranks_csv():
         def get_model_name(self):
             return self.MODEL_NAME
 
-        def _get_similar_items_to_user_profile(self, person_id, topn=1000):
+        def _get_similar_items_to_user_profile(self, person_id, topn=topn):
             # Computes the cosine similarity between the user profile and all item profiles
             cosine_similarities = cosine_similarity(user_profiles[person_id], tfidf_matrix)
             # Gets the top similar items
@@ -297,7 +299,7 @@ def create_ranks_csv():
                                    key=lambda x: -x[1])
             return similar_items
 
-        def recommend_items(self, user_id, items_to_ignore=None, topn=10, verbose=False):
+        def recommend_items(self, user_id, items_to_ignore=None, topn=topn, verbose=False):
             if items_to_ignore is None:
                 items_to_ignore = []
             similar_items = self._get_similar_items_to_user_profile(user_id)
@@ -362,7 +364,7 @@ def create_ranks_csv():
         def get_model_name(self):
             return self.MODEL_NAME
 
-        def recommend_items(self, user_id, items_to_ignore=None, topn=10, verbose=False):
+        def recommend_items(self, user_id, items_to_ignore=None, topn=topn, verbose=False):
             # Get and sort the user's predictions
             if items_to_ignore is None:
                 items_to_ignore = []
@@ -407,19 +409,19 @@ def create_ranks_csv():
         def get_model_name(self):
             return self.MODEL_NAME
 
-        def recommend_items(self, user_id, items_to_ignore=None, topn=10, verbose=False):
+        def recommend_items(self, user_id, items_to_ignore=None, topn=topn, verbose=False):
             # Getting the top-1000 Content-based filtering recommendations
             if items_to_ignore is None:
                 items_to_ignore = []
             cb_recs_df = self.cb_rec_model.recommend_items(user_id, items_to_ignore=items_to_ignore,
                                                            verbose=verbose,
-                                                           topn=1000).rename(
+                                                           topn=topn).rename(
                 columns={'recStrength': 'recStrengthCB'})
 
             # Getting the top-1000 Collaborative filtering recommendations
             cf_recs_df = self.cf_rec_model.recommend_items(user_id, items_to_ignore=items_to_ignore,
                                                            verbose=verbose,
-                                                           topn=1000).rename(
+                                                           topn=topn).rename(
                 columns={'recStrength': 'recStrengthCF'})
 
             # Combining the results by contentId
@@ -489,9 +491,8 @@ def create_ranks_csv():
     User = get_user_model()
 
     df = pd.DataFrame()
-    n = questions_df.shape[0]
     for uid in User.objects.values_list('id', flat=True):
-        new_df = best_model.recommend_items(uid, topn=n, verbose=True)
+        new_df = best_model.recommend_items(uid, topn=topn, verbose=True)
         new_df['userId'] = uid
         df = df.append(new_df)
 
