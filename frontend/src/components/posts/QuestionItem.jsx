@@ -37,6 +37,7 @@ const Question = styled.div`
   text-align: center;
   font-weight: 500;
   font-size: 15px;
+  word-break: break-all;
   @media (max-width: 650px) {
     padding: 16px;
   }
