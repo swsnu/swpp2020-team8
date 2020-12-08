@@ -10,6 +10,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import Badge from '@material-ui/core/Badge';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import { useHistory } from 'react-router';
+import styled from 'styled-components';
 
 const useStyles = makeStyles({
   root: {
@@ -24,6 +25,16 @@ const useStyles = makeStyles({
     minWidth: '40px'
   }
 });
+
+const SmallFontBottomNavAction = styled(BottomNavigationAction)`
+  .MuiBottomNavigationAction-label {
+    font-size: 0.68rem !important;
+  }
+
+  .MuiBottomNavigationAction-label.Mui-selected {
+    font-size: 0.7rem !important;
+  }
+`;
 
 export default function MobileFooter({ notiBadgeInvisible }) {
   const classes = useStyles();
@@ -64,11 +75,12 @@ export default function MobileFooter({ notiBadgeInvisible }) {
         icon={<SupervisorAccountIcon />}
         className={`${classes.icon} link`}
       />
-      <BottomNavigationAction
+      <SmallFontBottomNavAction
         value="/questions"
-        label="질문모음"
+        label="오늘의 질문"
         icon={<LiveHelpIcon />}
         className={`${classes.icon} link`}
+        style={{ padding: '6px 2px', fontSize: '0.7rem' }}
       />
       <BottomNavigationAction
         value="/notifications"
