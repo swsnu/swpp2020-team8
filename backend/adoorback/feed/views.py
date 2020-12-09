@@ -1,5 +1,5 @@
-import os
-import pandas as pd
+# import os
+# import pandas as pd
 
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseBadRequest

@@ -6,7 +6,7 @@ import pandas as pd
 from django.contrib.auth import get_user_model
 from faker import Faker
 
-from adoorback.content_types import get_question_type, get_response_type
+from adoorback.content_types import get_question_type
 from feed.models import Question, ResponseRequest, Response
 from like.models import Like
 
