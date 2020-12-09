@@ -530,6 +530,13 @@ export default function postReducer(state = initialState, action) {
         return post;
       });
 
+      const targetUserPost = state.selectedUserPosts.find((post) => {
+        const key = `${post.type}-${post.id}`;
+        return key === action.postKey;
+      });
+
+      newComments = getNewCommentsWithReply(targetUserPost?.comments, reply);
+
       const newUserPosts = state.selectedUserPosts.map((post) => {
         const key = `${post.type}-${post.id}`;
         if (key === action.postKey) {
