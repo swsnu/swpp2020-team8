@@ -289,9 +289,7 @@ const Header = ({ isMobile, setRefreshToken }) => {
             <AccountCircle color="secondary" />
           </Link>
           <Link to={`/users/${currentUser?.id}`}>
-            <HelloUsername className={'hello-username'}>
-              {currentUser?.username}
-            </HelloUsername>
+            <HelloUsername className={"hello-username"}>{currentUser?.username}</HelloUsername>
           </Link>
         </IconButton>
 
