@@ -62,7 +62,7 @@ export default function CommentItem({
   const [isReplyInputOpen, setIsReplyInputOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [liked, setLiked] = useState(commentObj.current_user_liked);
-  const [likeCount, setLikeCount] = useState(commentObj.like_count);
+  const [likeCount, setLikeCount] = useState(commentObj.like_count || 0);
   const dispatch = useDispatch();
   const { id: targetId } = useParams();
 
@@ -155,7 +155,7 @@ export default function CommentItem({
             <FavoriteBorderIcon className="like" color="primary" />
           </IconButton>
         )}
-        {isAuthor && (
+        {isCommentAuthor && (
           <div id="like-count" style={{ margin: '4px' }}>
             {likeCount}
           </div>
