@@ -15,6 +15,8 @@ import * as actionCreators from './modules/user';
 
 import { mockNotifications } from './constants';
 
+global.scrollTo = jest.fn();
+
 jest.mock('react-ga', () => ({
   pageview: jest.fn(),
   initialize: jest.fn()

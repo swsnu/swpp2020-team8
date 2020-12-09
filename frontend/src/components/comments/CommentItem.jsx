@@ -5,10 +5,13 @@ import LockIcon from '@material-ui/icons/Lock';
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { useParams } from 'react-router';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import AuthorProfile from '../posts/AuthorProfile';
 import NewComment from './NewComment';
 import { createReply, deleteComment } from '../../modules/post';
 import AlertDialog from '../common/AlertDialog';
+import { likePost, unlikePost } from '../../modules/like';
 
 const CommentItemWrapper = styled.div`
   display: flex;
@@ -21,6 +24,8 @@ CommentItemWrapper.displayName = 'CommentItem';
 const CommentContent = styled.div`
   margin: 0 12px;
 `;
+
+const IconButton = styled.div``;
 
 const ReplyWrapper = styled.div`
   min-width: 24px;
@@ -49,12 +54,15 @@ export default function CommentItem({
   postKey,
   commentObj,
   isReply = false,
-  isAuthor = false
+  isAuthor = false,
+  isAnon = false
 }) {
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const isCommentAuthor = currentUser?.id === commentObj?.author_detail?.id;
   const [isReplyInputOpen, setIsReplyInputOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [liked, setLiked] = useState(commentObj.current_user_liked);
+  const [likeCount, setLikeCount] = useState(commentObj.like_count);
   const dispatch = useDispatch();
   const { id: targetId } = useParams();
 
@@ -95,6 +103,22 @@ export default function CommentItem({
     setIsDeleteDialogOpen(false);
   };
 
+  const toggleLike = () => {
+    const postInfo = {
+      target_type: 'Comment',
+      target_id: commentObj.id,
+      is_anonymous: isAnon
+    };
+    if (liked) {
+      setLikeCount((prev) => prev - 1);
+      dispatch(unlikePost(postInfo));
+    } else {
+      setLikeCount((prev) => prev + 1);
+      dispatch(likePost(postInfo));
+    }
+    setLiked((prev) => !prev);
+  };
+
   return (
     <>
       <CommentItemWrapper id={commentObj.id}>
@@ -116,6 +140,20 @@ export default function CommentItem({
             id="delete-comment-icon"
             style={{ margin: '3px', fontSize: '17px', color: '#999' }}
           />
+        )}
+        {liked ? (
+          <IconButton color="primary" size="small" onClick={toggleLike}>
+            <FavoriteIcon className="unlike" color="primary" />
+          </IconButton>
+        ) : (
+          <IconButton color="primary" size="small" onClick={toggleLike}>
+            <FavoriteBorderIcon className="like" color="primary" />
+          </IconButton>
+        )}
+        {isAuthor && (
+          <div id="like-count" style={{ margin: '4px' }}>
+            {likeCount}
+          </div>
         )}
       </CommentItemWrapper>
       <div>{replyItems}</div>

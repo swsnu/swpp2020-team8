@@ -45,7 +45,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
   const isAnon =
     (postObj?.author && !postObj?.author_detail?.id) ||
     pathname.includes('anonymous') ||
-    search?.includes('anonymous');
+    search?.includes('anonymous=True');
   const onlyAnonPost =
     postObj?.share_anonymously && !postObj?.share_with_friends;
   const [liked, setLiked] = useState(false);

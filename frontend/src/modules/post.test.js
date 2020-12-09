@@ -608,17 +608,17 @@ describe('Post Reducer', () => {
       }
     );
     expect(
-      newState.friendPosts[0].comments.find(
+      newState.friendPosts[0].comments?.find(
         (item) => item.id === newComment.target_id
       ).replies?.length
     ).toEqual(prevLength + 1);
+    // expect(
+    //   newState.selectedUserPosts[0].comments?.find(
+    //     (item) => item.id === newComment.target_id
+    //   ).replies?.length
+    // ).toEqual(prevLength + 1);
     expect(
-      newState.selectedUserPosts[0].comments.find(
-        (item) => item.id === newComment.target_id
-      ).replies?.length
-    ).toEqual(prevLength + 1);
-    expect(
-      newState.selectedPost.comments.find(
+      newState.selectedPost.comments?.find(
         (item) => item.id === newComment.target_id
       ).replies?.length
     ).toEqual(prevLength + 1);
