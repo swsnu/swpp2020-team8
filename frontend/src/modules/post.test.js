@@ -540,6 +540,43 @@ describe('Post Reducer', () => {
     expect(newState.selectedPost.comments.length).toEqual(prevLength + 1);
   });
 
+  it('should add comment to anonPosts when create anon comment success', () => {
+    const newComment = {
+      id: 124,
+      target_type: 'Article',
+      target_id: mockPost.id,
+      content: 'test comment',
+      is_anonymous: true,
+      author_detail: {
+        id: 1,
+        username: 'admin',
+        profile_pic: null
+      }
+    };
+    const prevLength = mockPost.comments ? mockPost.comments.length : 0;
+    const newState = postReducer(
+      {
+        anonymousPosts: [mockPost],
+        friendPosts: [mockPost],
+        selectedUserPosts: [mockPost],
+        selectedPost: mockPost,
+        selectedUserId: null,
+        next: null
+      },
+      {
+        type: actionCreators.CREATE_COMMENT_SUCCESS,
+        result: newComment,
+        postKey: `Article-${mockPost.id}`
+      }
+    );
+    expect(newState.friendPosts[0].comments.length).toEqual(prevLength + 1);
+    expect(newState.selectedUserPosts[0].comments.length).toEqual(
+      prevLength + 1
+    );
+    expect(newState.anonymousPosts[0].comments.length).toEqual(prevLength + 1);
+    expect(newState.selectedPost.comments.length).toEqual(prevLength + 1);
+  });
+
   it('should add reply to posts when create reply success', () => {
     const newComment = {
       id: 1423424,
@@ -582,6 +619,44 @@ describe('Post Reducer', () => {
     ).toEqual(prevLength + 1);
     expect(
       newState.selectedPost.comments.find(
+        (item) => item.id === newComment.target_id
+      ).replies?.length
+    ).toEqual(prevLength + 1);
+  });
+
+  it('should add reply to anon posts when create anon reply success', () => {
+    const newComment = {
+      id: 1423424,
+      target_type: 'Comment',
+      is_anonymous: true,
+      target_id: 1274,
+      content: 'test reply',
+      author_detail: {
+        id: 1,
+        username: 'admin',
+        profile_pic: null
+      }
+    };
+    const prevLength = mockResponse.comments.replies
+      ? mockPost.comments.replies.length
+      : 0;
+    const newState = postReducer(
+      {
+        anonymousPosts: [mockResponse, mockPost],
+        friendPosts: [mockResponse, mockPost],
+        selectedUserPosts: [mockResponse, mockPost],
+        selectedPost: mockResponse,
+        selectedUserId: null,
+        next: null
+      },
+      {
+        type: actionCreators.CREATE_REPLY_SUCCESS,
+        result: newComment,
+        postKey: 'Response-5999'
+      }
+    );
+    expect(
+      newState.anonymousPosts[0].comments.find(
         (item) => item.id === newComment.target_id
       ).replies?.length
     ).toEqual(prevLength + 1);

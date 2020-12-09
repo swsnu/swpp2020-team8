@@ -433,6 +433,21 @@ export default function postReducer(state = initialState, action) {
         return post;
       });
 
+      const newAnonPosts = state.anonymousPosts?.map((post) => {
+        if (
+          `${post.type}-${post.id}` === action.postKey &&
+          action.result?.is_anonymous
+        ) {
+          return {
+            ...post,
+            comments: post.comments
+              ? [...post.comments, action.result]
+              : [action.result]
+          };
+        }
+        return post;
+      });
+
       const newUserPosts = state.selectedUserPosts?.map((post) => {
         if (`${post.type}-${post.id}` === action.postKey) {
           return {
@@ -460,6 +475,7 @@ export default function postReducer(state = initialState, action) {
       return {
         ...state,
         friendPosts: newFriendPosts,
+        anonymousPosts: newAnonPosts,
         selectedUserPosts: newUserPosts,
         selectedPost: newSelectedPost
       };
@@ -475,6 +491,21 @@ export default function postReducer(state = initialState, action) {
       const newFriendPosts = state.friendPosts.map((post) => {
         const key = `${post.type}-${post.id}`;
         if (key === action.postKey) {
+          return { ...post, comments: newComments };
+        }
+        return post;
+      });
+
+      const targetAnonPost = state.anonymousPosts.find((post) => {
+        const key = `${post.type}-${post.id}`;
+        return key === action.postKey;
+      });
+
+      newComments = getNewCommentsWithReply(targetAnonPost?.comments, reply);
+
+      const newAnonPosts = state.anonymousPosts.map((post) => {
+        const key = `${post.type}-${post.id}`;
+        if (key === action.postKey && reply.is_anonymous) {
           return { ...post, comments: newComments };
         }
         return post;
@@ -501,6 +532,7 @@ export default function postReducer(state = initialState, action) {
 
       return {
         ...state,
+        anonymousPosts: newAnonPosts,
         selectedUserPosts: newUserPosts,
         selectedPost: newSelectedPost,
         friendPosts: newFriendPosts
@@ -509,6 +541,11 @@ export default function postReducer(state = initialState, action) {
 
     case DELETE_COMMENT_SUCCESS: {
       const targetPost = state.friendPosts.find((post) => {
+        const key = `${post.type}-${post.id}`;
+        return key === action.postKey;
+      });
+
+      const targetAnonPost = state.anonymousPosts.find((post) => {
         const key = `${post.type}-${post.id}`;
         return key === action.postKey;
       });
@@ -527,11 +564,20 @@ export default function postReducer(state = initialState, action) {
           });
       };
       const newComments = getCommentsAfterDelete(targetPost?.comments);
+      const newAnonComments = getCommentsAfterDelete(targetAnonPost?.comments);
 
       const newFriendPosts = state.friendPosts.map((post) => {
         const key = `${post.type}-${post.id}`;
         if (key === action.postKey) {
           return { ...post, comments: newComments };
+        }
+        return post;
+      });
+
+      const newAnonPosts = state.anonymousPosts.map((post) => {
+        const key = `${post.type}-${post.id}`;
+        if (key === action.postKey) {
+          return { ...post, comments: newAnonComments };
         }
         return post;
       });
@@ -557,6 +603,7 @@ export default function postReducer(state = initialState, action) {
       return {
         ...state,
         friendPosts: newFriendPosts,
+        anonymousPosts: newAnonPosts,
         selectedPost: newSelectedPost,
         selectedUserPosts: newUserPosts
       };

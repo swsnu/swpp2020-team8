@@ -46,7 +46,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
     (postObj?.author && !postObj?.author_detail?.id) ||
     pathname.includes('anonymous');
   const onlyAnonPost =
-    postObj?.share_anonymously && postObj?.share_with_friends;
+    postObj?.share_anonymously && !postObj?.share_with_friends;
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
