@@ -269,7 +269,12 @@ class QuestionDetailAllResponsesSerializer(QuestionResponsiveSerializer):
     """
     for question detail page w/ all responses (friend + anonymous)
     """
+    max_page = serializers.SerializerMethodField(read_only=True)
     response_set = serializers.SerializerMethodField()
+
+    def get_max_page(self, obj):
+        page_size = self.context['request'].query_params.get('size') or 15
+        return obj.response_set.count() // page_size + 1
 
     def get_response_set(self, obj):
         current_user = self.context.get('request', None).user
@@ -285,14 +290,19 @@ class QuestionDetailAllResponsesSerializer(QuestionResponsiveSerializer):
 
     class Meta(QuestionResponsiveSerializer.Meta):
         model = Question
-        fields = QuestionResponsiveSerializer.Meta.fields + ['response_set']
+        fields = QuestionResponsiveSerializer.Meta.fields + ['max_page', 'response_set']
 
 
 class QuestionDetailFriendResponsesSerializer(QuestionResponsiveSerializer):
     """
     for question detail page w/ friend responses
     """
+    max_page = serializers.SerializerMethodField(read_only=True)
     response_set = serializers.SerializerMethodField()
+
+    def get_max_page(self, obj):
+        page_size = self.context['request'].query_params.get('size') or 15
+        return obj.response_set.count() // page_size + 1
 
     def get_response_set(self, obj):
         current_user = self.context.get('request', None).user
@@ -307,14 +317,19 @@ class QuestionDetailFriendResponsesSerializer(QuestionResponsiveSerializer):
 
     class Meta(QuestionResponsiveSerializer.Meta):
         model = Question
-        fields = QuestionResponsiveSerializer.Meta.fields + ['response_set']
+        fields = QuestionResponsiveSerializer.Meta.fields + ['max_page', 'response_set']
 
 
 class QuestionDetailAnonymousResponsesSerializer(QuestionResponsiveSerializer):
     """
     for question detail page w/ anonymous responses
     """
+    max_page = serializers.SerializerMethodField(read_only=True)
     response_set = serializers.SerializerMethodField()
+
+    def get_max_page(self, obj):
+        page_size = self.context['request'].query_params.get('size') or 15
+        return obj.response_set.count() // page_size + 1
 
     def get_response_set(self, obj):
         responses = obj.response_set.filter(share_anonymously=True)
@@ -327,7 +342,7 @@ class QuestionDetailAnonymousResponsesSerializer(QuestionResponsiveSerializer):
 
     class Meta(QuestionResponsiveSerializer.Meta):
         model = Question
-        fields = QuestionResponsiveSerializer.Meta.fields + ['response_set']
+        fields = QuestionResponsiveSerializer.Meta.fields + ['max_page', 'response_set']
 
 
 class ResponseRequestSerializer(serializers.ModelSerializer):

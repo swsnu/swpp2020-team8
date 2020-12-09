@@ -30,11 +30,9 @@ class NotificationList(generics.ListAPIView, generics.UpdateAPIView):
 
 def notification_id(request):
     notifications = Notification.objects.unread_only().filter(user__username=request.GET.get('username'))
-    responseData = {
-        "id": notifications.first().id,
-        "num_unread": notifications.count()
-    }
-    return JsonResponse(responseData)
+    if notifications.count() == 0:
+        return JsonResponse({"id": 0, "num_unread": 0})
+    return JsonResponse({"id": notifications.first().id, "num_unread": notifications.count()})
 
 
 class NotificationDetail(generics.UpdateAPIView):
