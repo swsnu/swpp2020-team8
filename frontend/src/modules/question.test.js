@@ -9,6 +9,14 @@ import {
 import * as actionCreators from './question';
 import questionReducer from './question';
 
+const observe = jest.fn();
+const unobserve = jest.fn();
+
+window.IntersectionObserver = jest.fn(() => ({
+  observe,
+  unobserve
+}));
+
 describe('questionActions', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -50,78 +58,88 @@ describe('questionActions', () => {
     });
   });
 
-  it(`'getResponsesByQuestion' should get responses of selected question correctly`, (done) => {
+  it(`'getResponsesByQuestionWithType('all')' should get responses of selected question correctly`, (done) => {
     jest.mock('axios');
 
     const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
       return new Promise((resolve) => {
         const res = {
-          data: questionDetailPosts
+          data: questionDetailPosts,
+          maxPage: 2
         };
         resolve(res);
       });
     });
 
-    store.dispatch(actionCreators.getResponsesByQuestion()).then(() => {
-      const newState = store.getState();
-      expect(spy).toHaveBeenCalled();
-      expect(newState.questionReducer.selectedQuestion).toMatchObject(
-        questionDetailPosts
-      );
-      expect(newState.questionReducer.selectedQuestionResponses).toMatchObject(
-        questionDetailPosts.response_set
-      );
-      done();
-    });
+    store
+      .dispatch(actionCreators.getResponsesByQuestionWithType(1, 'all'))
+      .then(() => {
+        const newState = store.getState();
+        expect(spy).toHaveBeenCalled();
+        expect(newState.questionReducer.selectedQuestion).toMatchObject(
+          questionDetailPosts
+        );
+        expect(
+          newState.questionReducer.selectedQuestionResponses
+        ).toMatchObject(questionDetailPosts.response_set);
+        done();
+      });
   });
 
-  it('should dispatch question/GET_SELECTED_QUESTION_RESPONSES_FAILURE when api returns error', async () => {
+  it('should dispatch question/GET_SELECTED_QUESTION_ALL_RESPONSES_FAILURE when api returns error', async () => {
     jest.mock('axios');
     const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
       return Promise.reject(new Error('error'));
     });
 
-    store.dispatch(actionCreators.getResponsesByQuestion()).then(() => {
-      const newState = store.getState();
-      expect(spy).toHaveBeenCalled();
-    });
+    store
+      .dispatch(actionCreators.getResponsesByQuestionWithType(1, 'all'))
+      .then(() => {
+        const newState = store.getState();
+        expect(spy).toHaveBeenCalled();
+      });
   });
 
-  it(`'getFriendResponsesByQuestion' should get responses of selected question correctly`, (done) => {
+  it(`'getResponsesByQuestionWithType('all') should get responses of selected question correctly`, (done) => {
     jest.mock('axios');
 
     const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
       return new Promise((resolve) => {
         const res = {
-          data: questionDetailPosts
+          data: questionDetailPosts,
+          maxPage: 2
         };
         resolve(res);
       });
     });
 
-    store.dispatch(actionCreators.getFriendResponsesByQuestion()).then(() => {
-      const newState = store.getState();
-      expect(spy).toHaveBeenCalled();
-      expect(newState.questionReducer.selectedQuestion).toMatchObject(
-        questionDetailPosts
-      );
-      expect(newState.questionReducer.selectedQuestionResponses).toMatchObject(
-        questionDetailPosts.response_set
-      );
-      done();
-    });
+    store
+      .dispatch(actionCreators.getResponsesByQuestionWithType(1, 'all'))
+      .then(() => {
+        const newState = store.getState();
+        expect(spy).toHaveBeenCalled();
+        expect(newState.questionReducer.selectedQuestion).toMatchObject(
+          questionDetailPosts
+        );
+        expect(
+          newState.questionReducer.selectedQuestionResponses
+        ).toMatchObject(questionDetailPosts.response_set);
+        done();
+      });
   });
 
-  it('should dispatch question/GET_SELECTED_QUESTION_RESPONSES_FAILURE when api returns error', async () => {
+  it('should dispatch question/GET_SELECTED_ALL_QUESTION_RESPONSES_FAILURE when api returns error', async () => {
     jest.mock('axios');
     const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
       return Promise.reject(new Error('error'));
     });
 
-    store.dispatch(actionCreators.getFriendResponsesByQuestion()).then(() => {
-      const newState = store.getState();
-      expect(spy).toHaveBeenCalled();
-    });
+    store
+      .dispatch(actionCreators.getResponsesByQuestionWithType(1, 'all'))
+      .then(() => {
+        const newState = store.getState();
+        expect(spy).toHaveBeenCalled();
+      });
   });
 
   it(`'getResponseRequestByQuestion' should get response requests of selected question correctly`, (done) => {
@@ -242,7 +260,8 @@ describe('Question Reducer', () => {
       selectedQuestion: null,
       selectedQuestionResponses: [],
       selectedQuestionResponseRequests: [],
-      next: null
+      next: null,
+      maxPage: null
     });
   });
 
