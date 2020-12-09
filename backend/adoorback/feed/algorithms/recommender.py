@@ -5,8 +5,8 @@ import pandas as pd
 import numpy as np
 import scipy
 import sklearn
-import MeCab
 
+from konlpy.tag import Twitter
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import cosine_similarity
@@ -209,27 +209,18 @@ def create_ranks_csv():
     print('Evaluating Popularity recommendation model...')
     pop_global_metrics, pop_detailed_results_df = model_evaluator.evaluate_model(popularity_model)
 
-    def getNVM_lemma(text):
-        tokenizer = MeCab.Tagger()
-        parsed = tokenizer.parse(text)
-        word_tag = list(parsed.split("\n"))
-        pos = []
-        tags = ['NNG', 'NNP', 'VV', 'VA', 'VX', 'VCP', 'VCN']
-        for word_ in word_tag[:-2]:
-            word = word_.split("\t")
-            tag = word[1].split(",")
-            if (len(word[0]) < 2) or ("게" in word[0]):
-                continue
-            if tag[-1] != '*':
-                t = tag[-1].split('/')
-                if len(t[0]) > 1 and ('VV' in t[1] or 'VA' in t[1] or 'VX' in t[1]):
-                    pos.append(t[0])
-            else:
-                if tag[0] in tags:
-                    pos.append(word[0])
-        return pos
+    class MyTokenizer:
+        def __init__(self, tagger):
+            self.tagger = tagger
 
-    vectorizer = CountVectorizer(tokenizer=getNVM_lemma, min_df=2)
+        def __call__(self, sent):
+            pos = self.tagger.pos(sent)
+            pos = ['{}/{}'.format(word, tag) for word, tag in pos]
+            return pos
+
+    my_tokenizer = MyTokenizer(Twitter())
+
+    vectorizer = CountVectorizer(tokenizer=my_tokenizer, min_df=2)
     item_ids = questions_df['contentId'].tolist()
     x_counts = vectorizer.fit_transform(questions_df['content'].values.astype('U'))
     transformer = TfidfTransformer(smooth_idf=False)
