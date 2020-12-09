@@ -57,10 +57,10 @@ class ArticleFriendSerializer(AdoorBaseSerializer):
     def get_comments(self, obj):
         current_user = self.context.get('request', None).user
         if obj.author == current_user:
-            comments = obj.article_comments.order_by('is_anonymous', '-id')
+            comments = obj.article_comments.order_by('is_anonymous', 'id')
             return CommentResponsiveSerializer(comments, many=True, read_only=True, context=self.context).data
         else:
-            comments = obj.article_comments.filter(is_anonymous=False, is_private=False).order_by('-id')
+            comments = obj.article_comments.filter(is_anonymous=False, is_private=False).order_by('id')
             return CommentFriendSerializer(comments, many=True, read_only=True, context=self.context).data
 
     class Meta(AdoorBaseSerializer.Meta):
@@ -88,10 +88,10 @@ class ArticleAnonymousSerializer(AdoorBaseSerializer):
     def get_comments(self, obj):
         current_user = self.context.get('request', None).user
         if obj.author == current_user:
-            comments = obj.article_comments.order_by('-is_anonymous', '-id')
+            comments = obj.article_comments.order_by('-is_anonymous', 'id')
             return CommentResponsiveSerializer(comments, many=True, read_only=True, context=self.context).data
         else:
-            comments = obj.article_comments.filter(is_anonymous=True, is_private=False).order_by('-id')
+            comments = obj.article_comments.filter(is_anonymous=True, is_private=False).order_by('id')
             return CommentAnonymousSerializer(comments, many=True, read_only=True, context=self.context).data
 
     class Meta(AdoorBaseSerializer.Meta):
@@ -131,10 +131,10 @@ class ResponseFriendSerializer(ResponseBaseSerializer):
     def get_comments(self, obj):
         current_user = self.context.get('request', None).user
         if obj.author == current_user:
-            comments = obj.response_comments.order_by('is_anonymous', '-id')
+            comments = obj.response_comments.order_by('is_anonymous', 'id')
             return CommentResponsiveSerializer(comments, many=True, read_only=True, context=self.context).data
         else:
-            comments = obj.response_comments.filter(is_anonymous=False, is_private=False).order_by('-id')
+            comments = obj.response_comments.filter(is_anonymous=False, is_private=False).order_by('id')
             return CommentFriendSerializer(comments, many=True, read_only=True, context=self.context).data
 
     class Meta(ResponseBaseSerializer.Meta):
@@ -162,10 +162,10 @@ class ResponseAnonymousSerializer(ResponseBaseSerializer):
     def get_comments(self, obj):
         current_user = self.context.get('request', None).user
         if obj.author == current_user:
-            comments = obj.response_comments.order_by('-is_anonymous', '-id')
+            comments = obj.response_comments.order_by('-is_anonymous', 'id')
             return CommentResponsiveSerializer(comments, many=True, read_only=True, context=self.context).data
         else:
-            comments = obj.response_comments.filter(is_anonymous=True, is_private=False).order_by('-id')
+            comments = obj.response_comments.filter(is_anonymous=True, is_private=False).order_by('id')
             return CommentAnonymousSerializer(comments, many=True, read_only=True, context=self.context).data
 
     class Meta(ResponseBaseSerializer.Meta):
