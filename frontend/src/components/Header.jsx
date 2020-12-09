@@ -110,7 +110,7 @@ const Header = ({ isMobile, setRefreshToken }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
-  const notiRef = useRef(null);
+  // const notiRef = useRef(null);
   const notiIconRef = useRef(null);
   const searchRef = useRef(null);
 
@@ -140,7 +140,8 @@ const Header = ({ isMobile, setRefreshToken }) => {
     setIsSearchOpen(false);
   };
 
-  useOnClickOutside(notiRef, handleNotiClose);
+  useOnClickOutside(notiIconRef, handleNotiClose);
+  // useOnClickOutside(notiRef, handleNotiClose);
   useOnClickOutside(searchRef, handleSearchClose);
 
   const handleClickLogout = () => {
@@ -271,6 +272,8 @@ const Header = ({ isMobile, setRefreshToken }) => {
           onClick={(e) => {
             e.stopPropagation();
             toggleNotiOpen();
+            console.log('click');
+            console.log(isNotiOpen);
           }}
           disableRipple
           color="secondary"
@@ -348,7 +351,7 @@ const Header = ({ isMobile, setRefreshToken }) => {
           </Toolbar>
         </AppBar>
       </div>
-      <div ref={notiRef}>
+      <div>
         {isNotiOpen && (
           <NotificationDropdownList
             notifications={notifications}

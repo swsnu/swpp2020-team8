@@ -13,7 +13,6 @@ import {
 } from '../modules/question';
 import PostItem from '../components/posts/PostItem';
 import Message from '../components/Message';
-import LoadingItem from '../components/posts/LoadingItem';
 
 const SwitchWrapper = styled.div`
   display: flex;
@@ -59,12 +58,6 @@ const QuestionDetail = (props) => {
     else dispatch(getFriendResponsesByQuestion(questionId));
   };
 
-  const isLoading =
-    useSelector(
-      (state) =>
-        state.loadingReducer['question/GET_SELECTED_QUESTION_FRIEND_RESPONSES']
-    ) === 'REQUEST';
-
   const responseList = responses.map((post) => (
     <PostItem
       postKey={`${post.type}-${post.id}`}
@@ -73,40 +66,42 @@ const QuestionDetail = (props) => {
     />
   ));
 
-  const questionAndResponseList = question ? (
-    <>
-      <QuestionItem
-        questionObj={question}
-        questionId={questionId}
-        onResetContent={() => setViewAnonymousResponses(false)}
-      />
-      {responses?.length !== 0 ? (
+  return (
+    <div>
+      {question ? (
         <>
-          <SwitchWrapper>
-            <span className={classes.switchLabel}>익명의 답변 보기</span>
-            <FormControlLabel
-              className={classes.switch}
-              control={
-                <Switch
-                  checked={viewAnonymousResponses}
-                  onChange={handleChangeViewAnonymousResponses}
-                  name="view-anonymous-responses"
-                  color="primary"
+          <QuestionItem
+            questionObj={question}
+            questionId={questionId}
+            onResetContent={() => setViewAnonymousResponses(false)}
+          />
+          {responses?.length !== 0 ? (
+            <>
+              <SwitchWrapper>
+                <span className={classes.switchLabel}>익명의 답변 보기</span>
+                <FormControlLabel
+                  className={classes.switch}
+                  control={
+                    <Switch
+                      checked={viewAnonymousResponses}
+                      onChange={handleChangeViewAnonymousResponses}
+                      name="view-anonymous-responses"
+                      color="primary"
+                    />
+                  }
                 />
-              }
-            />
-          </SwitchWrapper>
-          {responseList}
+              </SwitchWrapper>
+              {responseList}
+            </>
+          ) : (
+            <Message message="표시할 게시물이 없습니다 :(" />
+          )}
         </>
       ) : (
-        <Message message="답변이 아직 없는 질문입니다 :(" />
+        <Message message="존재하지 않는 질문입니다" />
       )}
-    </>
-  ) : (
-    <Message message="존재하지 않는 질문입니다" />
+    </div>
   );
-
-  return <div>{isLoading ? <LoadingItem /> : questionAndResponseList}</div>;
 };
 
 export default withRouter(QuestionDetail);
