@@ -1,3 +1,4 @@
+import 'intersection-observer';
 import React, { useEffect, useState } from 'react';
 import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
