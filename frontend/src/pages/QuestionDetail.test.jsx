@@ -34,7 +34,7 @@ describe('<QuestionDetail/>', () => {
     wrapper = mount(
       <Provider store={store}>
         <Router history={history}>
-          <QuestionDetail />
+          <QuestionDetail questionId={1} />
         </Router>
       </Provider>
     );

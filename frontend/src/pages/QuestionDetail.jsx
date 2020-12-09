@@ -67,6 +67,7 @@ const QuestionDetail = (props) => {
   const questionId = match.params.id;
 
   const [tab, setTab] = React.useState(0);
+  const [tabName, setTabName] = React.useState('all');
   const [target, setTarget] = useState(null);
 
   const dispatch = useDispatch();
@@ -106,33 +107,28 @@ const QuestionDetail = (props) => {
 
   const handleTabChange = (event, newValue) => {
     setTab(newValue);
+    if (newValue === 0) setTabName('all');
+    if (newValue === 1) setTabName('friend');
+    if (newValue === 2) setTabName('anonymous');
   };
 
   const onIntersect = ([entry]) => {
     if (entry.isIntersecting) {
-      if (tab === 0) {
-        dispatch(appendResponsesByQuestionWithType(questionId, 'all'));
-      } else if (tab === 1) {
-        dispatch(appendResponsesByQuestionWithType(questionId, 'friend'));
-      } else if (tab === 2) {
-        dispatch(appendResponsesByQuestionWithType(questionId, 'anonymous'));
-      }
+      dispatch(appendResponsesByQuestionWithType(questionId, tabName));
     }
   };
 
   useEffect(() => {
-    if (tab === 0) {
-      dispatch(getResponsesByQuestionWithType(questionId, 'all'));
-    } else if (tab === 1) {
-      dispatch(getResponsesByQuestionWithType(questionId, 'friend'));
-    } else if (tab === 2) {
-      dispatch(getResponsesByQuestionWithType(questionId, 'anonymous'));
-    }
+    dispatch(getResponsesByQuestionWithType(questionId, tabName));
   }, [dispatch, questionId, tab]);
 
+  const resetTabs = () => {
+    setTab(0);
+    setTabName('all');
+  };
   useEffect(() => {
     return () => {
-      setTab(0);
+      resetTabs();
       dispatch(resetSelectedQuestion());
     };
   }, [questionId]);
@@ -171,7 +167,7 @@ const QuestionDetail = (props) => {
           <QuestionItem
             questionObj={question}
             questionId={questionId}
-            onResetContent={() => setTab(0)}
+            onResetContent={() => resetTabs()}
           />
           <h2>답변</h2>
           <AppBar position="static" className={classes.header}>

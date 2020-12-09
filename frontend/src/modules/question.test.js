@@ -30,9 +30,7 @@ describe('questionActions', () => {
     const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
       return new Promise((resolve) => {
         const res = {
-          data: {
-            results: mockQuestionFeed
-          }
+          data: mockQuestionFeed
         };
         resolve(res);
       });
@@ -249,6 +247,29 @@ describe('questionActions', () => {
       done();
     });
   });
+
+  it(`'appendResponsesByQuestionWithType' should work correctly`, (done) => {
+    jest.mock('axios');
+    const spy = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const res = {
+          data: questionDetailPosts
+        };
+        resolve(res);
+      });
+    });
+
+    store
+      .dispatch(actionCreators.appendResponsesByQuestionWithType(1, 'friend'))
+      .then(() => {
+        const newState = store.getState();
+        expect(spy).toHaveBeenCalledTimes(0);
+        expect(newState.questionReducer.selectedQuestionResponses).toEqual(
+          questionDetailPosts.response_set
+        );
+        done();
+      });
+  });
 });
 
 describe('Question Reducer', () => {
@@ -321,6 +342,68 @@ describe('Question Reducer', () => {
       selectedQuestionResponses: [],
       selectedQuestionResponseRequests: [],
       next: 'mockUrl'
+    });
+  });
+
+  it('should add responses to question detail page when append success', () => {
+    const newState = questionReducer(
+      {
+        dailyQuestions: [],
+        sampleQuestions: [],
+        randomQuestions: [],
+        recommendedQuestions: [],
+        selectedQuestion: null,
+        selectedQuestionResponses: [],
+        selectedQuestionResponseRequests: [],
+        next: null,
+        maxPage: 2
+      },
+      {
+        type: actionCreators.APPEND_SELECTED_QUESTION_RESPONSES_SUCCESS,
+        res: questionDetailPosts.response_set,
+        next: '2'
+      }
+    );
+    expect(newState).toEqual({
+      dailyQuestions: [],
+      sampleQuestions: [],
+      randomQuestions: [],
+      recommendedQuestions: [],
+      selectedQuestion: null,
+      selectedQuestionResponses: questionDetailPosts.response_set,
+      selectedQuestionResponseRequests: [],
+      next: '2',
+      maxPage: 2
+    });
+  });
+
+  it('should set next null when append questions request', () => {
+    const newState = questionReducer(
+      {
+        dailyQuestions: [],
+        sampleQuestions: [],
+        randomQuestions: [],
+        recommendedQuestions: [],
+        selectedQuestion: null,
+        selectedQuestionResponses: [],
+        selectedQuestionResponseRequests: [],
+        next: 'localhost:8000/api/feed/questions/1?page=2',
+        maxPage: 2
+      },
+      {
+        type: actionCreators.APPEND_QUESTIONS_REQUEST
+      }
+    );
+    expect(newState).toEqual({
+      dailyQuestions: [],
+      sampleQuestions: [],
+      randomQuestions: [],
+      recommendedQuestions: [],
+      selectedQuestion: null,
+      selectedQuestionResponses: [],
+      selectedQuestionResponseRequests: [],
+      next: null,
+      maxPage: 2
     });
   });
 });
