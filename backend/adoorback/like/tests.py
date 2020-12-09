@@ -77,7 +77,7 @@ class LikeAPITestCase(APITestCase):
         with self.login(username=current_user.username, password='password'):
             response = self.get('like-list')
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.data['count'], N * 5)
+            self.assertEqual(len(response.data), N * 5)
 
     def test_like_create(self):
         current_user = self.make_user(username='current_user')

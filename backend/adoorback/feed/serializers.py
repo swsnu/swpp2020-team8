@@ -284,7 +284,7 @@ class QuestionDetailAllResponsesSerializer(QuestionResponsiveSerializer):
         page_size = self.context['request'].query_params.get('size') or 15
         paginator = Paginator(responses, page_size)
         page = self.context['request'].query_params.get('page') or 1
-        responses = paginator.page(page).order_by('-id')
+        responses = paginator.page(page)
         return ResponseResponsiveSerializer(responses, many=True, read_only=True, context=self.context).data
 
     class Meta(QuestionResponsiveSerializer.Meta):
@@ -310,7 +310,7 @@ class QuestionDetailFriendResponsesSerializer(QuestionResponsiveSerializer):
         page_size = self.context['request'].query_params.get('size') or 15
         paginator = Paginator(responses, page_size)
         page = self.context['request'].query_params.get('page') or 1
-        responses = paginator.page(page).order_by('-id')
+        responses = paginator.page(page)
         return ResponseFriendSerializer(responses, many=True, read_only=True, context=self.context).data
 
     class Meta(QuestionResponsiveSerializer.Meta):
@@ -334,7 +334,7 @@ class QuestionDetailAnonymousResponsesSerializer(QuestionResponsiveSerializer):
         page_size = self.context['request'].query_params.get('size') or 15
         paginator = Paginator(responses, page_size)
         page = self.context['request'].query_params.get('page') or 1
-        responses = paginator.page(page).order_by('-id')
+        responses = paginator.page(page)
         return ResponseAnonymousSerializer(responses, many=True, read_only=True, context=self.context).data
 
     class Meta(QuestionResponsiveSerializer.Meta):
