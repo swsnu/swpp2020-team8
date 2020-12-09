@@ -25,6 +25,7 @@ PostItemWrapper.displayName = 'PostItemWrapper';
 
 const ContentWrapper = styled.div`
   margin: 12px 0;
+  white-space: pre-wrap;
 `;
 
 const CommentWrapper = styled.div``;
@@ -114,7 +115,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
     <PostItemWrapper>
       <PostItemHeaderWrapper>
         <AuthorProfile author={postObj && postObj.author_detail} />
-        {isAuthor && (
+        {isAuthor && !isAnon && (
           <PostAuthorButtons
             isQuestion={false}
             onClickEdit={handleEdit}
@@ -127,7 +128,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       <CreateTime createdTime={postObj.created_at} />
       <PostItemFooterWrapper>
         <ShareSettingsWrapper>
-          {isAuthor && (
+          {isAuthor && !isAnon && (
             <>
               {(postObj.share_with_friends || postObj.share_anonymously) && (
                 <ShareSettingInfo>공개범위:</ShareSettingInfo>

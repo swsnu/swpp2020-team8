@@ -61,7 +61,7 @@ export default function NewPost() {
         id="new-post-input"
         name="content"
         placeholder="떠오르는 생각을 공유해주세요."
-        style={{ height: '70px' }}
+        style={{ minHeight: '70px' }}
         value={postInfo.content}
         onChange={onInputChange}
         className={classes.textarea}
