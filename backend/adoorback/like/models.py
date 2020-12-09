@@ -63,7 +63,7 @@ def create_like_noti(instance, **kwargs):
         return
     actor_name = '익명의 사용자가' if instance.is_anonymous else f'{actor.username}님이'
 
-    if origin.target.type == 'Comment':  # if is reply
+    if origin.type == 'Comment' and origin.target.type == 'Comment':  # if is reply
         message = f'{actor_name} 회원님의 댓글을 좋아합니다.'
         redirect_url = f'/{origin.target.target.type.lower()}s/' \
                        f'{origin.target.target.id}?anonymous={instance.is_anonymous}'

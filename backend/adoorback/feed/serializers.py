@@ -281,7 +281,6 @@ class QuestionDetailAllResponsesSerializer(QuestionResponsiveSerializer):
         responses = obj.response_set.filter(author_id__in=current_user.friend_ids) | \
                     obj.response_set.filter(share_anonymously=True) | \
                     obj.response_set.filter(author_id=current_user.id)
-        responses.order_by('-id')
         page_size = self.context['request'].query_params.get('size') or 15
         paginator = Paginator(responses, page_size)
         page = self.context['request'].query_params.get('page') or 1
@@ -308,7 +307,6 @@ class QuestionDetailFriendResponsesSerializer(QuestionResponsiveSerializer):
         current_user = self.context.get('request', None).user
         responses = obj.response_set.filter(author_id__in=current_user.friend_ids) | \
                     obj.response_set.filter(author_id=current_user.id)
-        responses.order_by('-id')
         page_size = self.context['request'].query_params.get('size') or 15
         paginator = Paginator(responses, page_size)
         page = self.context['request'].query_params.get('page') or 1
@@ -333,7 +331,6 @@ class QuestionDetailAnonymousResponsesSerializer(QuestionResponsiveSerializer):
 
     def get_response_set(self, obj):
         responses = obj.response_set.filter(share_anonymously=True)
-        responses.order_by('-id')
         page_size = self.context['request'].query_params.get('size') or 15
         paginator = Paginator(responses, page_size)
         page = self.context['request'].query_params.get('page') or 1

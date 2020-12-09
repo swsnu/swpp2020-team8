@@ -557,12 +557,12 @@ class ResponseRequestNotiAPITestCase(APITestCase):
             num_noti_after = Notification.objects.count()
             self.assertEqual(num_noti_before, num_noti_after)  # 4개의 답변 관련 노티 생성, 4개의 요청 관련 노티 삭제 -> 변화 X
 
-            self.assertEqual(Response.objects.last().response_targetted_notis.count(), 4)  # 요청자 각각에게
+            self.assertEqual(Response.objects.first().response_targetted_notis.count(), 4)  # 요청자 각각에게
             self.assertEqual(Notification.objects.first().user, random_user_3)
             self.assertEqual(Notification.objects.first().message, 'friend_user님이 회원님이 보낸 질문에 답했습니다.')
 
         # PATCH - modifying response should not create a new notification
-        response_id = Response.objects.last().id
+        response_id = Response.objects.first().id
         data = {"content": "modified content"}
         with self.login(username=friend_user.username, password='password'):
             num_noti_before = Notification.objects.count()
