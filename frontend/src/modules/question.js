@@ -126,7 +126,7 @@ export const getDailyQuestions = () => async (dispatch) => {
   }
   dispatch({
     type: 'question/GET_DAILY_QUESTIONS_SUCCESS',
-    res: res?.data.results,
+    res: res?.data,
     next: res?.data.next
   });
 };

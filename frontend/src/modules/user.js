@@ -180,7 +180,8 @@ export default function userReducer(state = initialState, action) {
       return {
         ...state,
         currentUser: null,
-        signUpError: false
+        signUpError: false,
+        loginError: false
       };
     case LOGIN_REQUEST:
       return {
