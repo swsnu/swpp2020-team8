@@ -181,13 +181,13 @@ class ResponseResponsiveSerializer(ResponseBaseSerializer):
 
     def get_author_detail(self, obj):
         current_user = self.context.get('request', None).user
-        if User.are_friends(current_user, obj.author) or obj.author == current_user:
+        if obj.share_with_friends and (User.are_friends(current_user, obj.author) or obj.author == current_user):
             return AuthorFriendSerializer(obj.author).data
         return AuthorAnonymousSerializer(obj.author).data
 
     def get_author(self, obj):
         current_user = self.context.get('request', None).user
-        if User.are_friends(current_user, obj.author) or obj.author == current_user:
+        if obj.share_with_friends and (User.are_friends(current_user, obj.author) or obj.author == current_user):
             return f'{BASE_URL}/api/user/{obj.author.id}/'
         return None
 
