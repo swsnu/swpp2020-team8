@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
@@ -37,6 +37,7 @@ const Question = styled.div`
   text-align: center;
   font-weight: 500;
   font-size: 15px;
+  word-break: break-all;
   @media (max-width: 650px) {
     padding: 16px;
   }
@@ -60,7 +61,11 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function QuestionItem({ questionObj, onResetContent }) {
+export default function QuestionItem({
+  questionObj,
+  onResetContent,
+  questionId
+}) {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const isAuthor = currentUser?.id === questionObj.author_detail.id;
@@ -77,6 +82,15 @@ export default function QuestionItem({ questionObj, onResetContent }) {
     type: 'Response'
   });
   const [isQuestionSendModalOpen, setQuestionSendModalOpen] = useState(false);
+
+  useEffect(() => {
+    setNewPost({
+      question_id: questionId,
+      question_detail: questionObj,
+      content: '',
+      type: 'Response'
+    });
+  }, [questionId]);
 
   const handleContentChange = (e) => {
     setNewPost((prev) => ({

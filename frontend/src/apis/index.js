@@ -9,6 +9,7 @@ const prodBaseUrl = 'https://adoor.world/api/';
 
 const instance = axios.create({
   baseURL: '/api/',
+  // baseURL: developBaseUrl,
   withCredentials: true
 });
 
