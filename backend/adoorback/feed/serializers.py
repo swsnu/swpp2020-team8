@@ -259,6 +259,6 @@ class ResponseRequestSerializer(serializers.ModelSerializer):
         validators = [
             UniqueTogetherValidator(
                 queryset=ResponseRequest.objects.all(),
-                fields=['requester_id', 'requestee_id']
+                fields=['requester_id', 'requestee_id', 'question_id']
             )
         ]

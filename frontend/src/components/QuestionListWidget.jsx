@@ -35,7 +35,9 @@ const NewQuestionButton = styled(CommonButton)`
 `;
 
 const QuestionWidgetWrapper = styled.div`
-  position: fixed;
+  @media (min-width: 650px) {
+    position: fixed;
+  }
 `;
 
 const WidgetCard = styled(Card)`
