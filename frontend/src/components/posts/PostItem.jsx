@@ -36,7 +36,7 @@ const ShareSettingInfo = styled.span`
 `;
 
 export default function PostItem({ postObj, postKey, isDetailPage }) {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.userReducer.currentUser);
@@ -44,7 +44,8 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
     postObj?.author && currentUser?.id === postObj.author_detail?.id;
   const isAnon =
     (postObj?.author && !postObj?.author_detail?.id) ||
-    pathname.includes('anonymous');
+    pathname.includes('anonymous') ||
+    search?.includes('anonymous');
   const onlyAnonPost =
     postObj?.share_anonymously && !postObj?.share_with_friends;
   const [liked, setLiked] = useState(false);
