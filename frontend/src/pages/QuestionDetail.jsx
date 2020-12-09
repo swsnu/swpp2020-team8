@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react/jsx-wrap-multilines */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { withRouter } from 'react-router';
@@ -8,11 +8,11 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import QuestionItem from '../components/posts/QuestionItem';
 import {
-  getResponsesByQuestion,
-  getFriendResponsesByQuestion,
-  getAnonymousResponsesByQuestion
+  getResponsesByQuestionWithType,
+  appendResponsesByQuestionWithType
 } from '../modules/question';
 import PostItem from '../components/posts/PostItem';
 import Message from '../components/Message';
@@ -66,8 +66,7 @@ const QuestionDetail = (props) => {
   const questionId = match.params.id;
 
   const [tab, setTab] = React.useState(0);
-  // TODO: append
-  // const [target, setTarget] = useState(null);
+  const [target, setTarget] = useState(null);
 
   const dispatch = useDispatch();
   const question = useSelector(
@@ -77,7 +76,27 @@ const QuestionDetail = (props) => {
   const isLoading =
     useSelector(
       (state) =>
-        state.loadingReducer['question/GET_SELECTED_QUESTION_RESPONSES']
+        state.loadingReducer['question/GET_SELECTED_QUESTION_ALL_RESPONSES']
+    ) === 'REQUEST';
+
+  const friendTabisLoading =
+    useSelector(
+      (state) =>
+        state.loadingReducer['question/GET_SELECTED_QUESTION_FRIEND_RESPONSES']
+    ) === 'REQUEST';
+
+  const anonymousTabisLoading =
+    useSelector(
+      (state) =>
+        state.loadingReducer[
+          'question/GET_SELECTED_QUESTION_ANONYMOUS_RESPONSES'
+        ]
+    ) === 'REQUEST';
+
+  const isAppending =
+    useSelector(
+      (state) =>
+        state.loadingReducer['question/APPEND_SELECTED_QUESTION_RESPONSES']
     ) === 'REQUEST';
 
   const responses = useSelector(
@@ -88,20 +107,25 @@ const QuestionDetail = (props) => {
     setTab(newValue);
   };
 
-  // TODO: append
-  // const onIntersect = ([entry]) => {
-  // if (entry.isIntersecting) {
-  //   dispatch(appendNotifications());
-  // }
-  // };
+  const onIntersect = ([entry]) => {
+    if (entry.isIntersecting) {
+      if (tab === 0) {
+        dispatch(appendResponsesByQuestionWithType(questionId, 'all'));
+      } else if (tab === 1) {
+        dispatch(appendResponsesByQuestionWithType(questionId, 'friend'));
+      } else if (tab === 2) {
+        dispatch(appendResponsesByQuestionWithType(questionId, 'anonymous'));
+      }
+    }
+  };
 
   useEffect(() => {
     if (tab === 0) {
-      dispatch(getResponsesByQuestion(questionId));
+      dispatch(getResponsesByQuestionWithType(questionId, 'all'));
     } else if (tab === 1) {
-      dispatch(getFriendResponsesByQuestion(questionId));
+      dispatch(getResponsesByQuestionWithType(questionId, 'friend'));
     } else if (tab === 2) {
-      dispatch(getAnonymousResponsesByQuestion(questionId));
+      dispatch(getResponsesByQuestionWithType(questionId, 'anonymous'));
     }
   }, [dispatch, questionId, tab]);
 
@@ -111,23 +135,30 @@ const QuestionDetail = (props) => {
     };
   }, [questionId]);
 
-  // TODO: append
-  // useEffect(() => {
-  //   let observer;
-  //   if (target) {
-  //     observer = new IntersectionObserver(onIntersect, { threshold: 1 });
-  //     observer.observe(target);
-  //   }
-  //   return () => observer && observer.disconnect();
-  // }, [target]);
+  useEffect(() => {
+    let observer;
+    if (target) {
+      observer = new IntersectionObserver(onIntersect, { threshold: 1 });
+      observer.observe(target);
+    }
+    return () => observer && observer.disconnect();
+  }, [target]);
 
-  const responseList = responses.map((post) => (
-    <PostItem
-      postKey={`${post.type}-${post.id}`}
-      key={`${post.type}-${post.id}`}
-      postObj={post}
-    />
-  ));
+  const responseList = (
+    <>
+      {responses.map((post) => (
+        <PostItem
+          postKey={`${post.type}-${post.id}`}
+          key={`${post.type}-${post.id}`}
+          postObj={post}
+        />
+      ))}
+      <div ref={setTarget} />
+      <div style={{ margin: '8px', textAlign: 'center' }}>
+        {isAppending && <CircularProgress id="spinner" color="primary" />}
+      </div>
+    </>
+  );
 
   return (
     <div>
@@ -157,16 +188,13 @@ const QuestionDetail = (props) => {
           {responses?.length !== 0 ? (
             <>
               <TabPanel value={tab} index={0} className={classes.tabPanel}>
-                {responseList}
-                {/* <div ref={setTarget} /> */}
+                {isLoading ? <LoadingList /> : responseList}
               </TabPanel>
               <TabPanel value={tab} index={1} className={classes.tabPanel}>
-                {responseList}
-                {/* <div ref={setTarget} /> */}
+                {friendTabisLoading ? <LoadingList /> : responseList}
               </TabPanel>
               <TabPanel value={tab} index={2} className={classes.tabPanel}>
-                {responseList}
-                {/* <div ref={setTarget} /> */}
+                {anonymousTabisLoading ? <LoadingList /> : responseList}
               </TabPanel>
             </>
           ) : (

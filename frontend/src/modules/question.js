@@ -41,12 +41,19 @@ export const GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS =
 export const GET_SELECTED_QUESTION_FRIEND_RESPONSES_FAILURE =
   'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_FAILURE';
 
-export const GET_SELECTED_QUESTION_RESPONSES_REQUEST =
-  'question/GET_SELECTED_QUESTION_RESPONSES_REQUEST';
-export const GET_SELECTED_QUESTION_RESPONSES_SUCCESS =
-  'question/GET_SELECTED_QUESTION_RESPONSES_SUCCESS';
-export const GET_SELECTED_QUESTION_RESPONSES_FAILURE =
-  'question/GET_SELECTED_QUESTION_RESPONSES_FAILURE';
+export const GET_SELECTED_QUESTION_ALL_RESPONSES_REQUEST =
+  'question/GET_SELECTED_QUESTION_ALL_RESPONSES_REQUEST';
+export const GET_SELECTED_QUESTION_ALL_RESPONSES_SUCCESS =
+  'question/GET_SELECTED_QUESTION_ALL_RESPONSES_SUCCESS';
+export const GET_SELECTED_QUESTION_ALL_RESPONSES_FAILURE =
+  'question/GET_SELECTED_QUESTION_ALL_RESPONSES_FAILURE';
+
+export const APPEND_SELECTED_QUESTION_RESPONSES_REQUEST =
+  'question/APPEND_SELECTED_QUESTION_RESPONSES_REQUEST';
+export const APPEND_SELECTED_QUESTION_RESPONSES_SUCCESS =
+  'question/APPEND_SELECTED_QUESTION_RESPONSES_SUCCESS';
+export const APPEND_SELECTED_QUESTION_RESPONSES_FAILURE =
+  'question/APPEND_SELECTED_QUESTION_RESPONSES_FAILURE';
 
 export const GET_RESPONSE_REQUESTS_REQUEST =
   'question/GET_RESPONSE_REQUESTS_REQUEST';
@@ -77,7 +84,8 @@ const initialState = {
   selectedQuestion: null,
   selectedQuestionResponses: [],
   selectedQuestionResponseRequests: [],
-  next: null
+  next: null,
+  maxPage: null
 };
 
 export const getSampleQuestions = () => {
@@ -162,62 +170,66 @@ export const getRandomQuestions = () => {
   };
 };
 
-export const getResponsesByQuestion = (id) => async (dispatch) => {
+export const getResponsesByQuestionWithType = (id, type) => async (
+  dispatch
+) => {
   let res;
-  dispatch({ type: 'question/GET_SELECTED_QUESTION_RESPONSES_REQUEST' });
+  const responseType = type.toUpperCase();
+  dispatch({
+    type: `question/GET_SELECTED_QUESTION_${responseType}_RESPONSES_REQUEST`
+  });
   try {
-    res = await axios.get(`/feed/questions/${id}/`);
+    if (type === 'all') {
+      res = await axios.get(`/feed/questions/${id}/`);
+    } else {
+      res = await axios.get(`/feed/questions/${id}/${type}/`);
+    }
   } catch (error) {
     dispatch({
-      type: 'question/GET_SELECTED_QUESTION_RESPONSES_FAILURE',
+      type: `question/GET_SELECTED_QUESTION_${responseType}_RESPONSES_FAILURE`,
       error
     });
     return;
   }
   dispatch({
-    type: 'question/GET_SELECTED_QUESTION_RESPONSES_SUCCESS',
+    type: `question/GET_SELECTED_QUESTION_${responseType}_RESPONSES_SUCCESS`,
     res: res?.data?.response_set,
-    question: res?.data
+    question: res?.data,
+    next: res.data.max_page > 1 ? 2 : null,
+    maxPage: res.data.max_page
   });
 };
 
-export const getAnonymousResponsesByQuestion = (id) => async (dispatch) => {
+export const appendResponsesByQuestionWithType = (id, type) => async (
+  dispatch,
+  getState
+) => {
   let res;
-  dispatch({
-    type: 'question/GET_SELECTED_QUESTION_ANONYMOUS_RESPONSES_REQUEST'
-  });
-  try {
-    res = await axios.get(`/feed/questions/${id}/anonymous/`);
-  } catch (error) {
-    dispatch({
-      type: 'question/GET_SELECTED_QUESTION_ANONYMOUS_RESPONSES_FAILURE',
-      error
-    });
-    return;
-  }
-  dispatch({
-    type: 'question/GET_SELECTED_QUESTION_ANONYMOUS_RESPONSES_SUCCESS',
-    res: res?.data?.response_set,
-    question: res?.data
-  });
-};
+  const { next, maxPage } = getState().questionReducer;
 
-export const getFriendResponsesByQuestion = (id) => async (dispatch) => {
-  let res;
-  dispatch({ type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_REQUEST' });
+  if (!next) return;
+
+  dispatch({
+    type: `question/APPEND_SELECTED_QUESTION_RESPONSES_REQUEST`
+  });
   try {
-    res = await axios.get(`/feed/questions/${id}/friend/`);
+    if (type === 'all') {
+      res = await axios.get(`/feed/questions/${id}/?page=${next}`);
+    } else {
+      res = await axios.get(`/feed/questions/${id}/${type}/?page=${next}`);
+    }
   } catch (error) {
     dispatch({
-      type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_FAILURE',
+      type: `question/APPEND_SELECTED_QUESTION_RESPONSES_FAILURE`,
       error
     });
     return;
   }
   dispatch({
-    type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS',
+    type: `question/APPEND_SELECTED_QUESTION_RESPONSES_SUCCESS`,
     res: res?.data?.response_set,
-    question: res?.data
+    question: res?.data,
+    next: next === maxPage ? null : next + 1
   });
 };
 
@@ -332,23 +344,25 @@ export default function questionReducer(state = initialState, action) {
         ...state,
         randomQuestions
       };
-    case GET_SELECTED_QUESTION_RESPONSES_SUCCESS:
-      return {
-        ...state,
-        selectedQuestionResponses: action.res,
-        selectedQuestion: action.question
-      };
+    case GET_SELECTED_QUESTION_ALL_RESPONSES_SUCCESS:
     case GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS:
-      return {
-        ...state,
-        selectedQuestionResponses: action.res,
-        selectedQuestion: action.question
-      };
     case GET_SELECTED_QUESTION_ANONYMOUS_RESPONSES_SUCCESS:
       return {
         ...state,
         selectedQuestionResponses: action.res,
-        selectedQuestion: action.question
+        selectedQuestion: action.question,
+        maxPage: action.maxPage,
+        next: action.next
+      };
+    case APPEND_SELECTED_QUESTION_RESPONSES_SUCCESS:
+      const appendedResponses = [
+        ...state.selectedQuestionResponses,
+        ...action.res
+      ];
+      return {
+        ...state,
+        selectedQuestionResponses: appendedResponses,
+        next: action.next
       };
     case GET_RESPONSE_REQUESTS_SUCCESS:
       return {

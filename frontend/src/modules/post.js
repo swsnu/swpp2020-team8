@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import axios from '../apis';
-import { getFriendResponsesByQuestion } from './question';
+import { getResponsesByQuestionWithType } from './question';
 
 export const APPEND_POSTS_REQUEST = 'post/APPEND_POSTS_REQUEST';
 export const APPEND_POSTS_SUCCESS = 'post/APPEND_POSTS_SUCCESS';
@@ -227,7 +227,7 @@ export const createPost = (newPost) => async (dispatch, getState) => {
     resultPost.type === 'Response' &&
     selectedQuestion?.id === resultPost.question_id
   ) {
-    dispatch(getFriendResponsesByQuestion(selectedQuestion?.id));
+    dispatch(getResponsesByQuestionWithType(selectedQuestion?.id, 'friend'));
   }
   const { selectedUserId } = getState().postReducer;
   if (+selectedUserId === +resultPost.author_detail?.id) {
