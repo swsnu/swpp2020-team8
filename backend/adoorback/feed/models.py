@@ -97,6 +97,9 @@ class Response(AdoorModel):
                                                 content_type_field='origin_type',
                                                 object_id_field='origin_id')
 
+    class Meta:
+        ordering = ['-id']
+
     @property
     def type(self):
         return self.__class__.__name__
