@@ -171,7 +171,9 @@ class PostAPITestCase(APITestCase):
             # test comments
             self.assertEqual(response.data['results'][0]['comments'][0]['is_reply'], False)
             self.assertEqual(len(response.data['results'][0]['comments']), 4)
-            self.assertEqual(response.data['results'][0]['comments'][0]['replies'][0]['is_reply'], True)
+            self.assertEqual(response.data['results'][0]['comments'][2]['replies'][0]['is_reply'], True)
+            self.assertEqual(response.data['results'][0]['comments'][2]['replies'][0]['is_anonymous'], True)
+            self.assertEqual(response.data['results'][0]['comments'][1]['replies'][0]['is_anonymous'], False)
 
         # test friend feed - friend
         with self.login(username=friend_user.username, password='password'):
@@ -194,8 +196,7 @@ class PostAPITestCase(APITestCase):
             self.assertEqual(response.data['results'][0]['comments'][0]['is_anonymous'], True)
             self.assertEqual(response.data['results'][0]['comments'][3]['is_anonymous'], False)  # ordering
             self.assertEqual(len(response.data['results'][0]['comments']), 4)
-            self.assertEqual(response.data['results'][0]['comments'][1]['replies'][0]['is_anonymous'], True)
-            self.assertEqual(response.data['results'][0]['comments'][1]['replies'][0]['is_anonymous'], True)
+            self.assertEqual(len(response.data['results'][0]['comments'][3]['replies']), 2)
 
         # test anonymous feed - friend
         with self.login(username=friend_user.username, password='password'):
