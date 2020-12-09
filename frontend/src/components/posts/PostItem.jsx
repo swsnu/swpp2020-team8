@@ -36,8 +36,15 @@ const ShareSettingInfo = styled.span`
   font-size: 12px;
 `;
 
+const CommentInfo = styled.div`
+  margin-left: 3px;
+  margin-bottom: 8px;
+  color: #aaa;
+  font-size: 10px;
+`;
+
 export default function PostItem({ postObj, postKey, isDetailPage }) {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.userReducer.currentUser);
@@ -45,7 +52,10 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
     postObj?.author && currentUser?.id === postObj.author_detail?.id;
   const isAnon =
     (postObj?.author && !postObj?.author_detail?.id) ||
-    pathname.includes('anonymous');
+    pathname.includes('anonymous') ||
+    search?.includes('anonymous=True');
+  const onlyAnonPost =
+    postObj?.share_anonymously && !postObj?.share_with_friends;
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -64,6 +74,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
     if (comment.is_private && !isAuthor && !isCommentAuthor) return null;
     return (
       <CommentItem
+        isAnon={isAnon}
         postKey={postKey}
         key={comment.id}
         commentObj={comment}
@@ -81,9 +92,10 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       target_type: postObj.type,
       target_id: postObj.id,
       content,
-      is_private: isPrivate
+      is_private: isPrivate,
+      is_anonymous: isAnon || onlyAnonPost
     };
-    dispatch(createComment(newCommentObj, postKey));
+    dispatch(createComment(newCommentObj, postKey, postObj?.question_id));
   };
 
   const toggleLike = () => {
@@ -114,8 +126,11 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
   return (
     <PostItemWrapper>
       <PostItemHeaderWrapper>
-        <AuthorProfile author={postObj && postObj.author_detail} />
-        {isAuthor && !isAnon && (
+        <AuthorProfile
+          author={postObj && postObj.author_detail}
+          isAuthor={isAuthor}
+        />
+        {isAuthor && (
           <PostAuthorButtons
             isQuestion={false}
             onClickEdit={handleEdit}
@@ -128,7 +143,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       <CreateTime createdTime={postObj.created_at} />
       <PostItemFooterWrapper>
         <ShareSettingsWrapper>
-          {isAuthor && !isAnon && (
+          {isAuthor && (
             <>
               {(postObj.share_with_friends || postObj.share_anonymously) && (
                 <ShareSettingInfo>공개범위:</ShareSettingInfo>
@@ -163,12 +178,15 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
           )}
         </PostItemButtonsWrapper>
       </PostItemFooterWrapper>
-      {!isAnon && (
-        <>
-          <NewComment onSubmit={handleSubmit} />
-          <CommentWrapper>{commentList}</CommentWrapper>
-        </>
-      )}
+      <>
+        <NewComment isAnon={isAnon} onSubmit={handleSubmit} />
+        <CommentInfo>
+          작성된 댓글은
+          {isAnon ? ' 익명피드에만 ' : ' 친구들에게만 '}
+          공개됩니다.
+        </CommentInfo>
+        <CommentWrapper>{commentList}</CommentWrapper>
+      </>
       <AlertDialog
         message="정말 삭제하시겠습니까?"
         onConfirm={handleDelete}
