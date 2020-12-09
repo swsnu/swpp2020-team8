@@ -5,6 +5,7 @@ import { getSelectedPost } from '../modules/post';
 import PostItem from '../components/posts/PostItem';
 import QuestionItem from '../components/posts/QuestionItem';
 import Message from '../components/Message';
+import LoadingItem from '../components/posts/LoadingItem';
 
 export default function PostDetail() {
   const selectedPost = useSelector((state) => state.postReducer.selectedPost);
@@ -13,6 +14,11 @@ export default function PostDetail() {
   );
   const { postType, id } = useParams();
   const dispatch = useDispatch();
+
+  const isLoading =
+    useSelector(
+      (state) => state.loadingReducer['post/GET_SELECTED_ARTICLE']
+    ) === 'REQUEST';
 
   useEffect(() => {
     dispatch(getSelectedPost(postType, id));
@@ -30,14 +36,21 @@ export default function PostDetail() {
         {selectedPost && <QuestionItem questionObj={selectedPost} />}
       </div>
     );
+
   return (
     <div id="post-detail-not-question">
-      {selectedPost && (
-        <PostItem
-          postObj={selectedPost}
-          postKey={`${selectedPost.type}-${selectedPost.id}`}
-          isDetailPage
-        />
+      {isLoading ? (
+        <LoadingItem />
+      ) : (
+        <>
+          {selectedPost && (
+            <PostItem
+              postObj={selectedPost}
+              postKey={`${selectedPost.type}-${selectedPost.id}`}
+              isDetailPage
+            />
+          )}
+        </>
       )}
     </div>
   );
