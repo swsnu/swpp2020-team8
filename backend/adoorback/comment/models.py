@@ -65,13 +65,14 @@ def create_noti(instance, **kwargs):
 
     if user == actor:  # do not create notification for comment author him/herself.
         return
+    actor_name = '익명의 사용자가' if instance.is_anonymous else f'{actor.username}님이'
 
     if instance.target.type == 'Comment':  # if is_reply
-        message = f'{actor.username}님이 회원님의 댓글에 답글을 남겼습니다.'
+        message = f'{actor_name} 회원님의 댓글에 답글을 남겼습니다.'
         redirect_url = f'/{origin.target.type.lower()}s/{origin.target.id}?anonymous={instance.is_anonymous}'
     else:  # if not reply
         origin_target_name = '게시글' if origin.type == 'Article' else '답변'
-        message = f'{actor.username}님이 회원님의 {origin_target_name}에 댓글을 남겼습니다.'
+        message = f'{actor_name} 회원님의 {origin_target_name}에 댓글을 남겼습니다.'
         redirect_url = f'/{origin.type.lower()}s/{origin.id}?anonymous={instance.is_anonymous}'
 
     Notification.objects.create(actor=actor, user=user,
