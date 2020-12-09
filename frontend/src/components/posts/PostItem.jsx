@@ -114,7 +114,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
     <PostItemWrapper>
       <PostItemHeaderWrapper>
         <AuthorProfile author={postObj && postObj.author_detail} />
-        {isAuthor && (
+        {isAuthor && !isAnon && (
           <PostAuthorButtons
             isQuestion={false}
             onClickEdit={handleEdit}
