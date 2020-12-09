@@ -76,6 +76,7 @@ export default function CommentItem({
       target_type: 'Comment',
       target_id: commentObj.id,
       is_private: isPrivate,
+      is_anonymous: commentObj?.is_anonymous,
       content
     };
     dispatch(createReply(newReplyObj, postKey));

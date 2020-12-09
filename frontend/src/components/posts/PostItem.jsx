@@ -45,6 +45,8 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
   const isAnon =
     (postObj?.author && !postObj?.author_detail?.id) ||
     pathname.includes('anonymous');
+  const onlyAnonPost =
+    postObj?.share_anonymously && postObj?.share_with_friends;
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -63,6 +65,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
     if (comment.is_private && !isAuthor && !isCommentAuthor) return null;
     return (
       <CommentItem
+        isAnon={isAnon}
         postKey={postKey}
         key={comment.id}
         commentObj={comment}
@@ -80,7 +83,8 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       target_type: postObj.type,
       target_id: postObj.id,
       content,
-      is_private: isPrivate
+      is_private: isPrivate,
+      is_anonymous: isAnon || onlyAnonPost
     };
     dispatch(createComment(newCommentObj, postKey));
   };
@@ -162,12 +166,10 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
           )}
         </PostItemButtonsWrapper>
       </PostItemFooterWrapper>
-      {!isAnon && (
-        <>
-          <NewComment onSubmit={handleSubmit} />
-          <CommentWrapper>{commentList}</CommentWrapper>
-        </>
-      )}
+      <>
+        <NewComment isAnon={isAnon} onSubmit={handleSubmit} />
+        <CommentWrapper>{commentList}</CommentWrapper>
+      </>
       <AlertDialog
         message="정말 삭제하시겠습니까?"
         onConfirm={handleDelete}
