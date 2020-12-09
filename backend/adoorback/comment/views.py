@@ -2,7 +2,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
 from comment.models import Comment
-from comment.serializers import CommentBaseSerializer, CommentResponsiveSerializer
+from comment.serializers import CommentResponsiveSerializer
 
 from adoorback.permissions import IsAuthorOrReadOnly
 from adoorback.content_types import get_generic_relation_type
@@ -14,7 +14,7 @@ class CommentCreate(generics.ListCreateAPIView):
     List all comments
     """
     queryset = Comment.objects.order_by('id')
-    serializer_class = CommentBaseSerializer
+    serializer_class = CommentResponsiveSerializer
     permission_classes = [IsAuthenticated]
 
     def get_exception_handler(self):
