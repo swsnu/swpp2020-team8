@@ -1,5 +1,5 @@
-# import os
-# import pandas as pd
+import os
+import pandas as pd
 
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseBadRequest
@@ -261,14 +261,12 @@ class RecommendedQuestionList(generics.ListAPIView):
         return adoor_exception_handler
 
     def get_queryset(self):
-        # dir_name = os.path.dirname(os.path.abspath(__file__))
-        # path = os.path.join(dir_name, 'algorithms', 'recommendations.csv')
-        # df = pd.read_csv(path)
-        # df = df[df.userId == self.request.user.id]
-        # rank_ids = df['questionId'].tolist()
-        # daily_question_ids = set(list(Question.objects.daily_questions().values_list('id', flat=True)))
-        # recommended_ids = [x for x in rank_ids if x in daily_question_ids][:5]
-        #
-        # return Question.objects.filter(pk__in=recommended_ids).order_by('-id')
+        dir_name = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(dir_name, 'algorithms', 'recommendations.csv')
+        df = pd.read_csv(path)
+        df = df[df.userId == self.request.user.id]
+        rank_ids = df['questionId'].tolist()
+        daily_question_ids = set(list(Question.objects.daily_questions().values_list('id', flat=True)))
+        recommended_ids = [x for x in rank_ids if x in daily_question_ids][:5]
 
-        return Question.objects.daily_questions().order_by('content')[:5]
+        return Question.objects.filter(pk__in=recommended_ids).order_by('-id')
