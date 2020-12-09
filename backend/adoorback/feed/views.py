@@ -242,6 +242,7 @@ class ResponseRequestDestroy(generics.DestroyAPIView):
 class DailyQuestionList(generics.ListAPIView):
     serializer_class = fs.QuestionResponsiveSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = None
 
     def get_exception_handler(self):
         return adoor_exception_handler
