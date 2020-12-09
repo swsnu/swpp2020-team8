@@ -133,6 +133,7 @@ export default function QuestionItem({
   const resetContent = () => {
     setNewPost((prev) => ({ ...prev, content: '' }));
     if (onResetContent) onResetContent();
+    setIsWriting(false);
   };
 
   return (

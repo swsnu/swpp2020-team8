@@ -12,7 +12,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import QuestionItem from '../components/posts/QuestionItem';
 import {
   getResponsesByQuestionWithType,
-  appendResponsesByQuestionWithType
+  appendResponsesByQuestionWithType,
+  resetSelectedQuestion
 } from '../modules/question';
 import PostItem from '../components/posts/PostItem';
 import Message from '../components/Message';
@@ -132,6 +133,7 @@ const QuestionDetail = (props) => {
   useEffect(() => {
     return () => {
       setTab(0);
+      dispatch(resetSelectedQuestion());
     };
   }, [questionId]);
 

@@ -4,7 +4,9 @@ import store from '../store';
 import {
   mockQuestionFeed,
   questionDetailPosts,
-  mockResponseRequests
+  mockResponseRequests,
+  mockCustomQuestion,
+  mockResponse
 } from '../constants';
 import * as actionCreators from './question';
 import questionReducer from './question';
@@ -265,6 +267,33 @@ describe('Question Reducer', () => {
     });
   });
 
+  it('should reset question when RESET QUESTION called', () => {
+    const newState = questionReducer(
+      {
+        dailyQuestions: [],
+        sampleQuestions: [],
+        randomQuestions: [],
+        recommendedQuestions: [],
+        selectedQuestion: mockCustomQuestion,
+        selectedQuestionResponses: [mockResponse],
+        selectedQuestionResponseRequests: [],
+        next: null
+      },
+      {
+        type: actionCreators.RESET_SELECTED_QUESTION
+      }
+    );
+    expect(newState).toEqual({
+      dailyQuestions: [],
+      sampleQuestions: [],
+      randomQuestions: [],
+      recommendedQuestions: [],
+      selectedQuestion: null,
+      selectedQuestionResponses: [],
+      selectedQuestionResponseRequests: [],
+      next: null
+    });
+  });
   it('should add daily question to feed when append success', () => {
     const newState = questionReducer(
       {
@@ -274,6 +303,7 @@ describe('Question Reducer', () => {
         recommendedQuestions: [],
         selectedQuestion: null,
         selectedQuestionResponses: [],
+        selectedQuestionResponseRequests: [],
         next: null
       },
       {
@@ -289,6 +319,7 @@ describe('Question Reducer', () => {
       recommendedQuestions: [],
       selectedQuestion: null,
       selectedQuestionResponses: [],
+      selectedQuestionResponseRequests: [],
       next: 'mockUrl'
     });
   });

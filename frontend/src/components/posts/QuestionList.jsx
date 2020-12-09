@@ -5,7 +5,11 @@ import LoadingList from './LoadingList';
 
 export default function QuestionList({ questions, isAppending, isLoading }) {
   const dailyQuestionList = questions.map((question) => (
-    <QuestionItem key={question.id} questionObj={question} />
+    <QuestionItem
+      key={question.id}
+      questionObj={question}
+      questionId={question.id}
+    />
   ));
 
   return (

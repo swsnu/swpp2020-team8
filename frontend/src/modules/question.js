@@ -25,6 +25,7 @@ export const GET_DAILY_QUESTIONS_SUCCESS =
 export const GET_DAILY_QUESTIONS_FAILURE =
   'question/GET_DAILY_QUESTIONS_FAILURE';
 
+export const RESET_SELECTED_QUESTION = 'question/RESET_SELECTED_QUESTION';
 export const GET_RANDOM_QUESTIONS = 'question/GET_RANDOM_QUESTIONS';
 
 export const GET_SELECTED_QUESTION_ANONYMOUS_RESPONSES_REQUEST =
@@ -143,6 +144,12 @@ export const getDailyQuestions = () => async (dispatch) => {
     res: res?.data.results,
     next: res?.data.next
   });
+};
+
+export const resetSelectedQuestion = () => {
+  return {
+    type: RESET_SELECTED_QUESTION
+  };
 };
 
 export const appendDailyQuestions = () => async (dispatch, getState) => {
@@ -296,6 +303,14 @@ export const deleteResponseRequest = (qid, rid) => async (dispatch) => {
 
 export default function questionReducer(state = initialState, action) {
   switch (action.type) {
+    case RESET_SELECTED_QUESTION: {
+      return {
+        ...state,
+        selectedQuestion: null,
+        selectedQuestionResponses: [],
+        selectedQuestionResponseRequests: []
+      };
+    }
     case GET_DAILY_QUESTIONS_REQUEST: {
       return {
         ...state,

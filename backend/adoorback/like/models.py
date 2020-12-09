@@ -63,10 +63,15 @@ def create_like_noti(instance, **kwargs):
         return
     actor_name = '익명의 사용자가' if instance.is_anonymous else f'{actor.username}님이'
 
-    if instance.target.type == 'Comment':  # if is reply
+    if origin.type == 'Comment' and origin.target.type == 'Comment':  # if is reply
         message = f'{actor_name} 회원님의 댓글을 좋아합니다.'
-        redirect_url = f'/{origin.target.type.lower()}s/{origin.target.id}?anonymous={instance.is_anonymous}'
-    else:
+        redirect_url = f'/{origin.target.target.type.lower()}s/' \
+                       f'{origin.target.target.id}?anonymous={instance.is_anonymous}'
+    elif origin.type == 'Comment':  # if is comment
+        message = f'{actor_name} 회원님의 댓글을 좋아합니다.'
+        redirect_url = f'/{origin.target.type.lower()}s/' \
+                       f'{origin.target.id}?anonymous={instance.is_anonymous}'
+    else:  # if is post
         origin_target_name = ''
         if instance.target.type == 'Article':
             origin_target_name = '게시글'
