@@ -85,6 +85,12 @@ export default function SignUp({ setRefreshToken }) {
     setRefreshToken(Cookies.get('jwt_token_refresh'));
   };
 
+  const onKeySubmit = (e) => {
+    if (e.key === 'Enter') {
+      onClickSubmitButton();
+    }
+  };
+
   return (
     <SignUpWrapper>
       <h1 id="signup-title">회원가입</h1>
@@ -117,7 +123,9 @@ export default function SignUp({ setRefreshToken }) {
         value={signUpInfo.password}
         placeholder="비밀번호"
         onChange={onInputChange}
+        onKeyDown={onKeySubmit}
       />
+
       <CommonButton
         disabled={!isFilled}
         margin="40px 0"

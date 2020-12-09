@@ -26,24 +26,22 @@ sentry_sdk.init(
     send_default_pii=True
 )
 
-CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOW_CREDENTIALS = True
 
-SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_SAMESITE = 'None'
+# SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_SAMESITE = 'None'
 
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'None'
+#CSRF_COOKIE_SECURE = True
+#CSRF_COOKIE_SAMESITE = 'None'
 
-CSRF_TRUSTED_ORIGINS = [
-    "develop.d3t1tnno5uz3sa.amplifyapp.com",
-    "localhost"
-]
+#CSRF_TRUSTED_ORIGINS = [
+#    "develop.d3t1tnno5uz3sa.amplifyapp.com",
+#    "localhost"
+#]
 
-ALLOWED_HOSTS = [
-  "ec2-54-84-211-34.compute-1.amazonaws.com",
-]
+ALLOWED_HOSTS = ['ec2-54-237-96-51.compute-1.amazonaws.com', 'localhost']
 
-CORS_ALLOWED_ORIGINS = [
-    "https://develop.d3t1tnno5uz3sa.amplifyapp.com",
-    "http://localhost:3000",
-]
+#CORS_ALLOWED_ORIGINS = [
+#    "https://develop.d3t1tnno5uz3sa.amplifyapp.com",
+#    "http://localhost:3000",
+#]

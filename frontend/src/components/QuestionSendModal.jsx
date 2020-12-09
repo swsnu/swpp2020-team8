@@ -36,9 +36,12 @@ const Question = styled.div`
   text-align: center;
   font-weight: 500;
   font-size: 15px;
+  word-break: break-all;
+  padding: 8px;
 `;
 
 const NoFriend = styled.div`
+  margin-top: 8px;
   padding: 16px;
   border: none;
   border-radius: 4px;
@@ -85,9 +88,7 @@ const QuestionSendModal = ({ questionObj, open, handleClose }) => {
         </IconButton>
       </DialogTitle>
       <DialogContent className={classes.content}>
-        <Question>
-          <h3>{questionObj.content}</h3>
-        </Question>
+        <Question>{questionObj.content}</Question>
         <List className={classes.list} aria-label="friend list">
           {friendList.length ? (
             friendItemList

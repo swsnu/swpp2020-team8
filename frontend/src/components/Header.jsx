@@ -241,7 +241,7 @@ const Header = ({ isMobile, setRefreshToken }) => {
         size="large"
         activeClassName={classes.tabActive}
       >
-        질문 모음
+        오늘의 질문
       </NavLink>
       <div className={classes.grow} />
       <div className={classes.sectionDesktop}>
