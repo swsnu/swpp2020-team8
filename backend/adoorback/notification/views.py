@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from rest_framework import generics
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
@@ -25,6 +26,15 @@ class NotificationList(generics.ListAPIView, generics.UpdateAPIView):
         queryset = Notification.objects.visible_only().filter(user=request.user)
         serializer = NotificationSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
+
+
+def notification_id(request):
+    responseData = {
+        "id": Notification.objects.filter(user=request.user).unread_only().first().id,
+        "name": request.user.username,
+        "num_unread": Notification.objects.filter(user=request.user).unread_only().count()
+    }
+    return JsonResponse(responseData)
 
 
 class NotificationDetail(generics.UpdateAPIView):
