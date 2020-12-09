@@ -23,3 +23,6 @@ DROP TABLE some_table;
 
 pg_dump -U adoor adoor -h localhost > adoor_data_export.sql
 psql adoor
+
+sudo -u postgres psql adoor
+\dt

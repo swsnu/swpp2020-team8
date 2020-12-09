@@ -26,6 +26,7 @@ class CommentManager(models.Manager):
 class Comment(AdoorModel):
     author = models.ForeignKey(User, related_name='comment_set', on_delete=models.CASCADE)
     is_private = models.BooleanField(default=False)
+    is_anonymous = models.BooleanField(default=False)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.IntegerField()

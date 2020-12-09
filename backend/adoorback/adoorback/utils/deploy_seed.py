@@ -6,7 +6,7 @@ import pandas as pd
 from django.contrib.auth import get_user_model
 from faker import Faker
 
-from adoorback.content_types import get_question_type, get_response_type
+from adoorback.content_types import get_question_type
 from feed.models import Question, ResponseRequest, Response
 from like.models import Like
 
@@ -39,20 +39,20 @@ def set_mock_seed():
                 elements=range(1, 1000),
                 length=random.randint(3, 10),
                 unique=True))))
-    logging.info("Superuser created!") if DEBUG else None
+        logging.info("Superuser created!") if DEBUG else None
 
-    # Seed User
-    for i in range(1000):
-        User.objects.create_user(username=str(i) + faker.user_name(),
-                                 email=str(i) + faker.email(),
-                                 password=faker.password(),
-                                 question_history=",".join(map(str,
-                                                               faker.random_elements(
-                                                                   elements=range(1, 1000),
-                                                                   length=random.randint(3, 10),
-                                                                   unique=True))))
-    logging.info(
-        f"{User.objects.count()} Users created!") if DEBUG else None
+        # Seed User
+        for i in range(1000):
+            User.objects.create_user(username=str(i) + faker.user_name(),
+                                     email=str(i) + faker.email(),
+                                     password=faker.password(),
+                                     question_history=",".join(map(str,
+                                                                   faker.random_elements(
+                                                                       elements=range(1, 1000),
+                                                                       length=random.randint(3, 10),
+                                                                       unique=True))))
+        logging.info(
+            f"{User.objects.count()} Users created!") if DEBUG else None
 
     users = User.objects.all()
 
