@@ -397,10 +397,9 @@ class DailyQuestionTestCase(APITestCase):
             response = self.get('daily-question-list')
             self.assertEqual(response.status_code, 200)
             self.assertEqual(len(response.data), 30)
-            self.assertEqual(len(response.data['results']), 15)
-            self.assertTrue(response.data['results'][1]['selected_date'])
-            self.assertGreater(response.data['results'][1]['id'],
-                               response.data['results'][2]['id'])  # check order_by
+            self.assertTrue(response.data[1]['selected_date'])
+            self.assertGreater(response.data[1]['id'],
+                               response.data[2]['id'])  # check order_by
 
     def test_recommended_questions_call(self):
         current_user = self.make_user(username='current_user')
