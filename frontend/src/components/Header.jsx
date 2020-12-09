@@ -292,7 +292,7 @@ const Header = ({ isMobile, setRefreshToken }) => {
             <AccountCircle color="secondary" />
           </Link>
           <Link to={`/users/${currentUser?.id}`}>
-            <HelloUsername>
+            <HelloUsername className={'hello-username'}>
               {currentUser?.username}
               {/* 님, 안녕하세요! */}
             </HelloUsername>
