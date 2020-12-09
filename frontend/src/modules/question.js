@@ -27,6 +27,13 @@ export const GET_DAILY_QUESTIONS_FAILURE =
 
 export const GET_RANDOM_QUESTIONS = 'question/GET_RANDOM_QUESTIONS';
 
+export const GET_SELECTED_QUESTION_ANONYMOUS_RESPONSES_REQUEST =
+  'question/GET_SELECTED_QUESTION_ANONYMOUS_RESPONSES_REQUEST';
+export const GET_SELECTED_QUESTION_ANONYMOUS_RESPONSES_SUCCESS =
+  'question/GET_SELECTED_QUESTION_ANONYMOUS_RESPONSES_SUCCESS';
+export const GET_SELECTED_QUESTION_ANONYMOUS_RESPONSES_FAILURE =
+  'question/GET_SELECTED_QUESTION_ANONYMOUS_RESPONSES_FAILURE';
+
 export const GET_SELECTED_QUESTION_FRIEND_RESPONSES_REQUEST =
   'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_REQUEST';
 export const GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS =
@@ -174,6 +181,27 @@ export const getResponsesByQuestion = (id) => async (dispatch) => {
   });
 };
 
+export const getAnonymousResponsesByQuestion = (id) => async (dispatch) => {
+  let res;
+  dispatch({
+    type: 'question/GET_SELECTED_QUESTION_ANONYMOUS_RESPONSES_REQUEST'
+  });
+  try {
+    res = await axios.get(`/feed/questions/${id}/anonymous/`);
+  } catch (error) {
+    dispatch({
+      type: 'question/GET_SELECTED_QUESTION_ANONYMOUS_RESPONSES_FAILURE',
+      error
+    });
+    return;
+  }
+  dispatch({
+    type: 'question/GET_SELECTED_QUESTION_ANONYMOUS_RESPONSES_SUCCESS',
+    res: res?.data?.response_set,
+    question: res?.data
+  });
+};
+
 export const getFriendResponsesByQuestion = (id) => async (dispatch) => {
   let res;
   dispatch({ type: 'question/GET_SELECTED_QUESTION_FRIEND_RESPONSES_REQUEST' });
@@ -311,6 +339,12 @@ export default function questionReducer(state = initialState, action) {
         selectedQuestion: action.question
       };
     case GET_SELECTED_QUESTION_FRIEND_RESPONSES_SUCCESS:
+      return {
+        ...state,
+        selectedQuestionResponses: action.res,
+        selectedQuestion: action.question
+      };
+    case GET_SELECTED_QUESTION_ANONYMOUS_RESPONSES_SUCCESS:
       return {
         ...state,
         selectedQuestionResponses: action.res,
