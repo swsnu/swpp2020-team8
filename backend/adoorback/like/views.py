@@ -16,6 +16,7 @@ class LikeList(generics.ListCreateAPIView):
     queryset = Like.objects.order_by('-id')
     serializer_class = LikeSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = None
 
     def get_exception_handler(self):
         return adoor_exception_handler
