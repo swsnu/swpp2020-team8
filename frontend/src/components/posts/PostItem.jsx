@@ -126,8 +126,11 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
   return (
     <PostItemWrapper>
       <PostItemHeaderWrapper>
-        <AuthorProfile author={postObj && postObj.author_detail} />
-        {isAuthor && !isAnon && (
+        <AuthorProfile
+          author={postObj && postObj.author_detail}
+          isAuthor={isAuthor}
+        />
+        {isAuthor && (
           <PostAuthorButtons
             isQuestion={false}
             onClickEdit={handleEdit}
@@ -140,7 +143,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       <CreateTime createdTime={postObj.created_at} />
       <PostItemFooterWrapper>
         <ShareSettingsWrapper>
-          {isAuthor && !isAnon && (
+          {isAuthor && (
             <>
               {(postObj.share_with_friends || postObj.share_anonymously) && (
                 <ShareSettingInfo>공개범위:</ShareSettingInfo>
