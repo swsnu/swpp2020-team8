@@ -493,10 +493,7 @@ def create_ranks_csv():
 
     df = pd.DataFrame()
     for uid in User.objects.exclude(is_superuser=True).values_list('id', flat=True):
-<<<<<<< HEAD
         print(str(uid) + "done")
-=======
->>>>>>> 79de02188b32f4e61d44ea3b1fdd6f0a04948d17
         new_df = best_model.recommend_items(uid, topn=topn, verbose=True)
         new_df['userId'] = uid
         df = df.append(new_df)

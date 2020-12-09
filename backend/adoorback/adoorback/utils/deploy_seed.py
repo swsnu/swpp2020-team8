@@ -93,4 +93,3 @@ def set_mock_seed():
         question = Question.objects.get(id=i % 1000 + 1)
         Like.objects.get_or_create(user=user, content_type=get_question_type(), object_id=question.id)
     logging.info(f"{Like.objects.count()} Likes created!") if DEBUG else None
-
