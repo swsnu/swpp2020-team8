@@ -51,7 +51,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
   const isAuthor =
     postObj?.author && currentUser?.id === postObj.author_detail?.id;
   const isAnon =
-    (postObj?.author && !postObj?.author_detail?.id) ||
+    !postObj?.author_detail?.id ||
     pathname.includes('anonymous') ||
     search?.includes('anonymous=True');
   const onlyAnonPost =
@@ -74,7 +74,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
     if (comment.is_private && !isAuthor && !isCommentAuthor) return null;
     return (
       <CommentItem
-        isAnon={isAnon}
+        isAnon={isAnon || onlyAnonPost}
         postKey={postKey}
         key={comment.id}
         commentObj={comment}
@@ -182,7 +182,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
         <NewComment isAnon={isAnon} onSubmit={handleSubmit} />
         <CommentInfo>
           작성된 댓글은
-          {isAnon ? ' 익명피드에만 ' : ' 친구들에게만 '}
+          {isAnon || onlyAnonPost ? ' 익명피드에만 ' : ' 친구들에게만 '}
           공개됩니다.
         </CommentInfo>
         <CommentWrapper>{commentList}</CommentWrapper>
