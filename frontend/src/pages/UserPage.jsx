@@ -16,6 +16,7 @@ import { getSelectedUserPosts, appendPosts } from '../modules/post';
 import { getSelectedUser } from '../modules/user';
 import { getFriendList } from '../modules/friend';
 import FriendStatusButtons from '../components/friends/FriendStatusButtons';
+import Message from '../components/Message';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -108,6 +109,10 @@ export default function UserPage() {
     useSelector((state) => state.loadingReducer['post/GET_USER_POSTS']) ===
     'REQUEST';
 
+  const getUserFailure =
+    useSelector((state) => state.loadingReducer['user/GET_SELECTED_USER']) ===
+    'FAILURE';
+
   useEffect(() => {
     dispatch(getSelectedUser(id));
     dispatch(getFriendList());
@@ -148,85 +153,91 @@ export default function UserPage() {
 
   return (
     <MobileWrapper className={classes.root}>
-      <Container fixed>
-        <UserPageWrapper>
-          <FaceIcon
-            style={{
-              color: selectedUser?.profile_pic
-            }}
-          />
-          <h3 margin-bottom="10px">{selectedUser?.username}</h3>
-          <div>
-            {selectedUser && (
-              <FriendStatusButtons
-                isUserPage
-                friendObj={selectedUser}
-                isFriend={selectedUser.are_friends}
-                isPending={selectedUser.received_friend_request_from}
-                hasSentRequest={selectedUser.sent_friend_request_to}
+      {getUserFailure ? (
+        <Message message="존재하지 않는 사용자입니다:(" />
+      ) : (
+        <>
+          <Container fixed>
+            <UserPageWrapper>
+              <FaceIcon
+                style={{
+                  color: selectedUser?.profile_pic
+                }}
               />
-            )}
-          </div>
-        </UserPageWrapper>
-      </Container>
-      <AppBar position="static" className={classes.header}>
-        <Tabs
-          value={value}
-          indicatorColor="primary"
-          textColor="primary"
-          onChange={handleChange}
-          aria-label="user tabs"
-        >
-          <Tab label="전체" value="All" {...a11yProps('All')} />
-          <Tab label="나의 Q&A" value="Q&A" {...a11yProps('Q&A')} />
-          <Tab
-            label="아무말 대잔치"
-            value="Articles"
-            {...a11yProps('Articles')}
-          />
-          <Tab
-            label="작성한 질문"
-            value="CustomQuestions"
-            {...a11yProps('CustomQuestions')}
-          />
-        </Tabs>
-      </AppBar>
-      <MobileTabPanel value={value} index="All">
-        <UserPostList
-          posts={selectedUserPosts}
-          isAppending={isAppending}
-          isLoading={isLoading}
-          isFriendOrMyPage={isFriendOrMyPage}
-        />
-        <div ref={setTarget} />
-      </MobileTabPanel>
-      <MobileTabPanel value={value} index="Q&A">
-        <UserPostList
-          posts={userResponses}
-          isAppending={isAppending}
-          isLoading={isLoading}
-          isFriendOrMyPage={isFriendOrMyPage}
-        />
-        <div ref={setTarget} />
-      </MobileTabPanel>
-      <MobileTabPanel value={value} index="Articles">
-        <UserPostList
-          posts={userArticles}
-          isAppending={isAppending}
-          isLoading={isLoading}
-          isFriendOrMyPage={isFriendOrMyPage}
-        />
-        <div ref={setTarget} />
-      </MobileTabPanel>
-      <MobileTabPanel value={value} index="CustomQuestions">
-        <UserPostList
-          posts={userQuestions}
-          isAppending={isAppending}
-          isLoading={isLoading}
-          isFriendOrMyPage={isFriendOrMyPage}
-        />
-        <div ref={setTarget} />
-      </MobileTabPanel>
+              <h3 margin-bottom="10px">{selectedUser?.username}</h3>
+              <div>
+                {selectedUser && (
+                  <FriendStatusButtons
+                    isUserPage
+                    friendObj={selectedUser}
+                    isFriend={selectedUser.are_friends}
+                    isPending={selectedUser.received_friend_request_from}
+                    hasSentRequest={selectedUser.sent_friend_request_to}
+                  />
+                )}
+              </div>
+            </UserPageWrapper>
+          </Container>
+          <AppBar position="static" className={classes.header}>
+            <Tabs
+              value={value}
+              indicatorColor="primary"
+              textColor="primary"
+              onChange={handleChange}
+              aria-label="user tabs"
+            >
+              <Tab label="전체" value="All" {...a11yProps('All')} />
+              <Tab label="나의 Q&A" value="Q&A" {...a11yProps('Q&A')} />
+              <Tab
+                label="아무말 대잔치"
+                value="Articles"
+                {...a11yProps('Articles')}
+              />
+              <Tab
+                label="작성한 질문"
+                value="CustomQuestions"
+                {...a11yProps('CustomQuestions')}
+              />
+            </Tabs>
+          </AppBar>
+          <MobileTabPanel value={value} index="All">
+            <UserPostList
+              posts={selectedUserPosts}
+              isAppending={isAppending}
+              isLoading={isLoading}
+              isFriendOrMyPage={isFriendOrMyPage}
+            />
+            <div ref={setTarget} />
+          </MobileTabPanel>
+          <MobileTabPanel value={value} index="Q&A">
+            <UserPostList
+              posts={userResponses}
+              isAppending={isAppending}
+              isLoading={isLoading}
+              isFriendOrMyPage={isFriendOrMyPage}
+            />
+            <div ref={setTarget} />
+          </MobileTabPanel>
+          <MobileTabPanel value={value} index="Articles">
+            <UserPostList
+              posts={userArticles}
+              isAppending={isAppending}
+              isLoading={isLoading}
+              isFriendOrMyPage={isFriendOrMyPage}
+            />
+            <div ref={setTarget} />
+          </MobileTabPanel>
+          <MobileTabPanel value={value} index="CustomQuestions">
+            <UserPostList
+              posts={userQuestions}
+              isAppending={isAppending}
+              isLoading={isLoading}
+              isFriendOrMyPage={isFriendOrMyPage}
+            />
+            <div ref={setTarget} />
+          </MobileTabPanel>
+        </>
+      )}
     </MobileWrapper>
   );
 }
