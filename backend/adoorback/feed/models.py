@@ -154,7 +154,7 @@ class Post(AdoorModel):
     objects = PostManager()
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ['-id']
         base_manager_name = 'objects'
 
 

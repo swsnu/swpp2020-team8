@@ -59,8 +59,10 @@ class UserFeedPostList(generics.ListAPIView):
     def get_queryset(self):
         selected_user_id = self.kwargs.get('pk')
         current_user = self.request.user
-        if selected_user_id in current_user.friend_ids or current_user.id == selected_user_id:
+        if selected_user_id in current_user.friend_ids:
             return Post.objects.friend_posts_only().filter(author_id=self.kwargs.get('pk'))
+        elif selected_user_id == current_user.id:
+            return Post.objects.filter(author_id=current_user.id)
         raise PermissionDenied("you're not his/her friend...")
 
 
@@ -91,7 +93,7 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         article = Article.objects.get(id=self.kwargs.get('pk'))
-        if User.are_friends(self.request.user, article.author):
+        if User.are_friends(self.request.user, article.author) and article.share_with_friends:
             return fs.ArticleFriendSerializer
         return fs.ArticleAnonymousSerializer
 
@@ -123,7 +125,7 @@ class ResponseDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         response = Response.objects.get(id=self.kwargs.get('pk'))
-        if User.are_friends(self.request.user, response.author):
+        if User.are_friends(self.request.user, response.author) and response.share_with_friends:
             return fs.ResponseFriendSerializer
         return fs.ResponseAnonymousSerializer
 
@@ -197,7 +199,7 @@ class ResponseRequestList(generics.ListAPIView):
         except Question.DoesNotExist:
             return HttpResponseBadRequest
         sent_response_request_set = self.request.user.sent_response_request_set.all()
-        responseRequests = sent_response_request_set.filter(question=question).order_by('-created_at')
+        responseRequests = sent_response_request_set.filter(question=question).order_by('-id')
         return responseRequests
 
 
@@ -258,12 +260,14 @@ class RecommendedQuestionList(generics.ListAPIView):
         return adoor_exception_handler
 
     def get_queryset(self):
-        dir_name = os.path.dirname(os.path.abspath(__file__))
-        path = os.path.join(dir_name, 'algorithms', 'recommendations.csv')
-        df = pd.read_csv(path)
-        df = df[df.userId == self.request.user.id]
-        rank_ids = df['questionId'].tolist()
-        daily_question_ids = set(list(Question.objects.daily_questions().values_list('id', flat=True)))
-        recommended_ids = [x for x in rank_ids if x in daily_question_ids][:5]
+        # dir_name = os.path.dirname(os.path.abspath(__file__))
+        # path = os.path.join(dir_name, 'algorithms', 'recommendations.csv')
+        # df = pd.read_csv(path)
+        # df = df[df.userId == self.request.user.id]
+        # rank_ids = df['questionId'].tolist()
+        # daily_question_ids = set(list(Question.objects.daily_questions().values_list('id', flat=True)))
+        # recommended_ids = [x for x in rank_ids if x in daily_question_ids][:5]
+        #
+        # return Question.objects.filter(pk__in=recommended_ids).order_by('-id')
 
-        return Question.objects.filter(pk__in=recommended_ids).order_by('-id')
+        return Question.objects.daily_questions().order_by('content')[:5]

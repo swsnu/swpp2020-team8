@@ -5,6 +5,7 @@ from rest_framework.test import APIClient
 
 from django.contrib.auth import get_user_model
 
+from comment.models import Comment
 from feed.models import Article, Response, Question, Post, ResponseRequest
 from notification.models import Notification
 
@@ -122,18 +123,42 @@ class APITestCase(TestCase):
 
 class PostAPITestCase(APITestCase):
 
-    def test_friend_feed(self):
+    def test_feed_permissions(self):
         current_user = self.make_user(username='current_user')
         friend_user = self.make_user(username='friend_user')
+        friend_user.friends.add(current_user)
 
         question = Question.objects.create(author_id=current_user.id, content="test_question",
                                            is_admin_question=False)
         Response.objects.create(author_id=current_user.id, content="test_response",
-                                question_id=question.id)
-        Article.objects.create(author_id=current_user.id, content="test_article")
+                                question_id=question.id,
+                                share_with_friends=True, share_anonymously=True)
         Article.objects.create(author_id=friend_user.id, content="test_article",
-                               share_with_friends=False)
+                               share_with_friends=False, share_anonymously=False)
+        article = Article.objects.create(author_id=current_user.id, content="test_article",
+                                         share_with_friends=True, share_anonymously=True)
 
+        # Seed comments w/ different share settings
+        comment_anonymous = Comment.objects.create(author_id=current_user.id, target=article,
+                                                   content="test comment1", is_anonymous=True, is_private=True)
+        Comment.objects.create(author_id=current_user.id, target=article,
+                               content="test comment2", is_anonymous=True, is_private=False)
+        Comment.objects.create(author_id=current_user.id, target=article,
+                               content="test comment3", is_anonymous=False, is_private=True)
+        comment_friend = Comment.objects.create(author_id=current_user.id, target=article,
+                                                content="test comment4", is_anonymous=False, is_private=False)
+
+        # Seed replies w/ different share settings
+        Comment.objects.create(author_id=current_user.id, target=comment_friend,
+                               content="test reply1", is_anonymous=False, is_private=True)
+        Comment.objects.create(author_id=current_user.id, target=comment_friend,
+                               content="test reply2", is_anonymous=False, is_private=False)
+        Comment.objects.create(author_id=current_user.id, target=comment_anonymous,
+                               content="test reply3", is_anonymous=True, is_private=True)
+        Comment.objects.create(author_id=current_user.id, target=comment_anonymous,
+                               content="test reply4", is_anonymous=True, is_private=False)
+
+        # test friend feed - self
         with self.login(username=current_user.username, password='password'):
             response = self.get('friend-feed-post-list')
             self.assertEqual(response.status_code, 200)
@@ -143,18 +168,46 @@ class PostAPITestCase(APITestCase):
             self.assertEqual(response.data['results'][2]['type'], 'Question')
             self.assertEqual(response.data['results'][0]['share_with_friends'], True)
 
-    def test_anonymous_feed(self):
-        current_user = self.make_user(username='current_user')
+            # test comments
+            self.assertEqual(response.data['results'][0]['comments'][0]['is_reply'], False)
+            self.assertEqual(len(response.data['results'][0]['comments']), 4)
+            self.assertEqual(response.data['results'][0]['comments'][0]['replies'][0]['is_reply'], True)
 
-        Question.objects.create(author_id=1, content="test_question", is_admin_question=False)
-        Response.objects.create(author_id=1, content="test_response", question_id=1)
-        Article.objects.create(author_id=1, content="test_article")
-        Article.objects.create(author_id=1, content="test_article", share_anonymously=False)
+        # test friend feed - friend
+        with self.login(username=friend_user.username, password='password'):
+            response = self.get('friend-feed-post-list')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['count'], 4)
+            self.assertEqual(response.data['results'][0]['type'], 'Article')
 
+            # test comments
+            self.assertEqual(len(response.data['results'][0]['comments']), 1)  # private/anonymous comments hidden
+            self.assertEqual(len(response.data['results'][0]['comments'][0]['replies']), 1)
+
+        # test anonymous feed - self
         with self.login(username=current_user.username, password='password'):
             response = self.get('anonymous-feed-post-list')
             self.assertEqual(response.data['count'], 3)
             self.assertEqual(response.data['results'][0]['share_anonymously'], True)
+
+            # test comments
+            self.assertEqual(response.data['results'][0]['comments'][0]['is_anonymous'], True)
+            self.assertEqual(response.data['results'][0]['comments'][3]['is_anonymous'], False)  # ordering
+            self.assertEqual(len(response.data['results'][0]['comments']), 4)
+            self.assertEqual(response.data['results'][0]['comments'][1]['replies'][0]['is_anonymous'], True)
+            self.assertEqual(response.data['results'][0]['comments'][1]['replies'][0]['is_anonymous'], True)
+
+        # test anonymous feed - friend
+        with self.login(username=friend_user.username, password='password'):
+            response = self.get('anonymous-feed-post-list')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['count'], 3)
+            self.assertEqual(response.data['results'][0]['type'], 'Article')
+
+            # test comments
+            self.assertEqual(len(response.data['results'][0]['comments']), 1)  # private/anonymous comments hidden
+            self.assertEqual(response.data['results'][0]['comments'][0]['is_anonymous'], True)
+            self.assertEqual(len(response.data['results'][0]['comments'][0]['replies']), 0)
 
 
 class UserFeedTestCase(APITestCase):

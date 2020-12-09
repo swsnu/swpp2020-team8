@@ -6,7 +6,7 @@ from rest_framework.validators import UniqueTogetherValidator
 from feed.models import Article, Response, Question, Post, ResponseRequest
 from adoorback.serializers import AdoorBaseSerializer
 from adoorback.settings.base import BASE_URL
-from comment.serializers import CommentFriendSerializer
+from comment.serializers import CommentFriendSerializer, CommentResponsiveSerializer, CommentAnonymousSerializer
 from account.serializers import AuthorFriendSerializer, AuthorAnonymousSerializer
 
 User = get_user_model()
@@ -52,8 +52,16 @@ class ArticleFriendSerializer(AdoorBaseSerializer):
     author = serializers.HyperlinkedIdentityField(
         view_name='user-detail', read_only=True)
     author_detail = AuthorFriendSerializer(source='author', read_only=True)
-    comments = CommentFriendSerializer(
-        source='article_comments', many=True, read_only=True)
+    comments = serializers.SerializerMethodField()
+
+    def get_comments(self, obj):
+        current_user = self.context.get('request', None).user
+        if obj.author == current_user:
+            comments = obj.article_comments.order_by('is_anonymous', '-id')
+            return CommentResponsiveSerializer(comments, many=True, read_only=True, context=self.context).data
+        else:
+            comments = obj.article_comments.filter(is_anonymous=False, is_private=False).order_by('-id')
+            return CommentFriendSerializer(comments, many=True, read_only=True, context=self.context).data
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Article
@@ -63,11 +71,21 @@ class ArticleFriendSerializer(AdoorBaseSerializer):
 
 class ArticleAnonymousSerializer(AdoorBaseSerializer):
     author_detail = AuthorAnonymousSerializer(source='author', read_only=True)
+    comments = serializers.SerializerMethodField()
+
+    def get_comments(self, obj):
+        current_user = self.context.get('request', None).user
+        if obj.author == current_user:
+            comments = obj.article_comments.order_by('-is_anonymous', '-id')
+            return CommentResponsiveSerializer(comments, many=True, read_only=True, context=self.context).data
+        else:
+            comments = obj.article_comments.filter(is_anonymous=True, is_private=False).order_by('-id')
+            return CommentAnonymousSerializer(comments, many=True, read_only=True, context=self.context).data
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Article
         fields = AdoorBaseSerializer.Meta.fields + ['share_with_friends', 'share_anonymously',
-                                                    'author_detail']
+                                                    'author_detail', 'comments']
 
 
 class QuestionBaseSerializer(AdoorBaseSerializer):
@@ -96,8 +114,16 @@ class ResponseFriendSerializer(ResponseBaseSerializer):
     author = serializers.HyperlinkedIdentityField(
         view_name='user-detail', read_only=True)
     author_detail = AuthorFriendSerializer(source='author', read_only=True)
-    comments = CommentFriendSerializer(
-        source='response_comments', many=True, read_only=True)
+    comments = serializers.SerializerMethodField()
+
+    def get_comments(self, obj):
+        current_user = self.context.get('request', None).user
+        if obj.author == current_user:
+            comments = obj.response_comments.order_by('is_anonymous', '-id')
+            return CommentResponsiveSerializer(comments, many=True, read_only=True, context=self.context).data
+        else:
+            comments = obj.response_comments.filter(is_anonymous=False, is_private=False).order_by('-id')
+            return CommentFriendSerializer(comments, many=True, read_only=True, context=self.context).data
 
     class Meta(ResponseBaseSerializer.Meta):
         model = Response
@@ -107,10 +133,20 @@ class ResponseFriendSerializer(ResponseBaseSerializer):
 
 class ResponseAnonymousSerializer(ResponseBaseSerializer):
     author_detail = AuthorAnonymousSerializer(source='author', read_only=True)
+    comments = serializers.SerializerMethodField()
+
+    def get_comments(self, obj):
+        current_user = self.context.get('request', None).user
+        if obj.author == current_user:
+            comments = obj.response_comments.order_by('-is_anonymous', '-id')
+            return CommentResponsiveSerializer(comments, many=True, read_only=True, context=self.context).data
+        else:
+            comments = obj.response_comments.filter(is_anonymous=True, is_private=False).order_by('-id')
+            return CommentAnonymousSerializer(comments, many=True, read_only=True, context=self.context).data
 
     class Meta(ResponseBaseSerializer.Meta):
-        model = Article
-        fields = ResponseBaseSerializer.Meta.fields + ['author_detail']
+        model = Response
+        fields = ResponseBaseSerializer.Meta.fields + ['author_detail', 'comments']
 
 
 class ResponseResponsiveSerializer(ResponseBaseSerializer):
@@ -200,8 +236,8 @@ class QuestionDetailAllResponsesSerializer(QuestionResponsiveSerializer):
         responses = obj.response_set.filter(author_id__in=current_user.friend_ids) | \
                     obj.response_set.filter(share_anonymously=True) | \
                     obj.response_set.filter(author_id=current_user.id)
-        return ResponseResponsiveSerializer(responses, many=True, read_only=True,
-                                            context={'request': self.context.get('request', None)}).data
+        responses.order_by('-id')
+        return ResponseResponsiveSerializer(responses, many=True, read_only=True, context=self.context).data
 
     class Meta(QuestionResponsiveSerializer.Meta):
         model = Question
@@ -218,8 +254,8 @@ class QuestionDetailFriendResponsesSerializer(QuestionResponsiveSerializer):
         current_user = self.context.get('request', None).user
         responses = obj.response_set.filter(author_id__in=current_user.friend_ids) | \
                     obj.response_set.filter(author_id=current_user.id)
-        return ResponseFriendSerializer(responses, many=True, read_only=True,
-                                        context={'request': self.context.get('request', None)}).data
+        responses.order_by('-id')
+        return ResponseFriendSerializer(responses, many=True, read_only=True, context=self.context).data
 
     class Meta(QuestionResponsiveSerializer.Meta):
         model = Question
@@ -234,8 +270,8 @@ class QuestionDetailAnonymousResponsesSerializer(QuestionResponsiveSerializer):
 
     def get_response_set(self, obj):
         responses = obj.response_set.filter(share_anonymously=True)
-        return ResponseAnonymousSerializer(responses, many=True, read_only=True,
-                                           context={'request': self.context.get('request', None)}).data
+        responses.order_by('-id')
+        return ResponseAnonymousSerializer(responses, many=True, read_only=True, context=self.context).data
 
     class Meta(QuestionResponsiveSerializer.Meta):
         model = Question
