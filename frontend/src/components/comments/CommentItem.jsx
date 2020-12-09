@@ -23,7 +23,7 @@ const CommentItemWrapper = styled.div`
 CommentItemWrapper.displayName = 'CommentItem';
 
 const CommentContent = styled.div`
-  margin: 0 12px;
+  margin: 0 12px 0 6px;
 `;
 
 const IconButton = styled.div``;

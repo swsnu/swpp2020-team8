@@ -40,7 +40,16 @@ export default function AuthorProfile({
           }}
         />
       ) : (
-        <AnonIcon style={{ marginRight: '4px' }} hex={hex} />
+        <AnonIcon
+          style={{
+            marginRight: '4px',
+            width: isComment && '20px',
+            height: isComment && '20px',
+            top: '2px',
+            position: 'relative'
+          }}
+          hex={hex}
+        />
       )}
 
       {username && (!isAnonFeed || isAuthor) && (
