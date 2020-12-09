@@ -35,6 +35,13 @@ const ShareSettingInfo = styled.span`
   font-size: 12px;
 `;
 
+const CommentInfo = styled.div`
+  margin-left: 3px;
+  margin-bottom: 8px;
+  color: #aaa;
+  font-size: 10px;
+`;
+
 export default function PostItem({ postObj, postKey, isDetailPage }) {
   const { pathname, search } = useLocation();
   const history = useHistory();
@@ -169,6 +176,11 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       </PostItemFooterWrapper>
       <>
         <NewComment isAnon={isAnon} onSubmit={handleSubmit} />
+        <CommentInfo>
+          작성된 댓글은
+          {isAnon ? ' 익명피드에만 ' : ' 친구들에게만 '}
+          공개됩니다.
+        </CommentInfo>
         <CommentWrapper>{commentList}</CommentWrapper>
       </>
       <AlertDialog

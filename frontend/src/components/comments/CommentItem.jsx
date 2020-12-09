@@ -123,7 +123,11 @@ export default function CommentItem({
     <>
       <CommentItemWrapper id={commentObj.id}>
         {isReply && <ReplyIcon />}
-        <AuthorProfile author={commentObj.author_detail} isComment />
+        <AuthorProfile
+          author={commentObj.author_detail}
+          isComment
+          isAuthor={isCommentAuthor}
+        />
         <CommentContent id="comment-content">
           {commentObj.content}
         </CommentContent>
