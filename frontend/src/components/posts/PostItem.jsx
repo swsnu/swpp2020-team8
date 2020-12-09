@@ -25,6 +25,7 @@ PostItemWrapper.displayName = 'PostItemWrapper';
 
 const ContentWrapper = styled.div`
   margin: 12px 0;
+  white-space: pre-wrap;
 `;
 
 const CommentWrapper = styled.div``;
