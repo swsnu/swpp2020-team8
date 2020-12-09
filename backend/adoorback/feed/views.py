@@ -134,7 +134,7 @@ class QuestionList(generics.ListCreateAPIView):
     """
     List all questions, or create a new question.
     """
-    queryset = Question.objects.all()
+    queryset = Question.objects.order_by('-id')
     serializer_class = fs.QuestionResponsiveSerializer
     permission_classes = [IsAuthenticated]
 
