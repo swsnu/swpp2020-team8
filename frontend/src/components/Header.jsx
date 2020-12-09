@@ -112,7 +112,6 @@ const Header = ({ isMobile, setRefreshToken }) => {
   const history = useHistory();
   const notiRef = useRef(null);
   const notiIconRef = useRef(null);
-
   const searchRef = useRef(null);
 
   const currentUser = useSelector((state) => state.userReducer.currentUser);
@@ -141,7 +140,7 @@ const Header = ({ isMobile, setRefreshToken }) => {
     setIsSearchOpen(false);
   };
 
-  useOnClickOutside([notiRef, notiIconRef], handleNotiClose);
+  useOnClickOutside(notiRef, handleNotiClose);
   useOnClickOutside(searchRef, handleSearchClose);
 
   const handleClickLogout = () => {

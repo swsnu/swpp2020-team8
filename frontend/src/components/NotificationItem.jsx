@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // eslint-disable-next-line react/prop-types
-const NotificationItem = ({ notiObj, isNotificationPage }) => {
+const NotificationItem = ({ notiObj, isNotificationPage, setIsNotiOpen }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -45,6 +45,7 @@ const NotificationItem = ({ notiObj, isNotificationPage }) => {
   const handleClickNotiItem = () => {
     dispatch(readNotification(notiObj.id));
     history.push(notiObj.redirect_url);
+    setIsNotiOpen(false);
   };
 
   return (

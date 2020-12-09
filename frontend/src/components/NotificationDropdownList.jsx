@@ -59,7 +59,11 @@ const NotificationDropdownList = ({ notifications, setIsNotiOpen }) => {
   const dispatch = useDispatch();
 
   const notificationList = notifications?.map((noti) => (
-    <NotificationItem key={`noti-${noti.id}`} notiObj={noti} />
+    <NotificationItem
+      key={`noti-${noti.id}`}
+      notiObj={noti}
+      setIsNotiOpen={setIsNotiOpen}
+    />
   ));
 
   const handleReadAllNotification = () => {
