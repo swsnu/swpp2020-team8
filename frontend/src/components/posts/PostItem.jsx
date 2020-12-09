@@ -178,14 +178,15 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
           )}
         </PostItemButtonsWrapper>
       </PostItemFooterWrapper>
+      <div style={{ borderTop: '1px solid #eee', margin: '8px 0' }} />
       <>
+        <CommentWrapper>{commentList}</CommentWrapper>
         <NewComment isAnon={isAnon} onSubmit={handleSubmit} />
         <CommentInfo>
           작성된 댓글은
           {isAnon ? ' 익명피드에만 ' : ' 친구들에게만 '}
           공개됩니다.
         </CommentInfo>
-        <CommentWrapper>{commentList}</CommentWrapper>
       </>
       <AlertDialog
         message="정말 삭제하시겠습니까?"

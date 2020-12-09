@@ -126,7 +126,7 @@ describe('<CommentItem /> unit mount test', () => {
     const component = getWrapper();
     const commentLength = component.find('CommentItem').length;
     expect(commentLength).toBeTruthy();
-    const deleteButton = component.find('#delete-comment-icon').first();
+    const deleteButton = component.find('#delete-comment').first();
     deleteButton.simulate('click');
     component.update();
   });
