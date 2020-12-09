@@ -16,7 +16,11 @@ const AnonIcon = styled.div`
 `;
 AnonIcon.displayName = 'AnonIcon';
 
-export default function AuthorProfile({ author, isComment = false }) {
+export default function AuthorProfile({
+  author,
+  isComment = false,
+  isAuthor = false
+}) {
   const location = useLocation();
   const isAnonFeed = location.pathname === '/anonymous';
 
@@ -24,7 +28,7 @@ export default function AuthorProfile({ author, isComment = false }) {
   const { id, username, profile_pic: picHex, color_hex: hex } = author;
   return (
     <AuthorProfileWrapper>
-      {id && !isAnonFeed ? (
+      {id && (!isAnonFeed || isAuthor) ? (
         <FaceIcon
           style={{
             color: picHex,
@@ -37,7 +41,7 @@ export default function AuthorProfile({ author, isComment = false }) {
         <AnonIcon style={{ marginRight: '4px' }} hex={hex} />
       )}
 
-      {username && !isAnonFeed && (
+      {username && (!isAnonFeed || isAuthor) && (
         <div style={{ fontSize: isComment ? '12px' : '14px' }}>{username}</div>
       )}
     </AuthorProfileWrapper>

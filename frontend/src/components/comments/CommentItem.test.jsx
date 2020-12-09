@@ -5,17 +5,22 @@ import { Router } from 'react-router-dom';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
+import { act } from 'react-dom/test-utils';
 import CommentItem from './CommentItem';
 import { mockStore } from '../../mockStore';
 import rootReducer from '../../modules';
 import history from '../../history';
 import 'jest-styled-components';
 
+import * as actionCreators from '../../modules/like';
+
 const mockComment = {
   id: 1272,
   post_id: 383,
   content: 'fun',
   author: 1,
+  current_user_liked: false,
+  like_count: 0,
   author_detail: {
     id: 123,
     username: 'curious',
@@ -26,6 +31,8 @@ const mockComment = {
     {
       id: 1272,
       content: 'reply',
+      current_user_liked: false,
+      like_count: 1,
       author: 1,
       author_detail: {
         id: 123,
@@ -128,5 +135,47 @@ describe('<CommentItem /> unit mount test', () => {
     const component = getWrapper();
     const commentLength = component.find('.reply-item').length;
     expect(commentLength).toBeLessThanOrEqual(mockComment.replies.length * 2);
+  });
+
+  it('should toggle like', async () => {
+    const component = getWrapper();
+    const likeButton = component.find('.like').at(0);
+    let unlikeButton = component.find('.unlike').at(0);
+    const likeCount = component.find('#like-count');
+    expect(likeButton).toBeTruthy();
+    expect(unlikeButton.length).toBe(0);
+
+    const toggleLike = jest
+      .spyOn(actionCreators, 'likePost')
+      .mockImplementation(() => {
+        return () => {};
+      });
+
+    await act(async () => {
+      likeButton.simulate('click');
+    });
+
+    expect(toggleLike).toHaveBeenCalledTimes(1);
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    component.update();
+
+    unlikeButton = component.find('.unlike').at(0);
+    expect(unlikeButton).toBeTruthy();
+
+    const toggleUnlike = jest
+      .spyOn(actionCreators, 'unlikePost')
+      .mockImplementation(() => {
+        return () => {};
+      });
+
+    unlikeButton = component.find('.unlike').at(0);
+    await act(async () => {
+      unlikeButton.simulate('click');
+    });
+
+    expect(toggleUnlike).toHaveBeenCalledTimes(1);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    expect(likeCount).toMatchObject({});
   });
 });
