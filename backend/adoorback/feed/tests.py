@@ -396,7 +396,7 @@ class DailyQuestionTestCase(APITestCase):
         with self.login(username=current_user.username, password='password'):
             response = self.get('daily-question-list')
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.data['count'], 30)
+            self.assertEqual(len(response.data), 30)
             self.assertEqual(len(response.data['results']), 15)
             self.assertTrue(response.data['results'][1]['selected_date'])
             self.assertGreater(response.data['results'][1]['id'],
