@@ -78,6 +78,7 @@ export default function CommentItem({
         key={reply.id}
         isReply
         commentObj={reply}
+        isAnon={isAnon}
       />
     );
   });
