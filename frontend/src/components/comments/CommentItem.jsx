@@ -35,9 +35,6 @@ const ReplyWrapper = styled.div`
   align-items: center;
   font-size: 12px;
   color: #999;
-  @media (max-width: 650px) {
-    margin: 0;
-  }
   margin-left: 10px;
   :hover: {
     color: #000;
@@ -51,9 +48,6 @@ const DeleteWrapper = styled.div`
   align-items: center;
   font-size: 12px;
   color: #999;
-  @media (max-width: 650px) {
-    margin: 0;
-  }
   margin-left: 4px;
   :hover: {
     color: #000;
@@ -148,7 +142,13 @@ export default function CommentItem({
           <div style={{ display: 'flex', alignItems: 'flex-start' }}>
             {isReply && <ReplyIcon />}
             {commentObj.is_private && (
-              <LockIcon style={{ fontSize: '14px', color: '#bbb' }} />
+              <LockIcon
+                style={{
+                  fontSize: '16px',
+                  color: 'rgb(187, 187, 187)',
+                  margin: '6px 4px 0 0'
+                }}
+              />
             )}
             <AuthorProfile
               author={commentObj.author_detail}
