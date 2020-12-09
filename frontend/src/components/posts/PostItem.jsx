@@ -86,7 +86,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       is_private: isPrivate,
       is_anonymous: isAnon || onlyAnonPost
     };
-    dispatch(createComment(newCommentObj, postKey));
+    dispatch(createComment(newCommentObj, postKey, postObj?.question_id));
   };
 
   const toggleLike = () => {

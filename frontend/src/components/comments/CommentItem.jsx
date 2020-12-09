@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import LockIcon from '@material-ui/icons/Lock';
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import { useParams } from 'react-router';
 import AuthorProfile from '../posts/AuthorProfile';
 import NewComment from './NewComment';
 import { createReply, deleteComment } from '../../modules/post';
@@ -55,6 +56,8 @@ export default function CommentItem({
   const [isReplyInputOpen, setIsReplyInputOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const dispatch = useDispatch();
+  const { id: targetId } = useParams();
+
   const replyItems = commentObj?.replies?.map((reply) => {
     const isReplyAuthor = currentUser?.id === reply.author_detail?.id;
     if (reply.is_private && !isAuthor && !isReplyAuthor && !isCommentAuthor) {
@@ -79,11 +82,11 @@ export default function CommentItem({
       is_anonymous: commentObj?.is_anonymous,
       content
     };
-    dispatch(createReply(newReplyObj, postKey));
+    dispatch(createReply(newReplyObj, postKey, targetId));
   };
 
   const handleDeleteComment = () => {
-    dispatch(deleteComment(commentObj.id, postKey, isReply));
+    dispatch(deleteComment(commentObj.id, postKey, isReply, targetId));
     setIsDeleteDialogOpen(false);
   };
   const toggleReplyInputOpen = () => setIsReplyInputOpen((prev) => !prev);

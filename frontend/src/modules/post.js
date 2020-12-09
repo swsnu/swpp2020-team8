@@ -235,7 +235,10 @@ export const createPost = (newPost) => async (dispatch, getState) => {
   }
 };
 
-export const createComment = (newComment, postKey) => async (dispatch) => {
+export const createComment = (newComment, postKey, targetId) => async (
+  dispatch,
+  getState
+) => {
   dispatch({
     type: CREATE_COMMENT_REQUEST
   });
@@ -255,9 +258,16 @@ export const createComment = (newComment, postKey) => async (dispatch) => {
     result: result.data,
     postKey
   });
+  const { selectedQuestion } = getState().questionReducer;
+  if (+selectedQuestion?.id === +targetId) {
+    dispatch(getFriendResponsesByQuestion(selectedQuestion?.id));
+  }
 };
 
-export const createReply = (newReply, postKey) => async (dispatch) => {
+export const createReply = (newReply, postKey, targetId) => async (
+  dispatch,
+  getState
+) => {
   dispatch({
     type: CREATE_REPLY_REQUEST
   });
@@ -277,10 +287,15 @@ export const createReply = (newReply, postKey) => async (dispatch) => {
     result: result.data,
     postKey
   });
+  const { selectedQuestion } = getState().questionReducer;
+  if (+selectedQuestion?.id === +targetId) {
+    dispatch(getFriendResponsesByQuestion(selectedQuestion?.id));
+  }
 };
 
-export const deleteComment = (commentId, postKey, isReply) => async (
-  dispatch
+export const deleteComment = (commentId, postKey, isReply, targetId) => async (
+  dispatch,
+  getState
 ) => {
   dispatch({
     type: DELETE_COMMENT_REQUEST
@@ -301,6 +316,10 @@ export const deleteComment = (commentId, postKey, isReply) => async (
     isReply,
     postKey
   });
+  const { selectedQuestion } = getState().questionReducer;
+  if (+selectedQuestion?.id === +targetId) {
+    dispatch(getFriendResponsesByQuestion(selectedQuestion?.id));
+  }
 };
 
 export const deletePost = (postId, type) => async (dispatch) => {
