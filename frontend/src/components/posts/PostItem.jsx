@@ -127,7 +127,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       <CreateTime createdTime={postObj.created_at} />
       <PostItemFooterWrapper>
         <ShareSettingsWrapper>
-          {isAuthor && (
+          {isAuthor && !isAnon && (
             <>
               {(postObj.share_with_friends || postObj.share_anonymously) && (
                 <ShareSettingInfo>공개범위:</ShareSettingInfo>
