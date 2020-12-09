@@ -70,8 +70,20 @@ class ArticleFriendSerializer(AdoorBaseSerializer):
 
 
 class ArticleAnonymousSerializer(AdoorBaseSerializer):
-    author_detail = AuthorAnonymousSerializer(source='author', read_only=True)
     comments = serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField(read_only=True)
+    author_detail = serializers.SerializerMethodField(
+        source='author', read_only=True)
+
+    def get_author_detail(self, obj):
+        if obj.author == self.context.get('request', None).user:
+            return AuthorFriendSerializer(obj.author).data
+        return AuthorAnonymousSerializer(obj.author).data
+
+    def get_author(self, obj):
+        if obj.author == self.context.get('request', None).user:
+            return f'{BASE_URL}/api/user/{obj.author.id}/'
+        return None
 
     def get_comments(self, obj):
         current_user = self.context.get('request', None).user
@@ -85,7 +97,7 @@ class ArticleAnonymousSerializer(AdoorBaseSerializer):
     class Meta(AdoorBaseSerializer.Meta):
         model = Article
         fields = AdoorBaseSerializer.Meta.fields + ['share_with_friends', 'share_anonymously',
-                                                    'author_detail', 'comments']
+                                                    'author', 'author_detail', 'comments']
 
 
 class QuestionBaseSerializer(AdoorBaseSerializer):
@@ -132,8 +144,20 @@ class ResponseFriendSerializer(ResponseBaseSerializer):
 
 
 class ResponseAnonymousSerializer(ResponseBaseSerializer):
-    author_detail = AuthorAnonymousSerializer(source='author', read_only=True)
     comments = serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField(read_only=True)
+    author_detail = serializers.SerializerMethodField(
+        source='author', read_only=True)
+
+    def get_author_detail(self, obj):
+        if obj.author == self.context.get('request', None).user:
+            return AuthorFriendSerializer(obj.author).data
+        return AuthorAnonymousSerializer(obj.author).data
+
+    def get_author(self, obj):
+        if obj.author == self.context.get('request', None).user:
+            return f'{BASE_URL}/api/user/{obj.author.id}/'
+        return None
 
     def get_comments(self, obj):
         current_user = self.context.get('request', None).user
@@ -146,7 +170,7 @@ class ResponseAnonymousSerializer(ResponseBaseSerializer):
 
     class Meta(ResponseBaseSerializer.Meta):
         model = Response
-        fields = ResponseBaseSerializer.Meta.fields + ['author_detail', 'comments']
+        fields = ResponseBaseSerializer.Meta.fields + ['author', 'author_detail', 'comments']
 
 
 class ResponseResponsiveSerializer(ResponseBaseSerializer):
@@ -155,12 +179,14 @@ class ResponseResponsiveSerializer(ResponseBaseSerializer):
         source='author', read_only=True)
 
     def get_author_detail(self, obj):
-        if User.are_friends(self.context.get('request', None).user, obj.author):
+        current_user = self.context.get('request', None).user
+        if User.are_friends(current_user, obj.author) or obj.author == current_user:
             return AuthorFriendSerializer(obj.author).data
         return AuthorAnonymousSerializer(obj.author).data
 
     def get_author(self, obj):
-        if User.are_friends(self.context.get('request', None).user, obj.author):
+        current_user = self.context.get('request', None).user
+        if User.are_friends(current_user, obj.author) or obj.author == current_user:
             return f'{BASE_URL}/api/user/{obj.author.id}/'
         return None
 
@@ -179,7 +205,8 @@ class QuestionResponsiveSerializer(QuestionBaseSerializer):
         source='author', read_only=True)
 
     def get_author_detail(self, obj):
-        if User.are_friends(self.context.get('request', None).user, obj.author):
+        current_user = self.context.get('request', None).user
+        if User.are_friends(current_user, obj.author) or obj.author == current_user:
             return AuthorFriendSerializer(obj.author).data
         return AuthorAnonymousSerializer(obj.author).data
 
@@ -218,11 +245,23 @@ class QuestionAnonymousSerializer(QuestionBaseSerializer):
     function is redundant to `QuestionResponsiveSerializer`
     but allows for faster responses when rendering friend/anonymous feeds.
     """
-    author_detail = AuthorAnonymousSerializer(source='author', read_only=True)
+    author = serializers.SerializerMethodField(read_only=True)
+    author_detail = serializers.SerializerMethodField(
+        source='author', read_only=True)
+
+    def get_author_detail(self, obj):
+        if obj.author == self.context.get('request', None).user:
+            return AuthorFriendSerializer(obj.author).data
+        return AuthorAnonymousSerializer(obj.author).data
+
+    def get_author(self, obj):
+        if obj.author == self.context.get('request', None).user:
+            return f'{BASE_URL}/api/user/{obj.author.id}/'
+        return None
 
     class Meta(QuestionBaseSerializer.Meta):
         model = Question
-        fields = QuestionBaseSerializer.Meta.fields + ['author_detail']
+        fields = QuestionBaseSerializer.Meta.fields + ['author', 'author_detail']
 
 
 class QuestionDetailAllResponsesSerializer(QuestionResponsiveSerializer):
