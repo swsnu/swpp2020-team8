@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { withRouter } from 'react-router';
-import Skeleton from '@material-ui/lab/Skeleton';
 import QuestionItem from '../components/posts/QuestionItem';
 import {
   getResponsesByQuestion,
@@ -14,6 +13,7 @@ import {
 } from '../modules/question';
 import PostItem from '../components/posts/PostItem';
 import Message from '../components/Message';
+import LoadingItem from '../components/posts/LoadingItem';
 
 const SwitchWrapper = styled.div`
   display: flex;
@@ -99,22 +99,14 @@ const QuestionDetail = (props) => {
           {responseList}
         </>
       ) : (
-        <Message message="표시할 게시물이 없습니다 :(" />
+        <Message message="답변이 아직 없는 질문입니다 :(" />
       )}
     </>
   ) : (
     <Message message="존재하지 않는 질문입니다" />
   );
 
-  return (
-    <div>
-      {isLoading ? (
-        <Skeleton variant="rect" width={650} height={118} />
-      ) : (
-        questionAndResponseList
-      )}
-    </div>
-  );
+  return <div>{isLoading ? <LoadingItem /> : questionAndResponseList}</div>;
 };
 
 export default withRouter(QuestionDetail);
