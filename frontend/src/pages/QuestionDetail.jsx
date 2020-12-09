@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { withRouter } from 'react-router';
+import Skeleton from '@material-ui/lab/Skeleton';
 import QuestionItem from '../components/posts/QuestionItem';
 import {
   getResponsesByQuestion,
@@ -58,6 +59,12 @@ const QuestionDetail = (props) => {
     else dispatch(getFriendResponsesByQuestion(questionId));
   };
 
+  const isLoading =
+    useSelector(
+      (state) =>
+        state.loadingReducer['question/GET_SELECTED_QUESTION_FRIEND_RESPONSES']
+    ) === 'REQUEST';
+
   const responseList = responses.map((post) => (
     <PostItem
       postKey={`${post.type}-${post.id}`}
@@ -66,39 +73,45 @@ const QuestionDetail = (props) => {
     />
   ));
 
-  return (
-    <div>
-      {question ? (
+  const questionAndResponseList = question ? (
+    <>
+      <QuestionItem
+        questionObj={question}
+        questionId={questionId}
+        onResetContent={() => setViewAnonymousResponses(false)}
+      />
+      {responses?.length !== 0 ? (
         <>
-          <QuestionItem
-            questionObj={question}
-            questionId={questionId}
-            onResetContent={() => setViewAnonymousResponses(false)}
-          />
-          {responses?.length !== 0 ? (
-            <>
-              <SwitchWrapper>
-                <span className={classes.switchLabel}>익명의 답변 보기</span>
-                <FormControlLabel
-                  className={classes.switch}
-                  control={
-                    <Switch
-                      checked={viewAnonymousResponses}
-                      onChange={handleChangeViewAnonymousResponses}
-                      name="view-anonymous-responses"
-                      color="primary"
-                    />
-                  }
+          <SwitchWrapper>
+            <span className={classes.switchLabel}>익명의 답변 보기</span>
+            <FormControlLabel
+              className={classes.switch}
+              control={
+                <Switch
+                  checked={viewAnonymousResponses}
+                  onChange={handleChangeViewAnonymousResponses}
+                  name="view-anonymous-responses"
+                  color="primary"
                 />
-              </SwitchWrapper>
-              {responseList}
-            </>
-          ) : (
-            <Message message="표시할 게시물이 없습니다 :(" />
-          )}
+              }
+            />
+          </SwitchWrapper>
+          {responseList}
         </>
       ) : (
-        <Message message="존재하지 않는 질문입니다" />
+        <Message message="표시할 게시물이 없습니다 :(" />
+      )}
+    </>
+  ) : (
+    <Message message="존재하지 않는 질문입니다" />
+  );
+
+  return (
+    <div>
+      {isLoading ? (
+        <Skeleton variant="rect" width={650} height={118} />
+      ) : (
+        questionAndResponseList
       )}
     </div>
   );
