@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.paginator import Paginator
 from rest_framework import serializers
 from rest_framework.exceptions import NotAcceptable
 from rest_framework.validators import UniqueTogetherValidator
@@ -268,53 +269,77 @@ class QuestionDetailAllResponsesSerializer(QuestionResponsiveSerializer):
     """
     for question detail page w/ all responses (friend + anonymous)
     """
+    max_page = serializers.SerializerMethodField(read_only=True)
     response_set = serializers.SerializerMethodField()
+
+    def get_max_page(self, obj):
+        page_size = self.context['request'].query_params.get('size') or 15
+        return obj.response_set.count() // page_size + 1
 
     def get_response_set(self, obj):
         current_user = self.context.get('request', None).user
         responses = obj.response_set.filter(author_id__in=current_user.friend_ids) | \
                     obj.response_set.filter(share_anonymously=True) | \
                     obj.response_set.filter(author_id=current_user.id)
-        responses.order_by('-id')
+        page_size = self.context['request'].query_params.get('size') or 15
+        paginator = Paginator(responses, page_size)
+        page = self.context['request'].query_params.get('page') or 1
+        responses = paginator.page(page).order_by('-id')
         return ResponseResponsiveSerializer(responses, many=True, read_only=True, context=self.context).data
 
     class Meta(QuestionResponsiveSerializer.Meta):
         model = Question
-        fields = QuestionResponsiveSerializer.Meta.fields + ['response_set']
+        fields = QuestionResponsiveSerializer.Meta.fields + ['max_page', 'response_set']
 
 
 class QuestionDetailFriendResponsesSerializer(QuestionResponsiveSerializer):
     """
     for question detail page w/ friend responses
     """
+    max_page = serializers.SerializerMethodField(read_only=True)
     response_set = serializers.SerializerMethodField()
+
+    def get_max_page(self, obj):
+        page_size = self.context['request'].query_params.get('size') or 15
+        return obj.response_set.count() // page_size + 1
 
     def get_response_set(self, obj):
         current_user = self.context.get('request', None).user
         responses = obj.response_set.filter(author_id__in=current_user.friend_ids) | \
                     obj.response_set.filter(author_id=current_user.id)
-        responses.order_by('-id')
+        page_size = self.context['request'].query_params.get('size') or 15
+        paginator = Paginator(responses, page_size)
+        page = self.context['request'].query_params.get('page') or 1
+        responses = paginator.page(page).order_by('-id')
         return ResponseFriendSerializer(responses, many=True, read_only=True, context=self.context).data
 
     class Meta(QuestionResponsiveSerializer.Meta):
         model = Question
-        fields = QuestionResponsiveSerializer.Meta.fields + ['response_set']
+        fields = QuestionResponsiveSerializer.Meta.fields + ['max_page', 'response_set']
 
 
 class QuestionDetailAnonymousResponsesSerializer(QuestionResponsiveSerializer):
     """
     for question detail page w/ anonymous responses
     """
+    max_page = serializers.SerializerMethodField(read_only=True)
     response_set = serializers.SerializerMethodField()
+
+    def get_max_page(self, obj):
+        page_size = self.context['request'].query_params.get('size') or 15
+        return obj.response_set.count() // page_size + 1
 
     def get_response_set(self, obj):
         responses = obj.response_set.filter(share_anonymously=True)
-        responses.order_by('-id')
+        page_size = self.context['request'].query_params.get('size') or 15
+        paginator = Paginator(responses, page_size)
+        page = self.context['request'].query_params.get('page') or 1
+        responses = paginator.page(page).order_by('-id')
         return ResponseAnonymousSerializer(responses, many=True, read_only=True, context=self.context).data
 
     class Meta(QuestionResponsiveSerializer.Meta):
         model = Question
-        fields = QuestionResponsiveSerializer.Meta.fields + ['response_set']
+        fields = QuestionResponsiveSerializer.Meta.fields + ['max_page', 'response_set']
 
 
 class ResponseRequestSerializer(serializers.ModelSerializer):
