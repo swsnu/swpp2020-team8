@@ -97,6 +97,9 @@ class Response(AdoorModel):
                                                 content_type_field='origin_type',
                                                 object_id_field='origin_id')
 
+    class Meta:
+        ordering = ['-id']
+
     @property
     def type(self):
         return self.__class__.__name__
@@ -154,7 +157,7 @@ class Post(AdoorModel):
     objects = PostManager()
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ['-id']
         base_manager_name = 'objects'
 
 
@@ -240,7 +243,7 @@ def delete_response_request(instance, created, **kwargs):
 @receiver(pre_delete, sender=Question)
 def protect_question_noti(instance, **kwargs):
     # response request에 대한 response 보냈을 때 발생하는 노티, like/comment로 발생하는 노티 모두 보호
-    for noti in Notification.objects.visible_only().filter(redirect_url=f'/questions/{instance.id}'):
+    for noti in Notification.objects.visible_only().filter(redirect_url__icontains=f'/questions/{instance.id}'):
         noti.target_type = None
         noti.origin_type = None
         noti.save()
@@ -249,7 +252,7 @@ def protect_question_noti(instance, **kwargs):
 @receiver(pre_delete, sender=Response)
 def protect_response_noti(instance, **kwargs):
     # comment, like로 인한 노티, response request 답변으로 인한 노티 모두 보호
-    for noti in Notification.objects.visible_only().filter(redirect_url=f'/responses/{instance.id}'):
+    for noti in Notification.objects.visible_only().filter(redirect_url__icontains=f'/responses/{instance.id}'):
         noti.target_type = None
         noti.origin_type = None
         noti.save()
@@ -258,7 +261,7 @@ def protect_response_noti(instance, **kwargs):
 @receiver(pre_delete, sender=Article)
 def protect_article_noti(instance, **kwargs):
     # comment, like로 인한 노티 모두 보호
-    for noti in Notification.objects.visible_only().filter(redirect_url=f'/articles/{instance.id}'):
+    for noti in Notification.objects.visible_only().filter(redirect_url__icontains=f'/articles/{instance.id}'):
         noti.target_type = None
         noti.origin_type = None
         noti.save()

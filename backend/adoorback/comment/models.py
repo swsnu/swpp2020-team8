@@ -26,6 +26,7 @@ class CommentManager(models.Manager):
 class Comment(AdoorModel):
     author = models.ForeignKey(User, related_name='comment_set', on_delete=models.CASCADE)
     is_private = models.BooleanField(default=False)
+    is_anonymous = models.BooleanField(default=False)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.IntegerField()
@@ -64,14 +65,15 @@ def create_noti(instance, **kwargs):
 
     if user == actor:  # do not create notification for comment author him/herself.
         return
+    actor_name = '익명의 사용자가' if instance.is_anonymous else f'{actor.username}님이'
 
     if instance.target.type == 'Comment':  # if is_reply
-        message = f'{actor.username}님이 회원님의 댓글에 답글을 남겼습니다.'
-        redirect_url = f'/{origin.target.type.lower()}s/{origin.target.id}'
+        message = f'{actor_name} 회원님의 댓글에 답글을 남겼습니다.'
+        redirect_url = f'/{origin.target.type.lower()}s/{origin.target.id}?anonymous={instance.is_anonymous}'
     else:  # if not reply
         origin_target_name = '게시글' if origin.type == 'Article' else '답변'
-        message = f'{actor.username}님이 회원님의 {origin_target_name}에 댓글을 남겼습니다.'
-        redirect_url = f'/{origin.type.lower()}s/{origin.id}'
+        message = f'{actor_name} 회원님의 {origin_target_name}에 댓글을 남겼습니다.'
+        redirect_url = f'/{origin.type.lower()}s/{origin.id}?anonymous={instance.is_anonymous}'
 
     Notification.objects.create(actor=actor, user=user,
                                 origin=origin, target=target,

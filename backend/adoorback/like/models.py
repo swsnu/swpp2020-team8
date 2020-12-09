@@ -25,6 +25,7 @@ class LikeManager(models.Manager):
 
 class Like(AdoorTimestampedModel):
     user = models.ForeignKey(User, related_name='like_set', on_delete=models.CASCADE)
+    is_anonymous = models.BooleanField(default=False)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.IntegerField()
@@ -60,12 +61,17 @@ def create_like_noti(instance, **kwargs):
 
     if user == actor:  # do not create notification for liker him/herself.
         return
-    actor_name = f'{actor.username}님이' if User.are_friends(user, actor) else '익명의 사용자가'
+    actor_name = '익명의 사용자가' if instance.is_anonymous else f'{actor.username}님이'
 
-    if instance.target.type == 'Comment':  # if is reply
+    if origin.type == 'Comment' and origin.target.type == 'Comment':  # if is reply
         message = f'{actor_name} 회원님의 댓글을 좋아합니다.'
-        redirect_url = f'/{origin.target.type.lower()}s/{origin.target.id}'
-    else:
+        redirect_url = f'/{origin.target.target.type.lower()}s/' \
+                       f'{origin.target.target.id}?anonymous={instance.is_anonymous}'
+    elif origin.type == 'Comment':  # if is comment
+        message = f'{actor_name} 회원님의 댓글을 좋아합니다.'
+        redirect_url = f'/{origin.target.type.lower()}s/' \
+                       f'{origin.target.id}?anonymous={instance.is_anonymous}'
+    else:  # if is post
         origin_target_name = ''
         if instance.target.type == 'Article':
             origin_target_name = '게시글'
@@ -74,7 +80,7 @@ def create_like_noti(instance, **kwargs):
         elif instance.target.type == 'Question':
             origin_target_name = '질문'
         message = f'{actor_name} 회원님의 {origin_target_name}을 좋아합니다.'
-        redirect_url = f'/{origin.type.lower()}s/{origin.id}'
+        redirect_url = f'/{origin.type.lower()}s/{origin.id}?anonymous={instance.is_anonymous}'
 
     Notification.objects.create(actor=actor, user=user,
                                 origin=origin, target=target,
