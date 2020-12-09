@@ -72,6 +72,7 @@ const QuestionDetail = (props) => {
         <>
           <QuestionItem
             questionObj={question}
+            questionId={questionId}
             onResetContent={() => setViewAnonymousResponses(false)}
           />
           {responses?.length !== 0 ? (

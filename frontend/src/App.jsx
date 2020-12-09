@@ -89,6 +89,7 @@ const App = () => {
       if (currentUser) {
         dispatch(getNotifications());
       }
+      window.scrollTo(0, 0);
       trackPage(location.pathname);
     });
   }, [history, dispatch, currentUser]);
