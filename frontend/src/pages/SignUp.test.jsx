@@ -72,6 +72,8 @@ describe('Sign up page unit test', () => {
     pwInput.simulate('change', pwEvent);
     const submitButton = component.find('button').first();
     submitButton.simulate('click');
+    pwInput.simulate('keyDown', { keyCode: 13 });
+
     await new Promise((resolve) => setTimeout(resolve, 500));
     // expect(component.find('WarningMessage').length)
   });

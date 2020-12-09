@@ -77,7 +77,7 @@ class LikeAPITestCase(APITestCase):
         with self.login(username=current_user.username, password='password'):
             response = self.get('like-list')
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.data['count'], N * 5)
+            self.assertEqual(len(response.data), N * 5)
 
     def test_like_create(self):
         current_user = self.make_user(username='current_user')
@@ -124,7 +124,7 @@ class LikeNotiAPITestCase(APITestCase):
         # create like (current_user -> author of Article with id=1)
         with self.login(username=current_user.username, password='password'):
             num_notis_before = Notification.objects.count()
-            data = {"target_type": "Article", "target_id": 1}
+            data = {"target_type": "Article", "target_id": 1, "is_anonymous": True}
             response = self.post('like-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
 
@@ -136,7 +136,7 @@ class LikeNotiAPITestCase(APITestCase):
 
         # create like (current_user -> author of Response with id=1)
         with self.login(username=current_user.username, password='password'):
-            data = {"target_type": "Response", "target_id": 1}
+            data = {"target_type": "Response", "target_id": 1, "is_anonymous": True}
             response = self.post('like-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
 
@@ -145,7 +145,7 @@ class LikeNotiAPITestCase(APITestCase):
 
         # create like (current_user -> author of Response with id=1)
         with self.login(username=current_user.username, password='password'):
-            data = {"target_type": "Question", "target_id": 1}
+            data = {"target_type": "Question", "target_id": 1, "is_anonymous": True}
             response = self.post('like-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
 
@@ -166,7 +166,7 @@ class LikeNotiAPITestCase(APITestCase):
         # create like (current_user -> author of Comment with id=1)
         with self.login(username=current_user.username, password='password'):
             num_notis_before = Notification.objects.count()
-            data = {"target_type": "Comment", "target_id": 1}
+            data = {"target_type": "Comment", "target_id": 1, "is_anonymous": True}
             response = self.post('like-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
 

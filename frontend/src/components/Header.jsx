@@ -110,9 +110,8 @@ const Header = ({ isMobile, setRefreshToken }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
-  const notiRef = useRef(null);
   const notiIconRef = useRef(null);
-
+  const notiDropDownRef = useRef(null);
   const searchRef = useRef(null);
 
   const currentUser = useSelector((state) => state.userReducer.currentUser);
@@ -134,15 +133,17 @@ const Header = ({ isMobile, setRefreshToken }) => {
   }, [dispatch, currentUser]);
 
   const handleNotiClose = () => {
-    setIsNotiOpen(false);
+    if (notiIconRef) setIsNotiOpen(false);
   };
 
   const handleSearchClose = () => {
     setIsSearchOpen(false);
   };
 
-  useOnClickOutside([notiRef, notiIconRef], handleNotiClose);
   useOnClickOutside(searchRef, handleSearchClose);
+  // useOnClickOutside([notiIconRef, notiDropDownRef], handleNotiClose);
+  // useOnClickOutside(notiIconRef, handleNotiClose);
+  useOnClickOutside(notiDropDownRef, handleNotiClose);
 
   const handleClickLogout = () => {
     dispatch(logout());
@@ -151,7 +152,7 @@ const Header = ({ isMobile, setRefreshToken }) => {
   };
 
   const toggleNotiOpen = () => {
-    setIsNotiOpen((prev) => !prev);
+    setIsNotiOpen(!isNotiOpen);
   };
 
   useEffect(() => {
@@ -241,7 +242,7 @@ const Header = ({ isMobile, setRefreshToken }) => {
         size="large"
         activeClassName={classes.tabActive}
       >
-        질문 모음
+        오늘의 질문
       </NavLink>
       <div className={classes.grow} />
       <div className={classes.sectionDesktop}>
@@ -261,10 +262,6 @@ const Header = ({ isMobile, setRefreshToken }) => {
           onChange={handleChange}
           onKeyDown={onKeySubmit}
         />
-        {/* <HelloUsername>
-          {currentUser?.username}
-          님, 안녕하세요!
-        </HelloUsername> */}
         <IconButton
           ref={notiIconRef}
           aria-label="show new notifications"
@@ -292,9 +289,8 @@ const Header = ({ isMobile, setRefreshToken }) => {
             <AccountCircle color="secondary" />
           </Link>
           <Link to={`/users/${currentUser?.id}`}>
-            <HelloUsername>
+            <HelloUsername className={'hello-username'}>
               {currentUser?.username}
-              {/* 님, 안녕하세요! */}
             </HelloUsername>
           </Link>
         </IconButton>
@@ -349,7 +345,7 @@ const Header = ({ isMobile, setRefreshToken }) => {
           </Toolbar>
         </AppBar>
       </div>
-      <div ref={notiRef}>
+      <div ref={notiDropDownRef}>
         {isNotiOpen && (
           <NotificationDropdownList
             notifications={notifications}

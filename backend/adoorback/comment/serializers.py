@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from comment.models import Comment
 
 from adoorback.serializers import AdoorBaseSerializer
+from adoorback.settings.base import BASE_URL
 from account.serializers import AuthorFriendSerializer, AuthorAnonymousSerializer
 
 User = get_user_model()
@@ -27,28 +28,89 @@ class CommentBaseSerializer(AdoorBaseSerializer):
 
     class Meta(AdoorBaseSerializer.Meta):
         model = Comment
-        fields = AdoorBaseSerializer.Meta.fields + ['is_reply', 'is_private', 'target_id']
+        fields = AdoorBaseSerializer.Meta.fields + ['is_reply', 'is_private',
+                                                    'is_anonymous', 'target_id']
 
 
 class CommentFriendSerializer(CommentBaseSerializer):
+    author = serializers.SerializerMethodField(read_only=True)
     author_detail = AuthorFriendSerializer(source='author', read_only=True)
-    replies = RecursiveReplyField(many=True, read_only=True)
+    replies = serializers.SerializerMethodField()
+
+    def get_author(self, obj):
+        return f'{BASE_URL}/api/user/{obj.author.id}/'
+
+    def get_replies(self, obj):
+        current_user = self.context.get('request', None).user
+        if obj.target.type != 'Comment' and obj.target.author == current_user:
+            comments = obj.replies.order_by('id')
+        else:
+            comments = obj.replies.filter(is_anonymous=False, is_private=False).order_by('id')
+        return self.__class__(comments, many=True, read_only=True, context=self.context).data
 
     class Meta(CommentBaseSerializer.Meta):
         model = Comment
-        fields = CommentBaseSerializer.Meta.fields + ['author_detail', 'replies']
-
-    def get_related_field(self, obj):
-        return CommentFriendSerializer()
+        fields = CommentBaseSerializer.Meta.fields + ['author', 'author_detail', 'replies']
 
 
 class CommentAnonymousSerializer(CommentBaseSerializer):
-    author_detail = AuthorAnonymousSerializer(source='author', read_only=True)
-    replies = RecursiveReplyField(many=True, read_only=True)
+    author = serializers.SerializerMethodField(read_only=True)
+    author_detail = serializers.SerializerMethodField(source='author', read_only=True)
+    replies = serializers.SerializerMethodField()
+
+    def get_author_detail(self, obj):
+        if obj.author != self.context.get('request', None).user:
+            return AuthorAnonymousSerializer(obj.author).data
+        return AuthorFriendSerializer(obj.author).data
+
+    def get_author(self, obj):
+        if obj.author == self.context.get('request', None).user:
+            return f'{BASE_URL}/api/user/{obj.author.id}/'
+        return None
+
+    def get_replies(self, obj):
+        current_user = self.context.get('request', None).user
+        if obj.target.author == current_user:
+            comments = obj.replies.order_by('id')
+        else:
+            comments = obj.replies.filter(is_anonymous=True, is_private=False).order_by('id')
+        return self.__class__(comments, many=True, read_only=True, context=self.context).data
 
     class Meta(CommentBaseSerializer.Meta):
         model = Comment
-        fields = CommentBaseSerializer.Meta.fields + ['author_detail', 'replies']
+        fields = CommentBaseSerializer.Meta.fields + ['author', 'author_detail', 'replies']
 
-    def get_related_field(self, obj):
-        return CommentAnonymousSerializer()
+
+class CommentResponsiveSerializer(CommentBaseSerializer):
+    author = serializers.SerializerMethodField(read_only=True)
+    author_detail = serializers.SerializerMethodField(
+        source='author', read_only=True)
+    replies = serializers.SerializerMethodField()
+
+    def get_replies(self, obj):
+        current_user = self.context.get('request', None).user
+        if obj.target.author == current_user:
+            comments = obj.replies.order_by('id')
+        else:
+            comments = obj.replies.filter(is_private=False).order_by('id')
+        return self.__class__(comments, many=True, read_only=True, context=self.context).data
+
+    def get_author_detail(self, obj):
+        if not obj.is_anonymous or (obj.author == self.context.get('request', None).user):
+            return AuthorFriendSerializer(obj.author).data
+        return AuthorAnonymousSerializer(obj.author).data
+
+    def get_author(self, obj):
+        if not obj.is_anonymous or (obj.author == self.context.get('request', None).user):
+            return f'{BASE_URL}/api/user/{obj.author.id}/'
+        return None
+
+    class Meta(CommentBaseSerializer.Meta):
+        model = Comment
+        fields = CommentBaseSerializer.Meta.fields + ['author', 'author_detail', 'replies']
+
+
+class ReplySerializer(CommentResponsiveSerializer):
+
+    class Meta(CommentResponsiveSerializer.Meta):
+        model = Comment

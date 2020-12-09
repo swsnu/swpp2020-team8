@@ -108,7 +108,7 @@ export const requestLogin = (loginInfo) => {
       dispatch({ type: 'user/LOGIN_SUCCESS', currentUser });
     } catch (error) {
       dispatch({ type: 'user/LOGIN_FAILURE', error });
-      dispatch({ type: 'user/REMOVE_ERROR', error });
+      dispatch({ type: 'user/REMOVE_ERROR' });
     }
   };
 };

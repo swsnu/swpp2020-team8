@@ -136,7 +136,7 @@ class DeleteFeedNotificationTestCase(TestCase):
         self.assertEqual(Notification.objects.visible_only().filter(
             origin_type=get_article_type(), origin_id=origin_id).count(), 0)
         self.assertGreater(Notification.objects.visible_only().filter(
-            redirect_url=f'/articles/{origin_id}').count(), 0)  # 노티 자체가 안 보이지는 않아야 함
+            redirect_url__icontains=f'/articles/{origin_id}').count(), 0)  # 노티 자체가 안 보이지는 않아야 함
 
         # origin = response
         noti = Notification.objects.visible_only().filter(origin_type=get_response_type()).last()
@@ -146,7 +146,7 @@ class DeleteFeedNotificationTestCase(TestCase):
         self.assertEqual(Notification.objects.visible_only().filter(
             origin_type=get_response_type(), origin_id=origin_id).count(), 0)
         self.assertGreater(Notification.objects.visible_only().filter(
-            redirect_url=f'/responses/{origin_id}').count(), 0)  # 노티 자체가 안 보이지는 않아야 함
+            redirect_url__icontains=f'/responses/{origin_id}').count(), 0)  # 노티 자체가 안 보이지는 않아야 함
 
         # origin = question
         noti = Notification.objects.visible_only().filter(target_type=get_response_request_type(),
@@ -157,7 +157,7 @@ class DeleteFeedNotificationTestCase(TestCase):
         self.assertEqual(Notification.objects.visible_only().filter(
             origin_type=get_question_type(), origin_id=origin_id).count(), 0)  # origin type은 바뀌어야 함
         self.assertGreater(Notification.objects.visible_only().filter(
-            redirect_url=f'/questions/{origin_id}').count(), 0)  # 노티 자체가 안 보이지는 않아야 함
+            redirect_url__icontains=f'/questions/{origin_id}').count(), 0)  # 노티 자체가 안 보이지는 않아야 함
 
 
 class APITestCase(TestCase):

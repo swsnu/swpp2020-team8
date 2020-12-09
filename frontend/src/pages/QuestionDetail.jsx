@@ -9,7 +9,8 @@ import { withRouter } from 'react-router';
 import QuestionItem from '../components/posts/QuestionItem';
 import {
   getResponsesByQuestion,
-  getFriendResponsesByQuestion
+  getFriendResponsesByQuestion,
+  resetSelectedQuestion
 } from '../modules/question';
 import PostItem from '../components/posts/PostItem';
 import Message from '../components/Message';
@@ -49,6 +50,7 @@ const QuestionDetail = (props) => {
     dispatch(getFriendResponsesByQuestion(questionId));
     return () => {
       setViewAnonymousResponses(false);
+      dispatch(resetSelectedQuestion());
     };
   }, [dispatch, questionId]);
 
@@ -72,6 +74,7 @@ const QuestionDetail = (props) => {
         <>
           <QuestionItem
             questionObj={question}
+            questionId={questionId}
             onResetContent={() => setViewAnonymousResponses(false)}
           />
           {responses?.length !== 0 ? (

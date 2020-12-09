@@ -1,3 +1,4 @@
+import 'intersection-observer';
 import React, { useEffect, useState } from 'react';
 import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
@@ -89,6 +90,7 @@ const App = () => {
       if (currentUser) {
         dispatch(getNotifications());
       }
+      window.scrollTo(0, 0);
       trackPage(location.pathname);
     });
   }, [history, dispatch, currentUser]);

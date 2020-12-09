@@ -21,6 +21,7 @@ def create_ranks_csv():
 
     interactions_df = pd.read_csv(os.path.join(dir_name, 'user_contents.csv'),
                                   names=['eventType', 'contentId', 'personId'])
+    interactions_df = interactions_df[interactions_df.personId != 1]
 
     event_type_strength = {
         'ANSWERED': 4.0,
@@ -272,7 +273,7 @@ def create_ranks_csv():
     len(user_profiles)
 
     pd.DataFrame(sorted(zip(tfidf_feature_names,
-                            user_profiles[1].flatten().tolist()), key=lambda x: -x[1])[:20],
+                            user_profiles[3].flatten().tolist()), key=lambda x: -x[1])[:20],
                  columns=['token', 'relevance'])
 
     class ContentBasedRecommender:
@@ -491,7 +492,8 @@ def create_ranks_csv():
     User = get_user_model()
 
     df = pd.DataFrame()
-    for uid in User.objects.values_list('id', flat=True):
+    for uid in User.objects.exclude(is_superuser=True).values_list('id', flat=True):
+        print(str(uid) + "done")
         new_df = best_model.recommend_items(uid, topn=topn, verbose=True)
         new_df['userId'] = uid
         df = df.append(new_df)
