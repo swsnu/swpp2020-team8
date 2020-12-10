@@ -34,14 +34,14 @@ sentry_sdk.init(
 #CSRF_COOKIE_SECURE = True
 #CSRF_COOKIE_SAMESITE = 'None'
 
-#CSRF_TRUSTED_ORIGINS = [
+# CSRF_TRUSTED_ORIGINS = [
 #    "develop.d3t1tnno5uz3sa.amplifyapp.com",
 #    "localhost"
-#]
+# ]
 
 ALLOWED_HOSTS = ['ec2-54-237-96-51.compute-1.amazonaws.com', 'localhost']
 
-#CORS_ALLOWED_ORIGINS = [
+# CORS_ALLOWED_ORIGINS = [
 #    "https://develop.d3t1tnno5uz3sa.amplifyapp.com",
 #    "http://localhost:3000",
-#]
+# ]
