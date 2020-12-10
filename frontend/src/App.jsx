@@ -76,7 +76,7 @@ const App = () => {
     if (refreshToken) {
       dispatch(getCurrentUser());
     }
-  }, [refreshToken]);
+  }, [dispatch, refreshToken]);
 
   useEffect(() => {
     if (loginFailure) {
