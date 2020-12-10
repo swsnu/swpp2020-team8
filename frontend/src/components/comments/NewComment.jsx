@@ -25,7 +25,8 @@ const PrivateWrapper = styled.div`
   font-size: 0.8rem;
   display: flex;
   align-items: center;
-  margin-left: 8px;
+  margin: 0 4px 0 8px;
+  color: grey;
 `;
 
 export default function NewComment({
@@ -85,15 +86,28 @@ export default function NewComment({
           checked={isPrivate}
           onChange={togglePrivate}
           size="small"
-          style={{ padding: 0 }}
+          style={{
+            padding: 0,
+            color: 'rgba(0, 0, 0, 0.26)',
+            marginRight: '4px'
+          }}
         />
         비밀 댓글
       </PrivateWrapper>
       <Button
         onClick={handleSubmit}
         id="submit-button"
-        style={{ padding: '4px 8px', minWidth: '30px', marginLeft: '3px' }}
-        color="primary"
+        style={{
+          padding: '2px 8px',
+          minWidth: '30px',
+          marginLeft: '8px',
+          fontWeight: 400,
+          fontSize: '13px',
+          color: 'grey',
+          border: '1px solid rgba(0, 0, 0, 0.26)',
+          marginRight: '3px'
+        }}
+        color="secondary"
       >
         작성
       </Button>

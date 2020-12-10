@@ -97,7 +97,9 @@ export default function MobileSearchPage() {
           )
         }}
       />
-      <div ref={searchRef}>{isSearchOpen && <SearchDropdownList />}</div>
+      <div ref={searchRef} style={{ marginTop: '12px' }}>
+        {isSearchOpen && totalPages > 0 && <SearchDropdownList />}
+      </div>
     </div>
   );
 }

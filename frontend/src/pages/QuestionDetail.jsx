@@ -170,7 +170,6 @@ const QuestionDetail = (props) => {
             questionId={questionId}
             onResetContent={() => resetTabs()}
           />
-          <h2>답변</h2>
           <AppBar position="static" className={classes.header}>
             <Tabs
               value={tab}
