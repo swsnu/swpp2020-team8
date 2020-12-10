@@ -19,11 +19,19 @@ const CommentItemWrapper = styled.div`
   padding-bottom: 4px;
   font-size: 12px;
   justify-content: space-between;
+
+  .like {
+    width: 0.75em !important;
+  }
+
+  .unlike {
+    width: 0.75em !important;
+  }
 `;
 CommentItemWrapper.displayName = 'CommentItem';
 
 const CommentContent = styled.div`
-  margin: 0 12px;
+  margin: 0 8px;
   @media (max-width: 650px) {
     margin: 0 6px;
   }
@@ -184,13 +192,17 @@ export default function CommentItem({
         </div>
         <div style={{ display: 'flex' }}>
           {isCommentAuthor && (
-            <div id="like-count" style={{ margin: '4px' }}>
+            <div id="like-count" style={{ margin: '4px', marginTop: '2px' }}>
               {likeCount}
             </div>
           )}
           {liked ? (
             <IconButton color="primary" size="small" onClick={toggleLike}>
-              <FavoriteIcon className="unlike" color="primary" />
+              <FavoriteIcon
+                style={{ width: '0.75em !important' }}
+                className="unlike"
+                color="primary"
+              />
             </IconButton>
           ) : (
             <IconButton color="primary" size="small" onClick={toggleLike}>

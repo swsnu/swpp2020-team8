@@ -4,6 +4,7 @@ import FaceIcon from '@material-ui/icons/Face';
 import { useHistory, useLocation } from 'react-router-dom';
 
 const AuthorProfileWrapper = styled.div`
+  cursor: pointer !important;
   display: flex;
   align-items: center;
   font-weight: 500;
@@ -45,7 +46,15 @@ export default function AuthorProfile({
           }}
         />
       ) : (
-        <AnonIcon style={{ marginRight: '4px' }} hex={hex} />
+        <AnonIcon
+          style={{
+            marginTop: isComment && '4px',
+            marginRight: !isComment && '4px',
+            width: isComment && '18px',
+            height: isComment && '18px'
+          }}
+          hex={hex}
+        />
       )}
 
       {username && (!isAnonFeed || isAuthor) && (
