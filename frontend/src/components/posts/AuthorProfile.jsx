@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import FaceIcon from '@material-ui/icons/Face';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 const AuthorProfileWrapper = styled.div`
   display: flex;
@@ -22,12 +22,17 @@ export default function AuthorProfile({
   isAuthor = false
 }) {
   const location = useLocation();
+  const history = useHistory();
   const isAnonFeed = location.pathname === '/anonymous';
 
   if (!author) return null;
   const { id, username, profile_pic: picHex, color_hex: hex } = author;
+
+  const onClickProfile = () => {
+    if (id) history.push(`/users/${id}`);
+  };
   return (
-    <AuthorProfileWrapper>
+    <AuthorProfileWrapper onClick={onClickProfile}>
       {id && (!isAnonFeed || isAuthor) ? (
         <FaceIcon
           style={{
