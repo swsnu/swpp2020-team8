@@ -51,6 +51,7 @@ const AnonIcon = styled.div`
   background: ${(props) => (props.hex ? props.hex : '#f12c56')};
   margin-right: 4px;
   margin-left: 2px;
+  flex-shrink: 0;
 `;
 AnonIcon.displayName = 'AnonIcon';
 
