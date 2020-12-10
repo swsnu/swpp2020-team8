@@ -44,11 +44,13 @@ export default function MobileFooter({ notiBadgeInvisible }) {
 
   useEffect(() => {
     if (
-      ['/', '/anonymous', 'questions', '/notifications', 'my-page'].includes(
+      ['/', '/anonymous', '/questions', '/notifications', '/my-page'].includes(
         pathname
       )
     ) {
       setValue(pathname);
+    } else {
+      setValue(null);
     }
   }, [pathname]);
 
