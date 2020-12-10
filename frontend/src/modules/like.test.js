@@ -46,10 +46,7 @@ describe('likeActions', () => {
     const spyGet = jest.spyOn(axios, 'get').mockImplementation(() => {
       return new Promise((resolve) => {
         const result = {
-          data: {
-            status: 200,
-            results: [mockLike]
-          }
+          data: [mockLike]
         };
         resolve(result);
       });

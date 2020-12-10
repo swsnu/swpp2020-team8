@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Checkbox, Button } from '@material-ui/core';
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
+import LockIcon from '@material-ui/icons/Lock';
 
 const NewCommentWrapper = styled.div`
   width: 100%;
   display: flex;
+  align-items: center;
 `;
 
 NewCommentWrapper.displayName = 'NewCommentWrapper';
@@ -19,10 +21,10 @@ const NewCommentInput = styled.input`
 `;
 
 const PrivateWrapper = styled.div`
-  font-size: 10px;
+  font-size: 0.8rem;
   display: flex;
   align-items: center;
-  margin-left: 3px;
+  margin-left: 8px;
 `;
 
 export default function NewComment({
@@ -60,6 +62,15 @@ export default function NewComment({
   return (
     <NewCommentWrapper>
       {isReply && <SubdirectoryArrowRightIcon />}
+      {isPrivate && (
+        <LockIcon
+          style={{
+            fontSize: '16px',
+            color: 'rgb(187, 187, 187)',
+            marginRight: '4px'
+          }}
+        />
+      )}
       <NewCommentInput
         className="comment-input"
         placeholder={placeholder}
@@ -80,8 +91,8 @@ export default function NewComment({
       <Button
         onClick={handleSubmit}
         id="submit-button"
-        style={{ padding: '4px', minWidth: '30px', marginLeft: '3px' }}
-        color="secondary"
+        style={{ padding: '4px 8px', minWidth: '30px', marginLeft: '3px' }}
+        color="primary"
       >
         작성
       </Button>

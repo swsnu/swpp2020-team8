@@ -9,8 +9,8 @@ export default function LoadingList() {
       <Skeleton
         id="skeleton-circle"
         variant="circle"
-        width={40}
-        height={40}
+        width={26}
+        height={26}
         style={{ opacity: '0.8', margin: '4px 0' }}
       />
       <Skeleton

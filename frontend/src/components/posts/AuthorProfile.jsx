@@ -34,7 +34,9 @@ export default function AuthorProfile({
             color: picHex,
             marginRight: '4px',
             width: isComment && '20px',
-            opacity: 0.8
+            opacity: 0.8,
+            top: '2px',
+            position: 'relative'
           }}
         />
       ) : (

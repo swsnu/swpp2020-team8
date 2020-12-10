@@ -14,6 +14,7 @@ import history from '../../history';
 import rootReducer from '../../modules';
 import QuestionItem from './QuestionItem';
 import { mockStore } from '../../mockStore';
+import { mockLike } from '../../constants';
 // import * as actionCreators from '../../modules/post';
 
 jest.mock('./ShareSettings', () => {
@@ -121,6 +122,15 @@ describe('<QuestionItem/>', () => {
     expect(likeIcon.length).toBe(0);
     expect(unlikeButton.length).toBe(1);
     expect(+likeCount).toEqual(userMockQuestions[0].like_count);
+
+    const spyGet = jest.spyOn(axios, 'get').mockImplementation(() => {
+      return new Promise((resolve) => {
+        const result = {
+          data: [mockLike]
+        };
+        resolve(result);
+      });
+    });
 
     // unlike
     await act(async () => {

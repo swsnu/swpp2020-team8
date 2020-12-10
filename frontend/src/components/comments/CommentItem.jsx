@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import LockIcon from '@material-ui/icons/Lock';
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { useParams } from 'react-router';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
@@ -12,12 +11,14 @@ import NewComment from './NewComment';
 import { createReply, deleteComment } from '../../modules/post';
 import AlertDialog from '../common/AlertDialog';
 import { likePost, unlikePost } from '../../modules/like';
+import CommentCreateTime from './CommentCreateTime';
 
 const CommentItemWrapper = styled.div`
   display: flex;
   align-items: center;
-  padding: 8px 0;
+  padding-bottom: 4px;
   font-size: 12px;
+  justify-content: space-between;
 `;
 CommentItemWrapper.displayName = 'CommentItem';
 
@@ -32,15 +33,29 @@ const ReplyWrapper = styled.div`
   cursor: pointer;
   display: flex;
   align-items: center;
-  font-size: 10px;
+  font-size: 12px;
   color: #999;
-  @media (max-width: 650px) {
-    margin: 0;
+  margin-left: 10px;
+  :hover: {
+    color: #000;
   }
-  margin-right: 12px;
+`;
+
+const DeleteWrapper = styled.div`
+  min-width: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #999;
+  margin-left: 4px;
+  :hover: {
+    color: #000;
+  }
 `;
 
 ReplyWrapper.displayName = 'ReplyWrapper';
+DeleteWrapper.displayName = 'DeleteWrapper';
 
 const ReplyIcon = styled(SubdirectoryArrowRightIcon)`
   @media (max-width: 650px) {
@@ -123,43 +138,63 @@ export default function CommentItem({
   return (
     <>
       <CommentItemWrapper id={commentObj.id}>
-        {isReply && <ReplyIcon />}
-        <AuthorProfile
-          author={commentObj.author_detail}
-          isComment
-          isAuthor={isCommentAuthor}
-        />
-        <CommentContent id="comment-content">
-          {commentObj.content}
-        </CommentContent>
-        {!isReply && (
-          <ReplyWrapper onClick={toggleReplyInputOpen}>답글</ReplyWrapper>
-        )}
-        {commentObj.is_private && (
-          <LockIcon style={{ fontSize: '14px', color: '#bbb' }} />
-        )}
-
-        {isCommentAuthor && (
-          <DeleteForeverIcon
-            onClick={() => setIsDeleteDialogOpen(true)}
-            id="delete-comment-icon"
-            style={{ margin: '3px', fontSize: '17px', color: '#999' }}
-          />
-        )}
-        {liked ? (
-          <IconButton color="primary" size="small" onClick={toggleLike}>
-            <FavoriteIcon className="unlike" color="primary" />
-          </IconButton>
-        ) : (
-          <IconButton color="primary" size="small" onClick={toggleLike}>
-            <FavoriteBorderIcon className="like" color="primary" />
-          </IconButton>
-        )}
-        {isCommentAuthor && (
-          <div id="like-count" style={{ margin: '4px' }}>
-            {likeCount}
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+            {isReply && <ReplyIcon />}
+            {commentObj.is_private && (
+              <LockIcon
+                style={{
+                  fontSize: '16px',
+                  color: 'rgb(187, 187, 187)',
+                  margin: '6px 4px 0 0'
+                }}
+              />
+            )}
+            <AuthorProfile
+              author={commentObj.author_detail}
+              isComment
+              isAuthor={isCommentAuthor}
+            />
+            <CommentContent id="comment-content" style={{ marginTop: '4px' }}>
+              {commentObj.content}
+            </CommentContent>
           </div>
-        )}
+          <div
+            style={{
+              display: 'flex',
+              marginLeft: `${isReply ? '51px' : '24px'}`
+            }}
+          >
+            <CommentCreateTime createdTime={commentObj.created_at} />
+            {!isReply && (
+              <ReplyWrapper onClick={toggleReplyInputOpen}>답글</ReplyWrapper>
+            )}
+            {isCommentAuthor && (
+              <DeleteWrapper
+                onClick={() => setIsDeleteDialogOpen(true)}
+                id="delete-comment"
+              >
+                삭제
+              </DeleteWrapper>
+            )}
+          </div>
+        </div>
+        <div style={{ display: 'flex' }}>
+          {isCommentAuthor && (
+            <div id="like-count" style={{ margin: '4px' }}>
+              {likeCount}
+            </div>
+          )}
+          {liked ? (
+            <IconButton color="primary" size="small" onClick={toggleLike}>
+              <FavoriteIcon className="unlike" color="primary" />
+            </IconButton>
+          ) : (
+            <IconButton color="primary" size="small" onClick={toggleLike}>
+              <FavoriteBorderIcon className="like" color="primary" />
+            </IconButton>
+          )}
+        </div>
       </CommentItemWrapper>
       <div>{replyItems}</div>
       <div>

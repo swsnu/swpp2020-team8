@@ -548,6 +548,7 @@ export const questionDetailPosts = {
   updated_at: '2020-11-21T14:59:33.519895+09:00',
   selected_date: '2020-11-21T14:59:33.519774+09:00',
   is_admin_question: true,
+  maxPage: 2,
   response_set: [
     {
       id: 10,
