@@ -38,6 +38,7 @@ const Question = styled.div`
   font-weight: 500;
   font-size: 15px;
   word-break: break-all;
+  padding: 8px 0;
   @media (max-width: 650px) {
     padding: 16px;
   }
@@ -191,6 +192,7 @@ export default function QuestionItem({
             id="content-input"
             placeholder="답변을 작성해주세요."
             value={newPost.content}
+            rowsMin={3}
             onChange={handleContentChange}
           />
           <ShareSettings newPost={newPost} resetContent={resetContent} />
