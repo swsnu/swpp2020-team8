@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles } from '@material-ui/core/styles';
@@ -110,7 +109,6 @@ const Header = ({ isMobile, setRefreshToken }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
-  const notiIconRef = useRef(null);
   const notiDropDownRef = useRef(null);
   const searchRef = useRef(null);
 
@@ -133,17 +131,26 @@ const Header = ({ isMobile, setRefreshToken }) => {
   }, [dispatch, currentUser]);
 
   const handleNotiClose = () => {
-    if (notiIconRef) setIsNotiOpen(false);
+    setIsNotiOpen(false);
   };
 
   const handleSearchClose = () => {
     setIsSearchOpen(false);
   };
 
+  const handleClickOutside = ({ target }) => {
+    if (isNotiOpen || !notiDropDownRef.current.contains(target))
+      handleNotiClose();
+  };
+
+  useEffect(() => {
+    window.addEventListener('click', handleClickOutside);
+    return () => {
+      window.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
   useOnClickOutside(searchRef, handleSearchClose);
-  // useOnClickOutside([notiIconRef, notiDropDownRef], handleNotiClose);
-  // useOnClickOutside(notiIconRef, handleNotiClose);
-  useOnClickOutside(notiDropDownRef, handleNotiClose);
 
   const handleClickLogout = () => {
     dispatch(logout());
@@ -263,7 +270,6 @@ const Header = ({ isMobile, setRefreshToken }) => {
           onKeyDown={onKeySubmit}
         />
         <IconButton
-          ref={notiIconRef}
           aria-label="show new notifications"
           className={`${classes.iconButton} noti-button`}
           onClick={(e) => {
@@ -289,7 +295,7 @@ const Header = ({ isMobile, setRefreshToken }) => {
             <AccountCircle color="secondary" />
           </Link>
           <Link to={`/users/${currentUser?.id}`}>
-            <HelloUsername className={'hello-username'}>
+            <HelloUsername className="hello-username">
               {currentUser?.username}
             </HelloUsername>
           </Link>

@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import axios from '../apis';
-import { getFriendResponsesByQuestion } from './question';
+import { getResponsesByQuestionWithType } from './question';
 
 export const APPEND_POSTS_REQUEST = 'post/APPEND_POSTS_REQUEST';
 export const APPEND_POSTS_SUCCESS = 'post/APPEND_POSTS_SUCCESS';
@@ -227,7 +227,7 @@ export const createPost = (newPost) => async (dispatch, getState) => {
     resultPost.type === 'Response' &&
     selectedQuestion?.id === resultPost.question_id
   ) {
-    dispatch(getFriendResponsesByQuestion(selectedQuestion?.id));
+    dispatch(getResponsesByQuestionWithType(selectedQuestion?.id, 'friend'));
   }
   const { selectedUserId } = getState().postReducer;
   if (+selectedUserId === +resultPost.author_detail?.id) {
@@ -260,7 +260,7 @@ export const createComment = (newComment, postKey, targetId) => async (
   });
   const { selectedQuestion } = getState().questionReducer;
   if (+selectedQuestion?.id === +targetId) {
-    dispatch(getFriendResponsesByQuestion(selectedQuestion?.id));
+    dispatch(getResponsesByQuestionWithType(selectedQuestion?.id, 'friend'));
   }
 };
 
@@ -289,7 +289,7 @@ export const createReply = (newReply, postKey, targetId) => async (
   });
   const { selectedQuestion } = getState().questionReducer;
   if (+selectedQuestion?.id === +targetId) {
-    dispatch(getFriendResponsesByQuestion(selectedQuestion?.id));
+    dispatch(getResponsesByQuestionWithType(selectedQuestion?.id, 'friend'));
   }
 };
 
@@ -318,7 +318,7 @@ export const deleteComment = (commentId, postKey, isReply, targetId) => async (
   });
   const { selectedQuestion } = getState().questionReducer;
   if (+selectedQuestion?.id === +targetId) {
-    dispatch(getFriendResponsesByQuestion(selectedQuestion?.id));
+    dispatch(getResponsesByQuestionWithType(selectedQuestion?.id, 'friend'));
   }
 };
 
@@ -529,6 +529,13 @@ export default function postReducer(state = initialState, action) {
         }
         return post;
       });
+
+      const targetUserPost = state.selectedUserPosts.find((post) => {
+        const key = `${post.type}-${post.id}`;
+        return key === action.postKey;
+      });
+
+      newComments = getNewCommentsWithReply(targetUserPost?.comments, reply);
 
       const newUserPosts = state.selectedUserPosts.map((post) => {
         const key = `${post.type}-${post.id}`;
