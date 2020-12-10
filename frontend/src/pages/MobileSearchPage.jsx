@@ -46,7 +46,7 @@ export default function MobileSearchPage() {
       dispatch(fetchSearchResults(1, query));
       setIsSearchOpen(true);
     } else setIsSearchOpen(false);
-  }, [query]);
+  }, [dispatch, query]);
 
   useEffect(() => {
     if (totalPages > 0) {

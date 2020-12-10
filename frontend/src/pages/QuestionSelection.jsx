@@ -85,12 +85,12 @@ export default function QuestionSelection() {
   const onClickSubmitButton = async () => {
     dispatch(skipOrCompleteSelectQuestions());
     await dispatch(postSelectedQuestions(selectedQuestions));
-    history.push('/');
+    history.push('/home');
   };
 
   const onClickSkipButton = async () => {
     dispatch(skipOrCompleteSelectQuestions());
-    history.push('/');
+    history.push('/home');
   };
 
   return (

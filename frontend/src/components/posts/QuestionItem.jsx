@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import { TextareaAutosize } from '@material-ui/core';
@@ -67,6 +67,9 @@ export default function QuestionItem({
   questionId
 }) {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const history = useHistory();
+  const isQuestionList = location.pathname === '/questions';
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const isAuthor = currentUser?.id === questionObj.author_detail.id;
 
@@ -90,7 +93,7 @@ export default function QuestionItem({
       content: '',
       type: 'Response'
     });
-  }, [questionId]);
+  }, [questionId, questionObj]);
 
   const handleContentChange = (e) => {
     setNewPost((prev) => ({
@@ -134,6 +137,7 @@ export default function QuestionItem({
     setNewPost((prev) => ({ ...prev, content: '' }));
     if (onResetContent) onResetContent();
     setIsWriting(false);
+    if (isQuestionList) history.push('/home');
   };
 
   return (

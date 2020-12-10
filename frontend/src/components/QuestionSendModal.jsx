@@ -76,7 +76,13 @@ const QuestionSendModal = ({ questionObj, open, handleClose }) => {
   });
 
   return (
-    <Dialog fullWidth onClose={handleClose} maxWidth="sm" open={open}>
+    <Dialog
+      fullWidth
+      onClose={handleClose}
+      maxWidth="sm"
+      open={open}
+      className="question-send"
+    >
       <DialogTitle className={classes.modalTitle} onClose={handleClose}>
         질문 보내기
         <IconButton
