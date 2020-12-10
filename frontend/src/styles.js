@@ -37,7 +37,14 @@ export const GlobalStyle = createGlobalStyle`
     @media (max-width: 650px) {
       position: fixed !important;
       top: 20% !important;
+      margin: 0 !important;
       width: calc(100% - 16px) !important;
+    }
+  }
+
+  .question-send {
+    .MuiPaper-root MuiDialog-paper {
+      margin: 0 !important;
     }
   }
 `;
