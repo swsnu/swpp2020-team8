@@ -149,6 +149,7 @@ const QuestionDetail = (props) => {
           postKey={`${post.type}-${post.id}`}
           key={`${post.type}-${post.id}`}
           postObj={post}
+          resetAfterComment={resetTabs}
         />
       ))}
       <div ref={setTarget} />
