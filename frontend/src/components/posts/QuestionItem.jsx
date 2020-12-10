@@ -93,7 +93,7 @@ export default function QuestionItem({
       content: '',
       type: 'Response'
     });
-  }, [questionId]);
+  }, [questionId, questionObj]);
 
   const handleContentChange = (e) => {
     setNewPost((prev) => ({
@@ -137,7 +137,7 @@ export default function QuestionItem({
     setNewPost((prev) => ({ ...prev, content: '' }));
     if (onResetContent) onResetContent();
     setIsWriting(false);
-    if (isQuestionList) history.push('/');
+    if (isQuestionList) history.push('/home');
   };
 
   return (
