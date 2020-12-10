@@ -71,6 +71,9 @@ export default function QuestionItem({
   const location = useLocation();
   const history = useHistory();
   const isQuestionList = location.pathname === '/questions';
+  const isAnon =
+    location?.pathname.includes('anonymous') ||
+    location?.search?.includes('anonymous=True');
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const isAuthor = currentUser?.id === questionObj.author_detail.id;
 
@@ -106,7 +109,8 @@ export default function QuestionItem({
   const toggleLike = () => {
     const postInfo = {
       target_type: questionObj.type,
-      target_id: questionObj.id
+      target_id: questionObj.id,
+      is_anonymous: isAnon
     };
     if (liked) {
       setLikeCount((prev) => prev - 1);
