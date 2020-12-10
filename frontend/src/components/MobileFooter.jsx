@@ -39,14 +39,18 @@ const SmallFontBottomNavAction = styled(BottomNavigationAction)`
 export default function MobileFooter({ notiBadgeInvisible }) {
   const classes = useStyles();
   const history = useHistory();
-  const [value, setValue] = React.useState('/');
+  const [value, setValue] = React.useState('/home');
   const { pathname } = window.location;
 
   useEffect(() => {
     if (
-      ['/', '/anonymous', '/questions', '/notifications', '/my-page'].includes(
-        pathname
-      )
+      [
+        '/home',
+        '/anonymous',
+        '/questions',
+        '/notifications',
+        '/my-page'
+      ].includes(pathname)
     ) {
       setValue(pathname);
     } else {
@@ -66,7 +70,7 @@ export default function MobileFooter({ notiBadgeInvisible }) {
       className={classes.root}
     >
       <BottomNavigationAction
-        value="/"
+        value="/home"
         label="Home"
         icon={<HomeIcon />}
         className={`${classes.icon} link`}
