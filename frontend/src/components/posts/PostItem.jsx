@@ -107,7 +107,8 @@ export default function PostItem({
   const toggleLike = () => {
     const postInfo = {
       target_type: postObj.type,
-      target_id: postObj.id
+      target_id: postObj.id,
+      is_anonymous: isAnon
     };
     if (liked) {
       setLikeCount((prev) => prev - 1);
