@@ -44,7 +44,14 @@ export default function AuthorProfile({
       )}
 
       {username && (!isAnonFeed || isAuthor) && (
-        <div style={{ fontSize: isComment ? '12px' : '14px' }}>{username}</div>
+        <div
+          style={{
+            minWidth: 'max-content',
+            fontSize: isComment ? '12px' : '14px'
+          }}
+        >
+          {username}
+        </div>
       )}
     </AuthorProfileWrapper>
   );

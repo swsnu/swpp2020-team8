@@ -5,6 +5,7 @@ import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRigh
 import LockIcon from '@material-ui/icons/Lock';
 
 const NewCommentWrapper = styled.div`
+  margin-top: 8px;
   width: 100%;
   display: flex;
   align-items: center;

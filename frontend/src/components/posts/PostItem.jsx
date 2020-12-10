@@ -43,7 +43,12 @@ const CommentInfo = styled.div`
   font-size: 10px;
 `;
 
-export default function PostItem({ postObj, postKey, isDetailPage }) {
+export default function PostItem({
+  postObj,
+  postKey,
+  isDetailPage,
+  resetAfterComment
+}) {
   const { pathname, search } = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -96,6 +101,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       is_anonymous: isAnon || onlyAnonPost
     };
     dispatch(createComment(newCommentObj, postKey, postObj?.question_id));
+    if (resetAfterComment) resetAfterComment();
   };
 
   const toggleLike = () => {
