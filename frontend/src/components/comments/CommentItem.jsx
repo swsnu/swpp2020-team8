@@ -24,6 +24,9 @@ CommentItemWrapper.displayName = 'CommentItem';
 
 const CommentContent = styled.div`
   margin: 0 12px;
+  @media (max-width: 650px) {
+    margin: 0 6px;
+  }
 `;
 
 const IconButton = styled.div``;
