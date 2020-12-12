@@ -157,12 +157,12 @@ describe('<ShareSettings />', () => {
     expect(shareAnon.props().checked).toBeTruthy();
   });
 
-  it('should not submitted when no content', () => {
+  it('should not submitted and open dialog when no content', () => {
     const wrapper = mount(
       <Provider store={store}>
         <Router history={history}>
           <ShareSettings
-            newPost={{ content: '', type: 'Article' }}
+            newPost={{ content: ' ', type: 'Article' }}
             resetContent={resetContent}
           />
         </Router>
@@ -171,6 +171,16 @@ describe('<ShareSettings />', () => {
     const submitButton = wrapper.find('button');
     expect(submitButton.length).toBe(1);
     submitButton.simulate('click');
+    wrapper.update();
+
     expect(jest.fn()).toHaveBeenCalledTimes(0);
+    let dialog = wrapper.find('#no-content-dialog').at(0);
+    expect(dialog.props().open).toBeTruthy();
+
+    const dialogConfirmButton = dialog.find('#confirm-button').at(0);
+    dialogConfirmButton.simulate('click');
+    wrapper.update();
+    dialog = wrapper.find('#no-content-dialog').at(0);
+    expect(dialog.props().open).toBeFalsy();
   });
 });
