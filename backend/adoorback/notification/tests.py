@@ -233,6 +233,17 @@ class NotificationAPITestCase(APITestCase):
             self.assertEqual(response.data['count'], 1)  # friend request noti is not visible
             self.assertEqual(response.data['results'][0]['message'], 'current_user님과 친구가 되었습니다.')
 
+    def test_noti_type_boolean(self):
+        current_user = self.make_user(username='current_user')
+
+        Notification.objects.create(user=current_user, actor=current_user, target=None, origin=None)
+        with self.login(username='current_user', password='password'):
+            response = self.get('notification-list')
+            self.assertEqual(response.status_code, 200)
+            noti = response.data['results'][0]
+            self.assertEqual(noti['is_response_request'], False)
+            self.assertEqual(noti['is_friend_request'], False)
+
     def test_response_request_noti(self):
         # Response Request/Response noti should include question content
         current_user = self.make_user(username='current_user')
@@ -334,3 +345,22 @@ class NotificationAPITestCase(APITestCase):
             response = self.get('notification-list')
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data['results'][1]['is_read'], True)  # all notis should be read
+
+    def test_noti_extension_view(self):
+
+        user = self.make_user(username='current_user')
+        Notification.objects.create(user=user, actor=user, redirect_url="url", message="message")
+
+        response = self.get('notification-id', data={'username': 'current_user'})
+        self.assertEqual(response.status_code, 200)
+        self.assertGreater(response.json()['id'], 0)
+        self.assertEqual(response.json()['num_unread'], 1)
+
+        with self.login(username='current_user', password='password'):
+            response = self.patch('notification-list')  # update
+            self.assertEqual(response.status_code, 200)
+
+        response = self.get('notification-id', data={'username': 'current_user'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['id'], 0)
+        self.assertEqual(response.json()['num_unread'], 0)
