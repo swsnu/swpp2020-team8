@@ -46,7 +46,7 @@ export default function MobileSearchPage() {
       dispatch(fetchSearchResults(1, query));
       setIsSearchOpen(true);
     } else setIsSearchOpen(false);
-  }, [query]);
+  }, [dispatch, query]);
 
   useEffect(() => {
     if (totalPages > 0) {
@@ -97,7 +97,9 @@ export default function MobileSearchPage() {
           )
         }}
       />
-      <div ref={searchRef}>{isSearchOpen && <SearchDropdownList />}</div>
+      <div ref={searchRef} style={{ marginTop: '12px' }}>
+        {isSearchOpen && totalPages > 0 && <SearchDropdownList />}
+      </div>
     </div>
   );
 }

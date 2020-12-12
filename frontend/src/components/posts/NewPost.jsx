@@ -66,7 +66,7 @@ export default function NewPost() {
         onChange={onInputChange}
         className={classes.textarea}
       />
-      <ShareSettings newPost={postInfo} resetContent={resetContent} />
+      <ShareSettings newPost={postInfo} resetContent={resetContent} isArticle />
     </NewPostWrapper>
   );
 }

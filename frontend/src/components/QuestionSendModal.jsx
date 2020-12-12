@@ -13,7 +13,8 @@ import QuestionSendFriendItem from './QuestionSendFriendItem';
 
 const useStyles = makeStyles((theme) => ({
   content: {
-    padding: theme.spacing(1, 2, 2, 2)
+    padding: theme.spacing(1, 2, 2, 2),
+    margin: '8px 0'
   },
   modalTitle: {
     fontSize: '24px',
@@ -76,7 +77,13 @@ const QuestionSendModal = ({ questionObj, open, handleClose }) => {
   });
 
   return (
-    <Dialog fullWidth onClose={handleClose} maxWidth="sm" open={open}>
+    <Dialog
+      fullWidth
+      onClose={handleClose}
+      maxWidth="sm"
+      open={open}
+      className="question-send"
+    >
       <DialogTitle className={classes.modalTitle} onClose={handleClose}>
         질문 보내기
         <IconButton

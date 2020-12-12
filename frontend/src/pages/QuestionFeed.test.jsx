@@ -55,4 +55,13 @@ describe('<QuestionFeed/>', () => {
     const questionList = wrapper.find('.question-list');
     expect(questionList.length).toBe(1);
   });
+
+  it('should render customQuestionModal when click new-question-button on mobile', () => {
+    const wrapper = getWrapper();
+    const newQuestion = wrapper.find('#new-question').hostNodes();
+    newQuestion.simulate('click');
+
+    const customQuestionModal = wrapper.find('CustomQuestionModal');
+    expect(customQuestionModal.length).toBe(1);
+  });
 });

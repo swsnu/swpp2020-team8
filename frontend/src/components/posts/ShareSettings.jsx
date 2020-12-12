@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-wrap-multilines */
 /* eslint-disable camelcase */
 import React, { useState, useEffect } from 'react';
 import {
@@ -30,6 +31,13 @@ const ShareSettingsWrapper = styled.div`
   font-size: 14px;
 `;
 
+const ArticleInfo = styled.div`
+  padding-top: 13px;
+  margin: 0 8px;
+  font-size: 10px;
+  color: #999;
+`;
+
 const useStyles = makeStyles(() => ({
   label: {
     fontSize: '14px'
@@ -40,7 +48,8 @@ export default function ShareSettings({
   newPost,
   resetContent,
   edit,
-  postObj
+  postObj,
+  isArticle = false
 }) {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -63,6 +72,9 @@ export default function ShareSettings({
         shareWithFriends: share_with_friends,
         shareAnonymously: share_anonymously
       });
+    }
+    if (isArticle) {
+      setShareState({ shareWithFriends: true, shareAnonymously: false });
     }
   }, [location, postObj]);
 
@@ -118,20 +130,28 @@ export default function ShareSettings({
   return (
     <ShareSettingsWrapper>
       <RespFormGroup row width="400px">
-        <FormControlLabel
-          className={`share-with-friends ${classes.label}`}
-          control={controlShareWithFriends}
-          label={
-            <Typography className={classes.label}>친구에게 공유하기</Typography>
-          }
-        />
-        <FormControlLabel
-          className={`share-anonymously ${classes.label}`}
-          control={controlShareAnonymously}
-          label={
-            <Typography className={classes.label}>익명으로 공유하기</Typography>
-          }
-        />
+        {!isArticle && (
+          <>
+            <FormControlLabel
+              className={`share-with-friends ${classes.label}`}
+              control={controlShareWithFriends}
+              label={
+                <Typography className={classes.label}>
+                  친구에게 공유하기
+                </Typography>
+              }
+            />
+            <FormControlLabel
+              className={`share-anonymously ${classes.label}`}
+              control={controlShareAnonymously}
+              label={
+                <Typography className={classes.label}>
+                  익명으로 공유하기
+                </Typography>
+              }
+            />
+          </>
+        )}
         <Button
           id="submit-button"
           size="small"
@@ -146,6 +166,11 @@ export default function ShareSettings({
           게시
         </Button>
       </RespFormGroup>
+      {isArticle && (
+        <ArticleInfo>
+          질문, 답변을 제외한 게시글은 친구들에게만 공개됩니다.
+        </ArticleInfo>
+      )}
     </ShareSettingsWrapper>
   );
 }

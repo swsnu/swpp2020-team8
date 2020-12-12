@@ -43,7 +43,12 @@ const CommentInfo = styled.div`
   font-size: 10px;
 `;
 
-export default function PostItem({ postObj, postKey, isDetailPage }) {
+export default function PostItem({
+  postObj,
+  postKey,
+  isDetailPage,
+  resetAfterComment
+}) {
   const { pathname, search } = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -51,7 +56,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
   const isAuthor =
     postObj?.author && currentUser?.id === postObj.author_detail?.id;
   const isAnon =
-    (postObj?.author && !postObj?.author_detail?.id) ||
+    !postObj?.author_detail?.id ||
     pathname.includes('anonymous') ||
     search?.includes('anonymous=True');
   const onlyAnonPost =
@@ -74,7 +79,7 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
     if (comment.is_private && !isAuthor && !isCommentAuthor) return null;
     return (
       <CommentItem
-        isAnon={isAnon}
+        isAnon={isAnon || onlyAnonPost}
         postKey={postKey}
         key={comment.id}
         commentObj={comment}
@@ -96,12 +101,14 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
       is_anonymous: isAnon || onlyAnonPost
     };
     dispatch(createComment(newCommentObj, postKey, postObj?.question_id));
+    if (resetAfterComment) resetAfterComment();
   };
 
   const toggleLike = () => {
     const postInfo = {
       target_type: postObj.type,
-      target_id: postObj.id
+      target_id: postObj.id,
+      is_anonymous: isAnon
     };
     if (liked) {
       setLikeCount((prev) => prev - 1);
@@ -178,14 +185,15 @@ export default function PostItem({ postObj, postKey, isDetailPage }) {
           )}
         </PostItemButtonsWrapper>
       </PostItemFooterWrapper>
+      <div style={{ borderTop: '1px solid #eee', margin: '8px 0' }} />
       <>
+        <CommentWrapper>{commentList}</CommentWrapper>
         <NewComment isAnon={isAnon} onSubmit={handleSubmit} />
         <CommentInfo>
           작성된 댓글은
-          {isAnon ? ' 익명피드에만 ' : ' 친구들에게만 '}
+          {isAnon || onlyAnonPost ? ' 익명피드에만 ' : ' 친구들에게만 '}
           공개됩니다.
         </CommentInfo>
-        <CommentWrapper>{commentList}</CommentWrapper>
       </>
       <AlertDialog
         message="정말 삭제하시겠습니까?"

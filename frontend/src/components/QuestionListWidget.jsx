@@ -5,6 +5,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
 import ListItemText from '@material-ui/core/ListItemText';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -111,6 +112,11 @@ const QuestionListWidget = ({
     (state) => state.questionReducer.randomQuestions
   );
 
+  const isLoading = useSelector(
+    (state) =>
+      state.loadingReducer['question/GET_RECOMMENDED_QUESTIONS'] === 'REQUEST'
+  );
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getDailyQuestions());
@@ -194,16 +200,21 @@ const QuestionListWidget = ({
                 )}
               </FlexDiv>
             </WidgetTitleWrapper>
-            {!isFolded && (
-              <List
-                className={classes.list}
-                aria-label="recommended question list"
-              >
-                {isRandomQuestions
-                  ? randomQuestionList
-                  : recommendedQuestionList}
-              </List>
-            )}
+            {!isFolded &&
+              (isLoading ? (
+                <div style={{ margin: '8px', textAlign: 'center' }}>
+                  <CircularProgress id="spinner" color="primary" />
+                </div>
+              ) : (
+                <List
+                  className={classes.list}
+                  aria-label="recommended question list"
+                >
+                  {isRandomQuestions
+                    ? randomQuestionList
+                    : recommendedQuestionList}
+                </List>
+              ))}
           </CardContent>
         </WidgetCard>
         <NewQuestionButton margin="16px 0" onClick={handleModalOpen}>

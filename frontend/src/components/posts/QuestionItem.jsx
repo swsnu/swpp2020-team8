@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import { TextareaAutosize } from '@material-ui/core';
@@ -38,6 +38,7 @@ const Question = styled.div`
   font-weight: 500;
   font-size: 15px;
   word-break: break-all;
+  padding: 8px 0;
   @media (max-width: 650px) {
     padding: 16px;
   }
@@ -67,6 +68,12 @@ export default function QuestionItem({
   questionId
 }) {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const history = useHistory();
+  const isQuestionList = location.pathname === '/questions';
+  const isAnon =
+    location?.pathname.includes('anonymous') ||
+    location?.search?.includes('anonymous=True');
   const currentUser = useSelector((state) => state.userReducer.currentUser);
   const isAuthor = currentUser?.id === questionObj.author_detail.id;
 
@@ -90,7 +97,7 @@ export default function QuestionItem({
       content: '',
       type: 'Response'
     });
-  }, [questionId]);
+  }, [questionId, questionObj]);
 
   const handleContentChange = (e) => {
     setNewPost((prev) => ({
@@ -102,7 +109,8 @@ export default function QuestionItem({
   const toggleLike = () => {
     const postInfo = {
       target_type: questionObj.type,
-      target_id: questionObj.id
+      target_id: questionObj.id,
+      is_anonymous: isAnon
     };
     if (liked) {
       setLikeCount((prev) => prev - 1);
@@ -134,6 +142,7 @@ export default function QuestionItem({
     setNewPost((prev) => ({ ...prev, content: '' }));
     if (onResetContent) onResetContent();
     setIsWriting(false);
+    if (isQuestionList) history.push('/home');
   };
 
   return (
@@ -187,6 +196,7 @@ export default function QuestionItem({
             id="content-input"
             placeholder="답변을 작성해주세요."
             value={newPost.content}
+            rowsMin={3}
             onChange={handleContentChange}
           />
           <ShareSettings newPost={newPost} resetContent={resetContent} />

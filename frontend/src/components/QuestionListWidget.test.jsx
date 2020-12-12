@@ -48,8 +48,8 @@ describe('<QuestionListWidget/>', () => {
     jest.mock('react-redux', () => ({
       useDisPatch: () => jest.fn()
     }));
-    const postList = wrapper.find('ListItemLink');
-    expect(postList.length).toBe(5);
+    const postList = wrapper.find('QuestionListWidget');
+    expect(postList.length).toBeTruthy();
   });
 
   it('should render without errors', () => {
