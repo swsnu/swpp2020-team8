@@ -34,6 +34,7 @@ export const GlobalStyle = createGlobalStyle`
   }
   
   .MuiDialog-paperFullWidth {
+    max-height: 60vh;
     @media (max-width: 650px) {
       position: fixed !important;
       top: 20% !important;

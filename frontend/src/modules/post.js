@@ -227,7 +227,7 @@ export const createPost = (newPost) => async (dispatch, getState) => {
     resultPost.type === 'Response' &&
     selectedQuestion?.id === resultPost.question_id
   ) {
-    dispatch(getResponsesByQuestionWithType(selectedQuestion?.id, 'friend'));
+    dispatch(getResponsesByQuestionWithType(selectedQuestion?.id, 'all'));
   }
   const { selectedUserId } = getState().postReducer;
   if (+selectedUserId === +resultPost.author_detail?.id) {
@@ -260,7 +260,7 @@ export const createComment = (newComment, postKey, targetId) => async (
   });
   const { selectedQuestion } = getState().questionReducer;
   if (+selectedQuestion?.id === +targetId) {
-    dispatch(getResponsesByQuestionWithType(selectedQuestion?.id, 'friend'));
+    dispatch(getResponsesByQuestionWithType(selectedQuestion?.id, 'all'));
   }
 };
 
@@ -289,7 +289,7 @@ export const createReply = (newReply, postKey, targetId) => async (
   });
   const { selectedQuestion } = getState().questionReducer;
   if (+selectedQuestion?.id === +targetId) {
-    dispatch(getResponsesByQuestionWithType(selectedQuestion?.id, 'friend'));
+    dispatch(getResponsesByQuestionWithType(selectedQuestion?.id, 'all'));
   }
 };
 
@@ -318,7 +318,7 @@ export const deleteComment = (commentId, postKey, isReply, targetId) => async (
   });
   const { selectedQuestion } = getState().questionReducer;
   if (+selectedQuestion?.id === +targetId) {
-    dispatch(getResponsesByQuestionWithType(selectedQuestion?.id, 'friend'));
+    dispatch(getResponsesByQuestionWithType(selectedQuestion?.id, 'all'));
   }
 };
 
