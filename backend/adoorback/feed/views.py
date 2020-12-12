@@ -250,7 +250,7 @@ class DailyQuestionList(generics.ListAPIView):
     def get_queryset(self):
         if Question.objects.daily_questions().count() == 0:
             select_daily_questions()
-        return Question.objects.daily_questions().order_by('-id')
+        return Question.objects.daily_questions().order_by('?')
 
 
 class RecommendedQuestionList(generics.ListAPIView):
@@ -261,12 +261,16 @@ class RecommendedQuestionList(generics.ListAPIView):
         return adoor_exception_handler
 
     def get_queryset(self):
-        dir_name = os.path.dirname(os.path.abspath(__file__))
-        path = os.path.join(dir_name, 'algorithms', 'recommendations.csv')
-        df = pd.read_csv(path)
+        try:
+            dir_name = os.path.dirname(os.path.abspath(__file__))
+            path = os.path.join(dir_name, 'algorithms', 'recommendations.csv')
+            df = pd.read_csv(path)
+        except FileNotFoundError:
+            return Question.objects.daily_questions()[:5].order_by('?')
+
         df = df[df.userId == self.request.user.id]
         rank_ids = df['questionId'].tolist()
         daily_question_ids = set(list(Question.objects.daily_questions().values_list('id', flat=True)))
         recommended_ids = [x for x in rank_ids if x in daily_question_ids][:5]
 
-        return Question.objects.filter(pk__in=recommended_ids).order_by('-id')
+        return Question.objects.filter(pk__in=recommended_ids).order_by('?')
