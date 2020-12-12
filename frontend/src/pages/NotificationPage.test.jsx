@@ -45,7 +45,7 @@ describe('<NotificationPage /> unit mount test', () => {
 
     expect(component.length).toBe(1);
     expect(friendRequests.length).toBe(0);
-    expect(notificationItems.length).toBe(1);
+    expect(notificationItems.length).toBeTruthy();
   });
 
   it('should handle change tab', async () => {
