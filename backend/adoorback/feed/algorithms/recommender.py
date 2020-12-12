@@ -6,7 +6,7 @@ import numpy as np
 import scipy
 import sklearn
 
-from konlpy.tag import Twitter
+from konlpy.tag import Okt
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import cosine_similarity
@@ -218,7 +218,7 @@ def create_ranks_csv():
             pos = ['{}/{}'.format(word, tag) for word, tag in pos]
             return pos
 
-    my_tokenizer = MyTokenizer(Twitter())
+    my_tokenizer = MyTokenizer(Okt())
 
     vectorizer = CountVectorizer(tokenizer=my_tokenizer, min_df=2)
     item_ids = questions_df['contentId'].tolist()
@@ -253,8 +253,8 @@ def create_ranks_csv():
         return user_profile_norm
 
     def build_users_profiles():
-        interactions_indexed_df = interactions_train_df[interactions_train_df['contentId'] \
-            .isin(questions_df['contentId'])].set_index('personId')
+        interactions_indexed_df = interactions_train_df[interactions_train_df['contentId'].isin(
+            questions_df['contentId'])].set_index('personId')
         profiles = {}
         for person_id in interactions_indexed_df.index.unique():
             profiles[person_id] = build_users_profile(person_id, interactions_indexed_df)
@@ -484,7 +484,7 @@ def create_ranks_csv():
 
     df = pd.DataFrame()
     for uid in User.objects.exclude(is_superuser=True).values_list('id', flat=True):
-        print(str(uid) + "done")
+        # print(str(uid) + "done")
         new_df = best_model.recommend_items(uid, topn=topn, verbose=True)
         new_df['userId'] = uid
         df = df.append(new_df)

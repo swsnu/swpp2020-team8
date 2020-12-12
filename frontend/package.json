@@ -95,7 +95,7 @@
       "!src/serviceWorker.js",
       "!src/utils/dateTimeHelpers.js",
       "!src/styles.js",
-      "!src/Friend.jsx"
+      "!src/apis/index.js"
     ]
   },
   "proxy": "http://localhost:8000"

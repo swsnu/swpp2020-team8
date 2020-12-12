@@ -6,7 +6,7 @@ import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 import { act } from 'react-dom/test-utils';
-import { mockNotifications } from '../constants';
+import { mockNotiArrays } from '../constants';
 import NotificationItem from './NotificationItem';
 import { mockStore } from '../mockStore';
 import rootReducer from '../modules';
@@ -23,7 +23,7 @@ describe('<NotificationItem/>', () => {
   const wrapper = mount(
     <Provider store={store}>
       <Router history={history}>
-        <NotificationItem notiObj={mockNotifications[0]} isNotificationPage />
+        <NotificationItem notiObj={mockNotiArrays[0]} isNotificationPage />
       </Router>
     </Provider>
   );

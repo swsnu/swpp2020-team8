@@ -506,3 +506,29 @@ class FriendshipNotisAPITestCase(APITestCase):
             self.assertEqual(Notification.objects.count(), num_notis - 3)
             self.assertEqual(User.objects.get(id=current_user.id).friends.count(), num_friends_current_user - 1)
             self.assertEqual(User.objects.get(id=friend_user.id).friends.count(), num_friends_friend_user - 1)
+
+
+class ExceptionHandlerAPITestCase(APITestCase):
+
+    def setUp(self):
+        set_seed(N)
+
+    def test_exception_raised(self):
+
+        response = self.get('signup-questions')
+        self.assertEqual(response.status_code, 403)
+
+        response = self.get('current_user_friends')
+        self.assertEqual(response.status_code, 404)
+
+        response = self.get(self.reverse('user-detail', pk=1))
+        self.assertEqual(response.status_code, 403)
+
+        response = self.delete(self.reverse('user-friend-destroy', pk=1))
+        self.assertEqual(response.status_code, 403)
+
+        response = self.delete(self.reverse('user-friend-request-destroy', pk=1))
+        self.assertEqual(response.status_code, 403)
+
+        response = self.get('user-search', data={'query': 'haha'})
+        self.assertEqual(response.status_code, 403)

@@ -4,7 +4,7 @@ import {
   mockQuestions,
   mockQuestionFeed,
   mockRecommendQuestions,
-  mockNotifications,
+  mockNotiArrays,
   mockResponse,
   mockResponse2,
   mockResponseRequests,
@@ -16,7 +16,7 @@ export const mockStore = {
     friendList: mockFriendList
   },
   notiReducer: {
-    receivedNotifications: mockNotifications
+    receivedNotifications: mockNotiArrays
   },
   postReducer: {
     selectedPost: mockCustomQuestion,
@@ -67,7 +67,7 @@ export const mockStore = {
 export const mockStoreBeforeLogin = {
   friendReducer: {},
   notiReducer: {
-    receivedNotifications: mockNotifications
+    receivedNotifications: mockNotiArrays
   },
   postReducer: {
     selectedPost: mockPost
