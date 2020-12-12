@@ -12,6 +12,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { useLocation, useHistory } from 'react-router-dom';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
 import { createPost, editSelectedPost } from '../../modules/post';
 
 const RespFormGroup = styled(FormGroup)`
@@ -59,6 +63,7 @@ export default function ShareSettings({
     shareWithFriends: true,
     shareAnonymously: false
   });
+  const [noContentDialogOpen, setNoContentDialogOpen] = useState(false);
 
   useEffect(() => {
     if (location.pathname === '/anonymous') {
@@ -85,6 +90,10 @@ export default function ShareSettings({
 
   const onClickSubmitButton = async () => {
     if (edit) {
+      if (postObj?.content.trim() === '') {
+        setNoContentDialogOpen(true);
+        return;
+      }
       const editedPostObj = {
         ...postObj,
         share_with_friends: shareState.shareWithFriends,
@@ -93,6 +102,10 @@ export default function ShareSettings({
       await dispatch(editSelectedPost(editedPostObj));
       history.push(location.pathname.slice(0, -4));
     } else {
+      if (newPost?.content.trim() === '') {
+        setNoContentDialogOpen(true);
+        return;
+      }
       const newPostObj = {
         ...shareState,
         ...newPost
@@ -171,6 +184,29 @@ export default function ShareSettings({
           질문, 답변을 제외한 게시글은 친구들에게만 공개됩니다.
         </ArticleInfo>
       )}
+      <Dialog
+        id="no-content-dialog"
+        open={noContentDialogOpen}
+        onClose={() => setNoContentDialogOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            내용을 입력해주세요!
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            id="confirm-button"
+            onClick={() => setNoContentDialogOpen(false)}
+            color="primary"
+            autoFocus
+          >
+            확인
+          </Button>
+        </DialogActions>
+      </Dialog>
     </ShareSettingsWrapper>
   );
 }
