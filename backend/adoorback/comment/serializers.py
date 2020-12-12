@@ -43,10 +43,10 @@ class CommentFriendSerializer(CommentBaseSerializer):
     def get_replies(self, obj):
         current_user = self.context.get('request', None).user
         if obj.target.type != 'Comment' and obj.target.author == current_user:
-            comments = obj.replies.order_by('id')
+            replies = obj.replies.order_by('id')
         else:
-            comments = obj.replies.filter(is_anonymous=False, is_private=False).order_by('id')
-        return self.__class__(comments, many=True, read_only=True, context=self.context).data
+            replies = obj.replies.filter(is_anonymous=False, is_private=False).order_by('id')
+        return self.__class__(replies, many=True, read_only=True, context=self.context).data
 
     class Meta(CommentBaseSerializer.Meta):
         model = Comment
@@ -71,10 +71,10 @@ class CommentAnonymousSerializer(CommentBaseSerializer):
     def get_replies(self, obj):
         current_user = self.context.get('request', None).user
         if obj.target.author == current_user:
-            comments = obj.replies.order_by('id')
+            replies = obj.replies.order_by('id')
         else:
-            comments = obj.replies.filter(is_anonymous=True, is_private=False).order_by('id')
-        return self.__class__(comments, many=True, read_only=True, context=self.context).data
+            replies = obj.replies.filter(is_anonymous=True, is_private=False).order_by('id')
+        return self.__class__(replies, many=True, read_only=True, context=self.context).data
 
     class Meta(CommentBaseSerializer.Meta):
         model = Comment
@@ -90,10 +90,10 @@ class CommentResponsiveSerializer(CommentBaseSerializer):
     def get_replies(self, obj):
         current_user = self.context.get('request', None).user
         if obj.target.author == current_user:
-            comments = obj.replies.order_by('id')
+            replies = obj.replies.order_by('id')
         else:
-            comments = obj.replies.filter(is_private=False).order_by('id')
-        return self.__class__(comments, many=True, read_only=True, context=self.context).data
+            replies = obj.replies.filter(is_private=False).order_by('id')
+        return self.__class__(replies, many=True, read_only=True, context=self.context).data
 
     def get_author_detail(self, obj):
         if not obj.is_anonymous or (obj.author == self.context.get('request', None).user):
