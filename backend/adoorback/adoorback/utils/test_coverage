@@ -29,6 +29,6 @@ coverage run --source='.' --branch ./manage.py test comment.tests
 coverage report -m
 
 # coverage - notification
-coverage run --source='.' ./manage.py test notification.tests
+coverage run --source='.' ./manage.py test feed.tests
 coverage run --source='.' --branch ./manage.py test notification.tests
 coverage report -m
