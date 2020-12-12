@@ -266,7 +266,7 @@ class RecommendedQuestionList(generics.ListAPIView):
             path = os.path.join(dir_name, 'algorithms', 'recommendations.csv')
             df = pd.read_csv(path)
         except FileNotFoundError:
-            return Question.objects.daily_questions()[:5].order_by('?')
+            return Question.objects.daily_questions().order_by('?')[:5]
 
         df = df[df.userId == self.request.user.id]
         rank_ids = df['questionId'].tolist()
