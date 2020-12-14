@@ -434,9 +434,24 @@ export default function postReducer(state = initialState, action) {
         const key = `${post.type}-${post.id}`;
         return key !== postKey;
       });
+      const newUserPosts = state.selectedUserPosts.filter((post) => {
+        const key = `${post.type}-${post.id}`;
+        return key !== postKey;
+      });
+      const newAnonPosts = state.anonymousPosts.filter((post) => {
+        const key = `${post.type}-${post.id}`;
+        return key !== postKey;
+      });
+      const newSelectedPost =
+        `${state.selectedPost?.type}-${state.selectedPost?.id}` === postKey
+          ? null
+          : state.selectedPost;
       return {
         ...state,
-        friendPosts: newFriendPosts
+        friendPosts: newFriendPosts,
+        selectedUserPosts: newUserPosts,
+        anonymousPosts: newAnonPosts,
+        selectedPost: newSelectedPost
       };
     }
     case CREATE_COMMENT_SUCCESS: {

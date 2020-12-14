@@ -86,7 +86,7 @@ export default function MobileFooter({ notiBadgeInvisible }) {
         label="오늘의 질문"
         icon={<LiveHelpIcon />}
         className={`${classes.icon} link`}
-        style={{ padding: '6px 2px', fontSize: '0.7rem' }}
+        style={{ padding: '6px 8px', fontSize: '0.7rem' }}
       />
       <BottomNavigationAction
         value="/notifications"
