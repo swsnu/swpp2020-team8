@@ -57,7 +57,7 @@ export default function PostItem({
     postObj?.author && currentUser?.id === postObj.author_detail?.id;
   const isAnon =
     !postObj?.author_detail?.id ||
-    pathname.includes('anonymous') ||
+    pathname?.includes('anonymous') ||
     search?.includes('anonymous=True');
   const onlyAnonPost =
     postObj?.share_anonymously && !postObj?.share_with_friends;
@@ -153,16 +153,18 @@ export default function PostItem({
           {isAuthor && (
             <>
               {(postObj.share_with_friends || postObj.share_anonymously) && (
-                <ShareSettingInfo>공개범위:</ShareSettingInfo>
+                <ShareSettingInfo id="share-title">공개범위:</ShareSettingInfo>
               )}
               {postObj.share_with_friends && (
-                <ShareSettingInfo>친구</ShareSettingInfo>
+                <ShareSettingInfo id="share-with-friends">
+                  친구
+                </ShareSettingInfo>
               )}
               {postObj.share_with_friends && postObj.share_anonymously && (
                 <ShareSettingInfo>|</ShareSettingInfo>
               )}
               {postObj.share_anonymously && (
-                <ShareSettingInfo>익명</ShareSettingInfo>
+                <ShareSettingInfo id="share-with-anon">익명</ShareSettingInfo>
               )}
             </>
           )}
@@ -191,7 +193,7 @@ export default function PostItem({
         <NewComment isAnon={isAnon} onSubmit={handleSubmit} />
         <CommentInfo>
           작성된 댓글은
-          {isAnon || onlyAnonPost ? ' 익명피드에만 ' : ' 친구들에게만 '}
+          {isAnon || onlyAnonPost ? ' 익명피드에만  ' : ' 친구들에게만 '}
           공개됩니다.
         </CommentInfo>
       </>

@@ -15,6 +15,7 @@ import * as actionCreators from '../../modules/like';
 
 const samplePostObj = {
   id: 0,
+  author: 'url',
   author_detail: {
     id: 123,
     username: 'curious',
@@ -24,7 +25,10 @@ const samplePostObj = {
   content: `ㅋㅋ은 대한민국의 인터넷 신조어로, 한글의 자음 중 하나인 'ㅋ'를 이용해 웃음소리를 표현한 것이다. ㅋㅋ는 의성어인 '큭큭', '킥킥', '캭캭' 등을 초성체로 줄여 쓴 것으로 해석하는 것이 일반적이며, ㅋ자의 빈도와 상황에 따라 여러 가지 의미와 느낌을 줄 수 있다. `,
   created_at: '2020-11-05T14:16:13.801119+08:00',
   like_count: 0,
-  current_user_liked: false
+  current_user_liked: false,
+  type: 'Article',
+  share_with_friends: true,
+  share_anonymously: true
 };
 
 const sampleResponseObj = {
@@ -76,6 +80,12 @@ const sampleResponseObj = {
 };
 
 describe('<PostItem /> unit mount test', () => {
+  Object.defineProperty(window, 'location', {
+    value: {
+      pathname: '/anonymous'
+    }
+  });
+
   const store = createStore(
     rootReducer,
     mockStore,
@@ -187,11 +197,38 @@ describe('<PostItem /> unit mount test', () => {
 
     const dialog = component.find('AlertDialog');
     expect(dialog).toBeTruthy();
+    const moreButton = component.find('#more-button');
 
+    expect(component.find('#post-delete-button').length).toBeTruthy();
+    component.find('#post-delete-button').at(0).simulate('click');
     const confirmButton = component.find('#confirm-button');
     expect(confirmButton).toBeTruthy();
+    confirmButton.at(0).simulate('click');
+
+    component.find('#post-delete-button').at(0).simulate('click');
+    const cancel = component.find('#cancel-button');
+    expect(confirmButton).toBeTruthy();
+    cancel.at(0).simulate('click');
 
     const handleDelete = jest.fn();
     expect(handleDelete.mock.calls).toBeTruthy();
+    component.update();
+  });
+
+  it('should deal with edit action', () => {
+    const component = getPostWrapper();
+
+    expect(component.find('#post-edit-button').length).toBeTruthy();
+    history.replace = jest.fn();
+
+    component.find('#post-edit-button').at(0).simulate('click');
+    component.update();
+  });
+
+  it('should display correct share range', () => {
+    const component = getPostWrapper();
+    expect(component.find('#share-with-friends').length).toBeTruthy();
+    expect(component.find('#share-with-anon').length).toBeTruthy();
+    expect(component.find('#share-title').length).toBeTruthy();
   });
 });

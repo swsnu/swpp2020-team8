@@ -322,7 +322,7 @@ export const deleteComment = (commentId, postKey, isReply, targetId) => async (
   }
 };
 
-export const deletePost = (postId, type) => async (dispatch) => {
+export const deletePost = (postId, type) => async (dispatch, getState) => {
   const postType = type.toLowerCase();
   try {
     await axios.delete(`feed/${postType}s/${postId}`);
@@ -331,6 +331,23 @@ export const deletePost = (postId, type) => async (dispatch) => {
     return;
   }
   dispatch({ type: DELETE_POST_SUCCESS, postId, postType: type });
+  const {
+    selectedQuestion,
+    selectedQuestionResponses
+  } = getState().questionReducer;
+  if (
+    type === 'Response' &&
+    selectedQuestionResponses.find((response) => response.id === postId)
+  ) {
+    const newResponses = selectedQuestionResponses.filter(
+      (response) => response.id !== postId
+    );
+    dispatch({
+      type: 'question/GET_SELECTED_QUESTION_ALL_RESPONSES_SUCCESS',
+      question: selectedQuestion,
+      res: newResponses
+    });
+  }
 };
 
 const getNewCommentsWithReply = (comments, reply) => {
@@ -434,9 +451,24 @@ export default function postReducer(state = initialState, action) {
         const key = `${post.type}-${post.id}`;
         return key !== postKey;
       });
+      const newUserPosts = state.selectedUserPosts.filter((post) => {
+        const key = `${post.type}-${post.id}`;
+        return key !== postKey;
+      });
+      const newAnonPosts = state.anonymousPosts.filter((post) => {
+        const key = `${post.type}-${post.id}`;
+        return key !== postKey;
+      });
+      const newSelectedPost =
+        `${state.selectedPost?.type}-${state.selectedPost?.id}` === postKey
+          ? null
+          : state.selectedPost;
       return {
         ...state,
-        friendPosts: newFriendPosts
+        friendPosts: newFriendPosts,
+        selectedUserPosts: newUserPosts,
+        anonymousPosts: newAnonPosts,
+        selectedPost: newSelectedPost
       };
     }
     case CREATE_COMMENT_SUCCESS: {
