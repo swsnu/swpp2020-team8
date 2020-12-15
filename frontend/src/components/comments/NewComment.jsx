@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Checkbox, Button } from '@material-ui/core';
+import { Checkbox, Button, TextareaAutosize } from '@material-ui/core';
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
 import LockIcon from '@material-ui/icons/Lock';
+import { makeStyles } from '@material-ui/core/styles';
 
 const NewCommentWrapper = styled.div`
   margin-top: 8px;
@@ -12,14 +13,30 @@ const NewCommentWrapper = styled.div`
 `;
 
 NewCommentWrapper.displayName = 'NewCommentWrapper';
-const NewCommentInput = styled.input`
-  outline: none;
-  flex-grow: 1;
-  padding: 6px;
-  margin: 4px 0;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-`;
+// const NewCommentInput = styled.input`
+//   outline: none;
+//   flex-grow: 1;
+//   padding: 6px;
+//   margin: 4px 0;
+//   border: 1px solid #ddd;
+//   border-radius: 4px;
+// `;
+
+const useStyles = makeStyles({
+  textarea: {
+    flexGrow: '1',
+    padding: '6px',
+    margin: '4px 0',
+    border: '1px solid #ddd',
+    borderRadius: '4px',
+    overflow: 'hidden',
+    resize: 'none',
+    cursor: 'auto',
+    boxSizing: 'border-box',
+    fontFamily: 'Noto Sans KR, sans-serif',
+    outline: 'none !important'
+  }
+});
 
 const PrivateWrapper = styled.div`
   font-size: 0.8rem;
@@ -37,6 +54,7 @@ export default function NewComment({
   const [content, setContent] = useState('');
   const [isPrivate, setIsPrivate] = useState(forcePrivate);
   const placeholder = isReply ? '답글을 입력하세요.' : '댓글을 입력하세요.';
+  const classes = useStyles();
 
   const handleContentChange = (e) => {
     setContent(e.target.value);
@@ -73,12 +91,13 @@ export default function NewComment({
           }}
         />
       )}
-      <NewCommentInput
-        className="comment-input"
+      <TextareaAutosize
+        id="comment-input"
         placeholder={placeholder}
         onChange={handleContentChange}
         onKeyDown={handleEnter}
         value={content}
+        className={classes.textarea}
       />
       <PrivateWrapper>
         <Checkbox

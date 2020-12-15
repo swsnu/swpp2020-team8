@@ -25,7 +25,7 @@ describe('<NewComment />', () => {
     const component = shallow(<NewComment onSubmit={onSubmit} isReply />);
     const wrapper = component.find('NewCommentWrapper');
     expect(wrapper.length).toBe(1);
-    let input = component.find('.comment-input');
+    let input = component.find('#comment-input');
     expect(input).toBeTruthy();
     let submitButton = component.find('#submit-button');
     expect(submitButton).toBeTruthy();
@@ -36,7 +36,7 @@ describe('<NewComment />', () => {
     };
     input.simulate('change', inputEvent);
     component.update();
-    input = component.find('.comment-input');
+    input = component.find('#comment-input');
     expect(input.props().value).toEqual('hello');
     submitButton = component.find('#submit-button');
     submitButton.simulate('click');
@@ -46,7 +46,7 @@ describe('<NewComment />', () => {
     const component = shallow(
       <NewComment onSubmit={onSubmit} isReply={false} />
     );
-    const input = component.find('.comment-input');
+    const input = component.find('#comment-input');
     input.simulate('keydown', {
       keyCode: 19,
       preventDefault: jest.fn(),
@@ -62,7 +62,7 @@ describe('<NewComment />', () => {
 
   it('should recognize enter key press when is reply', () => {
     const component = shallow(<NewComment onSubmit={onSubmit} isReply />);
-    const input = component.find('.comment-input');
+    const input = component.find('#comment-input');
     input.simulate('keydown', {
       keyCode: 19,
       preventDefault: jest.fn(),

@@ -15,7 +15,12 @@ export default function UserPostList({
     const postKey = `${post.type}-${post.id}`;
     if (post['content-type'] === 'Question' || post.type === 'Question')
       return (
-        <QuestionItem key={postKey} postKey={postKey} questionObj={post} />
+        <QuestionItem
+          key={postKey}
+          postKey={postKey}
+          questionObj={post}
+          questionId={post.id}
+        />
       );
     return <PostItem key={postKey} postKey={postKey} postObj={post} />;
   });
