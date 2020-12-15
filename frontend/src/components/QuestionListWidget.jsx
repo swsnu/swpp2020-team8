@@ -53,6 +53,7 @@ const QuestionListItemLink = styled(ListItemLink)`
   margin: 8px;
   width: calc(100% - 16px);
   border-radius: 4px;
+  word-break: break-all;
 `;
 
 NewQuestionButton.displayName = 'NewQuestionButton';
@@ -116,6 +117,23 @@ const QuestionListWidget = ({
     (state) =>
       state.loadingReducer['question/GET_RECOMMENDED_QUESTIONS'] === 'REQUEST'
   );
+
+  const recommendFailure = useSelector(
+    (state) =>
+      state.loadingReducer['question/GET_RECOMMENDED_QUESTIONS'] === 'FAILURE'
+  );
+
+  const getDailyQuestionsSuccess = useSelector(
+    (state) =>
+      state.loadingReducer['question/GET_DAILY_QUESTIONS'] === 'SUCCESS'
+  );
+
+  useEffect(() => {
+    if (recommendFailure && getDailyQuestionsSuccess) {
+      dispatch(getRandomQuestions());
+      setRandomQuestions(true);
+    }
+  }, [recommendFailure, getDailyQuestionsSuccess]);
 
   const dispatch = useDispatch();
   useEffect(() => {
