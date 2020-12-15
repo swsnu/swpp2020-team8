@@ -46,7 +46,11 @@ export default function PostAuthorButtons({
           <List style={{ padding: '0' }}>
             {!isQuestion && (
               <ListItem button>
-                <ListItemText primary="수정하기" onClick={onClickEdit} />
+                <ListItemText
+                  id="post-edit-button"
+                  primary="수정하기"
+                  onClick={onClickEdit}
+                />
               </ListItem>
             )}
             <ListItem button>
