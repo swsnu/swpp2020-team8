@@ -628,367 +628,248 @@ export const mockFriendRequestList = [
 ];
 
 export const mockNotifications = [
-  {
-    count: 25,
-    next: 'http://localhost:8000/api/notifications/?page=2',
-    previous: null,
-    results: [
-      {
-        id: 84,
-        message: '익명의 사용자가 회원님의 댓글을 좋아합니다.',
-        actor: 'http://localhost:8000/api/user/84/',
-        actor_detail: {
-          color_hex: '#FA698A'
-        },
-        recipient: 'http://localhost:8000/api/user/84/',
-        recipient_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        target_type: 'Like',
-        target_id: 49,
-        origin_type: 'Comment',
-        origin_id: 10,
-        is_visible: true,
-        is_read: false,
-        created_at: '2020-11-27T01:30:38.038238+09:00',
-        updated_at: '2020-11-27T01:30:38.038265+09:00'
+  [
+    {
+      id: 12436,
+      is_response_request: false,
+      is_friend_request: false,
+      actor_detail: {
+        id: 1069,
+        username: 'curious.curie',
+        profile_pic: '#006F44',
+        url: 'http://localhost:8000/api/user/1069/'
       },
-      {
-        id: 82,
-        message: '익명의 사용자가 회원님의 질문을 좋아합니다.',
-        actor: 'http://localhost:8000/api/user/82/',
-        actor_detail: {
-          color_hex: '#5C9469'
-        },
-        recipient: 'http://localhost:8000/api/user/82/',
-        recipient_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        target_type: 'Like',
-        target_id: 47,
-        origin_type: 'Question',
-        origin_id: 10,
-        is_visible: true,
-        is_read: false,
-        created_at: '2020-11-27T01:30:38.028161+09:00',
-        updated_at: '2020-11-27T01:30:38.028187+09:00'
+      message: 'curious.curie님이 회원님이 보낸 질문에 답했습니다.',
+      question_content: '지금까지의 올 한해에 대해 한 문장으로 표현해보자.',
+      is_read: false,
+      created_at: '2020-12-13T01:21:37.632702+09:00',
+      redirect_url: '/questions/630'
+    },
+    {
+      id: 12416,
+      is_response_request: false,
+      is_friend_request: false,
+      actor_detail: {
+        id: 1080,
+        username: 'hwimining',
+        profile_pic: '#420F5C',
+        url: 'http://localhost:8000/api/user/1080/'
       },
-      {
-        id: 79,
-        message: 'adoor님이 회원님의 댓글을 좋아합니다.',
-        actor: 'http://localhost:8000/api/user/79/',
-        actor_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        recipient: 'http://localhost:8000/api/user/79/',
-        recipient_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        target_type: 'Like',
-        target_id: 44,
-        origin_type: 'Comment',
-        origin_id: 9,
-        is_visible: true,
-        is_read: false,
-        created_at: '2020-11-27T01:30:38.008712+09:00',
-        updated_at: '2020-11-27T01:30:38.008739+09:00'
+      message: 'hwimining님과 친구가 되었습니다.',
+      question_content: null,
+      is_read: true,
+      created_at: '2020-12-13T01:16:21.305194+09:00',
+      redirect_url: '/users/1080'
+    },
+    {
+      id: 12408,
+      is_response_request: false,
+      is_friend_request: false,
+      actor_detail: {
+        id: 1014,
+        username: '룰렁',
+        profile_pic: '#6CA9F1',
+        url: 'http://localhost:8000/api/user/1014/'
       },
-      {
-        id: 77,
-        message: 'adoor님이 회원님의 질문을 좋아합니다.',
-        actor: 'http://localhost:8000/api/user/77/',
-        actor_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        recipient: 'http://localhost:8000/api/user/77/',
-        recipient_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        target_type: 'Like',
-        target_id: 42,
-        origin_type: 'Question',
-        origin_id: 9,
-        is_visible: true,
-        is_read: false,
-        created_at: '2020-11-27T01:30:37.998900+09:00',
-        updated_at: '2020-11-27T01:30:37.998926+09:00'
+      message: '룰렁님과 친구가 되었습니다.',
+      question_content: null,
+      is_read: true,
+      created_at: '2020-12-13T00:59:03.821842+09:00',
+      redirect_url: '/users/1014'
+    },
+    {
+      id: 12361,
+      is_response_request: false,
+      is_friend_request: false,
+      actor_detail: {
+        id: 1019,
+        username: 'ramyeee',
+        profile_pic: '#6AAE87',
+        url: 'http://localhost:8000/api/user/1019/'
       },
-      {
-        id: 76,
-        message: 'adoor님이 회원님의 게시물을 좋아합니다.',
-        actor: 'http://localhost:8000/api/user/76/',
-        actor_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        recipient: 'http://localhost:8000/api/user/76/',
-        recipient_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        target_type: 'Like',
-        target_id: 41,
-        origin_type: 'Article',
-        origin_id: 9,
-        is_visible: true,
-        is_read: false,
-        created_at: '2020-11-27T01:30:37.993789+09:00',
-        updated_at: '2020-11-27T01:30:37.993815+09:00'
+      message: 'ramyeee님이 회원님이 보낸 질문에 답했습니다.',
+      question_content: '가장 뮤지컬로 만들어보고 싶은 영화는 무엇인가요?',
+      is_read: true,
+      created_at: '2020-12-12T22:54:55.727299+09:00',
+      redirect_url: '/questions/1056'
+    },
+    {
+      id: 12358,
+      is_response_request: false,
+      is_friend_request: false,
+      actor_detail: {
+        id: 1019,
+        username: 'ramyeee',
+        profile_pic: '#6AAE87',
+        url: 'http://localhost:8000/api/user/1019/'
       },
-      {
-        id: 74,
-        message: '익명의 사용자가 회원님의 댓글을 좋아합니다.',
-        actor: 'http://localhost:8000/api/user/74/',
-        actor_detail: {
-          color_hex: '#338C79'
-        },
-        recipient: 'http://localhost:8000/api/user/74/',
-        recipient_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        target_type: 'Like',
-        target_id: 39,
-        origin_type: 'Comment',
-        origin_id: 8,
-        is_visible: true,
-        is_read: false,
-        created_at: '2020-11-27T01:30:37.979199+09:00',
-        updated_at: '2020-11-27T01:30:37.979225+09:00'
+      message: 'ramyeee님이 회원님이 보낸 질문에 답했습니다.',
+      question_content: '부모님이 아시면 걱정하실 일이 있는가?',
+      is_read: true,
+      created_at: '2020-12-12T22:52:13.148666+09:00',
+      redirect_url: '/questions/612'
+    },
+    {
+      id: 12356,
+      is_response_request: false,
+      is_friend_request: false,
+      actor_detail: {
+        id: 1010,
+        username: 'be_yuriful',
+        profile_pic: '#99CC0D',
+        url: 'http://localhost:8000/api/user/1010/'
       },
-      {
-        id: 72,
-        message: '익명의 사용자가 회원님의 질문을 좋아합니다.',
-        actor: 'http://localhost:8000/api/user/72/',
-        actor_detail: {
-          color_hex: '#66A0FA'
-        },
-        recipient: 'http://localhost:8000/api/user/72/',
-        recipient_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        target_type: 'Like',
-        target_id: 37,
-        origin_type: 'Question',
-        origin_id: 8,
-        is_visible: true,
-        is_read: false,
-        created_at: '2020-11-27T01:30:37.968519+09:00',
-        updated_at: '2020-11-27T01:30:37.968549+09:00'
+      message: 'be_yuriful님이 회원님이 보낸 질문에 답했습니다.',
+      question_content: '오늘을 색깔로 표현해보자.',
+      is_read: false,
+      created_at: '2020-12-12T22:39:23.079768+09:00',
+      redirect_url: '/questions/100'
+    },
+    {
+      id: 12355,
+      is_response_request: false,
+      is_friend_request: false,
+      actor_detail: {
+        id: 1010,
+        username: 'be_yuriful',
+        profile_pic: '#99CC0D',
+        url: 'http://localhost:8000/api/user/1010/'
       },
-      {
-        id: 69,
-        message: '익명의 사용자가 회원님의 댓글을 좋아합니다.',
-        actor: 'http://localhost:8000/api/user/69/',
-        actor_detail: {
-          color_hex: '#A02D59'
-        },
-        recipient: 'http://localhost:8000/api/user/69/',
-        recipient_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        target_type: 'Like',
-        target_id: 34,
-        origin_type: 'Comment',
-        origin_id: 7,
-        is_visible: true,
-        is_read: false,
-        created_at: '2020-11-27T01:30:37.946757+09:00',
-        updated_at: '2020-11-27T01:30:37.946783+09:00'
+      message: '익명의 사용자가 회원님의 답변에 댓글을 남겼습니다.',
+      question_content: null,
+      is_read: false,
+      created_at: '2020-12-12T22:37:29.299507+09:00',
+      redirect_url: '/responses/3272?anonymous=True'
+    },
+    {
+      id: 12354,
+      is_response_request: false,
+      is_friend_request: false,
+      actor_detail: {
+        id: 1010,
+        username: 'be_yuriful',
+        profile_pic: '#99CC0D',
+        url: 'http://localhost:8000/api/user/1010/'
       },
-      {
-        id: 67,
-        message: '익명의 사용자가 회원님의 질문을 좋아합니다.',
-        actor: 'http://localhost:8000/api/user/67/',
-        actor_detail: {
-          color_hex: '#F4F526'
-        },
-        recipient: 'http://localhost:8000/api/user/67/',
-        recipient_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        target_type: 'Like',
-        target_id: 32,
-        origin_type: 'Question',
-        origin_id: 7,
-        is_visible: true,
-        is_read: false,
-        created_at: '2020-11-27T01:30:37.936342+09:00',
-        updated_at: '2020-11-27T01:30:37.936371+09:00'
+      message: '익명의 사용자가 회원님의 답변을 좋아합니다.',
+      question_content: null,
+      is_read: false,
+      created_at: '2020-12-12T22:37:19.482799+09:00',
+      redirect_url: '/responses/3272?anonymous=True'
+    },
+    {
+      id: 12353,
+      is_response_request: false,
+      is_friend_request: false,
+      actor_detail: {
+        id: 1010,
+        username: 'be_yuriful',
+        profile_pic: '#99CC0D',
+        url: 'http://localhost:8000/api/user/1010/'
       },
-      {
-        id: 57,
-        message: '익명의 사용자가 회원님의 질문을 좋아합니다.',
-        actor: 'http://localhost:8000/api/user/57/',
-        actor_detail: {
-          color_hex: '#55B770'
-        },
-        recipient: 'http://localhost:8000/api/user/57/',
-        recipient_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        target_type: 'Like',
-        target_id: 22,
-        origin_type: 'Question',
-        origin_id: 5,
-        is_visible: true,
-        is_read: false,
-        created_at: '2020-11-27T01:30:37.876656+09:00',
-        updated_at: '2020-11-27T01:30:37.876680+09:00'
+      message: 'be_yuriful님이 회원님의 답변을 좋아합니다.',
+      question_content: null,
+      is_read: false,
+      created_at: '2020-12-12T22:36:51.340743+09:00',
+      redirect_url: '/responses/3274?anonymous=False'
+    },
+    {
+      id: 12352,
+      is_response_request: false,
+      is_friend_request: false,
+      actor_detail: {
+        id: 1010,
+        username: 'be_yuriful',
+        profile_pic: '#99CC0D',
+        url: 'http://localhost:8000/api/user/1010/'
       },
-      {
-        id: 56,
-        message: '익명의 사용자가 회원님의 게시물을 좋아합니다.',
-        actor: 'http://localhost:8000/api/user/56/',
-        actor_detail: {
-          color_hex: '#012AE5'
-        },
-        recipient: 'http://localhost:8000/api/user/56/',
-        recipient_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        target_type: 'Like',
-        target_id: 21,
-        origin_type: 'Article',
-        origin_id: 5,
-        is_visible: true,
-        is_read: false,
-        created_at: '2020-11-27T01:30:37.871425+09:00',
-        updated_at: '2020-11-27T01:30:37.871449+09:00'
+      message: 'be_yuriful님이 회원님의 답변에 댓글을 남겼습니다.',
+      question_content: null,
+      is_read: false,
+      created_at: '2020-12-12T22:36:46.633625+09:00',
+      redirect_url: '/responses/3273?anonymous=False'
+    },
+    {
+      id: 12347,
+      is_response_request: false,
+      is_friend_request: false,
+      actor_detail: {
+        id: 1069,
+        username: 'curious.curie',
+        profile_pic: '#006F44',
+        url: 'http://localhost:8000/api/user/1069/'
       },
-      {
-        id: 55,
-        message: '익명의 사용자가 회원님의 댓글을 좋아합니다.',
-        actor: 'http://localhost:8000/api/user/55/',
-        actor_detail: {
-          color_hex: '#D69ABE'
-        },
-        recipient: 'http://localhost:8000/api/user/55/',
-        recipient_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        target_type: 'Like',
-        target_id: 20,
-        origin_type: 'Comment',
-        origin_id: 24,
-        is_visible: true,
-        is_read: false,
-        created_at: '2020-11-27T01:30:37.862794+09:00',
-        updated_at: '2020-11-27T01:30:37.862820+09:00'
+      message: '익명의 사용자가 회원님의 답변을 좋아합니다.',
+      question_content: null,
+      is_read: false,
+      created_at: '2020-12-12T22:01:21.435475+09:00',
+      redirect_url: '/responses/3274?anonymous=True'
+    },
+    {
+      id: 12343,
+      is_response_request: false,
+      is_friend_request: false,
+      actor_detail: {
+        id: 1002,
+        username: 'jina',
+        profile_pic: '#B82B85',
+        url: 'http://localhost:8000/api/user/1002/'
       },
-      {
-        id: 52,
-        message: '익명의 사용자가 회원님의 질문을 좋아합니다.',
-        actor: 'http://localhost:8000/api/user/52/',
-        actor_detail: {
-          color_hex: '#1F2243'
-        },
-        recipient: 'http://localhost:8000/api/user/52/',
-        recipient_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        target_type: 'Like',
-        target_id: 17,
-        origin_type: 'Question',
-        origin_id: 4,
-        is_visible: true,
-        is_read: false,
-        created_at: '2020-11-27T01:30:37.847300+09:00',
-        updated_at: '2020-11-27T01:30:37.847327+09:00'
+      message: 'jina님이 회원님의 댓글을 좋아합니다.',
+      question_content: null,
+      is_read: false,
+      created_at: '2020-12-12T21:32:27.247628+09:00',
+      redirect_url: '/responses/3262?anonymous=False'
+    },
+    {
+      id: 12340,
+      is_response_request: false,
+      is_friend_request: false,
+      actor_detail: {
+        id: 1002,
+        username: 'jina',
+        profile_pic: '#B82B85',
+        url: 'http://localhost:8000/api/user/1002/'
       },
-      {
-        id: 51,
-        message: '익명의 사용자가 회원님의 게시물을 좋아합니다.',
-        actor: 'http://localhost:8000/api/user/51/',
-        actor_detail: {
-          color_hex: '#D1B1A0'
-        },
-        recipient: 'http://localhost:8000/api/user/51/',
-        recipient_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        target_type: 'ResponseRequest',
-        target_id: 16,
-        origin_type: 'Question',
-        origin_id: 4,
-        is_visible: true,
-        is_read: false,
-        created_at: '2020-11-27T01:30:37.841983+09:00',
-        updated_at: '2020-11-27T01:30:37.842009+09:00'
+      message: 'jina님이 회원님이 보낸 질문에 답했습니다.',
+      question_content: '부모님이 아시면 걱정하실 일이 있는가?',
+      is_read: false,
+      created_at: '2020-12-12T20:50:38.247025+09:00',
+      redirect_url: '/questions/612'
+    },
+    {
+      id: 12339,
+      is_response_request: false,
+      is_friend_request: false,
+      actor_detail: {
+        id: 1002,
+        username: 'jina',
+        profile_pic: '#B82B85',
+        url: 'http://localhost:8000/api/user/1002/'
       },
-      {
-        id: 47,
-        message: '익명의 사용자가 회원님의 질문을 좋아합니다.',
-        actor: 'http://localhost:8000/api/user/47/',
-        actor_detail: {
-          color_hex: '#1E9AE3'
-        },
-        recipient: 'http://localhost:8000/api/user/47/',
-        recipient_detail: {
-          id: 3,
-          username: 'adoor',
-          profile_pic: '#D088DF',
-          url: 'http://localhost:8000/api/user/3/'
-        },
-        target_type: 'FriendRequest',
-        target_id: 12,
-        origin_type: 'User',
-        origin_id: 3,
-        is_visible: true,
-        is_read: false,
-        created_at: '2020-11-27T01:30:37.812678+09:00',
-        updated_at: '2020-11-27T01:30:37.812704+09:00'
-      }
-    ]
-  }
+      message: 'jina님이 회원님의 답변을 좋아합니다.',
+      question_content: null,
+      is_read: false,
+      created_at: '2020-12-12T20:49:53.694562+09:00',
+      redirect_url: '/responses/3274?anonymous=False'
+    },
+    {
+      id: 12338,
+      is_response_request: false,
+      is_friend_request: false,
+      actor_detail: {
+        id: 1002,
+        username: 'jina',
+        profile_pic: '#B82B85',
+        url: 'http://localhost:8000/api/user/1002/'
+      },
+      message: '익명의 사용자가 회원님의 답변을 좋아합니다.',
+      question_content: null,
+      is_read: false,
+      created_at: '2020-12-12T20:49:34.385959+09:00',
+      redirect_url: '/responses/3272?anonymous=True'
+    }
+  ]
 ];
 
 export const mockNotiArrays = [

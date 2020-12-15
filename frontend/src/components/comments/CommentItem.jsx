@@ -19,7 +19,6 @@ const CommentItemWrapper = styled.div`
   padding-bottom: 4px;
   font-size: 12px;
   justify-content: space-between;
-
   .like {
     width: 0.75em !important;
   }

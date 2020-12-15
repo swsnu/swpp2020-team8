@@ -162,7 +162,7 @@ describe('<PostItem /> unit mount test', () => {
 
   it('should deal with comment submit function', () => {
     const component = getPostWrapper();
-    let input = component.find('.comment-input').at(0);
+    let input = component.find('#comment-input').at(0);
     expect(input).toBeTruthy();
     let submitButton = component.find('#submit-button').at(0);
     expect(submitButton).toBeTruthy();
@@ -171,9 +171,10 @@ describe('<PostItem /> unit mount test', () => {
       preventDefault() {},
       target: { value: 'hello' }
     };
+    input = component.find('#comment-input').at(0);
     input.simulate('change', inputEvent);
     component.update();
-    input = component.find('.comment-input').at(0);
+    input = component.find('#comment-input').at(0);
     expect(input.props().value).toEqual('hello');
     submitButton = component.find('#submit-button').at(0);
     submitButton.simulate('click');
