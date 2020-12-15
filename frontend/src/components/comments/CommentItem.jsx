@@ -11,7 +11,7 @@ import NewComment from './NewComment';
 import { createReply, deleteComment } from '../../modules/post';
 import AlertDialog from '../common/AlertDialog';
 import { likePost, unlikePost } from '../../modules/like';
-import CommentCreateTime from './CommentCreateTime';
+import CreateTime from '../posts/CreateTime';
 
 const CommentItemWrapper = styled.div`
   display: flex;
@@ -176,7 +176,7 @@ export default function CommentItem({
               marginLeft: `${isReply ? '51px' : '24px'}`
             }}
           >
-            <CommentCreateTime createdTime={commentObj.created_at} />
+            <CreateTime createdTime={commentObj.created_at} />
             {!isReply && (
               <ReplyWrapper onClick={toggleReplyInputOpen}>답글</ReplyWrapper>
             )}
