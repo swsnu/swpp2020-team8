@@ -11,7 +11,7 @@ import { act } from 'react-dom/test-utils';
 import history from '../history';
 import rootReducer from '../modules';
 import QuestionSendModal from './QuestionSendModal';
-import { mockStore } from '../mockStore';
+import { mockStore, mockNoFriendStore } from '../mockStore';
 import { mockFriendList } from '../constants';
 
 describe('<QuestionSendModal /> unit test', () => {
@@ -56,5 +56,30 @@ describe('<QuestionSendModal /> unit test', () => {
   it('should handle with delete response request', async () => {
     const QuestionSendFriendItem = wrapper.find('QuestionSendFriendItem');
     expect(QuestionSendFriendItem).toHaveLength(mockFriendList.length);
+  });
+
+  it('should render NoFriend when current user have no friends', () => {
+    const noFriendStore = createStore(
+      rootReducer,
+      mockNoFriendStore,
+      composeWithDevTools(applyMiddleware(thunk))
+    );
+
+    const noFriendWrapper = mount(
+      <Provider store={noFriendStore}>
+        <Router history={history}>
+          <QuestionSendModal
+            questionObj={mockQuestion}
+            open={true}
+            handleClose={mockfn}
+          />
+        </Router>
+      </Provider>
+    );
+
+    const noFriend = noFriendWrapper.find('NoFriend');
+    expect(noFriend.length).toBe(1);
+    const friendItem = noFriendWrapper.find('QuestionSendFriendItem');
+    expect(friendItem.length).toBe(0);
   });
 });
