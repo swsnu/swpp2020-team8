@@ -31,7 +31,8 @@ const CommentItemWrapper = styled.div`
 CommentItemWrapper.displayName = 'CommentItem';
 
 const CommentContent = styled.div`
-  margin: 0 8px;
+  margin: 4px 8px 0 8px;
+  word-break: break-all;
   @media (max-width: 650px) {
     margin: 0 6px;
   }
@@ -166,7 +167,7 @@ export default function CommentItem({
               isComment
               isAuthor={isCommentAuthor}
             />
-            <CommentContent id="comment-content" style={{ marginTop: '4px' }}>
+            <CommentContent id="comment-content">
               {commentObj.content}
             </CommentContent>
           </div>
