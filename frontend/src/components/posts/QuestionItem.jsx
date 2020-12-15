@@ -151,7 +151,7 @@ export default function QuestionItem({
       <AlertDialog
         message="정말 삭제하시겠습니까?"
         onConfirm={handleDelete}
-        onClose={() => setIsDeleteDialogOpen(true)}
+        onClose={() => setIsDeleteDialogOpen(false)}
         isOpen={isDeleteDialogOpen}
       />
       <PostItemHeaderWrapper>
