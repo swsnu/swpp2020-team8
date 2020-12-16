@@ -72,7 +72,7 @@ const NotificationItem = ({ notiObj, isNotificationPage }) => {
     history.push(notiObj.redirect_url);
   };
 
-  const { id, profile_pic: picHex, color_hex: hex } = notiObj.actor_detail;
+  const { actor_detail } = notiObj;
 
   return (
     <ListItem
@@ -82,10 +82,10 @@ const NotificationItem = ({ notiObj, isNotificationPage }) => {
       onClick={handleClickNotiItem}
     >
       <MessageWrapper>
-        {id ? (
+        {actor_detail?.id ? (
           <FaceIcon
             style={{
-              color: picHex,
+              color: actor_detail.profile_pic,
               marginRight: '4px',
               opacity: 0.8,
               top: '2px',
@@ -93,7 +93,7 @@ const NotificationItem = ({ notiObj, isNotificationPage }) => {
             }}
           />
         ) : (
-          <AnonIcon hex={hex} />
+          <AnonIcon hex={actor_detail?.color_hex} />
         )}
         <ListItemText
           classes={{ primary: classes.message }}

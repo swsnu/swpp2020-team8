@@ -24,7 +24,7 @@ export default function AuthorProfile({
 }) {
   const location = useLocation();
   const history = useHistory();
-  const isAnonFeed = location.pathname === '/anonymous';
+  const isAnonFeed = location?.pathname === '/anonymous';
 
   if (!author) return null;
   const { id, username, profile_pic: picHex, color_hex: hex } = author;

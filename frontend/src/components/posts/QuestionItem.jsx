@@ -39,6 +39,7 @@ const Question = styled.div`
   font-size: 15px;
   word-break: break-all;
   padding: 8px 0;
+  white-space: pre-wrap;
   @media (max-width: 650px) {
     padding: 16px;
   }

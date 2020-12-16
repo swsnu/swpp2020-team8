@@ -4,6 +4,11 @@ import { shallow, mount } from 'enzyme';
 import MobileFooter from './MobileFooter';
 import history from '../history';
 
+Object.defineProperty(window, 'location', {
+  value: {
+    pathname: '/questions'
+  }
+});
 const historyMock = { push: jest.fn(), location: {}, listen: jest.fn() };
 describe('<MobileFooter/>', () => {
   it('should render without errors', () => {
@@ -32,6 +37,9 @@ describe('<MobileFooter/>', () => {
     history.push = jest.fn();
 
     links.at(0).simulate('click');
+    for (let i = 0; i < links.length; i += 1) {
+      links.at(i).simulate('click');
+    }
 
     const nav = component.find('#bottom-nav');
     nav.at(0).simulate('change', ',', '/');

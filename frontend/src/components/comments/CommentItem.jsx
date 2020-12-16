@@ -11,7 +11,7 @@ import NewComment from './NewComment';
 import { createReply, deleteComment } from '../../modules/post';
 import AlertDialog from '../common/AlertDialog';
 import { likePost, unlikePost } from '../../modules/like';
-import CommentCreateTime from './CommentCreateTime';
+import CreateTime from '../posts/CreateTime';
 
 const CommentItemWrapper = styled.div`
   display: flex;
@@ -19,7 +19,6 @@ const CommentItemWrapper = styled.div`
   padding-bottom: 4px;
   font-size: 12px;
   justify-content: space-between;
-
   .like {
     width: 0.75em !important;
   }
@@ -31,7 +30,8 @@ const CommentItemWrapper = styled.div`
 CommentItemWrapper.displayName = 'CommentItem';
 
 const CommentContent = styled.div`
-  margin: 0 8px;
+  margin: 4px 8px 0 8px;
+  word-break: break-all;
   @media (max-width: 650px) {
     margin: 0 6px;
   }
@@ -166,7 +166,7 @@ export default function CommentItem({
               isComment
               isAuthor={isCommentAuthor}
             />
-            <CommentContent id="comment-content" style={{ marginTop: '4px' }}>
+            <CommentContent id="comment-content">
               {commentObj.content}
             </CommentContent>
           </div>
@@ -176,7 +176,7 @@ export default function CommentItem({
               marginLeft: `${isReply ? '51px' : '24px'}`
             }}
           >
-            <CommentCreateTime createdTime={commentObj.created_at} />
+            <CreateTime createdTime={commentObj.created_at} />
             {!isReply && (
               <ReplyWrapper onClick={toggleReplyInputOpen}>답글</ReplyWrapper>
             )}
