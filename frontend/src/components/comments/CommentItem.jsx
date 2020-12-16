@@ -33,7 +33,7 @@ const CommentContent = styled.div`
   margin: 4px 8px 0 8px;
   word-break: break-all;
   @media (max-width: 650px) {
-    margin: 0 6px;
+    margin: 3px 6px;
   }
 `;
 

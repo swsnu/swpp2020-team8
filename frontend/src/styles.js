@@ -82,7 +82,7 @@ export const MainWrapper = styled.main`
 
 export const FeedWrapper = styled.div`
   @media (max-width: 650px) {
-    width: 100vw;
+    width: calc(100vw - 12px);
     margin: 0 12px;
   }
   width: 720px;

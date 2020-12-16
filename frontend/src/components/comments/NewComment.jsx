@@ -43,6 +43,11 @@ const PrivateWrapper = styled.div`
   display: flex;
   align-items: center;
   margin: 0 4px 0 8px;
+  @media (max-width: 650px) {
+    margin: 0 4px;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
   color: grey;
 `;
 
@@ -118,7 +123,7 @@ export default function NewComment({
         id="submit-button"
         style={{
           padding: '2px 8px',
-          minWidth: '30px',
+          minWidth: '42px',
           marginLeft: '8px',
           fontWeight: 400,
           fontSize: '13px',
