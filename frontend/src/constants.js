@@ -155,7 +155,7 @@ export const mockQuestionFeed = [
     created_at: '2020-11-15T14:52:51.786164+09:00',
     updated_at: '2020-11-15T14:52:52.380141+09:00',
     selected_date: '2020-11-15T14:52:52.380046+09:00',
-    is_admin_question: true
+    is_admin_question: false
   },
   {
     id: 3,
