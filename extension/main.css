@@ -1,0 +1,14 @@
+#adoor_logo {
+    cursor: pointer;
+}
+
+#alarm-on-off {
+    text-align: center;
+    font-family: 'Nanum Gothic', sans-serif;
+    background-color: rgba(241, 44, 86, 0.15);
+    color: rgba(241, 44, 86, 1);
+    margin: 10px;
+    border-radius: 10px;
+    padding: 10px;
+    border: rgba(241, 44, 86, 1);
+}
