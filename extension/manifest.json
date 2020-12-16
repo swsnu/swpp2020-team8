@@ -1,0 +1,21 @@
+
+
+{
+  "name": "adoor(어도어) Notification Alarm",
+  "description": "Help users keep track of notifications from https://adoor.world .",
+  "version": "1.2",
+  "manifest_version": 2,
+  "permissions": ["alarms", "notifications", "storage", "tabs", "webNavigation", "*://adoor.world/*"],
+  "background": {
+    "persistent": false,
+    "page": "background.html"
+  },
+  "browser_action": {
+    "default_title": "Adoor Notification",
+    "default_icon": "icon19.png",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "128": "adoor128.png"
+  }
+}
