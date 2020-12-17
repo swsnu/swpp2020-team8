@@ -1,4 +1,4 @@
-import random
+import secrets
 
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
@@ -46,10 +46,8 @@ class AuthorAnonymousSerializer(serializers.ModelSerializer):
     color_hex = serializers.SerializerMethodField(read_only=True)
 
     def get_color_hex(self, obj):
-        author_hash = obj.id * \
-                      random.randint(4343, 54897) * random.randint(100, 938574)
-        # mod max color HEX
-        return '#{0:06X}'.format(author_hash % 16777215)
+        author_hash = obj.id * secrets.randbelow(63872) * secrets.randbelow(98574)
+        return '#{0:06X}'.format(author_hash % 16777215)  # mod max color HEX
 
     class Meta:
         model = User

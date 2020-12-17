@@ -199,8 +199,8 @@ class ResponseRequestList(generics.ListAPIView):
         except Question.DoesNotExist:
             return HttpResponseBadRequest
         sent_response_request_set = self.request.user.sent_response_request_set.all()
-        responseRequests = sent_response_request_set.filter(question=question).order_by('-id')
-        return responseRequests
+        response_requests = sent_response_request_set.filter(question=question).order_by('-id')
+        return response_requests
 
 
 class ResponseRequestCreate(generics.CreateAPIView):

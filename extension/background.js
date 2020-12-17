@@ -12,38 +12,51 @@ function isAdoorUrl(url) {
   return url.startsWith(getAdoorUrl());
 }
 
+function isExemptAdoorUrl(url) {
+  let urls = ['/login', '/signup', '/api']
+  return urls.some(el => url.includes(el));
+}
+
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (
     changeInfo.status === "complete" &&
     tab.status === "complete" &&
-    isAdoorUrl(tab.url)
+    isAdoorUrl(tab.url) &&
+    !isExemptAdoorUrl(tab.url)
   ) {
     chrome.tabs.query(
       { active: true, windowId: chrome.windows.WINDOW_ID_CURRENT },
       async function (tabs) {
         let code = `document.getElementsByClassName("hello-username")[0].innerText;`;
         let notFound = true;
+        let count = 0;
         while (notFound) {
-          chrome.tabs.executeScript(
-            tabId,
-            {
-              code: code,
-            },
-            function (result) {
-              if (result[0] === null) {
-                console.log("waiting for load");
-              } else {
-                let name = localStorage.getItem("name");
-                if (result !== name) {
-                  console.log("username changed");
-                  setAlarm(tabs);
+          if (count < 30) {
+            chrome.tabs.executeScript(
+              tabId,
+              {
+                code: code,
+              },
+              function (result) {
+                if (result === null || result[0] === null) {
+                  console.log("waiting for load");
+                } else {
+                  let name = localStorage.getItem("name");
+                  if (result !== name) {
+                    console.log(result);
+                    setAlarm(tabs);
+                  }
+                  localStorage.setItem("name", result);
+                  notFound = false;
                 }
-                localStorage.setItem("name", result);
-                notFound = false;
               }
-            }
-          );
-          await new Promise((r) => setTimeout(r, 500));
+            );
+            await new Promise((r) => setTimeout(r, 200));
+            count++;
+          } else {
+            console.log("get username not successful - tab url: ".concat(tabs[0].url));
+            notFound = false;
+          }
         }
       }
     );

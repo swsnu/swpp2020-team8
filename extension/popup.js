@@ -27,43 +27,6 @@ chrome.browserAction.onClicked.addListener(function (activeTab) {
   chrome.tabs.create({ url: getAdoorUrl() }, function (tab) {});
 });
 
-chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  if (
-    changeInfo.status === "complete" &&
-    tab.status === "complete" &&
-    isAdoorUrl(tab.url)
-  ) {
-    chrome.tabs.query(
-      { active: true, windowId: chrome.windows.WINDOW_ID_CURRENT },
-      async function (tabs) {
-        let code = `document.getElementsByClassName("hello-username")[0].innerText;`;
-        let notFound = true;
-        while (notFound) {
-          chrome.tabs.executeScript(
-            tabId,
-            {
-              code: code,
-            },
-            function (result) {
-              if (result[0] === null) {
-                console.log("waiting for load");
-              } else {
-                let name = localStorage.getItem("name");
-                if (result !== name) {
-                  console.log("username changed");
-                }
-                localStorage.setItem("name", result);
-                notFound = false;
-              }
-            }
-          );
-          await new Promise((r) => setTimeout(r, 500));
-        }
-      }
-    );
-  }
-});
-
 function goToInbox() {
   console.log("알림 페이지로 이동 중...");
   let tabFound = false;
