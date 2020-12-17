@@ -202,10 +202,11 @@ class NotificationAPITestCase(APITestCase):
 
         like = Like.objects.first()
         target = like
-        message = 'test noti'
-        Notification.objects.create(actor=current_user, user=current_user, message=message,
+        friend_message = "특정 사용자가 회원님의 뭔가를 좋아해요"
+        anonymous_message = '익명의 사용자가 회원님의 뭔가를 좋아해요'
+        Notification.objects.create(actor=current_user, user=current_user, message=friend_message,
                                     origin=target, target=target)
-        Notification.objects.create(actor=current_user, user=spy_user, message=message,
+        Notification.objects.create(actor=current_user, user=spy_user, message=anonymous_message,
                                     origin=target, target=target)
 
         # not authenticated
