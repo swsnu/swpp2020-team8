@@ -4,6 +4,7 @@ import pandas as pd
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.http import HttpResponseBadRequest
+from django.core.cache import cache
 
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
@@ -30,8 +31,13 @@ class FriendFeedPostList(generics.ListAPIView):
 
     def get_queryset(self):
         current_user = self.request.user
-        queryset = Post.objects.friend_posts_only().filter(author_id__in=current_user.friend_ids) | \
-                   Post.objects.filter(author_id=current_user.id)
+        queryset = cache.get('friend-{}'.format(current_user.id))
+        if queryset:
+            return queryset
+        else:
+            queryset = Post.objects.friend_posts_only().filter(author_id__in=current_user.friend_ids) | \
+                    Post.objects.filter(author_id=current_user.id)
+            cache.set('friend-{}'.format(current_user.id), queryset)
         return queryset
 
 
@@ -39,9 +45,15 @@ class AnonymousFeedPostList(generics.ListAPIView):
     """
     List anonymous feed posts
     """
-    queryset = Post.objects.anonymous_posts_only()
     serializer_class = fs.PostAnonymousSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = cache.get('anonymous')
+        if not queryset:
+            queryset = Post.objects.anonymous_posts_only()
+            cache.set('anonymous', queryset)
+        return queryset
 
     def get_exception_handler(self):
         return adoor_exception_handler
@@ -80,6 +92,8 @@ class ArticleList(generics.CreateAPIView):
 
     @transaction.atomic
     def perform_create(self, serializer):
+        cache.delete('friend-{}'.format(self.request.user.id))
+        cache.delete('anonymous')
         serializer.save(author=self.request.user)
 
 
@@ -113,6 +127,9 @@ class ResponseList(generics.ListCreateAPIView):
 
     @transaction.atomic
     def perform_create(self, serializer):
+        cache.delete('questions')
+        cache.delete('friend-{}'.format(self.request.user.id))
+        cache.delete('anonymous')
         serializer.save(author=self.request.user)
 
 
@@ -146,6 +163,9 @@ class QuestionList(generics.ListCreateAPIView):
 
     @transaction.atomic
     def perform_create(self, serializer):
+        cache.delete('friend-{}'.format(self.request.user.id))
+        cache.delete('anonymous')
+        cache.delete('questions')
         serializer.save(author=self.request.user)
 
 
@@ -153,9 +173,15 @@ class QuestionAllResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve, update, or destroy a question.
     """
-    queryset = Question.objects.all()
     serializer_class = fs.QuestionDetailAllResponsesSerializer
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly, IsShared]
+
+    def get_queryset(self):
+        queryset = cache.get('questions')
+        if not queryset:
+            queryset = Question.objects.all()
+            cache.set('questions', queryset)
+        return queryset
 
     def get_exception_handler(self):
         return adoor_exception_handler
@@ -165,9 +191,15 @@ class QuestionFriendResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve, update, or destroy a question.
     """
-    queryset = Question.objects.all()
     serializer_class = fs.QuestionDetailFriendResponsesSerializer
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly, IsShared]
+
+    def get_queryset(self):
+        queryset = cache.get('questions')
+        if not queryset:
+            queryset = Question.objects.all()
+            cache.set('questions', queryset)
+        return queryset
 
     def get_exception_handler(self):
         return adoor_exception_handler
@@ -177,9 +209,15 @@ class QuestionAnonymousResponsesDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve, update, or destroy a question.
     """
-    queryset = Question.objects.all()
     serializer_class = fs.QuestionDetailAnonymousResponsesSerializer
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly, IsShared]
+
+    def get_queryset(self):
+        queryset = cache.get('questions')
+        if not queryset:
+            queryset = Question.objects.all()
+            cache.set('questions', queryset)
+        return queryset
 
     def get_exception_handler(self):
         return adoor_exception_handler
