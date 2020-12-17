@@ -4,7 +4,7 @@
 import { mount } from 'enzyme';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { Router } from 'react-router-dom';
+import { Router, MemoryRouter } from 'react-router-dom';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
@@ -15,7 +15,6 @@ import rootReducer from '../../modules';
 import QuestionItem from './QuestionItem';
 import { mockStore } from '../../mockStore';
 import { mockLike } from '../../constants';
-// import * as actionCreators from '../../modules/post';
 
 jest.mock('./ShareSettings', () => {
   return jest.fn((props) => {
@@ -244,5 +243,104 @@ describe('<QuestionItem/>', () => {
     const textArea = component.find('TextareaAutosize');
     expect(textArea.length).toBe(1);
     expect(textArea.prop('value')).toEqual('');
+  });
+
+  it('should push /home when resetContent on questionList', () => {
+    const questionListQuestionItem = mount(
+      <MemoryRouter initialEntries={['/questions']}>
+        <Provider store={store}>
+          <QuestionItem id="user-question" questionObj={userMockQuestions[0]} />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const component = questionListQuestionItem.find('QuestionItem');
+
+    if (!component.props().onResetContent) {
+      const writeButton = questionListQuestionItem
+        .find('CreateIcon')
+        .closest('button');
+
+      writeButton.simulate('click');
+
+      wrapper.update();
+
+      const questionItemHistory = questionListQuestionItem
+        .find('Router')
+        .prop('history');
+
+      if (questionItemHistory.location.pathname === '/questions') {
+        const submitButton = questionListQuestionItem.find('.submit-button');
+        submitButton.simulate('click');
+        expect(questionItemHistory.location.pathname).toBe('/home');
+      }
+    }
+  });
+
+  it('should close alert dialog', () => {
+    wrapper = getWrapper();
+
+    const component = wrapper.find('#user-question');
+    const postAuthorButtons = component.find('PostAuthorButtons');
+    expect(postAuthorButtons.length).toBe(1);
+
+    const deleteButton = postAuthorButtons.find('#post-delete-button').at(0);
+    deleteButton.simulate('click');
+
+    wrapper.update();
+    let alert = wrapper.find('AlertDialog').at(0);
+    expect(alert.props().isOpen).toBeTruthy();
+
+    const cancelButton = alert.find('#cancel-button').at(0);
+
+    // modal close
+    cancelButton.simulate('click');
+    wrapper.update();
+
+    alert = wrapper.find('AlertDialog').at(0);
+    expect(alert.props().isOpen).toBeFalsy();
+  });
+
+  it('should delete properly when click confirm button on AlertDialog', () => {
+    wrapper = getWrapper();
+
+    const component = wrapper.find('#user-question');
+    const postAuthorButtons = component.find('PostAuthorButtons');
+    expect(postAuthorButtons.length).toBe(1);
+
+    const deleteButton = postAuthorButtons.find('#post-delete-button').at(0);
+    deleteButton.simulate('click');
+
+    wrapper.update();
+    const alert = wrapper.find('AlertDialog').at(0);
+    expect(alert.props().isOpen).toBeTruthy();
+
+    // handle delete
+    jest.mock('react-redux', () => ({
+      useDispatch: () => jest.fn()
+    }));
+    const confirmButton = wrapper.find('#confirm-button').at(0);
+    confirmButton.simulate('click');
+  });
+
+  it('should open questionSendModal when click send button', () => {
+    wrapper = getWrapper();
+
+    const component = wrapper.find('#user-question');
+    const sendButton = component.find('SendIcon').closest('button').at(0);
+    sendButton.simulate('click');
+
+    wrapper.update();
+    let questionSendModal = wrapper.find('QuestionSendModal');
+    expect(questionSendModal.props().open).toBeTruthy();
+
+    const closeButton = questionSendModal
+      .find('CloseIcon')
+      .closest('button')
+      .at(0);
+    closeButton.simulate('click');
+
+    questionSendModal = wrapper.find('QuestionSendModal');
+    expect(questionSendModal.length).toBe(0);
   });
 });

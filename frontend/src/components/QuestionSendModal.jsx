@@ -50,6 +50,8 @@ const NoFriend = styled.div`
   background: whitesmoke;
 `;
 
+NoFriend.displayName = 'NoFriend';
+
 const QuestionSendModal = ({ questionObj, open, handleClose }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
