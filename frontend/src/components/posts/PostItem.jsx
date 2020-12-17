@@ -76,7 +76,7 @@ export default function PostItem({
   const commentList = postObj?.comments?.map((comment) => {
     if (!comment) return null;
     const isCommentAuthor = comment.author_detail?.id === currentUser?.id;
-    if (comment.is_private && !isAuthor && !isCommentAuthor) return null;
+    if (comment.is_private && !(isAuthor || isCommentAuthor)) return null;
     return (
       <CommentItem
         isAnon={isAnon || onlyAnonPost}
