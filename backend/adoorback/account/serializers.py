@@ -1,5 +1,6 @@
 import secrets
 
+from django.db import transaction
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from django.contrib.auth import get_user_model
@@ -23,6 +24,7 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
                   'profile_pic', 'question_history', 'url']
         extra_kwargs = {'password': {'write_only': True}}
 
+    @transaction.atomic
     def create(self, validated_data):
         password = validated_data.pop('password')
         user = User(**validated_data)

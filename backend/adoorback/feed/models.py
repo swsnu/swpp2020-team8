@@ -1,5 +1,5 @@
 import datetime
-from django.db import models
+from django.db import models, transaction
 from django.db.models.signals import post_save, post_delete, pre_delete
 from django.dispatch import receiver
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -161,6 +161,7 @@ class Post(AdoorModel):
         base_manager_name = 'objects'
 
 
+@transaction.atomic
 @receiver(post_save, sender=Question)
 @receiver(post_save, sender=Response)
 @receiver(post_save, sender=Article)
@@ -180,6 +181,7 @@ def create_post(sender, instance, **kwargs):
     post.save()
 
 
+@transaction.atomic
 @receiver(post_delete, sender=User)
 @receiver(post_delete, sender=Question)
 @receiver(post_delete, sender=Response)
@@ -192,6 +194,7 @@ def delete_post(sender, instance, **kwargs):
                          object_id=instance.id).delete()
 
 
+@transaction.atomic
 @receiver(post_save, sender=ResponseRequest)
 def create_response_request_noti(instance, **kwargs):
     target = instance
@@ -205,6 +208,7 @@ def create_response_request_noti(instance, **kwargs):
                                 message=message, redirect_url=redirect_url)
 
 
+@transaction.atomic
 @receiver(post_save, sender=Response)
 def create_request_answered_noti(instance, created, **kwargs):
     if not created:  # response edit만 해준 경우
@@ -227,6 +231,7 @@ def create_request_answered_noti(instance, created, **kwargs):
                                     message=message, redirect_url=redirect_url)
 
 
+@transaction.atomic
 @receiver(post_save, sender=Response)
 def delete_response_request(instance, created, **kwargs):
     if not created:
@@ -240,6 +245,7 @@ def delete_response_request(instance, created, **kwargs):
     response_requests.delete()
 
 
+@transaction.atomic
 @receiver(pre_delete, sender=Question)
 def protect_question_noti(instance, **kwargs):
     # response request에 대한 response 보냈을 때 발생하는 노티, like/comment로 발생하는 노티 모두 보호
@@ -249,6 +255,7 @@ def protect_question_noti(instance, **kwargs):
         noti.save()
 
 
+@transaction.atomic
 @receiver(pre_delete, sender=Response)
 def protect_response_noti(instance, **kwargs):
     # comment, like로 인한 노티, response request 답변으로 인한 노티 모두 보호
@@ -258,6 +265,7 @@ def protect_response_noti(instance, **kwargs):
         noti.save()
 
 
+@transaction.atomic
 @receiver(pre_delete, sender=Article)
 def protect_article_noti(instance, **kwargs):
     # comment, like로 인한 노티 모두 보호

@@ -1,5 +1,5 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.db import models
+from django.db import models, transaction
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth import get_user_model
@@ -56,6 +56,7 @@ class Comment(AdoorModel):
         base_manager_name = 'objects'
 
 
+@transaction.atomic
 @receiver(post_save, sender=Comment)
 def create_noti(instance, **kwargs):
     user = instance.target.author

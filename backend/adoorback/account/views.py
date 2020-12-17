@@ -3,6 +3,7 @@ import sentry_sdk
 
 from django.apps import apps
 from django.contrib.auth import get_user_model, authenticate, login
+from django.db import transaction
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import generics
@@ -33,6 +34,7 @@ class JSONResponse(HttpResponse):
         super().__init__(content, **kwargs)
 
 
+@transaction.atomic
 @ensure_csrf_cookie
 def token_anonymous(request):
     if request.method == 'GET':
@@ -55,6 +57,7 @@ class UserSignup(generics.CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=201, headers=headers)
 
+    @transaction.atomic
     def perform_create(self, serializer):
         obj = serializer.save()
         Notification = apps.get_model('notification', 'Notification')
@@ -68,6 +71,7 @@ class UserSignup(generics.CreateAPIView):
                                     redirect_url='/anonymous')
 
 
+@transaction.atomic
 def user_login(request):
     if request.method == "POST":
         try:
@@ -135,6 +139,7 @@ class CurrentUserProfile(generics.RetrieveUpdateAPIView):
         # no further permission checking unnecessary
         return User.objects.get(id=self.request.user.id)
 
+    @transaction.atomic
     def perform_update(self, serializer):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -187,6 +192,7 @@ class UserFriendDestroy(generics.DestroyAPIView):
     def get_exception_handler(self):
         return adoor_exception_handler
 
+    @transaction.atomic
     def perform_destroy(self, obj):
         obj.friends.remove(self.request.user)
 
@@ -202,6 +208,7 @@ class UserFriendRequestList(generics.ListCreateAPIView):
     def get_queryset(self):
         return FriendRequest.objects.filter(requestee=self.request.user)
 
+    @transaction.atomic
     def perform_create(self, serializer):
         if self.request.data.get('requester_id') != self.request.user.id:
             raise PermissionDenied("requester가 본인이 아닙니다...")
@@ -220,6 +227,7 @@ class UserFriendRequestDestroy(generics.DestroyAPIView):
         return FriendRequest.objects.get(requester_id=self.request.user.id,
                                          requestee_id=self.kwargs.get('pk'))
 
+    @transaction.atomic
     def perform_destroy(self, obj):
         obj.delete()
 
@@ -244,5 +252,6 @@ class UserFriendRequestUpdate(generics.UpdateAPIView):
         self.perform_update(serializer)
         return Response(serializer.data)
 
+    @transaction.atomic
     def perform_update(self, serializer):
         return serializer.save()

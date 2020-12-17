@@ -77,7 +77,7 @@ def set_mock_seed():
                                  password=faker.password(),
                                  question_history=",".join(map(str,
                                                                faker.random_elements(
-                                                                   elements=range(1, 1501),
+                                                                   elements=range(1, 2001),
                                                                    length=random.randint(3, 10),
                                                                    unique=True))))
     logging.info(
@@ -87,7 +87,7 @@ def set_mock_seed():
 
     # Seed Friendship
     for user in users:
-        user.friends.add(*faker.random_elements(elements=range(1, 100), length=random.randint(0, 50), unique=True))
+        user.friends.add(*faker.random_elements(elements=range(1, 1000), length=random.randint(0, 50), unique=True))
     logging.info("Friendship Relations created!") if DEBUG else None
 
     # Seed Friend Request
@@ -186,7 +186,7 @@ def set_mock_seed():
         Like.objects.get_or_create(user=user, content_type=get_article_type(), object_id=article.id)
         Like.objects.get_or_create(user=user, content_type=get_question_type(), object_id=question.id)
         Like.objects.get_or_create(user=user, content_type=get_response_type(), object_id=response.id)
-    logging.info(f"{Like.objects.count()} Likes created!") if DEBUG else None
+    logging.info(f"{Like.objects.count()} Feed Likes created!") if DEBUG else None
 
     # Seed Comment Like
     for i in range(10000):

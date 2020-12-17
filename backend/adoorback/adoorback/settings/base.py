@@ -45,6 +45,7 @@ JWT_AUTH = {
 
 CORS_ORIGIN_WHITELIST = [
     "https://develop.d3t1tnno5uz3sa.amplifyapp.com",
+    "http://localhost:8000",
 ]
 
 BASE_URL = 'http://localhost:8000'
