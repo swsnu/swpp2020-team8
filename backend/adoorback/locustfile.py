@@ -1,7 +1,5 @@
 import random
 
-from django.contrib.auth import get_user_model
-
 from locust import HttpUser, task, between
 
 
@@ -56,43 +54,31 @@ class WebsiteUser(HttpUser):
         if response.status_code != 200:
             print(str(response.status_code) + " get notifications")
 
-    @task(10)
+    @task(5)
     def get_friend_feed(self):
         response = self.client.get("/api/feed/friend/")
         if response.status_code != 200:
             print(str(response.status_code) + " get friend feed")
 
     # Anonymous Feed Related
-    @task(7)
+    @task(3)
     def get_anonymous_feed(self):
         response = self.client.get("/api/feed/anonymous/")
         if response.status_code != 200:
             print(str(response.status_code) + " get anonymous feed")
 
     # Question Feed Related
-    @task(3)
+    @task
     def get_questions_feed(self):
         response = self.client.get("/api/feed/questions/")
         if response.status_code != 200:
             print(str(response.status_code) + " get questions feed")
 
     @task(3)
-    def get_questions_detail_1(self):
+    def get_questions_detail(self):
         response = self.client.get("/api/feed/questions/5/")
         if response.status_code != 200:
-            print(str(response.status_code) + " get questions detail 1")
-
-    @task(3)
-    def get_questions_detail_2(self):
-        response = self.client.get("/api/feed/questions/10/")
-        if response.status_code != 200:
-            print(str(response.status_code) + " get questions detail 2")
-
-    @task(3)
-    def get_questions_detail_3(self):
-        response = self.client.get("/api/feed/questions/15/")
-        if response.status_code != 200:
-            print(str(response.status_code) + " get questions detail 3")
+            print(str(response.status_code) + " get questions detail")
 
     # Create Methods
     @task
@@ -107,7 +93,7 @@ class WebsiteUser(HttpUser):
         if response.status_code != 201:
             print(str(response.status_code) + " post question")
 
-    @task(5)
+    @task(2)
     def post_question_response(self):
         response = self.client.get('/api/user/token/anonymous/')
         csrf_token = response.cookies['csrftoken']
@@ -132,34 +118,61 @@ class WebsiteUser(HttpUser):
         if response.status_code != 201:
             print(str(response.status_code) + " post article")
 
-    @task(10)
-    def post_comment(self):
+    @task(2)
+    def post_anonymous_comment(self):
         response = self.client.get('/api/user/token/anonymous/')
         csrf_token = response.cookies['csrftoken']
 
         response = self.client.post("/api/comments/",
                                     json={"content": "test content",
                                           "target_id": random.randint(1, 1000),
-                                          "target_type": random.choice(["Article", "Response"]),
-                                          "is_anonymous": random.choice([True, False])},
+                                          "target_type": "Article",
+                                          "is_anonymous": True},
                                     headers={"X-CSRFToken": csrf_token})
         if response.status_code != 201:
-            print(str(response.status_code) + " post comment")
+            print(str(response.status_code) + " post anonymous comment")
 
-    @task(15)
-    def post_like(self):
+    @task(2)
+    def post_friend_comment(self):
+        response = self.client.get('/api/user/token/anonymous/')
+        csrf_token = response.cookies['csrftoken']
+
+        response = self.client.post("/api/comments/",
+                                    json={"content": "test content",
+                                          "target_id": random.randint(1, 1000),
+                                          "target_type": "Response",
+                                          "is_anonymous": False},
+                                    headers={"X-CSRFToken": csrf_token})
+        if response.status_code != 201:
+            print(str(response.status_code) + " post friend comment")
+
+    @task(2)
+    def post_anonymous_like(self):
         response = self.client.get('/api/user/token/anonymous/')
         csrf_token = response.cookies['csrftoken']
 
         response = self.client.post("/api/likes/",
                                     json={"target_id": random.randint(1, 1000),
-                                          "target_type": random.choice(["Article", "Response, Question"]),
-                                          "is_anonymous": random.choice([True, False])},
+                                          "target_type": "Article",
+                                          "is_anonymous": True},
                                     headers={"X-CSRFToken": csrf_token})
         if response.status_code != 201:
-            print(str(response.status_code) + " post like")
+            print(str(response.status_code) + " post anonymous like")
 
-    @task(7)
+    @task(2)
+    def post_friend_like(self):
+        response = self.client.get('/api/user/token/anonymous/')
+        csrf_token = response.cookies['csrftoken']
+
+        response = self.client.post("/api/likes/",
+                                    json={"target_id": random.randint(1, 1000),
+                                          "target_type": "Question",
+                                          "is_anonymous": False},
+                                    headers={"X-CSRFToken": csrf_token})
+        if response.status_code != 201:
+            print(str(response.status_code) + " post friend like")
+
+    @task
     def post_response_request(self):
         response = self.client.get('/api/user/token/anonymous/')
         csrf_token = response.cookies['csrftoken']
@@ -178,24 +191,12 @@ class WebsiteUser(HttpUser):
 
     # Account Related
     @task
-    def get_user_1_detail(self):
-        response = self.client.get(f"/api/user/5/")
+    def get_user_detail(self):
+        response = self.client.get("/api/user/5/")
         if response.status_code != 200:
-            print(str(response.status_code) + " get other user 1 detail")
+            print(str(response.status_code) + " get other user detail")
 
     @task
-    def get_user_2_detail(self):
-        response = self.client.get(f"/api/user/10/")
-        if response.status_code != 200:
-            print(str(response.status_code) + " get other user 2 detail")
-
-    @task
-    def get_user_3_detail(self):
-        response = self.client.get(f"/api/user/15/")
-        if response.status_code != 200:
-            print(str(response.status_code) + " get other user 3 detail")
-
-    @task(7)
     def post_friend_request(self):
         response = self.client.get('/api/user/token/anonymous/')
         csrf_token = response.cookies['csrftoken']

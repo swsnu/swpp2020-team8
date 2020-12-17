@@ -61,7 +61,8 @@ class ArticleFriendSerializer(AdoorBaseSerializer):
             comments = obj.article_comments.order_by('is_anonymous', 'id')
             return CommentResponsiveSerializer(comments, many=True, read_only=True, context=self.context).data
         else:
-            comments = obj.article_comments.filter(is_anonymous=False, is_private=False).order_by('id')
+            comments = obj.article_comments.filter(is_anonymous=False, is_private=False) | \
+                       obj.article_comments.filter(author=current_user, is_anonymous=False).order_by('id')
             return CommentFriendSerializer(comments, many=True, read_only=True, context=self.context).data
 
     class Meta(AdoorBaseSerializer.Meta):
@@ -92,7 +93,8 @@ class ArticleAnonymousSerializer(AdoorBaseSerializer):
             comments = obj.article_comments.order_by('-is_anonymous', 'id')
             return CommentResponsiveSerializer(comments, many=True, read_only=True, context=self.context).data
         else:
-            comments = obj.article_comments.filter(is_anonymous=True, is_private=False).order_by('id')
+            comments = obj.article_comments.filter(is_anonymous=True, is_private=False) | \
+                       obj.article_comments.filter(author=current_user, is_anonymous=True).order_by('id')
             return CommentAnonymousSerializer(comments, many=True, read_only=True, context=self.context).data
 
     class Meta(AdoorBaseSerializer.Meta):
@@ -253,6 +255,27 @@ class QuestionFriendSerializer(QuestionBaseSerializer):
         model = Question
         fields = QuestionBaseSerializer.Meta.fields + \
                  ['author', 'author_detail']
+
+
+class DailyQuestionSerializer(QuestionBaseSerializer):
+    """
+    for questions in question feed
+
+    (all profiles are anonymized, including that of the current user)
+    """
+    author = serializers.SerializerMethodField(read_only=True)
+    author_detail = serializers.SerializerMethodField(
+        source='author', read_only=True)
+
+    def get_author_detail(self, obj):
+        return AuthorAnonymousSerializer(obj.author).data
+
+    def get_author(self, obj):
+        return None
+
+    class Meta(QuestionBaseSerializer.Meta):
+        model = Question
+        fields = QuestionBaseSerializer.Meta.fields + ['author', 'author_detail']
 
 
 class QuestionAnonymousSerializer(QuestionBaseSerializer):

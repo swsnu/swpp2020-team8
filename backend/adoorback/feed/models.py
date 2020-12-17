@@ -38,6 +38,11 @@ class Article(AdoorModel):
     def liked_user_ids(self):
         return self.article_likes.values_list('user_id', flat=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['-id']),
+        ]
+
 
 class QuestionManager(models.Manager):
 
@@ -79,6 +84,7 @@ class Question(AdoorModel):
 
     class Meta:
         base_manager_name = 'objects'
+        ordering = ['id']
 
 
 class Response(AdoorModel):
@@ -99,6 +105,9 @@ class Response(AdoorModel):
 
     class Meta:
         ordering = ['-id']
+        indexes = [
+            models.Index(fields=['-id']),
+        ]
 
     @property
     def type(self):
@@ -125,6 +134,9 @@ class ResponseRequest(AdoorTimestampedModel):
         constraints = [
             models.UniqueConstraint(
                 fields=['requester', 'requestee', 'question'], name='unique_response_request'),
+        ]
+        indexes = [
+            models.Index(fields=['-id']),
         ]
 
     def __str__(self):
@@ -159,6 +171,9 @@ class Post(AdoorModel):
     class Meta:
         ordering = ['-id']
         base_manager_name = 'objects'
+        indexes = [
+            models.Index(fields=['-id']),
+        ]
 
 
 @transaction.atomic

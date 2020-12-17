@@ -1,9 +1,9 @@
 import secrets
 
 from django.db import transaction
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-from django.contrib.auth import get_user_model
 
 from account.models import FriendRequest
 from adoorback.settings.base import BASE_URL

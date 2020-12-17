@@ -9,7 +9,7 @@ from django.db.models.signals import post_save
 from like.models import Like
 from notification.models import Notification
 from adoorback.models import AdoorModel
-from adoorback.content_types import get_comment_type
+from adoorback.content_types import get_comment_type, get_generic_relation_type
 
 User = get_user_model()
 
@@ -68,7 +68,7 @@ def create_noti(instance, **kwargs):
         return
     actor_name = '익명의 사용자가' if instance.is_anonymous else f'{actor.username}님이'
 
-    if instance.target.type == 'Comment':  # if is_reply
+    if origin.type == 'Comment':  # if is_reply
         message = f'{actor_name} 회원님의 댓글에 답글을 남겼습니다.'
         redirect_url = f'/{origin.target.type.lower()}s/{origin.target.id}?anonymous={instance.is_anonymous}'
     else:  # if not reply
@@ -76,6 +76,18 @@ def create_noti(instance, **kwargs):
         message = f'{actor_name} 회원님의 {origin_target_name}에 댓글을 남겼습니다.'
         redirect_url = f'/{origin.type.lower()}s/{origin.id}?anonymous={instance.is_anonymous}'
 
-    Notification.objects.create(actor=actor, user=user,
-                                origin=origin, target=target,
-                                message=message, redirect_url=redirect_url)
+    notification = Notification.objects.filter(actor=actor,
+                                               user=user,
+                                               origin_id=origin.id,
+                                               origin_type=get_generic_relation_type(origin.type))
+    if notification.count() > 0:
+        notification[0].save()
+    else:
+        Notification.objects.create(actor=actor,
+                                    user=user,
+                                    origin_id=origin.id,
+                                    origin_type=get_generic_relation_type(origin.type),
+                                    target_id=target.id,
+                                    target_type=get_comment_type(),
+                                    message=message,
+                                    redirect_url=redirect_url)

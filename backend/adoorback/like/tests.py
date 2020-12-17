@@ -71,14 +71,6 @@ class LikeAPITestCase(APITestCase):
     def setUp(self):
         set_seed(N)
 
-    def test_like_list(self):
-        current_user = self.make_user(username='current_user')
-
-        with self.login(username=current_user.username, password='password'):
-            response = self.get('like-list')
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data), N * 5)
-
     def test_like_create(self):
         current_user = self.make_user(username='current_user')
 
@@ -133,6 +125,7 @@ class LikeNotiAPITestCase(APITestCase):
             like_noti = Notification.objects.first()  # notification is order_by '-updated_at'
             self.assertEqual(like_noti.message, "익명의 사용자가 회원님의 게시글을 좋아합니다.")
             self.assertEqual(like_noti.user, Article.objects.get(id=1).author)
+            self.assertEqual(Notification.objects.first().redirect_url, "/articles/1?anonymous=True")
 
         # create like (current_user -> author of Response with id=1)
         with self.login(username=current_user.username, password='password'):
@@ -140,8 +133,7 @@ class LikeNotiAPITestCase(APITestCase):
             response = self.post('like-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
 
-            self.assertEqual(Notification.objects.first().message,
-                             "익명의 사용자가 회원님의 답변을 좋아합니다.")  # different message for response type
+            self.assertEqual(Notification.objects.first().redirect_url, "/responses/1?anonymous=True")
 
         # create like (current_user -> author of Response with id=1)
         with self.login(username=current_user.username, password='password'):
@@ -149,8 +141,7 @@ class LikeNotiAPITestCase(APITestCase):
             response = self.post('like-list', data=data, extra={'format': 'json'})
             self.assertEqual(response.status_code, 201)
 
-            self.assertEqual(Notification.objects.first().message,
-                             "익명의 사용자가 회원님의 질문을 좋아합니다.")  # different message for question type
+            self.assertEqual(Notification.objects.first().redirect_url, "/questions/1?anonymous=True")
 
         # create comment (current_user -> current_user): no new notification
         with self.login(username=current_user.username, password='password'):
