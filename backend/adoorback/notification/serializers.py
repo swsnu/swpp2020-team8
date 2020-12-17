@@ -26,11 +26,9 @@ class NotificationSerializer(serializers.ModelSerializer):
         return obj.target.type == 'FriendRequest'
 
     def get_actor_detail(self, obj):
-        if User.are_friends(self.context.get('request', None).user, obj.actor):
-            return AuthorFriendSerializer(obj.actor).data
-        if obj.target and obj.target.type == 'FriendRequest':
-            return AuthorFriendSerializer(obj.actor).data
-        return AuthorAnonymousSerializer(obj.actor).data
+        if obj.message[:13] == '익명의 사용자가 회원님의':
+            return AuthorAnonymousSerializer(obj.actor).data
+        return AuthorFriendSerializer(obj.actor).data
 
     def get_question_content(self, obj):
         content = None
