@@ -107,8 +107,12 @@ export const readAllNotification = () => async (dispatch) => {
   });
 };
 
-export default function notiReducer(state = initialState, action) {
+export default function notiReducer(state, action) {
+  if (typeof state === 'undefined') {
+    return initialState;
+  }
   switch (action.type) {
+    case READ_ALL_NOTIFICATIONS_SUCCESS:
     case GET_NOTIFICATIONS_SUCCESS:
       return {
         ...state,
@@ -134,12 +138,6 @@ export default function notiReducer(state = initialState, action) {
         receivedNotifications: state.receivedNotifications
           ? [...state.receivedNotifications, ...action.results]
           : [...action.results],
-        next: action.next
-      };
-    case READ_ALL_NOTIFICATIONS_SUCCESS:
-      return {
-        ...state,
-        receivedNotifications: action.res,
         next: action.next
       };
     default:

@@ -23,7 +23,7 @@ export const getPageCount = (total, denominator) => {
   return Math.floor(total / denominator) + valueToBeAdded;
 };
 
-export const fetchSearchResults = (updatedPageNo = '', query) => async (
+export const fetchSearchResults = (updatedPageNo, query) => async (
   dispatch
 ) => {
   const pageNumber = updatedPageNo ? `&page=${updatedPageNo}` : '';
@@ -81,6 +81,9 @@ export const fetchSearchResults = (updatedPageNo = '', query) => async (
 };
 
 export default function searchReducer(state = initialState, action) {
+  if (typeof state === 'undefined') {
+    return initialState;
+  }
   switch (action.type) {
     case GET_SEARCH_RESULTS:
       return {

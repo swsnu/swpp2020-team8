@@ -115,7 +115,10 @@ export const rejectFriendRequest = (friendId) => async (dispatch) => {
   });
 };
 
-export default function friendReducer(state = initialState, action) {
+export default function friendReducer(state, action) {
+  if (typeof state === 'undefined') {
+    return initialState;
+  }
   switch (action.type) {
     case GET_FRIEND_LIST_REQUEST:
     case GET_FRIEND_LIST_FAILURE:

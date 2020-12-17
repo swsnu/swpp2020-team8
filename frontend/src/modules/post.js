@@ -364,7 +364,10 @@ const getNewCommentsWithReply = (comments, reply) => {
   return newComments;
 };
 
-export default function postReducer(state = initialState, action) {
+export default function postReducer(state, action) {
+  if (typeof state === 'undefined') {
+    return initialState;
+  }
   switch (action.type) {
     case GET_SELECTED_ARTICLE_REQUEST:
     case GET_SELECTED_RESPONSE_REQUEST:
@@ -436,10 +439,6 @@ export default function postReducer(state = initialState, action) {
       };
     }
     case EDIT_SELECTED_ARTICLE_SUCCESS:
-      return {
-        ...state,
-        selectedPost: action.selectedPost
-      };
     case EDIT_SELECTED_RESPONSE_SUCCESS:
       return {
         ...state,
@@ -472,17 +471,21 @@ export default function postReducer(state = initialState, action) {
       };
     }
     case CREATE_COMMENT_SUCCESS: {
-      const newFriendPosts = state.friendPosts?.map((post) => {
-        if (`${post.type}-${post.id}` === action.postKey) {
-          return {
-            ...post,
-            comments: post.comments
-              ? [...post.comments, action.result]
-              : [action.result]
-          };
-        }
-        return post;
-      });
+      const getNewPostsWithComments = (posts) => {
+        return posts?.map((post) => {
+          if (`${post.type}-${post.id}` === action.postKey) {
+            return {
+              ...post,
+              comments: post.comments
+                ? [...post.comments, action.result]
+                : [action.result]
+            };
+          }
+          return post;
+        });
+      };
+
+      const newFriendPosts = getNewPostsWithComments(state.friendPosts);
 
       const newAnonPosts = state.anonymousPosts?.map((post) => {
         if (
@@ -499,17 +502,7 @@ export default function postReducer(state = initialState, action) {
         return post;
       });
 
-      const newUserPosts = state.selectedUserPosts?.map((post) => {
-        if (`${post.type}-${post.id}` === action.postKey) {
-          return {
-            ...post,
-            comments: post.comments
-              ? [...post.comments, action.result]
-              : [action.result]
-          };
-        }
-        return post;
-      });
+      const newUserPosts = getNewPostsWithComments(state.selectedUserPosts);
 
       const { selectedPost } = state;
       const newSelectedPost =
@@ -598,15 +591,15 @@ export default function postReducer(state = initialState, action) {
     }
 
     case DELETE_COMMENT_SUCCESS: {
-      const targetPost = state.friendPosts.find((post) => {
-        const key = `${post.type}-${post.id}`;
-        return key === action.postKey;
-      });
-
-      const targetAnonPost = state.anonymousPosts.find((post) => {
-        const key = `${post.type}-${post.id}`;
-        return key === action.postKey;
-      });
+      const getTargetPosts = (posts) => {
+        return posts.find((post) => {
+          const key = `${post.type}-${post.id}`;
+          return key === action.postKey;
+        });
+      };
+      const targetPost = getTargetPosts(state.friendPosts);
+      const targetUserPost = getTargetPosts(state?.selectedUserPosts);
+      const targetAnonPost = getTargetPosts(state.anonymousPosts);
 
       const getCommentsAfterDelete = (comments) => {
         return comments
@@ -621,7 +614,9 @@ export default function postReducer(state = initialState, action) {
             };
           });
       };
+
       const newComments = getCommentsAfterDelete(targetPost?.comments);
+      const newUserComments = getCommentsAfterDelete(targetUserPost?.comments);
       const newAnonComments = getCommentsAfterDelete(targetAnonPost?.comments);
 
       const newFriendPosts = state.friendPosts.map((post) => {
@@ -643,7 +638,7 @@ export default function postReducer(state = initialState, action) {
       const newUserPosts = state.selectedUserPosts.map((post) => {
         const key = `${post.type}-${post.id}`;
         if (key === action.postKey) {
-          return { ...post, comments: newComments };
+          return { ...post, comments: newUserComments };
         }
         return post;
       });
