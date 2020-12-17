@@ -301,7 +301,10 @@ export const deleteResponseRequest = (qid, rid) => async (dispatch) => {
   dispatch(getResponseRequestsByQuestion(qid));
 };
 
-export default function questionReducer(state = initialState, action) {
+export default function questionReducer(state, action) {
+  if (typeof state === 'undefined') {
+    return initialState;
+  }
   switch (action.type) {
     case RESET_SELECTED_QUESTION: {
       return {
@@ -352,9 +355,8 @@ export default function questionReducer(state = initialState, action) {
       };
     case GET_RANDOM_QUESTIONS:
       const { dailyQuestions } = state;
-      const randomQuestions = dailyQuestions
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 5);
+      const sortedQuestions = dailyQuestions.sort(() => 0.5 - Math.random());
+      const randomQuestions = sortedQuestions.slice(0, 5);
       return {
         ...state,
         randomQuestions

@@ -159,9 +159,13 @@ export const getSelectedUser = (id) => async (dispatch) => {
   });
 };
 
-export default function userReducer(state = initialState, action) {
+export default function userReducer(state, action) {
+  if (typeof state === 'undefined') {
+    return initialState;
+  }
   switch (action.type) {
     case GET_SELECTED_USER_REQUEST:
+    case GET_SELECTED_USER_FAILURE:
       return {
         ...state,
         selectedUser: null
@@ -170,11 +174,6 @@ export default function userReducer(state = initialState, action) {
       return {
         ...state,
         selectedUser: action.selectedUser
-      };
-    case GET_SELECTED_USER_FAILURE:
-      return {
-        ...state,
-        selectedUser: null
       };
     case SIGN_UP_REQUEST:
       return {

@@ -2,8 +2,11 @@
 import Cookies from 'js.cookie';
 import history from '../history';
 
-export default function loadingReducer(state = {}, action) {
-  const { type, error } = action;
+export default function loadingReducer(state, action) {
+  if (typeof state === 'undefined') {
+    return {};
+  }
+  const { type } = action;
   const matches = /(.*)_(REQUEST|SUCCESS|FAILURE)/.exec(type);
   if (!matches) return state;
   const [, requestName, requestState] = matches;

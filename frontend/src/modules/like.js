@@ -42,7 +42,10 @@ export const unlikePost = (postInfo) => async (dispatch) => {
   dispatch({ type: UNLIKE_POST_SUCCESS, postInfo });
 };
 
-export default function likeReducer(state = initialState, action) {
+export default function likeReducer(state, action) {
+  if (typeof state === 'undefined') {
+    return initialState;
+  }
   switch (action.type) {
     case LIKE_POST_REQUEST:
     case LIKE_POST_SUCCESS:
