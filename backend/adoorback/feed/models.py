@@ -226,7 +226,7 @@ def create_response_request_noti(instance, **kwargs):
 @transaction.atomic
 @receiver(post_save, sender=Response)
 def create_request_answered_noti(instance, created, **kwargs):
-    if not created:  # response edit만 해준 경우
+    if not created or not instance.share_with_friends:  # response edit만 해줬거나 익명으로만 공개한 경우
         return
 
     author_id = instance.author.id
