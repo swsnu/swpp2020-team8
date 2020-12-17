@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.http import JsonResponse
 from rest_framework import generics
 from rest_framework.exceptions import PermissionDenied
@@ -18,9 +19,11 @@ class NotificationList(generics.ListAPIView, generics.UpdateAPIView):
     def get_exception_handler(self):
         return adoor_exception_handler
 
+    @transaction.atomic
     def get_queryset(self):
         return Notification.objects.visible_only().filter(user=self.request.user)
 
+    @transaction.atomic
     def update(self, request, *args, **kwargs):
         self.get_queryset().filter(user=request.user).update(is_read=True)
         queryset = Notification.objects.visible_only().filter(user=request.user)
@@ -55,6 +58,7 @@ class NotificationDetail(generics.UpdateAPIView):
         self.perform_update(serializer)
         return Response(serializer.data)
 
+    @transaction.atomic
     def perform_update(self, serializer):
         if self.get_object().user != self.request.user:
             raise PermissionDenied("requester가 본인이 아닙니다...")

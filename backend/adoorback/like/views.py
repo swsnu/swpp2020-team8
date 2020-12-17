@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
@@ -21,6 +22,7 @@ class LikeList(generics.ListCreateAPIView):
     def get_exception_handler(self):
         return adoor_exception_handler
 
+    @transaction.atomic
     def perform_create(self, serializer):
         content_type_id = get_generic_relation_type(self.request.data['target_type']).id
         serializer.save(user=self.request.user,

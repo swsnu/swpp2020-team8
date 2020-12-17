@@ -7,7 +7,7 @@ from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericRelation
-from django.db import models
+from django.db import models, transaction
 from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 
@@ -83,6 +83,7 @@ class FriendRequest(AdoorTimestampedModel):
         return self.__class__.__name__
 
 
+@transaction.atomic
 @receiver(m2m_changed)
 def delete_friend_noti(action, pk_set, instance, **kwargs):
     if action == "post_remove":
@@ -94,6 +95,7 @@ def delete_friend_noti(action, pk_set, instance, **kwargs):
         FriendRequest.objects.filter(requester=friend, requestee=instance).delete()
 
 
+@transaction.atomic
 @receiver(post_save, sender=FriendRequest)
 def create_friend_noti(created, instance, **kwargs):
     accepted = instance.accepted

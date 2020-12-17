@@ -2,6 +2,7 @@ import os
 import pandas as pd
 
 from django.contrib.auth import get_user_model
+from django.db import transaction
 from django.http import HttpResponseBadRequest
 
 from rest_framework import generics
@@ -77,6 +78,7 @@ class ArticleList(generics.CreateAPIView):
     def get_exception_handler(self):
         return adoor_exception_handler
 
+    @transaction.atomic
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
@@ -109,6 +111,7 @@ class ResponseList(generics.ListCreateAPIView):
     def get_exception_handler(self):
         return adoor_exception_handler
 
+    @transaction.atomic
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
@@ -141,6 +144,7 @@ class QuestionList(generics.ListCreateAPIView):
     def get_exception_handler(self):
         return adoor_exception_handler
 
+    @transaction.atomic
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
@@ -193,6 +197,7 @@ class ResponseRequestList(generics.ListAPIView):
     def get_exception_handler(self):
         return adoor_exception_handler
 
+    @transaction.atomic
     def get_queryset(self):
         try:
             question = Question.objects.get(id=self.kwargs['qid'])
@@ -214,6 +219,7 @@ class ResponseRequestCreate(generics.CreateAPIView):
     def get_exception_handler(self):
         return adoor_exception_handler
 
+    @transaction.atomic
     def perform_create(self, serializer):
         current_user = self.request.user
         requester = User.objects.get(id=self.request.data.get('requester_id'))
@@ -260,6 +266,7 @@ class RecommendedQuestionList(generics.ListAPIView):
     def get_exception_handler(self):
         return adoor_exception_handler
 
+    @transaction.atomic
     def get_queryset(self):
         try:
             dir_name = os.path.dirname(os.path.abspath(__file__))
@@ -272,5 +279,7 @@ class RecommendedQuestionList(generics.ListAPIView):
         rank_ids = df['questionId'].tolist()
         daily_question_ids = set(list(Question.objects.daily_questions().values_list('id', flat=True)))
         recommended_ids = [x for x in rank_ids if x in daily_question_ids][:5]
+        recommended_ids = recommended_ids if len(recommended_ids) == 5 else \
+            Question.objects.daily_questions().values_list('id', flat=True)[:5]
 
         return Question.objects.filter(pk__in=recommended_ids).order_by('?')

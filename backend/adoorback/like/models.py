@@ -1,5 +1,5 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.db import models
+from django.db import models, transaction
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save
@@ -52,6 +52,7 @@ class Like(AdoorTimestampedModel):
         return self.__class__.__name__
 
 
+@transaction.atomic
 @receiver(post_save, sender=Like)
 def create_like_noti(instance, **kwargs):
     user = instance.target.author
