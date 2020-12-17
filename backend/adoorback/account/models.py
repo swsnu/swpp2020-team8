@@ -1,7 +1,7 @@
 """Django Model
 Define Models for account APIs
 """
-import random
+import secrets
 
 from django.apps import apps
 from django.contrib.auth import get_user_model
@@ -16,7 +16,7 @@ from adoorback.models import AdoorTimestampedModel
 
 def random_profile_color():
     # use random int so that initial users get different colors
-    return '#{0:06X}'.format(random.randint(0, 16777216))
+    return '#{0:06X}'.format(secrets.randbelow(16777216))
 
 
 class User(AbstractUser, AdoorTimestampedModel):
