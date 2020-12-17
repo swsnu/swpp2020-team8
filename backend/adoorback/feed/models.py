@@ -38,6 +38,11 @@ class Article(AdoorModel):
     def liked_user_ids(self):
         return self.article_likes.values_list('user_id', flat=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['-id']),
+        ]
+
 
 class QuestionManager(models.Manager):
 
@@ -79,6 +84,7 @@ class Question(AdoorModel):
 
     class Meta:
         base_manager_name = 'objects'
+        ordering = ['id']
 
 
 class Response(AdoorModel):
@@ -99,6 +105,9 @@ class Response(AdoorModel):
 
     class Meta:
         ordering = ['-id']
+        indexes = [
+            models.Index(fields=['-id']),
+        ]
 
     @property
     def type(self):
@@ -125,6 +134,9 @@ class ResponseRequest(AdoorTimestampedModel):
         constraints = [
             models.UniqueConstraint(
                 fields=['requester', 'requestee', 'question'], name='unique_response_request'),
+        ]
+        indexes = [
+            models.Index(fields=['-id']),
         ]
 
     def __str__(self):
@@ -159,6 +171,9 @@ class Post(AdoorModel):
     class Meta:
         ordering = ['-id']
         base_manager_name = 'objects'
+        indexes = [
+            models.Index(fields=['-id']),
+        ]
 
 
 @transaction.atomic
@@ -211,7 +226,7 @@ def create_response_request_noti(instance, **kwargs):
 @transaction.atomic
 @receiver(post_save, sender=Response)
 def create_request_answered_noti(instance, created, **kwargs):
-    if not created:  # response edit만 해준 경우
+    if not created or not instance.share_with_friends:  # response edit만 해줬거나 익명으로만 공개한 경우
         return
 
     author_id = instance.author.id

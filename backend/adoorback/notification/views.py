@@ -10,6 +10,7 @@ from notification.serializers import NotificationSerializer
 
 from adoorback.permissions import IsOwnerOrReadOnly
 from adoorback.validators import adoor_exception_handler
+from adoorback.content_types import get_friend_request_type, get_response_request_type
 
 
 class NotificationList(generics.ListAPIView, generics.UpdateAPIView):
@@ -29,6 +30,30 @@ class NotificationList(generics.ListAPIView, generics.UpdateAPIView):
         queryset = Notification.objects.visible_only().filter(user=request.user)
         serializer = NotificationSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
+
+
+class FriendRequestNotiList(generics.ListAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    def get_exception_handler(self):
+        return adoor_exception_handler
+
+    @transaction.atomic
+    def get_queryset(self):
+        return Notification.objects.visible_only.filter(target_type=get_friend_request_type())
+
+
+class ResponseRequestNotiList(generics.ListAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    def get_exception_handler(self):
+        return adoor_exception_handler
+
+    @transaction.atomic
+    def get_queryset(self):
+        return Notification.objects.visible_only.filter(target_type=get_response_request_type())
 
 
 def notification_id(request):

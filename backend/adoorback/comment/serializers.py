@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
 
 from comment.models import Comment
 
@@ -45,7 +45,8 @@ class CommentFriendSerializer(CommentBaseSerializer):
         if obj.target.type != 'Comment' and obj.target.author == current_user:
             replies = obj.replies.order_by('id')
         else:
-            replies = obj.replies.filter(is_anonymous=False, is_private=False).order_by('id')
+            replies = obj.replies.filter(is_anonymous=False, is_private=False) | \
+                      obj.replies.filter(author=current_user, is_anonymous=False).order_by('id')
         return self.__class__(replies, many=True, read_only=True, context=self.context).data
 
     class Meta(CommentBaseSerializer.Meta):
@@ -73,7 +74,8 @@ class CommentAnonymousSerializer(CommentBaseSerializer):
         if obj.target.author == current_user:
             replies = obj.replies.order_by('id')
         else:
-            replies = obj.replies.filter(is_anonymous=True, is_private=False).order_by('id')
+            replies = obj.replies.filter(is_anonymous=True, is_private=False) | \
+                      obj.replies.filter(author=current_user, is_anonymous=True).order_by('id')
         return self.__class__(replies, many=True, read_only=True, context=self.context).data
 
     class Meta(CommentBaseSerializer.Meta):
@@ -92,8 +94,9 @@ class CommentResponsiveSerializer(CommentBaseSerializer):
         if obj.target.author == current_user:
             replies = obj.replies.order_by('id')
         else:
-            replies = obj.replies.filter(is_private=False).order_by('id')
-        return self.__class__(replies, many=True, read_only=True, context=self.context).data
+            replies = obj.replies.filter(is_private=False) | \
+                      obj.replies.filter(author_id=current_user.id).order_by('id')
+        return self.__class__(replies, many=True, read_only=True, context=self.context).data  # responsive serializer
 
     def get_author_detail(self, obj):
         if not obj.is_anonymous or (obj.author == self.context.get('request', None).user):

@@ -36,6 +36,10 @@ class User(AbstractUser, AdoorTimestampedModel):
                                                   object_id_field='origin_id')
 
     class Meta:
+        indexes = [
+            models.Index(fields=['id']),
+            models.Index(fields=['username']),
+        ]
         ordering = ['id']
 
     @classmethod
@@ -72,6 +76,9 @@ class FriendRequest(AdoorTimestampedModel):
         constraints = [
             models.UniqueConstraint(
                 fields=['requester', 'requestee', ], name='unique_friend_request'),
+        ]
+        indexes = [
+            models.Index(fields=['-updated_at']),
         ]
         ordering = ['-updated_at']
 

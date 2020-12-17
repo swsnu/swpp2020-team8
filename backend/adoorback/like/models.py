@@ -43,6 +43,7 @@ class Like(AdoorTimestampedModel):
         constraints = [
             models.UniqueConstraint(fields=['user', 'content_type', 'object_id'], name='unique_like'),
         ]
+        ordering = ['id']
 
     def __str__(self):
         return f'{self.user} likes {self.content_type} ({self.object_id})'
@@ -73,14 +74,7 @@ def create_like_noti(instance, **kwargs):
         redirect_url = f'/{origin.target.type.lower()}s/' \
                        f'{origin.target.id}?anonymous={instance.is_anonymous}'
     else:  # if is post
-        origin_target_name = ''
-        if instance.target.type == 'Article':
-            origin_target_name = '게시글'
-        elif instance.target.type == 'Response':
-            origin_target_name = '답변'
-        elif instance.target.type == 'Question':
-            origin_target_name = '질문'
-        message = f'{actor_name} 회원님의 {origin_target_name}을 좋아합니다.'
+        message = f'{actor_name} 회원님의 게시글을 좋아합니다.'
         redirect_url = f'/{origin.type.lower()}s/{origin.id}?anonymous={instance.is_anonymous}'
 
     Notification.objects.create(actor=actor, user=user,

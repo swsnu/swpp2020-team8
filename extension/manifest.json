@@ -3,7 +3,7 @@
 {
   "name": "adoor(어도어) Notification Alarm",
   "description": "Help users keep track of notifications from https://adoor.world .",
-  "version": "1.2",
+  "version": "1.3",
   "manifest_version": 2,
   "permissions": ["alarms", "notifications", "storage", "tabs", "webNavigation", "*://adoor.world/*"],
   "background": {

@@ -284,7 +284,7 @@ class ResponseRequestDestroy(generics.DestroyAPIView):
 
 
 class DailyQuestionList(generics.ListAPIView):
-    serializer_class = fs.QuestionResponsiveSerializer
+    serializer_class = fs.DailyQuestionSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = None
 
@@ -292,9 +292,9 @@ class DailyQuestionList(generics.ListAPIView):
         return adoor_exception_handler
 
     def get_queryset(self):
-        if Question.objects.daily_questions().count() == 0:
+        if Question.objects.daily_questions().count() < 30:
             select_daily_questions()
-        return Question.objects.daily_questions().order_by('?')
+        return Question.objects.daily_questions()
 
 
 class RecommendedQuestionList(generics.ListAPIView):

@@ -8,7 +8,8 @@ from notification.models import Notification
 
 from adoorback.utils.seed import set_seed, fill_data
 from adoorback.content_types import get_comment_type, get_like_type, \
-    get_article_type, get_question_type, get_response_type, get_response_request_type
+    get_article_type, get_question_type, get_response_type, \
+    get_response_request_type, get_friend_request_type
 
 User = get_user_model()
 N = 10
@@ -172,6 +173,24 @@ class NotificationAPITestCase(APITestCase):
     def test_noti_list(self):
         current_user = self.make_user(username='current_user')
         received_notis_count = Notification.objects.filter(user=current_user).count()
+        with self.login(username=current_user.username, password='password'):
+            response = self.get('notification-list')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['count'], received_notis_count)
+
+    def test_friend_request_noti_list(self):
+        current_user = self.make_user(username='current_user')
+        received_notis_count = Notification.objects.filter(user=current_user,
+                                                           target_type=get_friend_request_type()).count()
+        with self.login(username=current_user.username, password='password'):
+            response = self.get('notification-list')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['count'], received_notis_count)
+
+    def test_response_request_noti_list(self):
+        current_user = self.make_user(username='current_user')
+        received_notis_count = Notification.objects.filter(user=current_user,
+                                                           target_type=get_response_request_type()).count()
         with self.login(username=current_user.username, password='password'):
             response = self.get('notification-list')
             self.assertEqual(response.status_code, 200)

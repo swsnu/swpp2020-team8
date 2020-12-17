@@ -24,7 +24,6 @@ class CommentCreate(generics.ListCreateAPIView):
     @transaction.atomic
     def perform_create(self, serializer):
         content_type_id = get_generic_relation_type(self.request.data['target_type']).id
-
         serializer.save(author=self.request.user,
                         content_type_id=content_type_id,
                         object_id=self.request.data['target_id'])

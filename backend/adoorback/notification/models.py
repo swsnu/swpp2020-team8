@@ -57,7 +57,10 @@ class Notification(AdoorTimestampedModel):
     objects = NotificationManager()
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ['-updated_at']
+        indexes = [
+            models.Index(fields=['-updated_at']),
+        ]
 
     def __str__(self):
         return self.message
