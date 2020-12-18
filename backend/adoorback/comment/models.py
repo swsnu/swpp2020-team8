@@ -80,7 +80,7 @@ def create_noti(instance, **kwargs):
                                                user=user,
                                                origin_id=origin.id,
                                                origin_type=get_generic_relation_type(origin.type))
-    if notification.count() > 0:
+    if notification.count() > 0:  # same notification exists --> update
         notification[0].save()
     else:
         Notification.objects.create(actor=actor,
