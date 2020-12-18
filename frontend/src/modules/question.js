@@ -355,7 +355,11 @@ export default function questionReducer(state, action) {
       };
     case GET_RANDOM_QUESTIONS:
       const { dailyQuestions } = state;
-      const sortedQuestions = dailyQuestions.sort(() => 0.5 - Math.random());
+      const array = new Uint32Array(1);
+      window.crypto.getRandomValues(array);
+      const sortedQuestions = dailyQuestions.sort(
+        () => 0.5 - array[0] / 10 ** 10
+      );
       const randomQuestions = sortedQuestions.slice(0, 5);
       return {
         ...state,
