@@ -41,7 +41,7 @@ class FriendRequestNotiList(generics.ListAPIView):
 
     @transaction.atomic
     def get_queryset(self):
-        return Notification.objects.visible_only.filter(target_type=get_friend_request_type())
+        return Notification.objects.visible_only().filter(target_type=get_friend_request_type())
 
 
 class ResponseRequestNotiList(generics.ListAPIView):
@@ -53,7 +53,7 @@ class ResponseRequestNotiList(generics.ListAPIView):
 
     @transaction.atomic
     def get_queryset(self):
-        return Notification.objects.visible_only.filter(target_type=get_response_request_type())
+        return Notification.objects.visible_only().filter(target_type=get_response_request_type())
 
 
 def notification_id(request):
